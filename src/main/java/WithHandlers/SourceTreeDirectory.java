@@ -1,6 +1,10 @@
 package WithHandlers;
 
 import Source.SourceDirectory;
+import Source.SourceItem;
+import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
@@ -10,6 +14,8 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.TreeMap;
 
 /**
  * Created by adrap on 17-09-2015.
@@ -59,22 +65,53 @@ public class SourceTreeDirectory extends TreeItem<String> {
         });
     }
 
+    /*
+    * We need to create a task to load the items to a temporary collection, otherwise the UI will hang while we access the disk.
+    * */
     public void loadMore(){
-        int loaded = directory.loadMore();
-        System.out.println("Loaded More: " + loaded);
+        final ArrayList<TreeItem<String>> children = new ArrayList<TreeItem<String>>(getChildren());
 
-        if(loaded != 0) {
-            this.getChildren().clear();
-            for (String sourceItem : directory.getChildren().keySet()) {
-                Path sourcePath = Paths.get(sourceItem);
-                if (Files.isDirectory(sourcePath)) {
-                    this.getChildren().add(new SourceTreeDirectory(sourcePath, directory.getChildDirectory(sourcePath)));
-                } else this.getChildren().add(new SourceTreeFile(sourcePath));
+        // First we access the disk and save the loaded items to a temporary collection
+        Task<Integer> task = new Task<Integer>() {
+            @Override
+            protected Integer call() throws Exception {
+                TreeMap<String, SourceItem> loaded;
+                loaded = directory.loadMore();
+                System.out.println("Loaded More: " + loaded.size());
+
+                if (loaded.size() != 0) {
+                    //Add new items
+                    for (String sourceItem : loaded.keySet()) {
+                        Path sourcePath = Paths.get(sourceItem);
+                        if (Files.isDirectory(sourcePath)) {
+                            children.add(new SourceTreeDirectory(sourcePath, directory.getChildDirectory(sourcePath)));
+                        } else children.add(new SourceTreeFile(sourcePath));
+                    }
+                    // check if there's more files to load
+                    if (directory.isStreamOpen())
+                        children.add(new SourceTreeLoadMore());
+                }
+                return loaded.size();
             }
-            // check if there's more files to load
-            if(directory.isStreamOpen())
-                this.getChildren().add(new SourceTreeLoadMore());
-        }
+        };
+
+        // After everything is loaded, we add all the items to the TreeView at once.
+        task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+            public void handle(WorkerStateEvent workerStateEvent) {
+                // Remove "loading" items
+                ArrayList<Object> toRemove = new ArrayList<Object>();
+                for(Object o: children)
+                    if(o instanceof SourceTreeLoading)
+                        toRemove.add(o);
+                children.removeAll(toRemove);
+                // Set the children
+                getChildren().setAll(children);
+            }
+        });
+
+        new Thread(task).start();
+
+
     }
 
 }

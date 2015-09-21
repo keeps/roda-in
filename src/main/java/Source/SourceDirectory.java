@@ -2,6 +2,7 @@ package Source;
 
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.TreeMap;
 
@@ -10,7 +11,7 @@ import java.util.TreeMap;
  */
 public class SourceDirectory implements SourceItem {
 
-    private Path path;
+    public Path path;
     private int itemsToLoad = 0;
     private TreeMap<String, SourceItem> children;
     private DirectoryStream<Path> directoryStream;
@@ -69,52 +70,40 @@ public class SourceDirectory implements SourceItem {
 
     public int firstLoad(){
         if(itemsToLoad != 0) return 0;
-        return loadMore();
+        return loadMore().size();
     }
 
-    public int loadMore(){
+    public boolean hasFirstLoaded(){return children.size() > 1;}
+
+    public TreeMap<String, SourceItem> loadMore(){
         startDirectoryStream();
         int loaded = 0, childrenSize = children.size();
+        TreeMap<String, SourceItem> result = new TreeMap<String, SourceItem>();
         itemsToLoad += 50;
 
         while(iterator.hasNext() && (childrenSize + loaded < itemsToLoad)){
-            loadChild();
+            Path file = iterator.next();
+            SourceItem added = loadChild(file);
+            result.put(file.toString(), added);
             loaded++;
         }
 
         //we can close de directory stream if there's no more files to load in the iterator
         if(!iterator.hasNext()) closeDirectoryStream();
 
-        return loaded;
+        return result;
     }
 
-    private void loadChild(){
-        Path file = iterator.next();
+    private SourceItem loadChild(Path file){
+        SourceItem item;
         if (Files.isDirectory(file)) {
-            addChild(file, new SourceDirectory(file));
-        }else addChild(file, new SourceFile(file));
-    }
+            item = new SourceDirectory(file);
+            addChild(file, item);
 
-    public void loadChildren(){
-        //System.out.println(path);
-        try {
-            DirectoryStream<Path> dir = Files.newDirectoryStream(path);
-            Iterator<Path> iterator = dir.iterator();
-            int addedFiles = 0;
-            Path file;
-            while(iterator.hasNext() && addedFiles < itemsToLoad){
-                file = iterator.next();
-                if (Files.isDirectory(file)) {
-                    if(file.getNameCount() <= 5)
-                        addChild(file, new SourceDirectory(file));
-                }else addChild(file, new SourceFile(file));
-                addedFiles++;
-            }
-            dir.close();
+        }else{
+            item = new SourceFile(file);
+            addChild(file, item);
         }
-        catch (AccessDeniedException e){}
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+        return item;
     }
 }
