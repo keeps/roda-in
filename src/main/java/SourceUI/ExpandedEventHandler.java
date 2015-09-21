@@ -1,5 +1,6 @@
-package WithHandlers;
+package SourceUI;
 
+import SourceUI.Items.SourceTreeDirectory;
 import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
@@ -20,7 +21,7 @@ public class ExpandedEventHandler implements EventHandler<TreeItem.TreeModificat
 
         if (source.isExpanded()) {
             ImageView iv = (ImageView) source.getGraphic();
-            iv.setImage(FilePathTreeItem.folderExpandImage);
+            iv.setImage(SourceTreeDirectory.folderExpandImage);
         }
 
         // We only load new items if this hasn't been done before

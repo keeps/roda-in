@@ -1,8 +1,7 @@
-package Source;
+package SourceRepresentation;
 
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.TreeMap;
 

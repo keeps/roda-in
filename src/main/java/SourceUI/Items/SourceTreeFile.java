@@ -1,4 +1,4 @@
-package WithHandlers;
+package SourceUI.Items;
 
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;

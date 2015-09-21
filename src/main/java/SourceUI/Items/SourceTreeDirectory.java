@@ -1,8 +1,8 @@
-package WithHandlers;
+package SourceUI.Items;
 
-import Source.SourceDirectory;
-import Source.SourceItem;
-import javafx.collections.ObservableList;
+import SourceRepresentation.SourceDirectory;
+import SourceRepresentation.SourceItem;
+import SourceUI.ExpandedEventHandler;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
@@ -22,6 +22,7 @@ import java.util.TreeMap;
  */
 public class SourceTreeDirectory extends TreeItem<String> {
     public static Image folderCollapseImage = new Image(ClassLoader.getSystemResourceAsStream("folder.png"));
+    public static Image folderExpandImage = new Image(ClassLoader.getSystemResourceAsStream("folder-open.png"));
     public SourceDirectory directory;
     public boolean expanded = false;
     //this stores the full path to the file or directory

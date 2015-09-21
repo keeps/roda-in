@@ -1,11 +1,13 @@
-package WithHandlers; /**
+package SourceUI; /**
  * Created by adrap on 16-09-2015.
  */
 
-import Source.SourceDirectory;
+import SourceRepresentation.SourceDirectory;
+import SourceUI.Items.SourceTreeDirectory;
+import SourceUI.Items.SourceTreeLoadMore;
+import SourceUI.Items.SourceTreeLoading;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
@@ -14,8 +16,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
@@ -23,7 +23,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.nio.file.*;
 
 public class FileTree extends Application {
@@ -90,7 +89,6 @@ public class FileTree extends Application {
                         Platform.runLater(new Runnable() {
                             public void run() {
                                 parent.loadMore();
-                                parent.getChildren().remove(loading);
                             }
                         });
 
