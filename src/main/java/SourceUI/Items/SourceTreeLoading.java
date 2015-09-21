@@ -8,6 +8,5 @@ import javafx.scene.control.TreeItem;
 public class SourceTreeLoading extends TreeItem<String> {
     public SourceTreeLoading(){
         super("Loading...");
-        this.setValue("Loading...");
     }
 }

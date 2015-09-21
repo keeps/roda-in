@@ -12,7 +12,6 @@ public class SourceTreeLoadMore extends TreeItem<String> {
 
     public SourceTreeLoadMore(){
         super("Load More ...");
-        this.setValue("Load More ...");
         this.setGraphic(new ImageView(fileImage));
     }
 }

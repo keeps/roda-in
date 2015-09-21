@@ -78,7 +78,6 @@ public class SourceTreeDirectory extends TreeItem<String> {
             protected Integer call() throws Exception {
                 TreeMap<String, SourceItem> loaded;
                 loaded = directory.loadMore();
-                System.out.println("Loaded More: " + loaded.size());
 
                 if (loaded.size() != 0) {
                     //Add new items
@@ -111,8 +110,6 @@ public class SourceTreeDirectory extends TreeItem<String> {
         });
 
         new Thread(task).start();
-
-
     }
 
 }
