@@ -2,22 +2,16 @@
  * Created by adrap on 16-09-2015.
  */
 
-import SourceRepresentation.SourceDirectory;
-import SourceUI.ClickedEventHandler;
-import SourceUI.Items.SourceTreeDirectory;
-import SourceUI.Items.SourceTreeLoadMore;
-import SourceUI.Items.SourceTreeLoading;
+import source.representation.SourceDirectory;
+import source.ui.ClickedEventHandler;
+import source.ui.items.SourceTreeDirectory;
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
-import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;

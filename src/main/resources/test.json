@@ -1,0 +1,119 @@
+{
+  "classificationPlan": [
+    {
+      "title": "Teste 1",
+      "id": "1",
+      "parentId": "0",
+      "descriptionlevel": "Fonds",
+      "level":"1",
+      "children": [
+        {
+          "title": "Teste 1.1",
+          "id": "11",
+          "parentId": "1",
+          "descriptionlevel": "Class",
+          "level":"2",
+          "children": [
+            {
+              "title": "Teste 1.1.1",
+              "id": "111",
+              "parentId": "11",
+              "descriptionlevel": "Sub-class",
+              "level":"3",
+              "children": [
+                
+              ]
+            },
+            {
+              "title": "Teste 1.1.2",
+              "id": "112",
+              "parentId": "11",
+              "descriptionlevel": "Sub-class",
+              "level":"3",
+              "children": [
+                {
+                  "title": "Teste 1.1.2.1",
+                  "id": "1121",
+                  "parentId": "112",
+                  "descriptionlevel": "Series",
+                  "level":"4",
+                  "children": [
+                    
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Teste 2",
+      "id": "2",
+      "parentId": "0",
+      "descriptionlevel": "Fonds",
+      "level":"1",
+      "children": [
+        {
+          "title": "Teste 2.1",
+          "id": "21",
+          "parentId": "2",
+          "descriptionlevel": "Class",
+          "level":"2",
+          "children": [
+            
+          ]
+        },
+        {
+          "title": "Teste 2.2",
+          "id": "22",
+          "parentId": "2",
+          "descriptionlevel": "Class",
+          "level":"2",
+          "children": [
+            {
+              "title": "",
+              "id": "",
+              "parentId": "",
+              "descriptionlevel": "",
+              "level":"",
+              "children": [
+                
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Teste 2.3",
+          "id": "23",
+          "parentId": "2",
+          "descriptionlevel": "Sub-fonds",
+          "level":"2",
+          "children": [
+            
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Teste 3",
+      "id": "3",
+      "parentId": "0",
+      "descriptionlevel": "Fonds",
+      "level":"1",
+      "children": [
+        
+      ]
+    },
+    {
+      "title": "Teste 4",
+      "id": "4",
+      "parentId": "0",
+      "descriptionlevel": "Fonds",
+      "level":"1",
+      "children": [
+        
+      ]
+    }
+  ]
+}
