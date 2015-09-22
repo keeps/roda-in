@@ -1,0 +1,29 @@
+{
+  "configs":[
+  {
+    "title": "fonds",
+    "abbreviation": "F",
+    "fontSize": 16,
+    "fontColor": "black",
+    "backgroundColor": "white",
+    "width":16
+  },
+  {
+    "title": "class",
+    "abbreviation": "C",
+    "fontSize": 16,
+    "fontColor": "black",
+    "backgroundColor": "blue",
+    "width":16
+  }
+  ,
+  {
+    "title": "sub-class",
+    "abbreviation": "SC",
+    "fontSize": 16,
+    "fontColor": "black",
+    "backgroundColor": "yellow",
+    "width":24
+  }
+]
+}
