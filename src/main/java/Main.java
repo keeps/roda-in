@@ -3,7 +3,10 @@
  */
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.scene.control.TreeItem;
 import schema.ClassificationSchema;
+import schema.DescriptionObject;
+import schema.ui.SchemaNode;
 import source.representation.SourceDirectory;
 import source.ui.ClickedEventHandler;
 import source.ui.items.SourceTreeDirectory;
@@ -19,32 +22,15 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import sun.misc.IOUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.*;
 
 public class Main extends Application {
     private Stage stage;
-    private Rectangle2D bounds;
+    private double minWidth;
 
     public static void main(String[] args) {
-        //read json file data to String
-        try {
-            InputStream input = ClassLoader.getSystemResourceAsStream("test.json");
-
-            //create ObjectMapper instance
-            ObjectMapper objectMapper = new ObjectMapper();
-
-            //convert json string to object
-            ClassificationSchema emp = objectMapper.readValue(input, ClassificationSchema.class);
-
-            System.out.println("Object\n"+emp);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        //launch(args);
+        launch(args);
     }
 
     @Override
@@ -57,7 +43,8 @@ public class Main extends Application {
     private void createFrameStructure(){
         // Maximize window
         Screen screen = Screen.getPrimary();
-        bounds = screen.getVisualBounds();
+        Rectangle2D bounds = screen.getVisualBounds();
+        minWidth = bounds.getWidth()/3 * 0.7;
 
         stage.setX(bounds.getMinX());
         stage.setY(bounds.getMinY());
@@ -69,9 +56,9 @@ public class Main extends Application {
 
         StackPane previewExplorer = createPreviewExplorer();
         StackPane rulesPane = createRulesPane();
-        StackPane sipExplorer = createSIPExplorer();
+        StackPane schemaPane = createSchemaPane();
 
-        split.getItems().addAll(previewExplorer, rulesPane, sipExplorer);
+        split.getItems().addAll(previewExplorer, rulesPane, schemaPane);
 
         // setup and show the window
         stage.setTitle("RODA-In");
@@ -81,7 +68,7 @@ public class Main extends Application {
 
     private StackPane createPreviewExplorer(){
         //create tree pane
-        final VBox treeBox=new VBox();
+        VBox treeBox=new VBox();
         treeBox.setPadding(new Insets(10, 10, 10, 10));
         treeBox.setSpacing(10);
 
@@ -96,22 +83,46 @@ public class Main extends Application {
 
         StackPane previewExplorer = new StackPane();
         previewExplorer.getChildren().add(treeBox);
+        previewExplorer.setMinWidth(minWidth);
 
         treeView.setOnMouseClicked(new ClickedEventHandler(treeView));
         return previewExplorer;
     }
 
-    private StackPane createRulesPane(){
-        double splitWidth = bounds.getWidth()/3;
+    private StackPane createSchemaPane(){
+        //create tree pane
+        VBox treeBox=new VBox();
+        treeBox.setPadding(new Insets(10, 10, 10, 10));
+        treeBox.setSpacing(10);
 
-        StackPane rulesPane = new StackPane();
-        rulesPane.setMinWidth(splitWidth);
+        TreeItem<String> rootNode = new TreeItem<String>();
+        rootNode.setExpanded(true);
 
-        return rulesPane;
+        // get the classification schema and add all its nodes to the tree
+        ClassificationSchema cs = ClassificationSchema.instantiate();
+        for(DescriptionObject obj: cs.getDos()){
+            SchemaNode sn = new SchemaNode(obj);
+            rootNode.getChildren().add(sn);
+        }
+
+        // create the tree view
+        TreeView<String> treeView=new TreeView<String>(rootNode);
+        treeView.setShowRoot(false);
+        // add everything to the tree pane
+        treeBox.getChildren().addAll(new Label("ClassificationSchema"), treeView);
+        VBox.setVgrow(treeView, Priority.ALWAYS);
+
+        StackPane schemaPane = new StackPane();
+        schemaPane.getChildren().add(treeBox);
+
+        schemaPane.setMinWidth(minWidth);
+
+        return schemaPane;
     }
 
-    public StackPane createSIPExplorer(){
-        StackPane sipExplorer = new StackPane();
-        return sipExplorer;
+    public StackPane createRulesPane(){
+        StackPane rulesPane = new StackPane();
+        rulesPane.setMinWidth(minWidth);
+        return rulesPane;
     }
 }

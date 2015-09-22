@@ -1,5 +1,9 @@
 package schema;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 /**
@@ -22,6 +26,24 @@ public class ClassificationSchema {
 
     public ClassificationSchema(ArrayList<DescriptionObject> dos) {
         this.dos = dos;
+    }
+
+    public static ClassificationSchema instantiate(){
+        //read json file data to String
+        try {
+            InputStream input = ClassLoader.getSystemResourceAsStream("test.json");
+
+            //create ObjectMapper instance
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            //convert json string to object
+            ClassificationSchema cs = objectMapper.readValue(input, ClassificationSchema.class);
+
+            return cs;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override
