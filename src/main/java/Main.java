@@ -2,6 +2,8 @@
  * Created by adrap on 16-09-2015.
  */
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import schema.ClassificationSchema;
 import source.representation.SourceDirectory;
 import source.ui.ClickedEventHandler;
 import source.ui.items.SourceTreeDirectory;
@@ -17,7 +19,10 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import sun.misc.IOUtils;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.*;
 
 public class Main extends Application {
@@ -25,7 +30,21 @@ public class Main extends Application {
     private Rectangle2D bounds;
 
     public static void main(String[] args) {
-        launch(args);
+        //read json file data to String
+        try {
+            InputStream input = ClassLoader.getSystemResourceAsStream("test.json");
+
+            //create ObjectMapper instance
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            //convert json string to object
+            ClassificationSchema emp = objectMapper.readValue(input, ClassificationSchema.class);
+
+            System.out.println("Object\n"+emp);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //launch(args);
     }
 
     @Override
