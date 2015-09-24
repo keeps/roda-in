@@ -5,14 +5,14 @@
     "abbreviation": "F",
     "fontSize": 16,
     "fontColor": "black",
-    "backgroundColor": "white",
+    "backgroundColor": "grey",
     "width":16
   },
   {
     "title": "class",
     "abbreviation": "C",
     "fontSize": 16,
-    "fontColor": "black",
+    "fontColor": "white",
     "backgroundColor": "blue",
     "width":16
   }

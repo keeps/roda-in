@@ -2,7 +2,6 @@
  * Created by adrap on 16-09-2015.
  */
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.scene.control.TreeItem;
 import schema.ClassificationSchema;
 import schema.DescriptionObject;
@@ -109,7 +108,7 @@ public class Main extends Application {
         TreeView<String> treeView=new TreeView<String>(rootNode);
         treeView.setShowRoot(false);
         // add everything to the tree pane
-        treeBox.getChildren().addAll(new Label("ClassificationSchema"), treeView);
+        treeBox.getChildren().addAll(new Label("Classification Schema"), treeView);
         VBox.setVgrow(treeView, Priority.ALWAYS);
 
         StackPane schemaPane = new StackPane();
