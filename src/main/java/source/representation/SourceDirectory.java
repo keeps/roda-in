@@ -1,4 +1,4 @@
-package SourceRepresentation;
+package source.representation;
 
 import java.io.IOException;
 import java.nio.file.*;

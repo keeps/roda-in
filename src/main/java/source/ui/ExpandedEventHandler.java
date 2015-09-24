@@ -1,6 +1,6 @@
-package SourceUI;
+package source.ui;
 
-import SourceUI.Items.SourceTreeDirectory;
+import source.ui.items.SourceTreeDirectory;
 import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;

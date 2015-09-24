@@ -1,8 +1,8 @@
-package SourceUI;
+package source.ui;
 
-import SourceUI.Items.SourceTreeDirectory;
-import SourceUI.Items.SourceTreeLoadMore;
-import SourceUI.Items.SourceTreeLoading;
+import source.ui.items.SourceTreeDirectory;
+import source.ui.items.SourceTreeLoadMore;
+import source.ui.items.SourceTreeLoading;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;

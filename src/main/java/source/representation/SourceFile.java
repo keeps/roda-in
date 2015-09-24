@@ -1,4 +1,4 @@
-package SourceRepresentation;
+package source.representation;
 
 import java.nio.file.Path;
 

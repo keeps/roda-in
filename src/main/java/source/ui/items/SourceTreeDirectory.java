@@ -1,8 +1,8 @@
-package SourceUI.Items;
+package source.ui.items;
 
-import SourceRepresentation.SourceDirectory;
-import SourceRepresentation.SourceItem;
-import SourceUI.ExpandedEventHandler;
+import source.ui.ExpandedEventHandler;
+import source.representation.SourceDirectory;
+import source.representation.SourceItem;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
