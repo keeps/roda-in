@@ -2,8 +2,12 @@
  * Created by adrapereira on 16-09-2015.
  */
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import rules.ui.RulesPane;
 import schema.ClassificationSchema;
 import schema.DescriptionObject;
 import schema.ui.SchemaNode;
@@ -39,19 +43,24 @@ public class Main extends Application {
         stage.setWidth(bounds.getWidth());
         stage.setHeight(bounds.getHeight());
 
-        // Divide Pane in 3
+        // Divide center pane in 3
         SplitPane split = new SplitPane();
-
         //StackPane previewExplorer = createPreviewExplorer();
         BorderPane previewExplorer = new FileExplorerPane(stage);
-        StackPane rulesPane = createRulesPane();
+        BorderPane rulesPane = new RulesPane(stage);
         StackPane schemaPane = createSchemaPane();
-
         split.getItems().addAll(previewExplorer, rulesPane, schemaPane);
+
+        //Create Footer
+        HBox footer = createFooter();
+
+        BorderPane mainPane = new BorderPane();
+        mainPane.setCenter(split);
+        mainPane.setBottom(footer);
 
         // setup and show the window
         stage.setTitle("RODA-In");
-        stage.setScene(new Scene(split, bounds.getWidth(), bounds.getHeight()));
+        stage.setScene(new Scene(mainPane, bounds.getWidth(), bounds.getHeight()));
         stage.show();
     }
 
@@ -86,9 +95,24 @@ public class Main extends Application {
         return schemaPane;
     }
 
-    public StackPane createRulesPane(){
-        StackPane rulesPane = new StackPane();
-        rulesPane.minWidthProperty().bind(stage.widthProperty().multiply(0.2));
-        return rulesPane;
+    private HBox createFooter(){
+        Button btn = new Button("Create SIPs");
+        Label title = new Label("Estado...............");
+
+        HBox space = new HBox();
+        HBox.setHgrow(space, Priority.ALWAYS);
+
+        HBox hbox = new HBox();
+        hbox.setPadding(new Insets(10, 10, 10, 10));
+        hbox.setSpacing(10);
+        hbox.setAlignment(Pos.TOP_RIGHT);
+        hbox.getChildren().addAll(title, space, btn);
+
+        btn.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent e) {
+                System.out.println("Create SIPs");
+            }
+        });
+        return hbox;
     }
 }
