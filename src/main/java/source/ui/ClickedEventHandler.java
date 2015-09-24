@@ -1,6 +1,7 @@
 package source.ui;
 
 import source.ui.items.SourceTreeDirectory;
+import source.ui.items.SourceTreeFile;
 import source.ui.items.SourceTreeLoadMore;
 import source.ui.items.SourceTreeLoading;
 import javafx.application.Platform;
@@ -10,14 +11,16 @@ import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
 
 /**
- * Created by adrap on 21-09-2015.
+ * Created by adrapereira on 21-09-2015.
  */
 public class ClickedEventHandler implements EventHandler<MouseEvent> {
 
     private TreeView<String> treeView;
+    private FileExplorerPane fep;
 
-    public ClickedEventHandler(TreeView<String> treeView){
-        this.treeView = treeView;
+    public ClickedEventHandler(FileExplorerPane pane){
+        this.treeView = pane.getTreeView();
+        fep = pane;
     }
 
     public void handle(MouseEvent mouseEvent) {
@@ -26,7 +29,7 @@ public class ClickedEventHandler implements EventHandler<MouseEvent> {
             if(item instanceof SourceTreeLoadMore) {
                 final SourceTreeDirectory parent = (SourceTreeDirectory)item.getParent();
                 parent.getChildren().remove(item);
-                final SourceTreeLoading loading = new SourceTreeLoading();
+                SourceTreeLoading loading = new SourceTreeLoading();
                 parent.getChildren().add(loading);
 
                 Platform.runLater(new Runnable() {
@@ -34,7 +37,12 @@ public class ClickedEventHandler implements EventHandler<MouseEvent> {
                         parent.loadMore();
                     }
                 });
-
+            }else if(item instanceof SourceTreeDirectory){
+                SourceTreeDirectory directory = (SourceTreeDirectory)item;
+                fep.updateMetadata(directory.getFullPath());
+            }else if(item instanceof SourceTreeFile) {
+                SourceTreeFile directory = (SourceTreeFile) item;
+                fep.updateMetadata(directory.getFullPath());
             }
         }
     }

@@ -3,7 +3,7 @@ package source.representation;
 import java.nio.file.Path;
 
 /**
- * Created by adrap on 17-09-2015.
+ * Created by adrapereira on 17-09-2015.
  */
 public class SourceFile implements SourceItem{
     public Path path;

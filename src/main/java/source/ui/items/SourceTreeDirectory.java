@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.TreeMap;
 
 /**
- * Created by adrap on 17-09-2015.
+ * Created by adrapereira on 17-09-2015.
  */
 public class SourceTreeDirectory extends TreeItem<String> {
     public static Image folderCollapseImage = new Image(ClassLoader.getSystemResourceAsStream("folder.png"));

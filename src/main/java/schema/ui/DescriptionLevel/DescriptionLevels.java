@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 
 /**
- * Created by adrap on 22-09-2015.
+ * Created by adrapereira on 22-09-2015.
  */
 public class DescriptionLevels {
     private static HashMap<String, DescriptionLevelConfig> configs;

@@ -8,7 +8,7 @@ import java.io.File;
 import java.nio.file.Path;
 
 /**
- * Created by adrap on 17-09-2015.
+ * Created by adrapereira on 17-09-2015.
  */
 public class SourceTreeFile extends TreeItem<String> {
     public static Image fileImage = new Image(ClassLoader.getSystemResourceAsStream("text-x-generic.png"));
