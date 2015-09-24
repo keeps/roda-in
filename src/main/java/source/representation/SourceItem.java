@@ -1,7 +1,7 @@
 package source.representation;
 
 /**
- * Created by adrap on 17-09-2015.
+ * Created by adrapereira on 17-09-2015.
  */
 public interface SourceItem {
 }

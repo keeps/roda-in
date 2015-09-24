@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.TreeMap;
 
 /**
- * Created by adrap on 17-09-2015.
+ * Created by adrapereira on 17-09-2015.
  */
 public class SourceDirectory implements SourceItem {
 

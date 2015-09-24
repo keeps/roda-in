@@ -3,7 +3,7 @@ package schema.ui.DescriptionLevel;
 import java.util.ArrayList;
 
 /**
- * Created by adrap on 22-09-2015.
+ * Created by adrapereira on 22-09-2015.
  *
  * This class is only used to map the json to a list.
  * We then manually get the contents of this list to use in an HashMap in the DescriptionLevels class.

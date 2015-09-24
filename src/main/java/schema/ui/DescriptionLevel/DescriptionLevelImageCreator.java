@@ -8,7 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 
 /**
- * Created by adrap on 22-09-2015.
+ * Created by adrapereira on 22-09-2015.
  */
 public class DescriptionLevelImageCreator {
     private DescriptionLevelConfig config;

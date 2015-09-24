@@ -7,7 +7,7 @@ import schema.DescriptionObject;
 import schema.ui.DescriptionLevel.DescriptionLevelImageCreator;
 
 /**
- * Created by adrap on 17-09-2015.
+ * Created by adrapereira on 17-09-2015.
  */
 public class SchemaNode extends TreeItem<String> {
     public DescriptionObject dob;

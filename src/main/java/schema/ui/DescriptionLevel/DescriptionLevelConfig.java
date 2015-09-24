@@ -1,7 +1,7 @@
 package schema.ui.DescriptionLevel;
 
 /**
- * Created by adrap on 22-09-2015.
+ * Created by adrapereira on 22-09-2015.
  */
 public class DescriptionLevelConfig {
     private String title;

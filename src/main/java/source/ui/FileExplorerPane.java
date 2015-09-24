@@ -25,7 +25,7 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 
 /**
- * Created by adrap on 24-09-2015.
+ * Created by adrapereira on 24-09-2015.
  */
 public class FileExplorerPane extends BorderPane {
     private HBox openfolder;

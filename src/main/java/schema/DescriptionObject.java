@@ -3,7 +3,7 @@ package schema;
 import java.util.ArrayList;
 
 /**
- * Created by adrap on 22-09-2015.
+ * Created by adrapereira on 22-09-2015.
  */
 public class DescriptionObject {
     private String id;

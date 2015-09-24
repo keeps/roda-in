@@ -1,7 +1,7 @@
 package utils;
 
 /**
- * Created by adrap on 24-09-2015.
+ * Created by adrapereira on 24-09-2015.
  */
 public class Utils {
     public static String formatSize(long v) {

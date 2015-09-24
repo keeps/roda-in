@@ -11,7 +11,7 @@ import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
 
 /**
- * Created by adrap on 21-09-2015.
+ * Created by adrapereira on 21-09-2015.
  */
 public class ClickedEventHandler implements EventHandler<MouseEvent> {
 
