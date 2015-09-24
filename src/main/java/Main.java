@@ -2,30 +2,21 @@
  * Created by adrap on 16-09-2015.
  */
 
-import javafx.scene.control.TreeItem;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import schema.ClassificationSchema;
 import schema.DescriptionObject;
 import schema.ui.SchemaNode;
-import source.representation.SourceDirectory;
-import source.ui.ClickedEventHandler;
-import source.ui.items.SourceTreeDirectory;
+import source.ui.FileExplorerPane;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.TreeView;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-import java.nio.file.*;
-
 public class Main extends Application {
-    private Stage stage;
+    public Stage stage;
     private double minWidth;
 
     public static void main(String[] args) {
@@ -53,7 +44,8 @@ public class Main extends Application {
         // Divide Pane in 3
         SplitPane split = new SplitPane();
 
-        StackPane previewExplorer = createPreviewExplorer();
+        //StackPane previewExplorer = createPreviewExplorer();
+        BorderPane previewExplorer = new FileExplorerPane(minWidth, stage);
         StackPane rulesPane = createRulesPane();
         StackPane schemaPane = createSchemaPane();
 
@@ -63,29 +55,6 @@ public class Main extends Application {
         stage.setTitle("RODA-In");
         stage.setScene(new Scene(split, bounds.getWidth(), bounds.getHeight()));
         stage.show();
-    }
-
-    private StackPane createPreviewExplorer(){
-        //create tree pane
-        VBox treeBox=new VBox();
-        treeBox.setPadding(new Insets(10, 10, 10, 10));
-        treeBox.setSpacing(10);
-
-        Path rootPath = Paths.get("/");
-        SourceTreeDirectory rootNode = new SourceTreeDirectory(rootPath, new SourceDirectory(rootPath));
-
-        // create the tree view
-        TreeView<String> treeView=new TreeView<String>(rootNode);
-        // add everything to the tree pane
-        treeBox.getChildren().addAll(new Label("Preview File Browser"), treeView);
-        VBox.setVgrow(treeView, Priority.ALWAYS);
-
-        StackPane previewExplorer = new StackPane();
-        previewExplorer.getChildren().add(treeBox);
-        previewExplorer.setMinWidth(minWidth);
-
-        treeView.setOnMouseClicked(new ClickedEventHandler(treeView));
-        return previewExplorer;
     }
 
     private StackPane createSchemaPane(){

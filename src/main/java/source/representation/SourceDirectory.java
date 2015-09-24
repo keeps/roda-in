@@ -67,11 +67,6 @@ public class SourceDirectory implements SourceItem {
         }
     }
 
-    public int firstLoad(){
-        if(itemsToLoad != 0) return 0;
-        return loadMore().size();
-    }
-
     public boolean hasFirstLoaded(){return children.size() > 1;}
 
     public TreeMap<String, SourceItem> loadMore(){
@@ -87,7 +82,7 @@ public class SourceDirectory implements SourceItem {
             loaded++;
         }
 
-        //we can close de directory stream if there's no more files to load in the iterator
+        //we can close the directory stream if there's no more files to load in the iterator
         if(!iterator.hasNext()) closeDirectoryStream();
 
         return result;
