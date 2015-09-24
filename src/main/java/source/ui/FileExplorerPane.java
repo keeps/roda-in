@@ -75,6 +75,7 @@ public class FileExplorerPane extends BorderPane {
                 DirectoryChooser chooser = new DirectoryChooser();
                 chooser.setTitle("Please choose a folder");
                 File selectedDirectory = chooser.showDialog(stage);
+                if(selectedDirectory == null) return;
                 Path path = selectedDirectory.toPath();
                 setFileExplorerRoot(path);
             }
@@ -102,6 +103,7 @@ public class FileExplorerPane extends BorderPane {
     public void setFileExplorerRoot(Path rootPath){
         SourceTreeDirectory rootNode = new SourceTreeDirectory(rootPath, new SourceDirectory(rootPath));
         treeView.setRoot(rootNode);
+        updateMetadata(rootPath);
     }
 
     private void createMetadata(){
@@ -148,7 +150,10 @@ public class FileExplorerPane extends BorderPane {
         try {
             BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class);
 
-            l_title.setText(path.getFileName().toString());
+            String title;
+            if(path.getFileName() != null) title = path.getFileName().toString();
+            else title = path.toString();
+            l_title.setText(title);
             l_path.setText(path.toString());
             l_metadata.setText("dummy.xml");
 
