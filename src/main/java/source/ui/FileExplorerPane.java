@@ -102,6 +102,7 @@ public class FileExplorerPane extends BorderPane {
 
     public void setFileExplorerRoot(Path rootPath){
         SourceTreeDirectory rootNode = new SourceTreeDirectory(rootPath, new SourceDirectory(rootPath));
+        rootNode.setExpanded(true);
         treeView.setRoot(rootNode);
         updateMetadata(rootPath);
     }
