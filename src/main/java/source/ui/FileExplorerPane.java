@@ -39,7 +39,7 @@ public class FileExplorerPane extends BorderPane {
     //This thread is used to walk a directory's file tree and update the UI periodically with the size and file count
     private ComputeDirectorySize computeThread;
 
-    public FileExplorerPane(double minWidth, Stage stage){
+    public FileExplorerPane(Stage stage){
         super();
 
         this.stage = stage;
@@ -54,7 +54,7 @@ public class FileExplorerPane extends BorderPane {
 
         this.setTop(openfolder);
         this.setCenter(split);
-        this.setMinWidth(minWidth);
+        this.minWidthProperty().bind(stage.widthProperty().multiply(0.2));;
     }
 
     private void createOpenFolder(){

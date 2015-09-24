@@ -17,7 +17,6 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
     public Stage stage;
-    private double minWidth;
 
     public static void main(String[] args) {
         launch(args);
@@ -34,7 +33,6 @@ public class Main extends Application {
         // Maximize window
         Screen screen = Screen.getPrimary();
         Rectangle2D bounds = screen.getVisualBounds();
-        minWidth = bounds.getWidth()/3 * 0.7;
 
         stage.setX(bounds.getMinX());
         stage.setY(bounds.getMinY());
@@ -45,7 +43,7 @@ public class Main extends Application {
         SplitPane split = new SplitPane();
 
         //StackPane previewExplorer = createPreviewExplorer();
-        BorderPane previewExplorer = new FileExplorerPane(minWidth, stage);
+        BorderPane previewExplorer = new FileExplorerPane(stage);
         StackPane rulesPane = createRulesPane();
         StackPane schemaPane = createSchemaPane();
 
@@ -83,14 +81,14 @@ public class Main extends Application {
         StackPane schemaPane = new StackPane();
         schemaPane.getChildren().add(treeBox);
 
-        schemaPane.setMinWidth(minWidth);
+        schemaPane.minWidthProperty().bind(stage.widthProperty().multiply(0.2));
 
         return schemaPane;
     }
 
     public StackPane createRulesPane(){
         StackPane rulesPane = new StackPane();
-        rulesPane.setMinWidth(minWidth);
+        rulesPane.minWidthProperty().bind(stage.widthProperty().multiply(0.2));
         return rulesPane;
     }
 }
