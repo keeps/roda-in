@@ -17,6 +17,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import source.representation.SourceDirectory;
 import source.ui.items.SourceTreeDirectory;
+import source.ui.items.SourceTreeItem;
 import utils.Utils;
 
 import java.io.File;
@@ -75,12 +76,11 @@ public class FileExplorerPane extends BorderPane {
                 DirectoryChooser chooser = new DirectoryChooser();
                 chooser.setTitle("Please choose a folder");
                 File selectedDirectory = chooser.showDialog(stage);
-                if(selectedDirectory == null) return;
+                if (selectedDirectory == null) return;
                 Path path = selectedDirectory.toPath();
                 setFileExplorerRoot(path);
             }
         });
-
     }
 
     private void createFileExplorer(){
@@ -201,6 +201,13 @@ public class FileExplorerPane extends BorderPane {
                 l_content.setText(result);
             }
         });
+    }
 
+    public String getSelectedItem(){
+        if(treeView == null) return null;
+        int selIndex = treeView.getSelectionModel().getSelectedIndex();
+        if(selIndex == -1) return null;
+        SourceTreeItem item = (SourceTreeItem)treeView.getTreeItem(selIndex);
+        return item.getPath();
     }
 }

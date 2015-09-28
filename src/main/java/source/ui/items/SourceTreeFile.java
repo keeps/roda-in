@@ -10,13 +10,13 @@ import java.nio.file.Path;
 /**
  * Created by adrapereira on 17-09-2015.
  */
-public class SourceTreeFile extends TreeItem<String> {
+public class SourceTreeFile extends TreeItem<String> implements SourceTreeItem{
     public static Image fileImage = new Image(ClassLoader.getSystemResourceAsStream("text-x-generic.png"));
 
     //this stores the full path to the file
     private String fullPath;
 
-    public String getFullPath() {
+    public String getPath() {
         return (this.fullPath);
     }
 

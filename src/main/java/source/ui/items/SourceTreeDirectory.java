@@ -20,7 +20,7 @@ import java.util.TreeMap;
 /**
  * Created by adrapereira on 17-09-2015.
  */
-public class SourceTreeDirectory extends TreeItem<String> {
+public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeItem{
     public static Image folderCollapseImage = new Image(ClassLoader.getSystemResourceAsStream("folder.png"));
     public static Image folderExpandImage = new Image(ClassLoader.getSystemResourceAsStream("folder-open.png"));
     public SourceDirectory directory;
@@ -28,7 +28,7 @@ public class SourceTreeDirectory extends TreeItem<String> {
     //this stores the full path to the file or directory
     private String fullPath;
 
-    public String getFullPath() {
+    public String getPath() {
         return (this.fullPath);
     }
 

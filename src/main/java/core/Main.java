@@ -2,18 +2,12 @@ package core; /**
  * Created by adrapereira on 16-09-2015.
  */
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import rules.ui.RulesPane;
-import schema.ClassificationSchema;
-import schema.DescriptionObject;
-import schema.ui.SchemaNode;
+import schema.ui.SchemaPane;
 import source.ui.FileExplorerPane;
 import javafx.application.Application;
-import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.stage.Screen;
@@ -21,6 +15,10 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
     public Stage stage;
+
+    private static FileExplorerPane previewExplorer;
+    private static BorderPane rulesPane;
+    private static SchemaPane schemaPane;
 
     public static void main(String[] args) {
         launch(args);
@@ -46,9 +44,9 @@ public class Main extends Application {
         // Divide center pane in 3
         SplitPane split = new SplitPane();
         //StackPane previewExplorer = createPreviewExplorer();
-        BorderPane previewExplorer = new FileExplorerPane(stage);
-        BorderPane rulesPane = new RulesPane(stage);
-        StackPane schemaPane = createSchemaPane();
+        previewExplorer = new FileExplorerPane(stage);
+        rulesPane = new RulesPane(stage);
+        schemaPane = new SchemaPane(stage);
         split.getItems().addAll(previewExplorer, rulesPane, schemaPane);
 
         //Create Footer
@@ -64,34 +62,10 @@ public class Main extends Application {
         stage.show();
     }
 
-    private StackPane createSchemaPane(){
-        //create tree pane
-        VBox treeBox=new VBox();
-        treeBox.setPadding(new Insets(10, 10, 10, 10));
-        treeBox.setSpacing(10);
-
-        TreeItem<String> rootNode = new TreeItem<String>();
-        rootNode.setExpanded(true);
-
-        // get the classification schema and add all its nodes to the tree
-        ClassificationSchema cs = ClassificationSchema.instantiate();
-        for(DescriptionObject obj: cs.getDos()){
-            SchemaNode sn = new SchemaNode(obj);
-            rootNode.getChildren().add(sn);
-        }
-
-        // create the tree view
-        TreeView<String> treeView=new TreeView<String>(rootNode);
-        treeView.setShowRoot(false);
-        // add everything to the tree pane
-        treeBox.getChildren().addAll(new Label("Classification Schema"), treeView);
-        VBox.setVgrow(treeView, Priority.ALWAYS);
-
-        StackPane schemaPane = new StackPane();
-        schemaPane.getChildren().add(treeBox);
-
-        schemaPane.minWidthProperty().bind(stage.widthProperty().multiply(0.2));
-
-        return schemaPane;
+    public static String getSchemaSelectedItem(){
+        return schemaPane.getSelectedItem();
+    }
+    public static String getSourceSelectedItem(){
+        return previewExplorer.getSelectedItem();
     }
 }

@@ -1,6 +1,7 @@
 package rules.ui;
 
 import core.Footer;
+import core.Main;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -17,11 +18,8 @@ import javafx.stage.Stage;
  */
 public class RulesPane extends BorderPane {
     private HBox createRule;
-    private Stage stage;
 
     public RulesPane(Stage stage){
-        this.stage = stage;
-
         createCreateRule();
 
         this.setTop(createRule);
@@ -43,7 +41,7 @@ public class RulesPane extends BorderPane {
 
         btn.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
-                Footer.setStatus("Carregou no \"Create Rule\"");
+                Footer.setStatus("Carregou no \"Create Rule\": " + Main.getSourceSelectedItem() + " <-> " + Main.getSchemaSelectedItem());
             }
         });
     }

@@ -39,10 +39,10 @@ public class ClickedEventHandler implements EventHandler<MouseEvent> {
                 });
             }else if(item instanceof SourceTreeDirectory){
                 SourceTreeDirectory directory = (SourceTreeDirectory)item;
-                fep.updateMetadata(directory.getFullPath());
+                fep.updateMetadata(directory.getPath());
             }else if(item instanceof SourceTreeFile) {
                 SourceTreeFile directory = (SourceTreeFile) item;
-                fep.updateMetadata(directory.getFullPath());
+                fep.updateMetadata(directory.getPath());
             }
         }
     }
