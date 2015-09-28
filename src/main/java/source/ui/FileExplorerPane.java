@@ -118,30 +118,36 @@ public class FileExplorerPane extends BorderPane {
         title.setFont(Font.font("Verdana", FontWeight.BOLD, 14));
         metadata.add(title, 0, 1);
         l_title = new Label();
+        l_title.setWrapText(true);
         metadata.add(l_title, 1, 1);
 
         Label type = new Label("Type:");
         type.setFont(Font.font("Verdana", FontWeight.BOLD, 14));
         metadata.add(type, 0, 2);
         l_type = new Label();
+        l_type.setWrapText(true);
         metadata.add(l_type, 1, 2);
 
         Label content = new Label("Content:");
         content.setFont(Font.font("Verdana", FontWeight.BOLD, 14));
         metadata.add(content, 0, 3);
         l_content = new Label();
+        l_content.setWrapText(true);
         metadata.add(l_content, 1, 3);
 
         Label path = new Label("Path:");
         path.setFont(Font.font("Verdana", FontWeight.BOLD, 14));
         metadata.add(path, 0, 4);
         l_path = new Label();
+        l_path.setWrapText(true);
         metadata.add(l_path, 1, 4);
 
         Label metadataLabel = new Label("Metadata:");
         metadataLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 14));
+        path.setMinWidth(100); //don't allow the label to minimize when the pane is shrunk
         metadata.add(metadataLabel, 0, 5);
         l_metadata = new Label();
+        l_metadata.setWrapText(true);
         metadata.add(l_metadata, 1, 5);
     }
 

@@ -1,4 +1,4 @@
-/**
+package core; /**
  * Created by adrapereira on 16-09-2015.
  */
 
@@ -52,7 +52,7 @@ public class Main extends Application {
         split.getItems().addAll(previewExplorer, rulesPane, schemaPane);
 
         //Create Footer
-        HBox footer = createFooter();
+        HBox footer = new Footer();
 
         BorderPane mainPane = new BorderPane();
         mainPane.setCenter(split);
@@ -93,26 +93,5 @@ public class Main extends Application {
         schemaPane.minWidthProperty().bind(stage.widthProperty().multiply(0.2));
 
         return schemaPane;
-    }
-
-    private HBox createFooter(){
-        Button btn = new Button("Create SIPs");
-        Label title = new Label("Estado...............");
-
-        HBox space = new HBox();
-        HBox.setHgrow(space, Priority.ALWAYS);
-
-        HBox hbox = new HBox();
-        hbox.setPadding(new Insets(10, 10, 10, 10));
-        hbox.setSpacing(10);
-        hbox.setAlignment(Pos.TOP_RIGHT);
-        hbox.getChildren().addAll(title, space, btn);
-
-        btn.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent e) {
-                System.out.println("Create SIPs");
-            }
-        });
-        return hbox;
     }
 }

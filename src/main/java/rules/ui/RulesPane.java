@@ -1,5 +1,6 @@
 package rules.ui;
 
+import core.Footer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -42,7 +43,7 @@ public class RulesPane extends BorderPane {
 
         btn.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
-                System.out.println("Create Rule");
+                Footer.setStatus("Carregou no \"Create Rule\"");
             }
         });
     }
