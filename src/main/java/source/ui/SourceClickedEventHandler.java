@@ -15,7 +15,7 @@ import javafx.scene.input.MouseEvent;
  */
 public class SourceClickedEventHandler implements EventHandler<MouseEvent> {
 
-    private TreeView<String> treeView;
+    private TreeView<Object> treeView;
     private FileExplorerPane fep;
 
     public SourceClickedEventHandler(FileExplorerPane pane){
@@ -25,7 +25,7 @@ public class SourceClickedEventHandler implements EventHandler<MouseEvent> {
 
     public void handle(MouseEvent mouseEvent) {
         if (mouseEvent.getClickCount() == 1) {
-            TreeItem<String> item = treeView.getSelectionModel().getSelectedItem();
+            TreeItem<Object> item = treeView.getSelectionModel().getSelectedItem();
             if(item instanceof SourceTreeLoadMore) {
                 final SourceTreeDirectory parent = (SourceTreeDirectory)item.getParent();
                 parent.getChildren().remove(item);

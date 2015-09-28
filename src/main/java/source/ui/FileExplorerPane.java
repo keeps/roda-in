@@ -31,7 +31,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 public class FileExplorerPane extends BorderPane {
     private HBox openfolder;
     private StackPane fileExplorer;
-    private TreeView<String> treeView;
+    private TreeView<Object> treeView;
     private Stage stage;
 
     private GridPane metadata;
@@ -89,7 +89,7 @@ public class FileExplorerPane extends BorderPane {
         treeBox.setPadding(new Insets(10, 10, 10, 10));
         treeBox.setSpacing(10);
 
-        treeView = new TreeView<String>();
+        treeView = new TreeView<Object>();
         // add everything to the tree pane
         treeBox.getChildren().addAll(treeView);
         VBox.setVgrow(treeView, Priority.ALWAYS);
@@ -184,7 +184,7 @@ public class FileExplorerPane extends BorderPane {
         updateMetadata(path);
     }
 
-    public TreeView<String> getTreeView() {
+    public TreeView<Object> getTreeView() {
         return treeView;
     }
 

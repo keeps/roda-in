@@ -20,7 +20,7 @@ import java.util.TreeMap;
 /**
  * Created by adrapereira on 17-09-2015.
  */
-public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeItem{
+public class SourceTreeDirectory extends TreeItem<Object> implements SourceTreeItem{
     public static Image folderCollapseImage = new Image(ClassLoader.getSystemResourceAsStream("folder.png"));
     public static Image folderExpandImage = new Image(ClassLoader.getSystemResourceAsStream("folder-open.png"));
     public SourceDirectory directory;
@@ -52,7 +52,7 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
             }
         }
 
-        this.addEventHandler(TreeItem.branchExpandedEvent(), new ExpandedEventHandler());
+        this.addEventHandler(SourceTreeDirectory.branchExpandedEvent(), new ExpandedEventHandler());
 
         this.addEventHandler(TreeItem.branchCollapsedEvent(), new EventHandler<TreeModificationEvent<Object>>() {
             public void handle(TreeItem.TreeModificationEvent<Object> e) {
@@ -70,7 +70,7 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
     * We need to create a task to load the items to a temporary collection, otherwise the UI will hang while we access the disk.
     * */
     public void loadMore(){
-        final ArrayList<TreeItem<String>> children = new ArrayList<TreeItem<String>>(getChildren());
+        final ArrayList<TreeItem<Object>> children = new ArrayList<TreeItem<Object>>(getChildren());
 
         // First we access the disk and save the loaded items to a temporary collection
         Task<Integer> task = new Task<Integer>() {
