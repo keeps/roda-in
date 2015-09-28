@@ -8,6 +8,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -18,11 +20,14 @@ import javafx.stage.Stage;
  */
 public class RulesPane extends BorderPane {
     private HBox createRule;
+    private ListView<Rule> listView;
 
     public RulesPane(Stage stage){
         createCreateRule();
+        createListView();
 
         this.setTop(createRule);
+        this.setCenter(listView);
         this.minWidthProperty().bind(stage.widthProperty().multiply(0.2));
     }
 
@@ -41,8 +46,15 @@ public class RulesPane extends BorderPane {
 
         btn.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
-                Footer.setStatus("Carregou no \"Create Rule\": " + Main.getSourceSelectedItem() + " <-> " + Main.getSchemaSelectedItem());
+                String source = Main.getSourceSelectedItem();
+                String schema = Main.getSchemaSelectedItem();
+                Footer.setStatus("Carregou no \"Create Rule\": " + source + " <-> " + schema);
             }
         });
+    }
+
+    private void createListView(){
+        listView = new ListView<Rule>();
+        listView.getItems().add(new Rule());
     }
 }
