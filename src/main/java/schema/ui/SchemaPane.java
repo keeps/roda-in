@@ -40,7 +40,7 @@ public class SchemaPane extends BorderPane {
     }
 
     public void createTop(){
-        Button btn = new Button("Refresh");
+        Button btn = new Button("Update");
         Label title = new Label("Classification Schema");
 
         HBox space = new HBox();
@@ -54,7 +54,7 @@ public class SchemaPane extends BorderPane {
 
         btn.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
-                Footer.setStatus("Refresh Classification Schema");
+                Footer.setStatus("Update Classification Schema");
             }
         });
     }
