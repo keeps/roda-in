@@ -1,4 +1,4 @@
-package schema.ui.DescriptionLevel;
+package schema.ui.descriptionlevel;
 
 /**
  * Created by adrapereira on 22-09-2015.

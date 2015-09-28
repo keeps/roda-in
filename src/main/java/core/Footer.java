@@ -13,12 +13,11 @@ import javafx.scene.layout.Priority;
  * Created by adrapereira on 28-09-2015.
  */
 public class Footer extends HBox{
-    public static Label status;
+    public static final Label status = new Label();
 
     public Footer(){
         super();
         Button btn = new Button("Create SIPs");
-        status = new Label("Estado...............");
 
         HBox space = new HBox();
         HBox.setHgrow(space, Priority.ALWAYS);

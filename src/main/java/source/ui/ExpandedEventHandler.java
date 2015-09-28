@@ -11,9 +11,6 @@ import javafx.scene.image.ImageView;
 public class ExpandedEventHandler implements EventHandler<TreeItem.TreeModificationEvent<Object>> {
     public SourceTreeDirectory source;
     public void handle(TreeItem.TreeModificationEvent<Object> e) {
-        //TreeItem<String> item = e.getSource();
-        System.out.println(e.getSource().getClass());
-
         source = (SourceTreeDirectory)e.getSource();
 
         // The event is triggered in the item and all its parents until the root,

@@ -1,4 +1,4 @@
-package schema.ui.DescriptionLevel;
+package schema.ui.descriptionlevel;
 
 import javafx.geometry.Pos;
 import javafx.scene.Group;

@@ -11,7 +11,7 @@ import java.nio.file.Path;
  * Created by adrapereira on 17-09-2015.
  */
 public class SourceTreeFile extends TreeItem<Object> implements SourceTreeItem{
-    public static Image fileImage = new Image(ClassLoader.getSystemResourceAsStream("text-x-generic.png"));
+    public static Image fileImage = new Image(ClassLoader.getSystemResourceAsStream("file.png"));
 
     //this stores the full path to the file
     private String fullPath;

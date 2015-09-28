@@ -1,4 +1,4 @@
-package schema.ui.DescriptionLevel;
+package schema.ui.descriptionlevel;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

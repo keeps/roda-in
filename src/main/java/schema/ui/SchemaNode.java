@@ -4,7 +4,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import schema.DescriptionObject;
-import schema.ui.DescriptionLevel.DescriptionLevelImageCreator;
+import schema.ui.descriptionlevel.DescriptionLevelImageCreator;
 
 /**
  * Created by adrapereira on 17-09-2015.
