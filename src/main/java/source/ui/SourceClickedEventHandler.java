@@ -13,12 +13,12 @@ import javafx.scene.input.MouseEvent;
 /**
  * Created by adrapereira on 21-09-2015.
  */
-public class ClickedEventHandler implements EventHandler<MouseEvent> {
+public class SourceClickedEventHandler implements EventHandler<MouseEvent> {
 
     private TreeView<String> treeView;
     private FileExplorerPane fep;
 
-    public ClickedEventHandler(FileExplorerPane pane){
+    public SourceClickedEventHandler(FileExplorerPane pane){
         this.treeView = pane.getTreeView();
         fep = pane;
     }

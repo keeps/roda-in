@@ -1,4 +1,6 @@
-package core; /**
+package core;
+
+/**
  * Created by adrapereira on 16-09-2015.
  */
 

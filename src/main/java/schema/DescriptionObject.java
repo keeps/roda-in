@@ -82,6 +82,6 @@ public class DescriptionObject {
                 ", level='" + level + '\'' +
                 ", descriptionlevel='" + descriptionlevel + '\'' +
                 ", children=" + children +
-                '}';
+                "}\n\n";
     }
 }

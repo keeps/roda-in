@@ -97,7 +97,7 @@ public class FileExplorerPane extends BorderPane {
         fileExplorer = new StackPane();
         fileExplorer.getChildren().add(treeBox);
 
-        treeView.setOnMouseClicked(new ClickedEventHandler(this));
+        treeView.setOnMouseClicked(new SourceClickedEventHandler(this));
     }
 
     public void setFileExplorerRoot(Path rootPath){
@@ -144,7 +144,7 @@ public class FileExplorerPane extends BorderPane {
 
         Label metadataLabel = new Label("Metadata:");
         metadataLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 14));
-        path.setMinWidth(100); //don't allow the label to minimize when the pane is shrunk
+        metadataLabel.setMinWidth(100); //don't allow the label to minimize when the pane is shrunk
         metadata.add(metadataLabel, 0, 5);
         l_metadata = new Label();
         l_metadata.setWrapText(true);
