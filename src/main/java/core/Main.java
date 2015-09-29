@@ -14,8 +14,10 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import rules.ui.RulesPane;
+import schema.ui.SchemaNode;
 import schema.ui.SchemaPane;
 import source.ui.FileExplorerPane;
+import source.ui.items.SourceTreeItem;
 
 public class Main extends Application {
     public Stage stage;
@@ -66,10 +68,10 @@ public class Main extends Application {
         stage.show();
     }
 
-    public static String getSchemaSelectedItem(){
+    public static SchemaNode getSchemaSelectedItem(){
         return schemaPane.getSelectedItem();
     }
-    public static String getSourceSelectedItem(){
+    public static SourceTreeItem getSourceSelectedItem(){
         return previewExplorer.getSelectedItem();
     }
 }

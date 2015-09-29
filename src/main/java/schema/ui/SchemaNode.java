@@ -12,6 +12,7 @@ import schema.ui.descriptionlevel.DescriptionLevelImageCreator;
  */
 public class SchemaNode extends TreeItem<String> {
     public DescriptionObject dob;
+    private Image icon;
 
     public SchemaNode(DescriptionObject dobject) {
         super(dobject.getTitle());
@@ -19,6 +20,7 @@ public class SchemaNode extends TreeItem<String> {
 
         DescriptionLevelImageCreator dlic = new DescriptionLevelImageCreator(dob.getDescriptionlevel());
         Image im = dlic.generate();
+        icon = im;
         this.setGraphic(new ImageView(im));
 
         for(DescriptionObject obj: dob.getChildren()){
@@ -26,4 +28,6 @@ public class SchemaNode extends TreeItem<String> {
             this.getChildren().add(child);
         }
     }
+
+    public Image getImage(){return icon;}
 }

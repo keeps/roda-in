@@ -4,24 +4,28 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
+import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
+import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
+
+import rules.Rule;
+import schema.ui.SchemaNode;
+import source.ui.items.SourceTreeDirectory;
 
 /**
  * Created by adrapereira on 28-09-2015.
  */
-public class Rule extends BorderPane {
+public class RuleComponent extends BorderPane {
+    private Rule rule;
 
-    public Rule(){
+    public RuleComponent(SourceTreeDirectory sourcePath, SchemaNode descriptionObject){
         super();
         setStyle("-fx-border-color: black;");
         setPadding(new Insets(10, 10, 10, 10));
+
+        rule = new Rule(sourcePath, descriptionObject);
 
         createTop();
         createCenter();
@@ -29,7 +33,32 @@ public class Rule extends BorderPane {
     }
 
     private void createTop(){
+        StackPane pane = new StackPane();
+        pane.setPadding(new Insets(0, 0, 10, 0));
 
+        HBox hbox = new HBox();
+        HBox.setHgrow(hbox, Priority.ALWAYS);
+        hbox.setStyle("-fx-background-color: lightgray;");
+        pane.getChildren().add(hbox);
+
+        Label source = new Label(rule.getFolderName());
+        source.setMinHeight(24);
+        source.setFont(new Font("Verdana", 14));
+        source.setGraphic(new ImageView(SourceTreeDirectory.folderCollapseImage));
+
+        Label descObj = new Label(rule.getDescObjName());
+        descObj.setMinHeight(24);
+        descObj.setFont(new Font("Verdana", 14));
+        descObj.setGraphic(new ImageView(rule.getSchemaNode().getImage()));
+        descObj.setContentDisplay(ContentDisplay.RIGHT);
+        descObj.setTextAlignment(TextAlignment.LEFT);
+
+        HBox space = new HBox();
+        HBox.setHgrow(space, Priority.ALWAYS);
+
+        hbox.getChildren().addAll(source, space, descObj);
+
+        setTop(pane);
     }
 
     private void createCenter(){

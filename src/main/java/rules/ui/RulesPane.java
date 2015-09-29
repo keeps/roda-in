@@ -14,13 +14,16 @@ import javafx.stage.Stage;
 
 import core.Footer;
 import core.Main;
+import schema.ui.SchemaNode;
+import source.ui.items.SourceTreeDirectory;
+import source.ui.items.SourceTreeItem;
 
 /**
  * Created by adrapereira on 24-09-2015.
  */
 public class RulesPane extends BorderPane {
     private HBox createRule;
-    private ListView<Rule> listView;
+    private ListView<RuleComponent> listView;
 
     public RulesPane(Stage stage){
         createCreateRule();
@@ -46,15 +49,21 @@ public class RulesPane extends BorderPane {
 
         btn.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
-                String source = Main.getSourceSelectedItem();
-                String schema = Main.getSchemaSelectedItem();
-                Footer.setStatus("Carregou no \"Create Rule\": " + source + " <-> " + schema);
+                SourceTreeItem source = Main.getSourceSelectedItem();
+                SchemaNode descObj = Main.getSchemaSelectedItem();
+                if(source != null && descObj != null) { //both trees need to have 1 element selected
+                    if(source instanceof SourceTreeDirectory) { //the source needs to be a directory
+                        RuleComponent ruleC = new RuleComponent((SourceTreeDirectory) source, descObj);
+                        listView.getItems().add(ruleC);
+                    }
+                }
+                Footer.setStatus("Carregou no \"Create Rule\": " + source + " <-> " + descObj);
             }
         });
     }
 
     private void createListView(){
-        listView = new ListView<Rule>();
-        listView.getItems().add(new Rule());
+        listView = new ListView<RuleComponent>();
+
     }
 }

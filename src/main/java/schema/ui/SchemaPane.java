@@ -125,11 +125,11 @@ public class SchemaPane extends BorderPane {
         metadata.add(l_descrpLevel, 1, 5);
     }
 
-    public String getSelectedItem(){
+    public SchemaNode getSelectedItem(){
         int selIndex = treeView.getSelectionModel().getSelectedIndex();
         if(selIndex == -1) return null;
         SchemaNode item = (SchemaNode)treeView.getTreeItem(selIndex);
-        return item.getValue();
+        return item;
     }
     public void updateMetadata(DescriptionObject dobject){
         l_id.setText(dobject.getId());

@@ -206,11 +206,11 @@ public class FileExplorerPane extends BorderPane {
         });
     }
 
-    public String getSelectedItem(){
+    public SourceTreeItem getSelectedItem(){
         if(treeView == null) return null;
         int selIndex = treeView.getSelectionModel().getSelectedIndex();
         if(selIndex == -1) return null;
         SourceTreeItem item = (SourceTreeItem)treeView.getTreeItem(selIndex);
-        return item.getPath();
+        return item;
     }
 }
