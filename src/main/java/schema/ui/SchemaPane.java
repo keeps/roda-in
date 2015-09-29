@@ -132,8 +132,7 @@ public class SchemaPane extends BorderPane {
     public SchemaNode getSelectedItem(){
         int selIndex = treeView.getSelectionModel().getSelectedIndex();
         if(selIndex == -1) return null;
-        SchemaNode item = (SchemaNode)treeView.getTreeItem(selIndex);
-        return item;
+        return (SchemaNode)treeView.getTreeItem(selIndex);
     }
     public void updateMetadata(DescriptionObject dobject){
         l_id.setText(dobject.getId());

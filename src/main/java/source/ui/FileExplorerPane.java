@@ -199,13 +199,22 @@ public class FileExplorerPane extends BorderPane {
         if(computeThread != null) computeThread.interrupt();
     }
 
-    public void updateSize(long count, long size){
-        final long countF = count, sizeF = size;
+    public void updateSize(final long fileCount, final long dirCount, final long size){
         Platform.runLater(new Runnable() {
             public void run() {
-                String result = countF + " items, ";
-                result += Utils.formatSize(sizeF);
-                l_content.setText(result);
+                StringBuilder result = new StringBuilder(dirCount + " ");
+                if(dirCount == 1) result.append("directory");
+                else result.append("directories");
+
+                result.append(", ");
+
+                result.append(fileCount).append(" ");
+                if(fileCount == 1) result.append("file");
+                else result.append("files");
+
+                result.append(", ");
+                result.append(Utils.formatSize(size));
+                l_content.setText(result.toString());
             }
         });
     }
@@ -214,7 +223,6 @@ public class FileExplorerPane extends BorderPane {
         if(treeView == null) return null;
         int selIndex = treeView.getSelectionModel().getSelectedIndex();
         if(selIndex == -1) return null;
-        SourceTreeItem item = (SourceTreeItem)treeView.getTreeItem(selIndex);
-        return item;
+        return (SourceTreeItem)treeView.getTreeItem(selIndex);
     }
 }

@@ -40,9 +40,7 @@ public class ClassificationSchema {
             ObjectMapper objectMapper = new ObjectMapper();
 
             //convert json string to object
-            ClassificationSchema cs = objectMapper.readValue(input, ClassificationSchema.class);
-
-            return cs;
+            return objectMapper.readValue(input, ClassificationSchema.class);
         } catch (IOException e) {
             log.debug(e.getMessage());
         }

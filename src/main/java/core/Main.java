@@ -26,7 +26,7 @@ import java.io.IOException;
 
 public class Main extends Application {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(Main.class.getName());
-    public Stage stage;
+    private Stage stage;
 
     private static FileExplorerPane previewExplorer;
     private static BorderPane rulesPane;
@@ -62,7 +62,6 @@ public class Main extends Application {
 
         // Divide center pane in 3
         SplitPane split = new SplitPane();
-        //StackPane previewExplorer = createPreviewExplorer();
         previewExplorer = new FileExplorerPane(stage);
         rulesPane = new RulesPane(stage);
         schemaPane = new SchemaPane(stage);
