@@ -8,6 +8,7 @@ import javafx.application.Application;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Screen;
@@ -20,6 +21,8 @@ import schema.ui.SchemaNode;
 import schema.ui.SchemaPane;
 import source.ui.FileExplorerPane;
 import source.ui.items.SourceTreeItem;
+
+import java.io.IOException;
 
 public class Main extends Application {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(Main.class.getName());
@@ -37,7 +40,14 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         stage = primaryStage;
 
+        try {
+            stage.getIcons().add(new Image(ClassLoader.getSystemResource("roda2-logo.png").openStream()));
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+
         createFrameStructure();
+        stage.show();
     }
 
     private void createFrameStructure(){
@@ -70,7 +80,6 @@ public class Main extends Application {
         Scene scene = new Scene(mainPane, bounds.getWidth(), bounds.getHeight());
         scene.getStylesheets().add(ClassLoader.getSystemResource("Modena.css").toExternalForm());
         stage.setScene(scene);
-        stage.show();
     }
 
     public static SchemaNode getSchemaSelectedItem(){
