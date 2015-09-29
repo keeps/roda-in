@@ -13,16 +13,16 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
+import org.slf4j.LoggerFactory;
+
 import rules.ui.RulesPane;
 import schema.ui.SchemaNode;
 import schema.ui.SchemaPane;
 import source.ui.FileExplorerPane;
 import source.ui.items.SourceTreeItem;
 
-import java.util.logging.Logger;
-
 public class Main extends Application {
-    private static final Logger log = Logger.getLogger(Main.class.getName());
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(Main.class.getName());
     public Stage stage;
 
     private static FileExplorerPane previewExplorer;

@@ -1,7 +1,6 @@
 package schema.ui;
 
 import java.io.InputStream;
-import java.util.logging.Logger;
 
 import javafx.geometry.VPos;
 import javafx.scene.SnapshotParameters;
@@ -12,12 +11,14 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by adrapereira on 22-09-2015.
  */
 public class DescriptionLevelImageCreator {
-    private static final Logger log = Logger.getLogger(DescriptionLevelImageCreator.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(DescriptionLevelImageCreator.class.getName());
     String unicode;
     final double size = 16;
 

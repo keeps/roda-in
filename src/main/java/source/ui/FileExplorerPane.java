@@ -6,8 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -25,6 +23,8 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
+import org.slf4j.LoggerFactory;
+
 import source.representation.SourceDirectory;
 import source.ui.items.SourceTreeDirectory;
 import source.ui.items.SourceTreeItem;
@@ -34,7 +34,7 @@ import utils.Utils;
  * Created by adrapereira on 24-09-2015.
  */
 public class FileExplorerPane extends BorderPane {
-    private static final Logger log = Logger.getLogger(FileExplorerPane.class.getName());
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(FileExplorerPane.class.getName());
     private HBox openfolder;
     private StackPane fileExplorer;
     private TreeView<Object> treeView;
@@ -182,7 +182,7 @@ public class FileExplorerPane extends BorderPane {
                 l_content.setText(Utils.formatSize(attr.size()));
             }
         } catch (IOException e) {
-            log.log(Level.SEVERE, e.getMessage());
+            log.error(e.getMessage());
         }
     }
 

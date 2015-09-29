@@ -4,13 +4,13 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import java.util.logging.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by adrapereira on 17-09-2015.
  */
 public class SourceTreeLoadMore extends TreeItem<Object> implements SourceTreeItem{
-    private static final Logger log = Logger.getLogger(SourceTreeLoadMore.class.getName());
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(SourceTreeLoadMore.class.getName());
     public static final Image fileImage = new Image(ClassLoader.getSystemResourceAsStream("icons/list-add.png"));
 
     public SourceTreeLoadMore(){

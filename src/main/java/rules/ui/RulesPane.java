@@ -17,19 +17,19 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
+import org.slf4j.LoggerFactory;
+
 import schema.ui.SchemaNode;
 import source.ui.items.SourceTreeDirectory;
 import source.ui.items.SourceTreeItem;
 import core.Footer;
 import core.Main;
 
-import java.util.logging.Logger;
-
 /**
  * Created by adrapereira on 24-09-2015.
  */
 public class RulesPane extends BorderPane {
-    private static final Logger log = Logger.getLogger(RulesPane.class.getName());
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(RulesPane.class.getName());
     private HBox createRule;
     private ListView<RuleComponent> listView;
 

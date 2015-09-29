@@ -10,17 +10,17 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 
+import org.slf4j.LoggerFactory;
+
 import rules.Rule;
 import schema.ui.SchemaNode;
 import source.ui.items.SourceTreeDirectory;
-
-import java.util.logging.Logger;
 
 /**
  * Created by adrapereira on 28-09-2015.
  */
 public class RuleComponent extends BorderPane {
-    private static final Logger log = Logger.getLogger(RuleComponent.class.getName());
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(RuleComponent.class.getName());
     private Rule rule;
 
     public RuleComponent(SourceTreeDirectory sourcePath, SchemaNode descriptionObject){

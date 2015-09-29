@@ -7,14 +7,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by adrapereira on 17-09-2015.
  */
 public class SourceDirectory implements SourceItem {
-    private static final Logger log = Logger.getLogger(SourceDirectory.class.getName());
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(SourceDirectory.class.getName());
     public Path path;
     private int itemsToLoad = 0;
     private TreeMap<String, SourceItem> children;
@@ -55,7 +55,7 @@ public class SourceDirectory implements SourceItem {
             if(directoryStream != null)
                 directoryStream.close();
         } catch (IOException e) {
-            log.log(Level.SEVERE, e.getMessage());
+            log.error(e.getMessage());
         }
     }
 
@@ -64,12 +64,13 @@ public class SourceDirectory implements SourceItem {
 
         try {
             directoryStream = Files.newDirectoryStream(path);
+            iterator = directoryStream.iterator();
         }
         catch (AccessDeniedException e){
-            log.log(Level.INFO, e.getMessage());
+            log.info(e.getMessage());
         }
         catch (IOException e) {
-            log.log(Level.SEVERE, e.getMessage());
+            log.error(e.getMessage());
         }
     }
 
@@ -80,14 +81,12 @@ public class SourceDirectory implements SourceItem {
         int loaded = 0, childrenSize = children.size();
         TreeMap<String, SourceItem> result = new TreeMap<String, SourceItem>();
         itemsToLoad += 50;
-
         while(iterator.hasNext() && (childrenSize + loaded < itemsToLoad)){
             Path file = iterator.next();
             SourceItem added = loadChild(file);
             result.put(file.toString(), added);
             loaded++;
         }
-
         //we can close the directory stream if there's no more files to load in the iterator
         if(!iterator.hasNext()) closeDirectoryStream();
 

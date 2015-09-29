@@ -3,8 +3,8 @@ package schema;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * Created by adrapereira on 22-09-2015.
  */
 public class ClassificationSchema {
-    private static final Logger log = Logger.getLogger(ClassificationSchema.class.getName());
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(ClassificationSchema.class.getName());
     private ArrayList<DescriptionObject> dos;
 
     public ClassificationSchema(){
@@ -44,7 +44,7 @@ public class ClassificationSchema {
 
             return cs;
         } catch (IOException e) {
-            log.log(Level.SEVERE, e.getMessage());
+            log.debug(e.getMessage());
         }
         return null;
     }

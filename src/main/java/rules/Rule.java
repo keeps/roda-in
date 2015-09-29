@@ -1,15 +1,15 @@
 package rules;
 
+import org.slf4j.LoggerFactory;
+
 import schema.ui.SchemaNode;
 import source.ui.items.SourceTreeDirectory;
-
-import java.util.logging.Logger;
 
 /**
  * Created by adrapereira on 29-09-2015.
  */
 public class Rule {
-    private static final Logger log = Logger.getLogger(Rule.class.getName());
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(Rule.class.getName());
     private SourceTreeDirectory source;
     private SchemaNode schemaNode;
 

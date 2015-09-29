@@ -1,19 +1,20 @@
 package schema.ui;
 
+import java.util.ResourceBundle;
+
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import schema.DescriptionObject;
+import org.slf4j.LoggerFactory;
 
-import java.util.ResourceBundle;
-import java.util.logging.Logger;
+import schema.DescriptionObject;
 
 /**
  * Created by adrapereira on 17-09-2015.
  */
 public class SchemaNode extends TreeItem<String> {
-    private static final Logger log = Logger.getLogger(SchemaNode.class.getName());
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(SchemaNode.class.getName());
     public DescriptionObject dob;
     private Image icon;
 

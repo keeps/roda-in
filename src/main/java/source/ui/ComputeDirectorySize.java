@@ -3,14 +3,14 @@ package source.ui;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by adrapereira on 24-09-2015.
  */
 public class ComputeDirectorySize extends Thread {
-    private static final Logger log = Logger.getLogger(ComputeDirectorySize.class.getName());
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(ComputeDirectorySize.class.getName());
     private final int UPDATEFREQUENCY = 500; //in milliseconds
     private long filesCount = 0, size = 0;
     private FileExplorerPane ui;
@@ -51,7 +51,7 @@ public class ComputeDirectorySize extends Thread {
                 }
             });
         } catch (IOException e) {
-            log.log(Level.SEVERE, e.getMessage());
+            log.error(e.getMessage());
         }
         //update the UI with the final values
         ui.updateSize(filesCount, size);

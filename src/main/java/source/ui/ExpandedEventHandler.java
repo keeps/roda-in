@@ -4,15 +4,15 @@ import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
 
-import source.ui.items.SourceTreeDirectory;
+import org.slf4j.LoggerFactory;
 
-import java.util.logging.Logger;
+import source.ui.items.SourceTreeDirectory;
 
 /**
  * Created by adrapereira on 16-09-2015.
  */
 public class ExpandedEventHandler implements EventHandler<TreeItem.TreeModificationEvent<Object>> {
-    private static final Logger log = Logger.getLogger(ExpandedEventHandler.class.getName());
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(ExpandedEventHandler.class.getName());
     public SourceTreeDirectory source;
     public void handle(TreeItem.TreeModificationEvent<Object> e) {
         source = (SourceTreeDirectory)e.getSource();

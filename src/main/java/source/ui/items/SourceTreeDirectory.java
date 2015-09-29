@@ -6,7 +6,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.TreeMap;
-import java.util.logging.Logger;
 
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
@@ -14,6 +13,8 @@ import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+
+import org.slf4j.LoggerFactory;
 
 import source.representation.SourceDirectory;
 import source.representation.SourceItem;
@@ -23,7 +24,7 @@ import source.ui.ExpandedEventHandler;
  * Created by adrapereira on 17-09-2015.
  */
 public class SourceTreeDirectory extends TreeItem<Object> implements SourceTreeItem{
-    private static final Logger log = Logger.getLogger(SourceTreeDirectory.class.getName());
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(SourceTreeDirectory.class.getName());
     public static final Image folderCollapseImage = new Image(ClassLoader.getSystemResourceAsStream("icons/folder.png"));
     public static final Image folderExpandImage = new Image(ClassLoader.getSystemResourceAsStream("icons/folder-open.png"));
     public SourceDirectory directory;

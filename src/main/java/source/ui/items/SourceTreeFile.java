@@ -2,17 +2,18 @@ package source.ui.items;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.logging.Logger;
 
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import org.slf4j.LoggerFactory;
+
 /**
  * Created by adrapereira on 17-09-2015.
  */
 public class SourceTreeFile extends TreeItem<Object> implements SourceTreeItem{
-    private static final Logger log = Logger.getLogger(SourceTreeFile.class.getName());
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(SourceTreeFile.class.getName());
     public static final Image fileImage = new Image(ClassLoader.getSystemResourceAsStream("icons/file.png"));
 
     //this stores the full path to the file
