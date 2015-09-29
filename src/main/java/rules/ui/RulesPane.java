@@ -1,5 +1,8 @@
 package rules.ui;
 
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -14,11 +17,11 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
-import core.Footer;
-import core.Main;
 import schema.ui.SchemaNode;
 import source.ui.items.SourceTreeDirectory;
 import source.ui.items.SourceTreeItem;
+import core.Footer;
+import core.Main;
 
 /**
  * Created by adrapereira on 24-09-2015.
@@ -39,7 +42,7 @@ public class RulesPane extends BorderPane {
     private void createCreateRule(){
         Button btn = new Button("Create Rule");
         Label title = new Label("Mapping Rules");
-        title.setFont(Font.font("Verdana", FontWeight.BOLD, 14));
+        title.setFont(Font.font("System", FontWeight.BOLD, 14));
 
         HBox space = new HBox();
         HBox.setHgrow(space, Priority.ALWAYS);
@@ -67,6 +70,17 @@ public class RulesPane extends BorderPane {
 
     private void createListView(){
         listView = new ListView<RuleComponent>();
+
+        //Disable selection in listview
+        listView.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                Platform.runLater(new Runnable() {
+                    public void run() {
+                        listView.getSelectionModel().select(-1);
+                    }
+                });
+            }
+        });
 
     }
 }

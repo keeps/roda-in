@@ -2073,7 +2073,7 @@ is being used to size a border should also be in pixels.
     -fx-background-color: -fx-control-inner-background;
     -fx-padding: 0.25em; /* 3 */
     -fx-text-fill: -fx-text-inner-color;
-    -fx-indent: 80;
+    -fx-indent: 25; /* default was 80 */
 }
 .tree-cell .label {
     -fx-padding: 0.0em 0.0em 0.0em 0.25em; /* 0 0 0 3 */

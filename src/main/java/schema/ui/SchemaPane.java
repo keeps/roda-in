@@ -43,7 +43,7 @@ public class SchemaPane extends BorderPane {
     public void createTop(){
         Button btn = new Button("Update");
         Label title = new Label("Classification Schema");
-        title.setFont(Font.font("Verdana",FontWeight.BOLD ,14));
+        title.setFont(Font.font("System",FontWeight.BOLD ,14));
 
         HBox space = new HBox();
         HBox.setHgrow(space, Priority.ALWAYS);
@@ -93,32 +93,32 @@ public class SchemaPane extends BorderPane {
         metadata.setPadding(new Insets(25, 25, 25, 25));
 
         Label id = new Label("ID:");
-        id.setFont(Font.font("Verdana", FontWeight.BOLD, 14));
+        id.setFont(Font.font("System", FontWeight.BOLD, 14));
         metadata.add(id, 0, 1);
         l_id = new Label();
         metadata.add(l_id, 1, 1);
 
         Label title = new Label("Title:");
-        title.setFont(Font.font("Verdana", FontWeight.BOLD, 14));
+        title.setFont(Font.font("System", FontWeight.BOLD, 14));
         metadata.add(title, 0, 2);
         l_title = new Label();
         l_title.setWrapText(true);
         metadata.add(l_title, 1, 2);
 
         Label parID = new Label("Parent ID:");
-        parID.setFont(Font.font("Verdana", FontWeight.BOLD, 14));
+        parID.setFont(Font.font("System", FontWeight.BOLD, 14));
         metadata.add(parID, 0, 3);
         l_parentId = new Label();
         metadata.add(l_parentId, 1, 3);
 
         Label level = new Label("Level:");
-        level.setFont(Font.font("Verdana", FontWeight.BOLD, 14));
+        level.setFont(Font.font("System", FontWeight.BOLD, 14));
         metadata.add(level, 0, 4);
         l_level = new Label();
         metadata.add(l_level, 1, 4);
 
         Label descriptionLevel = new Label("Description Level:");
-        descriptionLevel.setFont(Font.font("Verdana", FontWeight.BOLD, 14));
+        descriptionLevel.setFont(Font.font("System", FontWeight.BOLD, 14));
         descriptionLevel.setMinWidth(100); //don't allow the label to minimize when the pane is shrunk
         metadata.add(descriptionLevel, 0, 5);
         l_descrpLevel = new Label();

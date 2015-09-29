@@ -22,8 +22,8 @@ public class RuleComponent extends BorderPane {
 
     public RuleComponent(SourceTreeDirectory sourcePath, SchemaNode descriptionObject){
         super();
-        setStyle("-fx-border-color: black;");
-        setPadding(new Insets(10, 10, 10, 10));
+        setStyle("-fx-border-color: gray;");
+        setPadding(new Insets(0, 10, 0, 10));
 
         rule = new Rule(sourcePath, descriptionObject);
 
@@ -39,16 +39,17 @@ public class RuleComponent extends BorderPane {
         HBox hbox = new HBox();
         HBox.setHgrow(hbox, Priority.ALWAYS);
         hbox.setStyle("-fx-background-color: lightgray;");
+        hbox.setPadding(new Insets(5,2,2,2));
         pane.getChildren().add(hbox);
 
         Label source = new Label(rule.getFolderName());
         source.setMinHeight(24);
-        source.setFont(new Font("Verdana", 14));
+        source.setFont(new Font("System", 14));
         source.setGraphic(new ImageView(SourceTreeDirectory.folderCollapseImage));
 
         Label descObj = new Label(rule.getDescObjName());
         descObj.setMinHeight(24);
-        descObj.setFont(new Font("Verdana", 14));
+        descObj.setFont(new Font("System", 14));
         descObj.setGraphic(new ImageView(rule.getSchemaNode().getImage()));
         descObj.setContentDisplay(ContentDisplay.RIGHT);
         descObj.setTextAlignment(TextAlignment.LEFT);
