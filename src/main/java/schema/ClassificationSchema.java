@@ -3,6 +3,7 @@ package schema;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -10,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * Created by adrapereira on 22-09-2015.
  */
 public class ClassificationSchema {
+    private static final Logger log = Logger.getLogger(ClassificationSchema.class.getName());
     private ArrayList<DescriptionObject> dos;
 
     public ClassificationSchema(){

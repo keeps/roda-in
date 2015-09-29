@@ -14,10 +14,13 @@ import rules.Rule;
 import schema.ui.SchemaNode;
 import source.ui.items.SourceTreeDirectory;
 
+import java.util.logging.Logger;
+
 /**
  * Created by adrapereira on 28-09-2015.
  */
 public class RuleComponent extends BorderPane {
+    private static final Logger log = Logger.getLogger(RuleComponent.class.getName());
     private Rule rule;
 
     public RuleComponent(SourceTreeDirectory sourcePath, SchemaNode descriptionObject){
@@ -39,7 +42,7 @@ public class RuleComponent extends BorderPane {
         HBox hbox = new HBox();
         HBox.setHgrow(hbox, Priority.ALWAYS);
         hbox.setStyle("-fx-background-color: lightgray;");
-        hbox.setPadding(new Insets(5,2,2,2));
+        hbox.setPadding(new Insets(5, 2, 2, 2));
         pane.getChildren().add(hbox);
 
         Label source = new Label(rule.getFolderName());

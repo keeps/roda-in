@@ -19,7 +19,10 @@ import schema.ui.SchemaPane;
 import source.ui.FileExplorerPane;
 import source.ui.items.SourceTreeItem;
 
+import java.util.logging.Logger;
+
 public class Main extends Application {
+    private static final Logger log = Logger.getLogger(Main.class.getName());
     public Stage stage;
 
     private static FileExplorerPane previewExplorer;

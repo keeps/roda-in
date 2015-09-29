@@ -15,10 +15,13 @@ import schema.ClassificationSchema;
 import schema.DescriptionObject;
 import core.Footer;
 
+import java.util.logging.Logger;
+
 /**
  * Created by adrapereira on 28-09-2015.
  */
 public class SchemaPane extends BorderPane {
+    private static final Logger log = Logger.getLogger(SchemaPane.class.getName());
     private TreeView<String> treeView;
     private HBox refresh;
     private GridPane metadata;

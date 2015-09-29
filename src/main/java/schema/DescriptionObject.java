@@ -1,11 +1,13 @@
 package schema;
 
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 /**
  * Created by adrapereira on 22-09-2015.
  */
 public class DescriptionObject {
+    private static final Logger log = Logger.getLogger(DescriptionObject.class.getName());
     private String id;
     private String title;
     private String parentId;

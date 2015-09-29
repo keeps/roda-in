@@ -7,12 +7,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 
 /**
  * Created by adrapereira on 17-09-2015.
  */
 public class SourceDirectory implements SourceItem {
-
+    private static final Logger log = Logger.getLogger(SourceDirectory.class.getName());
     public Path path;
     private int itemsToLoad = 0;
     private TreeMap<String, SourceItem> children;

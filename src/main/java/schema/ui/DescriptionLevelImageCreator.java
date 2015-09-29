@@ -1,6 +1,7 @@
 package schema.ui;
 
 import java.io.InputStream;
+import java.util.logging.Logger;
 
 import javafx.geometry.VPos;
 import javafx.scene.SnapshotParameters;
@@ -16,6 +17,7 @@ import javafx.scene.text.TextAlignment;
  * Created by adrapereira on 22-09-2015.
  */
 public class DescriptionLevelImageCreator {
+    private static final Logger log = Logger.getLogger(DescriptionLevelImageCreator.class.getName());
     String unicode;
     final double size = 16;
 

@@ -23,10 +23,13 @@ import source.ui.items.SourceTreeItem;
 import core.Footer;
 import core.Main;
 
+import java.util.logging.Logger;
+
 /**
  * Created by adrapereira on 24-09-2015.
  */
 public class RulesPane extends BorderPane {
+    private static final Logger log = Logger.getLogger(RulesPane.class.getName());
     private HBox createRule;
     private ListView<RuleComponent> listView;
 

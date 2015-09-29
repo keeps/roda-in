@@ -6,10 +6,13 @@ import javafx.scene.image.ImageView;
 
 import source.ui.items.SourceTreeDirectory;
 
+import java.util.logging.Logger;
+
 /**
  * Created by adrapereira on 16-09-2015.
  */
 public class ExpandedEventHandler implements EventHandler<TreeItem.TreeModificationEvent<Object>> {
+    private static final Logger log = Logger.getLogger(ExpandedEventHandler.class.getName());
     public SourceTreeDirectory source;
     public void handle(TreeItem.TreeModificationEvent<Object> e) {
         source = (SourceTreeDirectory)e.getSource();

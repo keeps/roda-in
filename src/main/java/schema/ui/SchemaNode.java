@@ -7,11 +7,13 @@ import javafx.scene.image.ImageView;
 import schema.DescriptionObject;
 
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 /**
  * Created by adrapereira on 17-09-2015.
  */
 public class SchemaNode extends TreeItem<String> {
+    private static final Logger log = Logger.getLogger(SchemaNode.class.getName());
     public DescriptionObject dob;
     private Image icon;
 

@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.logging.Logger;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -32,6 +33,7 @@ import utils.Utils;
  * Created by adrapereira on 24-09-2015.
  */
 public class FileExplorerPane extends BorderPane {
+    private static final Logger log = Logger.getLogger(FileExplorerPane.class.getName());
     private HBox openfolder;
     private StackPane fileExplorer;
     private TreeView<Object> treeView;

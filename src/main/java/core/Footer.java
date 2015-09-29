@@ -9,10 +9,13 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 
+import java.util.logging.Logger;
+
 /**
  * Created by adrapereira on 28-09-2015.
  */
 public class Footer extends HBox{
+    private static final Logger log = Logger.getLogger(Footer.class.getName());
     public static final Label status = new Label();
 
     public Footer(){

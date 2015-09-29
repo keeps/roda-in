@@ -3,11 +3,13 @@ package source.ui;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.logging.Logger;
 
 /**
  * Created by adrapereira on 24-09-2015.
  */
 public class ComputeDirectorySize extends Thread {
+    private static final Logger log = Logger.getLogger(ComputeDirectorySize.class.getName());
     private final int UPDATEFREQUENCY = 500; //in milliseconds
     private long filesCount = 0, size = 0;
     private FileExplorerPane ui;

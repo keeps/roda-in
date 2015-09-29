@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
@@ -22,6 +23,7 @@ import source.ui.ExpandedEventHandler;
  * Created by adrapereira on 17-09-2015.
  */
 public class SourceTreeDirectory extends TreeItem<Object> implements SourceTreeItem{
+    private static final Logger log = Logger.getLogger(SourceTreeDirectory.class.getName());
     public static Image folderCollapseImage = new Image(ClassLoader.getSystemResourceAsStream("icons/folder.png"));
     public static Image folderExpandImage = new Image(ClassLoader.getSystemResourceAsStream("icons/folder-open.png"));
     public SourceDirectory directory;
