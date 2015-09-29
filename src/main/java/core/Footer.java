@@ -9,16 +9,19 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 
+import org.slf4j.LoggerFactory;
+
+
 /**
  * Created by adrapereira on 28-09-2015.
  */
 public class Footer extends HBox{
-    public static Label status;
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(Footer.class.getName());
+    public static final Label status = new Label();
 
     public Footer(){
         super();
         Button btn = new Button("Create SIPs");
-        status = new Label("Estado...............");
 
         HBox space = new HBox();
         HBox.setHgrow(space, Priority.ALWAYS);

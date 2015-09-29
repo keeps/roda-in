@@ -1,15 +1,20 @@
 package source.representation;
 
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.AccessDeniedException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.TreeMap;
+
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by adrapereira on 17-09-2015.
  */
 public class SourceDirectory implements SourceItem {
-
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(SourceDirectory.class.getName());
     public Path path;
     private int itemsToLoad = 0;
     private TreeMap<String, SourceItem> children;
@@ -50,7 +55,7 @@ public class SourceDirectory implements SourceItem {
             if(directoryStream != null)
                 directoryStream.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
     }
 
@@ -61,9 +66,11 @@ public class SourceDirectory implements SourceItem {
             directoryStream = Files.newDirectoryStream(path);
             iterator = directoryStream.iterator();
         }
-        catch (AccessDeniedException e){}
+        catch (AccessDeniedException e){
+            log.info(e.getMessage());
+        }
         catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
     }
 
@@ -74,14 +81,12 @@ public class SourceDirectory implements SourceItem {
         int loaded = 0, childrenSize = children.size();
         TreeMap<String, SourceItem> result = new TreeMap<String, SourceItem>();
         itemsToLoad += 50;
-
         while(iterator.hasNext() && (childrenSize + loaded < itemsToLoad)){
             Path file = iterator.next();
             SourceItem added = loadChild(file);
             result.put(file.toString(), added);
             loaded++;
         }
-
         //we can close the directory stream if there's no more files to load in the iterator
         if(!iterator.hasNext()) closeDirectoryStream();
 

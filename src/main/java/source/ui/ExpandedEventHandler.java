@@ -1,19 +1,20 @@
 package source.ui;
 
-import javafx.scene.control.TreeItem;
-import source.ui.items.SourceTreeDirectory;
 import javafx.event.EventHandler;
+import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
+
+import org.slf4j.LoggerFactory;
+
+import source.ui.items.SourceTreeDirectory;
 
 /**
  * Created by adrapereira on 16-09-2015.
  */
 public class ExpandedEventHandler implements EventHandler<TreeItem.TreeModificationEvent<Object>> {
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(ExpandedEventHandler.class.getName());
     public SourceTreeDirectory source;
     public void handle(TreeItem.TreeModificationEvent<Object> e) {
-        //TreeItem<String> item = e.getSource();
-        System.out.println(e.getSource().getClass());
-
         source = (SourceTreeDirectory)e.getSource();
 
         // The event is triggered in the item and all its parents until the root,

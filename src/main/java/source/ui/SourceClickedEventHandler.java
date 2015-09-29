@@ -1,20 +1,23 @@
 package source.ui;
 
-import source.ui.items.SourceTreeDirectory;
-import source.ui.items.SourceTreeFile;
-import source.ui.items.SourceTreeLoadMore;
-import source.ui.items.SourceTreeLoading;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
 
+import org.slf4j.LoggerFactory;
+
+import source.ui.items.SourceTreeDirectory;
+import source.ui.items.SourceTreeFile;
+import source.ui.items.SourceTreeLoadMore;
+import source.ui.items.SourceTreeLoading;
+
 /**
  * Created by adrapereira on 21-09-2015.
  */
 public class SourceClickedEventHandler implements EventHandler<MouseEvent> {
-
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(SourceClickedEventHandler.class.getName());
     private TreeView<Object> treeView;
     private FileExplorerPane fep;
 

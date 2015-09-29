@@ -5,11 +5,13 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
 
+import org.slf4j.LoggerFactory;
+
 /**
  * Created by adrapereira on 21-09-2015.
  */
 public class SchemaClickedEventHandler implements EventHandler<MouseEvent> {
-
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(SchemaClickedEventHandler.class.getName());
     private TreeView<String> treeView;
     private SchemaPane spane;
 
@@ -22,7 +24,8 @@ public class SchemaClickedEventHandler implements EventHandler<MouseEvent> {
         if (mouseEvent.getClickCount() == 1) {
             TreeItem<String> item = treeView.getSelectionModel().getSelectedItem();
             SchemaNode node = (SchemaNode) item;
-            spane.updateMetadata(node.dob);
+            if(node != null)
+                spane.updateMetadata(node.dob);
         }
     }
 }

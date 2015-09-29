@@ -4,18 +4,25 @@ package core;
  * Created by adrapereira on 16-09-2015.
  */
 
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import rules.ui.RulesPane;
-import schema.ui.SchemaPane;
-import source.ui.FileExplorerPane;
 import javafx.application.Application;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.control.SplitPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
+import org.slf4j.LoggerFactory;
+
+import rules.ui.RulesPane;
+import schema.ui.SchemaNode;
+import schema.ui.SchemaPane;
+import source.ui.FileExplorerPane;
+import source.ui.items.SourceTreeItem;
+
 public class Main extends Application {
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(Main.class.getName());
     public Stage stage;
 
     private static FileExplorerPane previewExplorer;
@@ -60,14 +67,16 @@ public class Main extends Application {
 
         // setup and show the window
         stage.setTitle("RODA-In");
-        stage.setScene(new Scene(mainPane, bounds.getWidth(), bounds.getHeight()));
+        Scene scene = new Scene(mainPane, bounds.getWidth(), bounds.getHeight());
+        scene.getStylesheets().add(ClassLoader.getSystemResource("Modena.css").toExternalForm());
+        stage.setScene(scene);
         stage.show();
     }
 
-    public static String getSchemaSelectedItem(){
+    public static SchemaNode getSchemaSelectedItem(){
         return schemaPane.getSelectedItem();
     }
-    public static String getSourceSelectedItem(){
+    public static SourceTreeItem getSourceSelectedItem(){
         return previewExplorer.getSelectedItem();
     }
 }

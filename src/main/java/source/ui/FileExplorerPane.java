@@ -1,5 +1,12 @@
 package source.ui;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -15,20 +22,19 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+
+import org.slf4j.LoggerFactory;
+
 import source.representation.SourceDirectory;
 import source.ui.items.SourceTreeDirectory;
 import source.ui.items.SourceTreeItem;
 import utils.Utils;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
-
 /**
  * Created by adrapereira on 24-09-2015.
  */
 public class FileExplorerPane extends BorderPane {
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(FileExplorerPane.class.getName());
     private HBox openfolder;
     private StackPane fileExplorer;
     private TreeView<Object> treeView;
@@ -61,6 +67,7 @@ public class FileExplorerPane extends BorderPane {
     private void createOpenFolder(){
         Button btn = new Button("Open Folder");
         Label title = new Label("Source File Explorer");
+        title.setFont(Font.font("System",FontWeight.BOLD ,14));
 
         HBox space = new HBox();
         HBox.setHgrow(space, Priority.ALWAYS);
@@ -115,35 +122,35 @@ public class FileExplorerPane extends BorderPane {
         metadata.setPadding(new Insets(25, 25, 25, 25));
 
         Label title = new Label("Title:");
-        title.setFont(Font.font("Verdana", FontWeight.BOLD, 14));
+        title.setFont(Font.font("System", FontWeight.BOLD, 14));
         metadata.add(title, 0, 1);
         l_title = new Label();
         l_title.setWrapText(true);
         metadata.add(l_title, 1, 1);
 
         Label type = new Label("Type:");
-        type.setFont(Font.font("Verdana", FontWeight.BOLD, 14));
+        type.setFont(Font.font("System", FontWeight.BOLD, 14));
         metadata.add(type, 0, 2);
         l_type = new Label();
         l_type.setWrapText(true);
         metadata.add(l_type, 1, 2);
 
         Label content = new Label("Content:");
-        content.setFont(Font.font("Verdana", FontWeight.BOLD, 14));
+        content.setFont(Font.font("System", FontWeight.BOLD, 14));
         metadata.add(content, 0, 3);
         l_content = new Label();
         l_content.setWrapText(true);
         metadata.add(l_content, 1, 3);
 
         Label path = new Label("Path:");
-        path.setFont(Font.font("Verdana", FontWeight.BOLD, 14));
+        path.setFont(Font.font("System", FontWeight.BOLD, 14));
         metadata.add(path, 0, 4);
         l_path = new Label();
         l_path.setWrapText(true);
         metadata.add(l_path, 1, 4);
 
         Label metadataLabel = new Label("Metadata:");
-        metadataLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 14));
+        metadataLabel.setFont(Font.font("System", FontWeight.BOLD, 14));
         metadataLabel.setMinWidth(100); //don't allow the label to minimize when the pane is shrunk
         metadata.add(metadataLabel, 0, 5);
         l_metadata = new Label();
@@ -175,7 +182,7 @@ public class FileExplorerPane extends BorderPane {
                 l_content.setText(Utils.formatSize(attr.size()));
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
     }
 
@@ -203,11 +210,11 @@ public class FileExplorerPane extends BorderPane {
         });
     }
 
-    public String getSelectedItem(){
+    public SourceTreeItem getSelectedItem(){
         if(treeView == null) return null;
         int selIndex = treeView.getSelectionModel().getSelectedIndex();
         if(selIndex == -1) return null;
         SourceTreeItem item = (SourceTreeItem)treeView.getTreeItem(selIndex);
-        return item.getPath();
+        return item;
     }
 }
