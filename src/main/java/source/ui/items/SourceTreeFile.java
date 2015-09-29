@@ -1,11 +1,11 @@
 package source.ui.items;
 
+import java.io.File;
+import java.nio.file.Path;
+
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-
-import java.io.File;
-import java.nio.file.Path;
 
 /**
  * Created by adrapereira on 17-09-2015.

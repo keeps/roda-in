@@ -43,6 +43,11 @@
             <artifactId>jacoco-maven-plugin</artifactId>
             <version>0.7.5.201505241946</version>
         </dependency>
+        <dependency>
+            <groupId>com.cathive.fonts</groupId>
+            <artifactId>fonts-fontawesome</artifactId>
+            <version>3.2.1.0</version>
+        </dependency>
     </dependencies>
 
 </project>

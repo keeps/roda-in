@@ -1,9 +1,10 @@
 package source.ui;
 
-import javafx.scene.control.TreeItem;
-import source.ui.items.SourceTreeDirectory;
 import javafx.event.EventHandler;
+import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
+
+import source.ui.items.SourceTreeDirectory;
 
 /**
  * Created by adrapereira on 16-09-2015.

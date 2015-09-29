@@ -1,6 +1,5 @@
 package schema.ui;
 
-import core.Footer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -11,8 +10,10 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+
 import schema.ClassificationSchema;
 import schema.DescriptionObject;
+import core.Footer;
 
 /**
  * Created by adrapereira on 28-09-2015.

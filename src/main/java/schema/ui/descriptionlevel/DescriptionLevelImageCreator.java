@@ -6,6 +6,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
+import javafx.scene.text.Font;
+
+import java.io.InputStream;
 
 /**
  * Created by adrapereira on 22-09-2015.
@@ -18,8 +21,13 @@ public class DescriptionLevelImageCreator {
     }
 
     public Image generate(){
-        Label label = new Label(config.getAbbreviation());
-        int width = config.getWidth();
+        InputStream font = getClass().getResourceAsStream("/fontawesome-webfont.ttf");
+        Font fontAwesome = Font.loadFont(font, 16);
+        final String ICON_ANDROID = "\uf17b";
+        Label label = new Label(ICON_ANDROID);
+        label.setFont(fontAwesome);
+
+        int width = 24;
         label.setMinSize(width, 16);
         label.setMaxSize(width, 16);
         label.setPrefSize(width, 16);
@@ -28,7 +36,7 @@ public class DescriptionLevelImageCreator {
 
         StringBuilder style = new StringBuilder();
         style.append("-fx-background-color: ");
-        style.append(config.getBackgroundColor()).append(";");
+        style.append("transparent;");
         style.append("-fx-text-fill:");
         style.append(config.getFontColor()).append(";");
         label.setStyle(style.toString());

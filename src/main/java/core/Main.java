@@ -4,16 +4,18 @@ package core;
  * Created by adrapereira on 16-09-2015.
  */
 
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import rules.ui.RulesPane;
-import schema.ui.SchemaPane;
-import source.ui.FileExplorerPane;
 import javafx.application.Application;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.control.SplitPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+
+import rules.ui.RulesPane;
+import schema.ui.SchemaPane;
+import source.ui.FileExplorerPane;
 
 public class Main extends Application {
     public Stage stage;

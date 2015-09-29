@@ -1,10 +1,10 @@
 package schema;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Created by adrapereira on 22-09-2015.

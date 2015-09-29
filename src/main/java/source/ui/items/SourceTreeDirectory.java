@@ -1,8 +1,12 @@
 package source.ui.items;
 
-import source.ui.ExpandedEventHandler;
-import source.representation.SourceDirectory;
-import source.representation.SourceItem;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.TreeMap;
+
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
@@ -10,12 +14,9 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.TreeMap;
+import source.representation.SourceDirectory;
+import source.representation.SourceItem;
+import source.ui.ExpandedEventHandler;
 
 /**
  * Created by adrapereira on 17-09-2015.
