@@ -1,4 +1,4 @@
-package schema.ui.descriptionlevel;
+package schema.ui;
 
 import java.io.InputStream;
 
@@ -23,6 +23,9 @@ public class DescriptionLevelImageCreator {
         this.unicode = unicode;
     }
 
+    /*
+    * http://news.kynosarges.org/2014/01/07/javafx-text-icons-as-images-files/
+    */
     public Image generate(){
         InputStream fontIS = getClass().getResourceAsStream("/fontawesome-webfont.ttf");
         Font font = Font.loadFont(fontIS, 16);

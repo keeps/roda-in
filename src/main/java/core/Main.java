@@ -64,7 +64,9 @@ public class Main extends Application {
 
         // setup and show the window
         stage.setTitle("RODA-In");
-        stage.setScene(new Scene(mainPane, bounds.getWidth(), bounds.getHeight()));
+        Scene scene = new Scene(mainPane, bounds.getWidth(), bounds.getHeight());
+        scene.getStylesheets().add(ClassLoader.getSystemResource("Modena.css").toExternalForm());
+        stage.setScene(scene);
         stage.show();
     }
 

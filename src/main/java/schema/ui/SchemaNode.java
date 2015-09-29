@@ -5,7 +5,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import schema.DescriptionObject;
-import schema.ui.descriptionlevel.DescriptionLevelImageCreator;
 
 import java.util.ResourceBundle;
 
