@@ -24,8 +24,8 @@ import source.ui.ExpandedEventHandler;
  */
 public class SourceTreeDirectory extends TreeItem<Object> implements SourceTreeItem{
     private static final Logger log = Logger.getLogger(SourceTreeDirectory.class.getName());
-    public static Image folderCollapseImage = new Image(ClassLoader.getSystemResourceAsStream("icons/folder.png"));
-    public static Image folderExpandImage = new Image(ClassLoader.getSystemResourceAsStream("icons/folder-open.png"));
+    public static final Image folderCollapseImage = new Image(ClassLoader.getSystemResourceAsStream("icons/folder.png"));
+    public static final Image folderExpandImage = new Image(ClassLoader.getSystemResourceAsStream("icons/folder-open.png"));
     public SourceDirectory directory;
     public boolean expanded = false;
     //this stores the full path to the file or directory
@@ -79,36 +79,36 @@ public class SourceTreeDirectory extends TreeItem<Object> implements SourceTreeI
         Task<Integer> task = new Task<Integer>() {
             @Override
             protected Integer call() throws Exception {
-                TreeMap<String, SourceItem> loaded;
-                loaded = directory.loadMore();
+            TreeMap<String, SourceItem> loaded;
+            loaded = directory.loadMore();
 
-                if (loaded.size() != 0) {
-                    //Add new items
-                    for (String sourceItem : loaded.keySet()) {
-                        Path sourcePath = Paths.get(sourceItem);
-                        if (Files.isDirectory(sourcePath)) {
-                            children.add(new SourceTreeDirectory(sourcePath, directory.getChildDirectory(sourcePath)));
-                        } else children.add(new SourceTreeFile(sourcePath));
-                    }
-                    // check if there's more files to load
-                    if (directory.isStreamOpen())
-                        children.add(new SourceTreeLoadMore());
+            if (loaded.size() != 0) {
+                //Add new items
+                for (String sourceItem : loaded.keySet()) {
+                    Path sourcePath = Paths.get(sourceItem);
+                    if (Files.isDirectory(sourcePath)) {
+                        children.add(new SourceTreeDirectory(sourcePath, directory.getChildDirectory(sourcePath)));
+                    } else children.add(new SourceTreeFile(sourcePath));
                 }
-                return loaded.size();
+                // check if there's more files to load
+                if (directory.isStreamOpen())
+                    children.add(new SourceTreeLoadMore());
+            }
+            return loaded.size();
             }
         };
 
         // After everything is loaded, we add all the items to the TreeView at once.
         task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
             public void handle(WorkerStateEvent workerStateEvent) {
-                // Remove "loading" items
-                ArrayList<Object> toRemove = new ArrayList<Object>();
-                for(Object o: children)
-                    if(o instanceof SourceTreeLoading)
-                        toRemove.add(o);
-                children.removeAll(toRemove);
-                // Set the children
-                getChildren().setAll(children);
+            // Remove "loading" items
+            ArrayList<Object> toRemove = new ArrayList<Object>();
+            for(Object o: children)
+                if(o instanceof SourceTreeLoading)
+                    toRemove.add(o);
+            children.removeAll(toRemove);
+            // Set the children
+            getChildren().setAll(children);
             }
         });
 

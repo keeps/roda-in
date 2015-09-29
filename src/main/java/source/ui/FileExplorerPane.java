@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javafx.application.Platform;
@@ -181,7 +182,7 @@ public class FileExplorerPane extends BorderPane {
                 l_content.setText(Utils.formatSize(attr.size()));
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, e.getMessage());
         }
     }
 

@@ -11,7 +11,7 @@ import java.util.logging.Logger;
  */
 public class SourceTreeLoadMore extends TreeItem<Object> implements SourceTreeItem{
     private static final Logger log = Logger.getLogger(SourceTreeLoadMore.class.getName());
-    public static Image fileImage = new Image(ClassLoader.getSystemResourceAsStream("icons/list-add.png"));
+    public static final Image fileImage = new Image(ClassLoader.getSystemResourceAsStream("icons/list-add.png"));
 
     public SourceTreeLoadMore(){
         super("Load More ...");

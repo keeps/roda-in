@@ -13,7 +13,7 @@ import javafx.scene.image.ImageView;
  */
 public class SourceTreeFile extends TreeItem<Object> implements SourceTreeItem{
     private static final Logger log = Logger.getLogger(SourceTreeFile.class.getName());
-    public static Image fileImage = new Image(ClassLoader.getSystemResourceAsStream("icons/file.png"));
+    public static final Image fileImage = new Image(ClassLoader.getSystemResourceAsStream("icons/file.png"));
 
     //this stores the full path to the file
     private String fullPath;

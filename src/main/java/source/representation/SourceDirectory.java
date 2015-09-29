@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.TreeMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -54,7 +55,7 @@ public class SourceDirectory implements SourceItem {
             if(directoryStream != null)
                 directoryStream.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, e.getMessage());
         }
     }
 
@@ -63,11 +64,12 @@ public class SourceDirectory implements SourceItem {
 
         try {
             directoryStream = Files.newDirectoryStream(path);
-            iterator = directoryStream.iterator();
         }
-        catch (AccessDeniedException e){}
+        catch (AccessDeniedException e){
+            log.log(Level.INFO, e.getMessage());
+        }
         catch (IOException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, e.getMessage());
         }
     }
 

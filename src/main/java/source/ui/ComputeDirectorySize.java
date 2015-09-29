@@ -3,6 +3,7 @@ package source.ui;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -50,7 +51,7 @@ public class ComputeDirectorySize extends Thread {
                 }
             });
         } catch (IOException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, e.getMessage());
         }
         //update the UI with the final values
         ui.updateSize(filesCount, size);
