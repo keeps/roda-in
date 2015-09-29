@@ -7,6 +7,8 @@ import javafx.scene.image.ImageView;
 import schema.DescriptionObject;
 import schema.ui.descriptionlevel.DescriptionLevelImageCreator;
 
+import java.util.ResourceBundle;
+
 /**
  * Created by adrapereira on 17-09-2015.
  */
@@ -18,7 +20,11 @@ public class SchemaNode extends TreeItem<String> {
         super(dobject.getTitle());
         dob = dobject;
 
-        DescriptionLevelImageCreator dlic = new DescriptionLevelImageCreator(dob.getDescriptionlevel());
+        ResourceBundle hierarchyConfig = ResourceBundle.getBundle("properties/roda-description-levels-hierarchy");
+        String category = hierarchyConfig.getString("category." + dobject.getDescriptionlevel());
+        String unicode = hierarchyConfig.getString("icon."+category);
+
+        DescriptionLevelImageCreator dlic = new DescriptionLevelImageCreator(unicode);
         Image im = dlic.generate();
         icon = im;
         this.setGraphic(new ImageView(im));

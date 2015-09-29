@@ -11,7 +11,7 @@ import javafx.scene.image.ImageView;
  * Created by adrapereira on 17-09-2015.
  */
 public class SourceTreeFile extends TreeItem<Object> implements SourceTreeItem{
-    public static Image fileImage = new Image(ClassLoader.getSystemResourceAsStream("file.png"));
+    public static Image fileImage = new Image(ClassLoader.getSystemResourceAsStream("icons/file.png"));
 
     //this stores the full path to the file
     private String fullPath;

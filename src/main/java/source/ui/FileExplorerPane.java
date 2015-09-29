@@ -64,6 +64,7 @@ public class FileExplorerPane extends BorderPane {
     private void createOpenFolder(){
         Button btn = new Button("Open Folder");
         Label title = new Label("Source File Explorer");
+        title.setFont(Font.font("Verdana",FontWeight.BOLD ,14));
 
         HBox space = new HBox();
         HBox.setHgrow(space, Priority.ALWAYS);

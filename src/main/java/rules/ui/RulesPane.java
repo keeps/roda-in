@@ -10,6 +10,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
 import core.Footer;
@@ -37,6 +39,7 @@ public class RulesPane extends BorderPane {
     private void createCreateRule(){
         Button btn = new Button("Create Rule");
         Label title = new Label("Mapping Rules");
+        title.setFont(Font.font("Verdana", FontWeight.BOLD, 14));
 
         HBox space = new HBox();
         HBox.setHgrow(space, Priority.ALWAYS);

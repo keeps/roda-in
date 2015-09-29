@@ -43,6 +43,7 @@ public class SchemaPane extends BorderPane {
     public void createTop(){
         Button btn = new Button("Update");
         Label title = new Label("Classification Schema");
+        title.setFont(Font.font("Verdana",FontWeight.BOLD ,14));
 
         HBox space = new HBox();
         HBox.setHgrow(space, Priority.ALWAYS);

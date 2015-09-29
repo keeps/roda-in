@@ -1,49 +1,42 @@
 package schema.ui.descriptionlevel;
 
-import javafx.geometry.Pos;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
+import java.io.InputStream;
+
+import javafx.geometry.VPos;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-
-import java.io.InputStream;
+import javafx.scene.text.TextAlignment;
 
 /**
  * Created by adrapereira on 22-09-2015.
  */
 public class DescriptionLevelImageCreator {
-    private DescriptionLevelConfig config;
+    String unicode;
+    final double size = 16;
 
-    public DescriptionLevelImageCreator(String descriptionlevel) {
-        config = DescriptionLevels.getConfig(descriptionlevel);
+    public DescriptionLevelImageCreator(String unicode) {
+        this.unicode = unicode;
     }
 
     public Image generate(){
-        InputStream font = getClass().getResourceAsStream("/fontawesome-webfont.ttf");
-        Font fontAwesome = Font.loadFont(font, 16);
-        final String ICON_ANDROID = "\uf17b";
-        Label label = new Label(ICON_ANDROID);
-        label.setFont(fontAwesome);
+        InputStream fontIS = getClass().getResourceAsStream("/fontawesome-webfont.ttf");
+        Font font = Font.loadFont(fontIS, 16);
 
-        int width = 24;
-        label.setMinSize(width, 16);
-        label.setMaxSize(width, 16);
-        label.setPrefSize(width, 16);
-        label.setAlignment(Pos.CENTER);
-        label.setWrapText(true);
+        final Canvas canvas = new Canvas(size, size);
+        final GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.setFont(font);
+        gc.setTextAlign(TextAlignment.CENTER);
+        gc.setTextBaseline(VPos.CENTER);
+        gc.fillText(unicode, size / 2, size / 2);
 
-        StringBuilder style = new StringBuilder();
-        style.append("-fx-background-color: ");
-        style.append("transparent;");
-        style.append("-fx-text-fill:");
-        style.append(config.getFontColor()).append(";");
-        label.setStyle(style.toString());
-
-        Scene scene = new Scene(new Group(label));
-        WritableImage img = new WritableImage(width, 16) ;
-        scene.snapshot(img);
-        return img ;
+        final SnapshotParameters params = new SnapshotParameters();
+        params.setFill(Color.TRANSPARENT);
+        final WritableImage snapshot = canvas.snapshot(params, null);
+        return snapshot;
     }
 }

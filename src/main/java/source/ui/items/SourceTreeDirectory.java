@@ -22,8 +22,8 @@ import source.ui.ExpandedEventHandler;
  * Created by adrapereira on 17-09-2015.
  */
 public class SourceTreeDirectory extends TreeItem<Object> implements SourceTreeItem{
-    public static Image folderCollapseImage = new Image(ClassLoader.getSystemResourceAsStream("folder.png"));
-    public static Image folderExpandImage = new Image(ClassLoader.getSystemResourceAsStream("folder-open.png"));
+    public static Image folderCollapseImage = new Image(ClassLoader.getSystemResourceAsStream("icons/folder.png"));
+    public static Image folderExpandImage = new Image(ClassLoader.getSystemResourceAsStream("icons/folder-open.png"));
     public SourceDirectory directory;
     public boolean expanded = false;
     //this stores the full path to the file or directory
