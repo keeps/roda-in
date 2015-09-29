@@ -8,15 +8,14 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -35,13 +34,14 @@ import utils.Utils;
  */
 public class FileExplorerPane extends BorderPane {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(FileExplorerPane.class.getName());
-    private HBox openfolder;
+    private HBox top;
     private StackPane fileExplorer;
     private TreeView<Object> treeView;
     private Stage stage;
 
     private GridPane metadata;
     private Label l_title, l_type, l_content, l_path, l_metadata;
+    private CheckBox toggleFiles;
 
     //This thread is used to walk a directory's file tree and update the UI periodically with the size and file count
     private ComputeDirectorySize computeThread;
@@ -51,7 +51,7 @@ public class FileExplorerPane extends BorderPane {
 
         this.stage = stage;
 
-        createOpenFolder();
+        createTop();
         createFileExplorer();
         createMetadata();
 
@@ -59,24 +59,25 @@ public class FileExplorerPane extends BorderPane {
         split.setOrientation(Orientation.VERTICAL);
         split.getItems().addAll(fileExplorer, metadata);
 
-        this.setTop(openfolder);
+        this.setTop(top);
         this.setCenter(split);
         this.minWidthProperty().bind(stage.widthProperty().multiply(0.2));
     }
 
-    private void createOpenFolder(){
+    private void createTop(){
         Button btn = new Button("Open Folder");
+        toggleFiles = new CheckBox("Show Files");
         Label title = new Label("Source File Explorer");
-        title.setFont(Font.font("System",FontWeight.BOLD ,14));
+        title.setFont(Font.font("System", FontWeight.BOLD, 14));
 
         HBox space = new HBox();
         HBox.setHgrow(space, Priority.ALWAYS);
 
-        openfolder = new HBox();
-        openfolder.setPadding(new Insets(10, 10, 10, 10));
-        openfolder.setSpacing(10);
-        openfolder.setAlignment(Pos.TOP_RIGHT);
-        openfolder.getChildren().addAll(title, space, btn);
+        top = new HBox();
+        top.setPadding(new Insets(10, 10, 10, 10));
+        top.setSpacing(10);
+        top.setAlignment(Pos.TOP_RIGHT);
+        top.getChildren().addAll(title, space, toggleFiles, btn);
 
         btn.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
@@ -85,7 +86,20 @@ public class FileExplorerPane extends BorderPane {
                 File selectedDirectory = chooser.showDialog(stage);
                 if (selectedDirectory == null) return;
                 Path path = selectedDirectory.toPath();
-                setFileExplorerRoot(path);
+                boolean showFiles = toggleFiles.isSelected();
+                setFileExplorerRoot(path, showFiles);
+            }
+        });
+
+        toggleFiles.selectedProperty().addListener(new ChangeListener<Boolean>() {
+            public void changed(ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) {
+                TreeItem<Object> root = treeView.getRoot();
+                if(root == null) return;
+                if(!(root instanceof SourceTreeDirectory)) return;
+                SourceTreeDirectory rootCasted = (SourceTreeDirectory)root;
+                String pathString = rootCasted.getPath();
+                Path path = Paths.get(pathString);
+                setFileExplorerRoot(path, new_val);
             }
         });
     }
@@ -107,8 +121,8 @@ public class FileExplorerPane extends BorderPane {
         treeView.setOnMouseClicked(new SourceClickedEventHandler(this));
     }
 
-    public void setFileExplorerRoot(Path rootPath){
-        SourceTreeDirectory rootNode = new SourceTreeDirectory(rootPath, new SourceDirectory(rootPath));
+    public void setFileExplorerRoot(Path rootPath, boolean showFiles){
+        SourceTreeDirectory rootNode = new SourceTreeDirectory(rootPath, new SourceDirectory(rootPath, showFiles));
         rootNode.setExpanded(true);
         treeView.setRoot(rootNode);
         updateMetadata(rootPath);

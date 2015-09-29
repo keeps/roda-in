@@ -20,9 +20,11 @@ public class SourceDirectory implements SourceItem {
     private TreeMap<String, SourceItem> children;
     private DirectoryStream<Path> directoryStream;
     private Iterator<Path> iterator;
+    private boolean showFiles;
 
-    public SourceDirectory(Path path) {
+    public SourceDirectory(Path path, boolean showFiles) {
         this.path = path;
+        this.showFiles = showFiles;
         children = new TreeMap<String, SourceItem>();
     }
 
@@ -83,6 +85,7 @@ public class SourceDirectory implements SourceItem {
         itemsToLoad += 50;
         while(iterator.hasNext() && (childrenSize + loaded < itemsToLoad)){
             Path file = iterator.next();
+            if(!showFiles && !Files.isDirectory(file)) continue;
             SourceItem added = loadChild(file);
             result.put(file.toString(), added);
             loaded++;
@@ -96,7 +99,7 @@ public class SourceDirectory implements SourceItem {
     private SourceItem loadChild(Path file){
         SourceItem item;
         if (Files.isDirectory(file)) {
-            item = new SourceDirectory(file);
+            item = new SourceDirectory(file, showFiles);
             addChild(file, item);
 
         }else{
