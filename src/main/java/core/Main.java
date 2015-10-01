@@ -65,6 +65,7 @@ public class Main extends Application {
         previewExplorer = new FileExplorerPane(stage);
         rulesPane = new RulesPane(stage);
         schemaPane = new SchemaPane(stage);
+
         split.getItems().addAll(previewExplorer, rulesPane, schemaPane);
 
         //Create Footer

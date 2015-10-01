@@ -61,7 +61,7 @@ public class FileExplorerPane extends BorderPane {
 
         this.setTop(top);
         this.setCenter(split);
-        this.minWidthProperty().bind(stage.widthProperty().multiply(0.2));
+        this.minWidthProperty().bind(stage.widthProperty().multiply(0.25));
     }
 
     private void createTop(){

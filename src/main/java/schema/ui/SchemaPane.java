@@ -40,7 +40,7 @@ public class SchemaPane extends BorderPane {
         this.setTop(refresh);
         this.setCenter(split);
 
-        this.minWidthProperty().bind(stage.widthProperty().multiply(0.2));
+        this.minWidthProperty().bind(stage.widthProperty().multiply(0.25));
     }
 
     public void createTop(){
