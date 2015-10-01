@@ -2,6 +2,8 @@ package rules.ui;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -13,8 +15,10 @@ import javafx.scene.text.TextAlignment;
 import org.slf4j.LoggerFactory;
 
 import rules.Rule;
+import rules.RuleTypes;
 import schema.ui.SchemaNode;
 import source.ui.items.SourceTreeDirectory;
+import core.Footer;
 
 /**
  * Created by adrapereira on 28-09-2015.
@@ -22,6 +26,8 @@ import source.ui.items.SourceTreeDirectory;
 public class RuleComponent extends BorderPane {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(RuleComponent.class.getName());
     private Rule rule;
+    private ToggleGroup group;
+    private ComboBox<Integer> level;
 
     public RuleComponent(SourceTreeDirectory sourcePath, SchemaNode descriptionObject){
         super();
@@ -65,20 +71,22 @@ public class RuleComponent extends BorderPane {
 
     private void createCenter(){
         GridPane gridCenter = new GridPane();
-        gridCenter.setPadding(new Insets(0,10,0,10));
+        gridCenter.setPadding(new Insets(0, 10, 0, 10));
         gridCenter.setHgap(10);
 
-        ToggleGroup group = new ToggleGroup();
+        group = new ToggleGroup();
 
         RadioButton byFile = new RadioButton("1 SIP por ficheiro");
         byFile.setToggleGroup(group);
+        byFile.setUserData(RuleTypes.SIPPERFILE);
         byFile.setSelected(true);
 
         RadioButton byFolder = new RadioButton("1 SIP por pasta até ao nível");
+        byFolder.setUserData(RuleTypes.SIPPERFOLDER);
         byFolder.setToggleGroup(group);
 
-        ObservableList<Integer> options = FXCollections.observableArrayList(0,1,2,3,4,5,6,7,8,9,10);
-        ComboBox<Integer> level = new ComboBox<Integer>(options);
+        ObservableList<Integer> options = FXCollections.observableArrayList(1,2,3,4,5,6,7,8,9,10);
+        level = new ComboBox<Integer>(options);
         level.setValue(3);
 
         gridCenter.add(byFile, 0, 1);
@@ -100,6 +108,18 @@ public class RuleComponent extends BorderPane {
         buttons.setSpacing(10);
         buttons.setAlignment(Pos.TOP_RIGHT);
         buttons.getChildren().addAll(remove, space, apply);
+
+        apply.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent e) {
+                Toggle active = group.getSelectedToggle();
+                if (active.getUserData() instanceof RuleTypes) {
+                    RuleTypes type = (RuleTypes) active.getUserData();
+                    int lev = level.getValue();
+                    rule.apply(type, lev);
+                    Footer.setStatus(rule.getSipCount() + "");
+                }
+            }
+        });
 
         setBottom(buttons);
     }

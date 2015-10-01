@@ -31,14 +31,20 @@ public class ComputeDirectorySize extends Thread {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     size += attrs.size();
-                    if(Files.isDirectory(file))
-                        directoryCount++;
-                    else filesCount++;
-                    long now = System.currentTimeMillis();
-                    if(now - lastUIUpdate > UPDATEFREQUENCY) {
-                        ui.updateSize(filesCount, directoryCount, size);
-                        lastUIUpdate = now;
-                    }
+                    filesCount++;
+
+                    update();
+                    //terminate if the thread has been interrupted
+                    if(Thread.interrupted())
+                        return FileVisitResult.TERMINATE;
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
+                    directoryCount++;
+
+                    update();
                     //terminate if the thread has been interrupted
                     if(Thread.interrupted())
                         return FileVisitResult.TERMINATE;
@@ -57,5 +63,13 @@ public class ComputeDirectorySize extends Thread {
         }
         //update the UI with the final values
         ui.updateSize(filesCount, directoryCount, size);
+    }
+
+    private void update(){
+        long now = System.currentTimeMillis();
+        if(now - lastUIUpdate > UPDATEFREQUENCY) {
+            ui.updateSize(filesCount, directoryCount, size);
+            lastUIUpdate = now;
+        }
     }
 }
