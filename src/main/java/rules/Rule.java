@@ -1,13 +1,15 @@
 package rules;
 
-import org.slf4j.LoggerFactory;
-
-import schema.ui.SchemaNode;
-import source.ui.items.SourceTreeDirectory;
-
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.HashSet;
+
+import org.slf4j.LoggerFactory;
+
+import schema.ui.SchemaNode;
+import schema.ui.SipPreview;
+import source.ui.items.SourceTreeDirectory;
 
 /**
  * Created by adrapereira on 29-09-2015.
@@ -17,6 +19,7 @@ public class Rule {
     private SourceTreeDirectory source;
     private SchemaNode schemaNode;
     private RuleTypes type;
+    private HashSet<SipPreview> sips;
     private int sipCount = 0;
     private int level;
 
@@ -57,6 +60,7 @@ public class Rule {
         this.type = type;
         this.level = level;
         sipCount = 0;
+        sips = new HashSet<SipPreview>();
 
         switch (type){
             case SIPPERFILE:
@@ -76,6 +80,7 @@ public class Rule {
             Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    SipPreview newSip = new SipPreview(file.getFileName().toString());
                     sipCount++;
                     return FileVisitResult.CONTINUE;
                 }
@@ -87,8 +92,6 @@ public class Rule {
         } catch (IOException e) {
             log.error(e.getMessage());
         }
-
-
     }
 
     private void previewSipPerFolder(){

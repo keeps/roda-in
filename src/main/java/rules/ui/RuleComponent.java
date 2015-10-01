@@ -42,9 +42,6 @@ public class RuleComponent extends BorderPane {
         createTop();
         createCenter();
         createBottom();
-
-        int result = applyAndCount();
-        sipCount.setText(result + " SIPs");
     }
 
     private void createTop(){
@@ -126,7 +123,10 @@ public class RuleComponent extends BorderPane {
         apply.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
                 int result = applyAndCount();
-                sipCount.setText(result + " SIPs");
+                String text = result + " ";
+                if(result == 1) text += "item";
+                else text += "items";
+                sipCount.setText(text);
             }
         });
 

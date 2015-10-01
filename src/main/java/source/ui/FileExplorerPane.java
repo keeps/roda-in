@@ -6,6 +6,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Observable;
+import java.util.Observer;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -28,11 +30,12 @@ import source.representation.SourceDirectory;
 import source.ui.items.SourceTreeDirectory;
 import source.ui.items.SourceTreeItem;
 import utils.Utils;
+import utils.WalkFileTree;
 
 /**
  * Created by adrapereira on 24-09-2015.
  */
-public class FileExplorerPane extends BorderPane {
+public class FileExplorerPane extends BorderPane implements Observer {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(FileExplorerPane.class.getName());
     private HBox top;
     private StackPane fileExplorer;
@@ -42,9 +45,10 @@ public class FileExplorerPane extends BorderPane {
     private GridPane metadata;
     private Label l_title, l_type, l_content, l_path, l_metadata;
     private CheckBox toggleFiles;
+    private ComputeDirectorySize computeSize;
 
     //This thread is used to walk a directory's file tree and update the UI periodically with the size and file count
-    private ComputeDirectorySize computeThread;
+    private WalkFileTree computeThread;
 
     public FileExplorerPane(Stage stage){
         super();
@@ -94,9 +98,9 @@ public class FileExplorerPane extends BorderPane {
         toggleFiles.selectedProperty().addListener(new ChangeListener<Boolean>() {
             public void changed(ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) {
                 TreeItem<Object> root = treeView.getRoot();
-                if(root == null) return;
-                if(!(root instanceof SourceTreeDirectory)) return;
-                SourceTreeDirectory rootCasted = (SourceTreeDirectory)root;
+                if (root == null) return;
+                if (!(root instanceof SourceTreeDirectory)) return;
+                SourceTreeDirectory rootCasted = (SourceTreeDirectory) root;
                 String pathString = rootCasted.getPath();
                 Path path = Paths.get(pathString);
                 setFileExplorerRoot(path, new_val);
@@ -188,7 +192,9 @@ public class FileExplorerPane extends BorderPane {
             if(attr.isDirectory()){
                 l_type.setText("Directory");
                 l_content.setText("");
-                computeThread = new ComputeDirectorySize(this, path.toString());
+                computeSize = new ComputeDirectorySize();
+                computeSize.addObserver(this);
+                computeThread = new WalkFileTree(path.toString(), computeSize);
                 computeThread.start();
             }
             else{
@@ -203,6 +209,12 @@ public class FileExplorerPane extends BorderPane {
     public void updateMetadata(String pathString){
         Path path = Paths.get(pathString);
         updateMetadata(path);
+    }
+    
+    public void update(Observable o, Object arg) {
+        if(o == computeSize){
+            updateSize(computeSize.getFilesCount(), computeSize.getDirectoryCount(), computeSize.getSize());
+        }
     }
 
     public TreeView<Object> getTreeView() {
