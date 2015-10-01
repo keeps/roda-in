@@ -1,6 +1,5 @@
 package rules.ui;
 
-import core.Main;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -11,6 +10,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
 import javafx.scene.text.TextAlignment;
 
 import org.slf4j.LoggerFactory;
@@ -20,6 +20,7 @@ import rules.RuleTypes;
 import schema.ui.SchemaNode;
 import source.ui.items.SourceTreeDirectory;
 import core.Footer;
+import core.Main;
 
 /**
  * Created by adrapereira on 28-09-2015.
@@ -30,6 +31,7 @@ public class RuleComponent extends BorderPane {
     private Rule rule;
     private ToggleGroup group;
     private ComboBox<Integer> level;
+    private Label sipCount;
 
     public RuleComponent(SourceTreeDirectory sourcePath, SchemaNode descriptionObject){
         super();
@@ -40,6 +42,9 @@ public class RuleComponent extends BorderPane {
         createTop();
         createCenter();
         createBottom();
+
+        int result = applyAndCount();
+        sipCount.setText(result + " SIPs");
     }
 
     private void createTop(){
@@ -63,10 +68,17 @@ public class RuleComponent extends BorderPane {
         descObj.setGraphic(new ImageView(rule.getSchemaNode().getImage()));
         descObj.setTextAlignment(TextAlignment.LEFT);
 
-        HBox space = new HBox();
-        HBox.setHgrow(space, Priority.ALWAYS);
+        HBox spaceLeft = new HBox();
+        HBox.setHgrow(spaceLeft, Priority.ALWAYS);
+        HBox spaceRight = new HBox();
+        HBox.setHgrow(spaceRight, Priority.ALWAYS);
 
-        hbox.getChildren().addAll(source, space, descObj);
+        sipCount = new Label();
+        sipCount.setMinHeight(24);
+        sipCount.setFont(Font.font("System", FontPosture.ITALIC, 12));
+        sipCount.setStyle("-fx-opacity: 0.5;");
+
+        hbox.getChildren().addAll(source, spaceLeft, sipCount, spaceRight, descObj);
 
         setTop(pane);
     }
@@ -99,8 +111,8 @@ public class RuleComponent extends BorderPane {
     }
 
     private void createBottom(){
-        Button remove = new Button("Remove");
-        Button apply = new Button("Apply");
+        final Button remove = new Button("Remove");
+        final Button apply = new Button("Apply");
 
         HBox space = new HBox();
         HBox.setHgrow(space, Priority.ALWAYS);
@@ -113,13 +125,8 @@ public class RuleComponent extends BorderPane {
 
         apply.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
-                Toggle active = group.getSelectedToggle();
-                if (active.getUserData() instanceof RuleTypes) {
-                    RuleTypes type = (RuleTypes) active.getUserData();
-                    int lev = level.getValue();
-                    rule.apply(type, lev);
-                    Footer.setStatus(rule.getSipCount() + "");
-                }
+                int result = applyAndCount();
+                sipCount.setText(result + " SIPs");
             }
         });
 
@@ -130,6 +137,17 @@ public class RuleComponent extends BorderPane {
         });
 
         setBottom(buttons);
+    }
+
+    private int applyAndCount(){
+        Toggle active = group.getSelectedToggle();
+        if (active.getUserData() instanceof RuleTypes) {
+            RuleTypes type = (RuleTypes) active.getUserData();
+            int lev = level.getValue();
+            rule.apply(type, lev);
+            Footer.setStatus(rule.getSipCount() + "");
+        }
+        return rule.getSipCount();
     }
 
 }
