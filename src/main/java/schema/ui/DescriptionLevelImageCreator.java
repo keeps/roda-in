@@ -42,7 +42,6 @@ public class DescriptionLevelImageCreator {
 
         final SnapshotParameters params = new SnapshotParameters();
         params.setFill(Color.TRANSPARENT);
-        final WritableImage snapshot = canvas.snapshot(params, null);
-        return snapshot;
+        return canvas.snapshot(params, null);
     }
 }

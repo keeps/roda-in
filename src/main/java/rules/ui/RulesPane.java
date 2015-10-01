@@ -39,7 +39,7 @@ public class RulesPane extends BorderPane {
 
         this.setTop(createRule);
         this.setCenter(listView);
-        this.minWidthProperty().bind(stage.widthProperty().multiply(0.2));
+        this.minWidthProperty().bind(stage.widthProperty().multiply(0.33));
     }
 
     private void createCreateRule(){
@@ -73,7 +73,6 @@ public class RulesPane extends BorderPane {
 
     private void createListView(){
         listView = new ListView<RuleComponent>();
-
         //Disable selection in listview
         listView.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {

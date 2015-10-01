@@ -25,8 +25,7 @@ public class RuleComponent extends BorderPane {
 
     public RuleComponent(SourceTreeDirectory sourcePath, SchemaNode descriptionObject){
         super();
-        setStyle("-fx-border-color: gray;");
-        setPadding(new Insets(0, 10, 0, 10));
+        setStyle("-fx-border-color: lightgray; -fx-border-width: 2px;");
 
         rule = new Rule(sourcePath, descriptionObject);
 
@@ -42,7 +41,7 @@ public class RuleComponent extends BorderPane {
         HBox hbox = new HBox();
         HBox.setHgrow(hbox, Priority.ALWAYS);
         hbox.setStyle("-fx-background-color: lightgray;");
-        hbox.setPadding(new Insets(5, 2, 2, 2));
+        hbox.setPadding(new Insets(5, 5, 5,5));
         pane.getChildren().add(hbox);
 
         Label source = new Label(rule.getFolderName());
@@ -54,7 +53,6 @@ public class RuleComponent extends BorderPane {
         descObj.setMinHeight(24);
         descObj.setFont(new Font("System", 14));
         descObj.setGraphic(new ImageView(rule.getSchemaNode().getImage()));
-        descObj.setContentDisplay(ContentDisplay.RIGHT);
         descObj.setTextAlignment(TextAlignment.LEFT);
 
         HBox space = new HBox();
@@ -67,23 +65,24 @@ public class RuleComponent extends BorderPane {
 
     private void createCenter(){
         GridPane gridCenter = new GridPane();
+        gridCenter.setPadding(new Insets(0,10,0,10));
         gridCenter.setHgap(10);
 
         ToggleGroup group = new ToggleGroup();
 
-        RadioButton porFicheiro = new RadioButton("1 SIP por ficheiro");
-        porFicheiro.setToggleGroup(group);
-        porFicheiro.setSelected(true);
+        RadioButton byFile = new RadioButton("1 SIP por ficheiro");
+        byFile.setToggleGroup(group);
+        byFile.setSelected(true);
 
-        RadioButton porPasta = new RadioButton("1 SIP por pasta até ao nível");
-        porPasta.setToggleGroup(group);
+        RadioButton byFolder = new RadioButton("1 SIP por pasta até ao nível");
+        byFolder.setToggleGroup(group);
 
         ObservableList<Integer> options = FXCollections.observableArrayList(0,1,2,3,4,5,6,7,8,9,10);
         ComboBox<Integer> level = new ComboBox<Integer>(options);
         level.setValue(3);
 
-        gridCenter.add(porFicheiro, 0, 1);
-        gridCenter.add(porPasta, 0, 2);
+        gridCenter.add(byFile, 0, 1);
+        gridCenter.add(byFolder, 0, 2);
         gridCenter.add(level, 1, 2);
 
         setCenter(gridCenter);

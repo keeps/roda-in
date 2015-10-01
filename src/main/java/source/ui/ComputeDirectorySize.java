@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 public class ComputeDirectorySize extends Thread {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(ComputeDirectorySize.class.getName());
     private final int UPDATEFREQUENCY = 500; //in milliseconds
-    private long filesCount = 0, size = 0;
+    private long filesCount = 0, directoryCount, size = 0;
     private FileExplorerPane ui;
     private long lastUIUpdate = 0;
     private String startPath;
@@ -24,17 +24,19 @@ public class ComputeDirectorySize extends Thread {
 
     @Override
     public void run() {
-        Path path = Paths.get(startPath);
+        final Path path = Paths.get(startPath);
 
         try {
             Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     size += attrs.size();
-                    filesCount++;
+                    if(Files.isDirectory(file))
+                        directoryCount++;
+                    else filesCount++;
                     long now = System.currentTimeMillis();
                     if(now - lastUIUpdate > UPDATEFREQUENCY) {
-                        ui.updateSize(filesCount, size);
+                        ui.updateSize(filesCount, directoryCount, size);
                         lastUIUpdate = now;
                     }
                     //terminate if the thread has been interrupted
@@ -54,6 +56,6 @@ public class ComputeDirectorySize extends Thread {
             log.error(e.getMessage());
         }
         //update the UI with the final values
-        ui.updateSize(filesCount, size);
+        ui.updateSize(filesCount, directoryCount, size);
     }
 }
