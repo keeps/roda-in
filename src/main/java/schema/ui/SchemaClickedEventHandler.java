@@ -25,7 +25,7 @@ public class SchemaClickedEventHandler implements EventHandler<MouseEvent> {
             TreeItem<String> item = treeView.getSelectionModel().getSelectedItem();
             SchemaNode node = (SchemaNode) item;
             if(node != null)
-                spane.updateMetadata(node.dob);
+                spane.updateMetadata(node);
         }
     }
 }

@@ -1,5 +1,6 @@
 package schema.ui;
 
+import java.util.HashMap;
 import java.util.ResourceBundle;
 
 import javafx.scene.control.TreeItem;
@@ -8,6 +9,7 @@ import javafx.scene.image.ImageView;
 
 import org.slf4j.LoggerFactory;
 
+import rules.Rule;
 import schema.DescriptionObject;
 
 /**
@@ -16,11 +18,13 @@ import schema.DescriptionObject;
 public class SchemaNode extends TreeItem<String> {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(SchemaNode.class.getName());
     public DescriptionObject dob;
+    private HashMap<String, Integer> rules;
     private Image icon;
 
     public SchemaNode(DescriptionObject dobject) {
         super(dobject.getTitle());
         dob = dobject;
+        rules = new HashMap<String, Integer>();
 
         ResourceBundle hierarchyConfig = ResourceBundle.getBundle("properties/roda-description-levels-hierarchy");
         String category = hierarchyConfig.getString("category." + dobject.getDescriptionlevel());
@@ -35,6 +39,25 @@ public class SchemaNode extends TreeItem<String> {
             SchemaNode child = new SchemaNode(obj);
             this.getChildren().add(child);
         }
+    }
+
+    public void addRule(Rule r){
+        int count = r.getSipCount();
+        String hash = "" + r.hashCode();
+        rules.put(hash, count);
+        setValue(dob.getTitle() + "  (" + getSipCount() + " items)");
+    }
+
+    public void removeRule(Rule r){
+        String hash = "" + r.hashCode();
+        rules.remove(hash);
+        setValue(dob.getTitle() + "  (" + getSipCount() + " items)");
+    }
+
+    public int getSipCount(){
+        int result = 0;
+        for(int i: rules.values()) result += i;
+        return result;
     }
 
     public Image getImage(){return icon;}

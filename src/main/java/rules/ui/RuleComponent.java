@@ -132,6 +132,8 @@ public class RuleComponent extends BorderPane {
 
         remove.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
+                //remove the count on the associated schema node
+                rule.getSchemaNode().removeRule(rule);
                 Main.removeRule(toRemove);
             }
         });

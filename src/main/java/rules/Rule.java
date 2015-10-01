@@ -46,7 +46,7 @@ public class Rule {
     }
 
     public String getDescObjName(){
-        return schemaNode.getValue();
+        return schemaNode.dob.getTitle();
     }
 
     public int getSipCount() {
@@ -66,6 +66,8 @@ public class Rule {
                 previewSipPerFolder();
                 break;
         }
+
+        schemaNode.addRule(this);
     }
 
     private void previewSipPerFile(){
