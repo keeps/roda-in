@@ -60,8 +60,8 @@ public class RulesPane extends BorderPane {
             public void handle(ActionEvent e) {
                 SourceTreeItem source = Main.getSourceSelectedItem();
                 SchemaNode descObj = Main.getSchemaSelectedItem();
-                if(source != null && descObj != null) { //both trees need to have 1 element selected
-                    if(source instanceof SourceTreeDirectory) { //the source needs to be a directory
+                if (source != null && descObj != null) { //both trees need to have 1 element selected
+                    if (source instanceof SourceTreeDirectory) { //the source needs to be a directory
                         RuleComponent ruleC = new RuleComponent((SourceTreeDirectory) source, descObj);
                         listView.getItems().add(ruleC);
                     }
@@ -83,6 +83,9 @@ public class RulesPane extends BorderPane {
                 });
             }
         });
+    }
 
+    public void removeChild(RuleComponent rule){
+        listView.getItems().remove(rule);
     }
 }

@@ -16,6 +16,7 @@ import javafx.stage.Stage;
 
 import org.slf4j.LoggerFactory;
 
+import rules.ui.RuleComponent;
 import rules.ui.RulesPane;
 import schema.ui.SchemaNode;
 import schema.ui.SchemaPane;
@@ -29,7 +30,7 @@ public class Main extends Application {
     private Stage stage;
 
     private static FileExplorerPane previewExplorer;
-    private static BorderPane rulesPane;
+    private static RulesPane rulesPane;
     private static SchemaPane schemaPane;
 
     public static void main(String[] args) {
@@ -87,5 +88,8 @@ public class Main extends Application {
     }
     public static SourceTreeItem getSourceSelectedItem(){
         return previewExplorer.getSelectedItem();
+    }
+    public static void removeRule(RuleComponent rule){
+        rulesPane.removeChild(rule);
     }
 }

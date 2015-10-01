@@ -1,5 +1,6 @@
 package rules.ui;
 
+import core.Main;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -25,6 +26,7 @@ import core.Footer;
  */
 public class RuleComponent extends BorderPane {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(RuleComponent.class.getName());
+    private RuleComponent toRemove = this; //we need a pointer to this object so we can send it when the "remove" button is pressed
     private Rule rule;
     private ToggleGroup group;
     private ComboBox<Integer> level;
@@ -47,7 +49,7 @@ public class RuleComponent extends BorderPane {
         HBox hbox = new HBox();
         HBox.setHgrow(hbox, Priority.ALWAYS);
         hbox.setStyle("-fx-background-color: lightgray;");
-        hbox.setPadding(new Insets(5, 5, 5,5));
+        hbox.setPadding(new Insets(5, 5, 5, 5));
         pane.getChildren().add(hbox);
 
         Label source = new Label(rule.getFolderName());
@@ -118,6 +120,12 @@ public class RuleComponent extends BorderPane {
                     rule.apply(type, lev);
                     Footer.setStatus(rule.getSipCount() + "");
                 }
+            }
+        });
+
+        remove.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent e) {
+                Main.removeRule(toRemove);
             }
         });
 
