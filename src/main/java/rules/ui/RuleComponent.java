@@ -38,7 +38,7 @@ public class RuleComponent extends BorderPane implements Observer {
 
     public RuleComponent(SourceTreeDirectory sourcePath, SchemaNode descriptionObject){
         super();
-        setStyle("-fx-border-color: lightgray; -fx-border-width: 2px;");
+        setStyle("-fx-border-color: lightgray; -fx-border-width: 2px; -fx-background-color: white;");
 
         rule = new Rule(sourcePath, descriptionObject);
         rule.addObserver(this);

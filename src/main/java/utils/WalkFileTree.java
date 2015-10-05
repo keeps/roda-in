@@ -35,6 +35,15 @@ public class WalkFileTree extends Thread{
                 }
 
                 @Override
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                    handler.preVisitDirectory(dir, attrs);
+                    //terminate if the thread has been interrupted
+                    if (Thread.interrupted())
+                        return FileVisitResult.TERMINATE;
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
                 public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
                     handler.postVisitDirectory(dir);
                     //terminate if the thread has been interrupted

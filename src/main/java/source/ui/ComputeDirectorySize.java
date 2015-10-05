@@ -18,7 +18,7 @@ public class ComputeDirectorySize extends Observable implements TreeWalkHandler 
 
     public ComputeDirectorySize(){ }
 
-    public void preVisitDirectory(Path path) {}
+    public void preVisitDirectory(Path path, BasicFileAttributes attrs) {}
 
     public void postVisitDirectory(Path path) {
         directoryCount++;

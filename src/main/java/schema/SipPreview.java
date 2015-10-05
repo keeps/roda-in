@@ -12,9 +12,9 @@ public class SipPreview {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(SipPreview.class.getName());
     private String name;
     private String path;
-    private Map<String, TreeNode> files;
+    private TreeNode files;
 
-    public SipPreview(String name, String path, Map<String, TreeNode> files){
+    public SipPreview(String name, String path, TreeNode files){
         this.name = name;
         this.path = path;
         this.files = files;
@@ -28,7 +28,7 @@ public class SipPreview {
         return path;
     }
 
-    public Map<String, TreeNode> getFiles() {
+    public TreeNode getFiles() {
         return files;
     }
 

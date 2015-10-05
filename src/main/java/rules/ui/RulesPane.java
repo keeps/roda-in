@@ -74,15 +74,15 @@ public class RulesPane extends BorderPane {
     private void createListView(){
         listView = new ListView<RuleComponent>();
         //Disable selection in listview
-        listView.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
-                Platform.runLater(new Runnable() {
-                    public void run() {
-                        listView.getSelectionModel().select(-1);
-                    }
-                });
-            }
-        });
+//        listView.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+//            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+//                Platform.runLater(new Runnable() {
+//                    public void run() {
+//                        listView.getSelectionModel().select(-1);
+//                    }
+//                });
+//            }
+//        });
     }
 
     public void removeChild(RuleComponent rule){

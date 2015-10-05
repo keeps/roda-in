@@ -33,7 +33,6 @@ public class Rule extends Observable implements Observer {
     private WalkFileTree treeWalker;
     private Image icon;
     private int sipCount = 0, added = 0;
-    private int level;
 
     public Rule(SourceTreeDirectory source, SchemaNode schemaNode){
         this.source = source;
@@ -41,7 +40,7 @@ public class Rule extends Observable implements Observer {
         this.addObserver(schemaNode);
 
         ResourceBundle hierarchyConfig = ResourceBundle.getBundle("properties/roda-description-levels-hierarchy");
-        String category = hierarchyConfig.getString("category.file");
+        String category = hierarchyConfig.getString("category.item");
         String unicode = hierarchyConfig.getString("icon." + category);
 
         DescriptionLevelImageCreator dlic = new DescriptionLevelImageCreator(unicode);
@@ -80,7 +79,6 @@ public class Rule extends Observable implements Observer {
 
     public void apply(RuleTypes type, int level){
         this.type = type;
-        this.level = level;
         sipCount = 0; added = 0;
         sips = new HashSet<SipPreview>();
 
@@ -91,10 +89,13 @@ public class Rule extends Observable implements Observer {
                 sipCreator = creator;
                 treeWalker = new WalkFileTree(source.getPath(), sipCreator);
                 treeWalker.start();
-
                 break;
             case SIPPERFOLDER:
-                //previewSipPerFolder();
+                SipPerFolderHandler perFolder = new SipPerFolderHandler(source.getPath(), level);
+                perFolder.addObserver(this);
+                sipCreator = perFolder;
+                treeWalker = new WalkFileTree(source.getPath(), sipCreator);
+                treeWalker.start();
                 break;
         }
 
@@ -109,33 +110,15 @@ public class Rule extends Observable implements Observer {
                 added++;
                 sipNodes.add(new SipPreviewNode(handler.getNext(), icon));
             }
+        }else if(o instanceof SipPerFolderHandler){
+            SipPerFolderHandler handler = (SipPerFolderHandler) o;
+            sipCount = handler.getCount();
+            while(handler.hasNext() && added < 100) {
+                added++;
+                sipNodes.add(new SipPreviewNode(handler.getNext(), icon));
+            }
         }
         setChanged();
         notifyObservers();
-    }
-
-    private void previewSipPerFolder(){
-        final Path path = Paths.get(source.getPath());
-        try {
-            Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
-                @Override
-                public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
-                    //every directory is a sub-directory of the start path, so if we remove it, we get the relative path to it
-                    String relative = dir.toString().replace(path.toString(), "");
-                    Path relativePath = Paths.get(relative);
-                    int relativeLevel = relativePath.getNameCount();
-
-                    if(relativeLevel <= level)
-                        sipCount++;
-                    return FileVisitResult.CONTINUE;
-                }
-                @Override
-                public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-                    return FileVisitResult.CONTINUE;
-                }
-            });
-        } catch (IOException e) {
-            log.error(e.getMessage());
-        }
     }
 }

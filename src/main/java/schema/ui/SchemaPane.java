@@ -1,5 +1,9 @@
 package schema.ui;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -14,12 +18,10 @@ import javafx.stage.Stage;
 
 import org.slf4j.LoggerFactory;
 
+import rules.TreeNode;
 import schema.ClassificationSchema;
 import schema.DescriptionObject;
 import core.Footer;
-import source.ui.items.SourceTreeFile;
-
-import java.nio.file.Paths;
 
 /**
  * Created by adrapereira on 28-09-2015.
@@ -134,10 +136,24 @@ public class SchemaPane extends BorderPane {
 
         l_name.setText(node.getValue());
         sipRoot.getChildren().clear();
-        for(String s: node.getSip().getFiles().keySet()){
-            SourceTreeFile file = new SourceTreeFile(Paths.get(s));
-            sipRoot.getChildren().add(file);
+        TreeNode startingNode = node.getSip().getFiles();
+        TreeItem<Object> startingItem = rec_CreateSipContent(startingNode);
+        startingItem.setExpanded(true);
+        sipRoot.getChildren().add(startingItem);
+    }
+
+    private TreeItem<Object> rec_CreateSipContent(TreeNode node){
+        TreeItem<Object> result;
+        Path path = Paths.get(node.getPath());
+        if(Files.isDirectory(path))
+            result = new SipContentDirectory(path);
+        else return new SipContentFile(path);
+
+        for(String key: node.getKeys()){
+            TreeItem<Object> temp = rec_CreateSipContent(node.get(key));
+            result.getChildren().add(temp);
         }
+        return result;
     }
     
     public void createSipMetadata(){
