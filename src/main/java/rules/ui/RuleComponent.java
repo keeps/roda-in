@@ -1,5 +1,6 @@
 package rules.ui;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -19,13 +20,15 @@ import rules.Rule;
 import rules.RuleTypes;
 import schema.ui.SchemaNode;
 import source.ui.items.SourceTreeDirectory;
-import core.Footer;
 import core.Main;
+
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Created by adrapereira on 28-09-2015.
  */
-public class RuleComponent extends BorderPane {
+public class RuleComponent extends BorderPane implements Observer {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(RuleComponent.class.getName());
     private RuleComponent toRemove = this; //we need a pointer to this object so we can send it when the "remove" button is pressed
     private Rule rule;
@@ -38,6 +41,7 @@ public class RuleComponent extends BorderPane {
         setStyle("-fx-border-color: lightgray; -fx-border-width: 2px;");
 
         rule = new Rule(sourcePath, descriptionObject);
+        rule.addObserver(this);
 
         createTop();
         createCenter();
@@ -122,11 +126,7 @@ public class RuleComponent extends BorderPane {
 
         apply.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
-                int result = applyAndCount();
-                String text = result + " ";
-                if(result == 1) text += "item";
-                else text += "items";
-                sipCount.setText(text);
+                apply();
             }
         });
 
@@ -141,15 +141,24 @@ public class RuleComponent extends BorderPane {
         setBottom(buttons);
     }
 
-    private int applyAndCount(){
+    public void update(Observable o, Object arg) {
+        if(o == rule){
+            Platform.runLater(new Runnable() {
+                public void run() {
+                    sipCount.setText(rule.getSipCount() + " items");
+                }
+            });
+
+        }
+    }
+
+    private void apply(){
         Toggle active = group.getSelectedToggle();
         if (active.getUserData() instanceof RuleTypes) {
             RuleTypes type = (RuleTypes) active.getUserData();
             int lev = level.getValue();
             rule.apply(type, lev);
-            Footer.setStatus(rule.getSipCount() + "");
         }
-        return rule.getSipCount();
     }
 
 }

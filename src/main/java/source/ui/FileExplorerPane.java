@@ -104,7 +104,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
                 String pathString = rootCasted.getPath();
                 Path path = Paths.get(pathString);
                 setFileExplorerRoot(path, new_val);
-            }
+                }
         });
     }
 
@@ -241,7 +241,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
                 result.append(", ");
                 result.append(Utils.formatSize(size));
                 l_content.setText(result.toString());
-            }
+                }
         });
     }
 
