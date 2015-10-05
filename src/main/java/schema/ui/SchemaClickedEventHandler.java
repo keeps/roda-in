@@ -27,6 +27,9 @@ public class SchemaClickedEventHandler implements EventHandler<MouseEvent> {
                 SchemaNode node = (SchemaNode) item;
                 if (node != null)
                     spane.updateMetadata(node);
+            }else if(item instanceof SipPreviewNode){
+                SipPreviewNode node = (SipPreviewNode)item;
+                spane.updateMetadata(node);
             }
         }
     }

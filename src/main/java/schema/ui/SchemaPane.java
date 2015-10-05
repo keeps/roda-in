@@ -5,6 +5,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
@@ -16,6 +17,9 @@ import org.slf4j.LoggerFactory;
 import schema.ClassificationSchema;
 import schema.DescriptionObject;
 import core.Footer;
+import source.ui.items.SourceTreeFile;
+
+import java.nio.file.Paths;
 
 /**
  * Created by adrapereira on 28-09-2015.
@@ -24,9 +28,14 @@ public class SchemaPane extends BorderPane {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(SchemaPane.class.getName());
     private TreeView<String> treeView;
     private HBox refresh;
-    private GridPane descObjsMetadata, emptyGrid;
-    private Label l_id, l_title, l_parentId, l_level, l_descrpLevel, l_sipsCount, l_sipsSize;
+    private GridPane descObjsMetadata, sipMetadata, emptyGrid;
     private SplitPane split;
+    //descObjsMetadata
+    private Label l_id, l_title, l_parentId, l_level, l_descrpLevel, l_sipsCount, l_sipsSize;
+    //sipMetadata
+    private Label l_name;
+    private TreeView<Object> sipFiles;
+    private TreeItem<Object> sipRoot;
 
     public SchemaPane(Stage stage){
         super();
@@ -94,6 +103,7 @@ public class SchemaPane extends BorderPane {
 
     private void createMetadata(){
         createDescObjsMetadata();
+        createSipMetadata();
     }
 
     public SchemaNode getSelectedItem(){
@@ -103,6 +113,7 @@ public class SchemaPane extends BorderPane {
     }
     public void updateMetadata(SchemaNode node){
         split.getItems().remove(emptyGrid);
+        split.getItems().remove(sipMetadata);
         if(!split.getItems().contains(descObjsMetadata))
             split.getItems().add(descObjsMetadata);
 
@@ -113,6 +124,56 @@ public class SchemaPane extends BorderPane {
         l_parentId.setText(dobject.getParentId());
         l_title.setText(dobject.getTitle());
         l_sipsCount.setText(node.getSipCount() + " items");
+    }
+
+    public void updateMetadata(SipPreviewNode node){
+        split.getItems().remove(emptyGrid);
+        split.getItems().remove(descObjsMetadata);
+        if(!split.getItems().contains(sipMetadata))
+            split.getItems().add(sipMetadata);
+
+        l_name.setText(node.getValue());
+        sipRoot.getChildren().clear();
+        for(String s: node.getSip().getFiles().keySet()){
+            SourceTreeFile file = new SourceTreeFile(Paths.get(s));
+            sipRoot.getChildren().add(file);
+        }
+    }
+    
+    public void createSipMetadata(){
+        sipMetadata = new GridPane();
+        sipMetadata.setAlignment(Pos.TOP_LEFT);
+        sipMetadata.setHgap(10);
+        sipMetadata.setVgap(10);
+        sipMetadata.setPadding(new Insets(25, 25, 25, 25));
+
+        Label name = new Label("Name:");
+        name.setFont(Font.font("System", FontWeight.BOLD, 14));
+        sipMetadata.add(name, 0, 1);
+        l_name = new Label();
+        sipMetadata.add(l_name, 1, 1);
+
+        Label content = new Label("Content:");
+        content.setFont(Font.font("System", FontWeight.BOLD, 14));
+        GridPane.setValignment(content, VPos.BASELINE);
+        sipMetadata.add(content, 0, 2);
+
+        //create tree pane
+        VBox treeBox=new VBox();
+        treeBox.setPadding(new Insets(10, 10, 10, 10));
+        treeBox.setSpacing(10);
+
+        sipFiles = new TreeView<Object>();
+        // add everything to the tree pane
+        treeBox.getChildren().addAll(sipFiles);
+        VBox.setVgrow(sipFiles, Priority.ALWAYS);
+
+        sipRoot = new TreeItem<Object>();
+        sipRoot.setExpanded(true);
+        sipFiles.setRoot(sipRoot);
+        sipFiles.setShowRoot(false);
+
+        sipMetadata.add(treeBox, 1, 2);
     }
 
     private void createDescObjsMetadata(){
