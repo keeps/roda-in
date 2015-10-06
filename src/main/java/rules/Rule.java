@@ -13,8 +13,8 @@ import schema.SipPreview;
 import schema.ui.DescriptionLevelImageCreator;
 import schema.ui.SipPreviewNode;
 import source.ui.items.SourceTreeDirectory;
+import utils.RandomIdGenerator;
 import utils.TreeVisitor;
-import utils.WalkFileTree;
 
 /**
  * Created by adrapereira on 29-09-2015.
@@ -25,13 +25,14 @@ public class Rule extends Observable implements Observer {
     private RuleTypes type;
     private HashSet<SipPreview> sips;
     private HashSet<SipPreviewNode> sipNodes = new HashSet<SipPreviewNode>();
-    private TreeVisitor sipCreator;
-    private WalkFileTree treeWalker;
+    private TreeVisitor visitor;
     private Image icon;
     private int sipCount = 0, added = 0;
+    private String id;
 
     public Rule(SourceTreeDirectory source){
         this.source = source;
+        id = RandomIdGenerator.GetBase62(5);
 
         ResourceBundle hierarchyConfig = ResourceBundle.getBundle("properties/roda-description-levels-hierarchy");
         String category = hierarchyConfig.getString("category.item");
@@ -45,6 +46,10 @@ public class Rule extends Observable implements Observer {
         return source;
     }
 
+    public String getId() {
+        return id;
+    }
+
     public void setSource(SourceTreeDirectory source) {
         this.source = source;
     }
@@ -53,6 +58,7 @@ public class Rule extends Observable implements Observer {
         return source.getValue().toString();
     }
 
+    public TreeVisitor getVisitor(){return visitor;}
     public int getSipCount() {
         return sipCount;
     }
@@ -67,22 +73,18 @@ public class Rule extends Observable implements Observer {
 
         switch (type){
             case SIPPERFILE:
-                SipPerFileVisitor visitorFile = new SipPerFileVisitor(source.getPath());
+                SipPerFileVisitor visitorFile = new SipPerFileVisitor(source.getPath(), id);
                 visitorFile.addObserver(this);
                 visitor = visitorFile;
-                /*sipCreator = creator;
-                treeWalker = new WalkFileTree(source.getPath(), sipCreator);
-                treeWalker.start();*/
                 break;
             default:
             case SIPPERFOLDER:
-                SipPerFolderVisitor visitorFolder = new SipPerFolderVisitor(source.getPath(), level);
+                SipPerFolderVisitor visitorFolder = new SipPerFolderVisitor(source.getPath(), id, level);
                 visitorFolder.addObserver(this);
                 visitor = visitorFolder;
-                /*treeWalker = new WalkFileTree(source.getPath(), sipCreator);
-                treeWalker.start();*/
                 break;
         }
+        this.visitor = visitor;
         return visitor;
     }
 

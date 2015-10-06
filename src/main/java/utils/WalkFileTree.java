@@ -28,41 +28,38 @@ public class WalkFileTree extends Thread{
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     handler.visitFile(file, attrs);
-                    //terminate if the thread has been interrupted
-                    if (Thread.interrupted())
-                        return FileVisitResult.TERMINATE;
-                    return FileVisitResult.CONTINUE;
+                    return isTerminated();
                 }
 
                 @Override
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
                     handler.preVisitDirectory(dir, attrs);
-                    //terminate if the thread has been interrupted
-                    if (Thread.interrupted())
-                        return FileVisitResult.TERMINATE;
-                    return FileVisitResult.CONTINUE;
+                    return isTerminated();
                 }
 
                 @Override
                 public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
                     handler.postVisitDirectory(dir);
-                    //terminate if the thread has been interrupted
-                    if (Thread.interrupted())
-                        return FileVisitResult.TERMINATE;
-                    return FileVisitResult.CONTINUE;
+                    return isTerminated();
                 }
 
                 @Override
                 public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
                     handler.visitFileFailed(file);
-                    if (Thread.interrupted())
-                        return FileVisitResult.TERMINATE;
-                    return FileVisitResult.CONTINUE;
+                    return isTerminated();
                 }
             });
         } catch (IOException e) {
             log.error(e.getMessage());
         }
         handler.end();
+    }
+
+    private FileVisitResult isTerminated(){
+        //terminate if the thread has been interrupted
+        if (Thread.interrupted()) {
+            handler.end();
+            return FileVisitResult.TERMINATE;
+        }return FileVisitResult.CONTINUE;
     }
 }

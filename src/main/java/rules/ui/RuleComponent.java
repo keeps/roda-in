@@ -1,5 +1,8 @@
 package rules.ui;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,13 +22,11 @@ import org.slf4j.LoggerFactory;
 import rules.Rule;
 import rules.RuleTypes;
 import rules.VisitorStack;
+import rules.VisitorState;
 import schema.ui.SchemaNode;
 import source.ui.items.SourceTreeDirectory;
-import core.Main;
 import utils.TreeVisitor;
-
-import java.util.Observable;
-import java.util.Observer;
+import core.Main;
 
 /**
  * Created by adrapereira on 28-09-2015.
@@ -39,12 +40,16 @@ public class RuleComponent extends BorderPane implements Observer {
     private ComboBox<Integer> level;
     private Label sipCount;
 
+    private HBox buttons;
+    private Button apply, remove, cancel;
+
     private VisitorStack visitors;
 
     public RuleComponent(SourceTreeDirectory sourcePath, SchemaNode schemaNode, VisitorStack visitors){
         super();
         schema = schemaNode;
         this.visitors = visitors;
+        this.visitors.addObserver(this);
         setStyle("-fx-border-color: lightgray; -fx-border-width: 2px; -fx-background-color: white;");
 
         rule = new Rule(sourcePath);
@@ -122,20 +127,23 @@ public class RuleComponent extends BorderPane implements Observer {
     }
 
     private void createBottom(){
-        final Button remove = new Button("Remove");
-        final Button apply = new Button("Apply");
+        remove = new Button("Remove");
+        apply = new Button("Apply");
 
         HBox space = new HBox();
         HBox.setHgrow(space, Priority.ALWAYS);
 
-        HBox buttons = new HBox();
+        buttons = new HBox();
         buttons.setPadding(new Insets(10, 10, 10, 10));
         buttons.setSpacing(10);
         buttons.setAlignment(Pos.TOP_RIGHT);
         buttons.getChildren().addAll(remove, space, apply);
 
+
         apply.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
+                apply.setDisable(true);
+                remove.setText("Cancel");
                 apply();
                 schema.addRule(rule);
             }
@@ -143,9 +151,17 @@ public class RuleComponent extends BorderPane implements Observer {
 
         remove.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
-                //remove the count on the associated schema node
-                schema.removeRule(rule);
-                Main.removeRule(toRemove);
+                if(remove.getText().contains("Cancel")){
+                    boolean cancelled = visitors.cancel(rule.getVisitor());
+                    if(cancelled) {
+                        apply.setDisable(false);
+                        remove.setText("Remove");
+                    }
+                }else {
+                    //remove the count on the associated schema node
+                    schema.removeRule(rule);
+                    Main.removeRule(toRemove);
+                }
             }
         });
 
@@ -159,6 +175,22 @@ public class RuleComponent extends BorderPane implements Observer {
                     sipCount.setText(rule.getSipCount() + " items");
                 }
             });
+        }else if(o == visitors){
+            VisitorState state = visitors.isDone(rule.getId());
+            switch (state){
+                case VISITOR_DONE:
+                    apply.setDisable(false);
+                    remove.setText("Remove");
+                    break;
+                case VISITOR_NOTSUBMITTED:
+                    break;
+                case VISITOR_QUEUED:
+                    remove.setText("Cancel");
+                    apply.setDisable(true);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 

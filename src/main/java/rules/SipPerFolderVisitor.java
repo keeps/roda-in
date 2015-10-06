@@ -27,12 +27,12 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor {
     private Stack<TreeNode> nodes;
     private String id;
 
-    public SipPerFolderVisitor(String startPath, int maxLevel){
+    public SipPerFolderVisitor(String startPath, String id, int maxLevel){
         this.startPath = startPath;
         this.maxLevel = maxLevel;
         sips = new ArrayList<SipPreview>();
         nodes = new Stack<TreeNode>();
-        id = RandomIdGenerator.GetBase62(5);
+        this.id = id;
     }
 
     public ArrayList<SipPreview> getSips() {return sips;}

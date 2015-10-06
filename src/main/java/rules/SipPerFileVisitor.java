@@ -8,7 +8,6 @@ import java.util.Observable;
 import org.slf4j.LoggerFactory;
 
 import schema.SipPreview;
-import utils.RandomIdGenerator;
 import utils.TreeVisitor;
 
 /**
@@ -23,10 +22,10 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor {
     private long lastUIUpdate = 0;
     private String id;
 
-    public SipPerFileVisitor(String startPath){
+    public SipPerFileVisitor(String startPath, String id){
         this.startPath = startPath;
         sips = new ArrayList<SipPreview>();
-        id = RandomIdGenerator.GetBase62(5);
+        this.id = id;
     }
 
     public ArrayList<SipPreview> getSips() {return sips;}

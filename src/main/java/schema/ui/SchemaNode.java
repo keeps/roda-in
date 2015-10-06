@@ -48,17 +48,19 @@ public class SchemaNode extends TreeItem<String> implements Observer {
             Platform.runLater(new Runnable() {
                 public void run() {
                     Rule rule = (Rule) o;
-                    String hash = "" + rule.hashCode();
+                    String id = rule.getId();
+
                     //replace sips from this rule
-                    if(sips.get(hash) != null)
-                        getChildren().removeAll(sips.get(hash));
-                    sips.put(hash, rule.getSipNodes());
+                    if(sips.get(id) != null) {
+                        getChildren().removeAll(sips.get(id));
+                    }
+                    sips.put(id, rule.getSipNodes());
 
                     getChildren().addAll(rule.getSipNodes());
 
                     //set the title with the sip count
                     int count = rule.getSipCount();
-                    rules.put(hash, count);
+                    rules.put(id, count);
                     setValue(dob.getTitle() + "  (" + getSipCount() + " items)");
                 }
             });
@@ -67,17 +69,18 @@ public class SchemaNode extends TreeItem<String> implements Observer {
 
     public void addRule(Rule r){
         int count = r.getSipCount();
-        String hash = "" + r.hashCode();
-        rules.put(hash, count);
+        String id = r.getId();
+        rules.put(id, count);
         setValue(dob.getTitle() + "  (" + getSipCount() + " items)");
     }
 
     public void removeRule(Rule r){
-        String hash = "" + r.hashCode();
-        if(sips.get(hash) != null)
-            getChildren().removeAll(sips.get(hash));
-        rules.remove(hash);
-        sips.remove(hash);
+        String id = r.getId();
+        if(sips.get(id) != null) {
+            getChildren().removeAll(sips.get(id));
+        }
+        rules.remove(id);
+        sips.remove(id);
 
         String text = dob.getTitle();
         int count = getSipCount();
