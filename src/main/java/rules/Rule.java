@@ -1,7 +1,5 @@
 package rules;
 
-import java.io.IOException;
-import java.nio.file.*;
 import java.util.HashSet;
 import java.util.Observable;
 import java.util.Observer;
@@ -13,10 +11,9 @@ import org.slf4j.LoggerFactory;
 
 import schema.SipPreview;
 import schema.ui.DescriptionLevelImageCreator;
-import schema.ui.SchemaNode;
 import schema.ui.SipPreviewNode;
 import source.ui.items.SourceTreeDirectory;
-import utils.TreeWalkHandler;
+import utils.TreeVisitor;
 import utils.WalkFileTree;
 
 /**
@@ -25,19 +22,16 @@ import utils.WalkFileTree;
 public class Rule extends Observable implements Observer {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(Rule.class.getName());
     private SourceTreeDirectory source;
-    private SchemaNode schemaNode;
     private RuleTypes type;
     private HashSet<SipPreview> sips;
     private HashSet<SipPreviewNode> sipNodes = new HashSet<SipPreviewNode>();
-    private TreeWalkHandler sipCreator;
+    private TreeVisitor sipCreator;
     private WalkFileTree treeWalker;
     private Image icon;
     private int sipCount = 0, added = 0;
 
-    public Rule(SourceTreeDirectory source, SchemaNode schemaNode){
+    public Rule(SourceTreeDirectory source){
         this.source = source;
-        this.schemaNode = schemaNode;
-        this.addObserver(schemaNode);
 
         ResourceBundle hierarchyConfig = ResourceBundle.getBundle("properties/roda-description-levels-hierarchy");
         String category = hierarchyConfig.getString("category.item");
@@ -55,20 +49,8 @@ public class Rule extends Observable implements Observer {
         this.source = source;
     }
 
-    public SchemaNode getSchemaNode() {
-        return schemaNode;
-    }
-
-    public void setSchemaNode(SchemaNode schemaNode) {
-        this.schemaNode = schemaNode;
-    }
-
     public String getFolderName(){
         return source.getValue().toString();
-    }
-
-    public String getDescObjName(){
-        return schemaNode.dob.getTitle();
     }
 
     public int getSipCount() {
@@ -77,45 +59,47 @@ public class Rule extends Observable implements Observer {
 
     public HashSet<SipPreviewNode> getSipNodes(){return sipNodes;}
 
-    public void apply(RuleTypes type, int level){
+    public TreeVisitor apply(RuleTypes type, int level){
         this.type = type;
         sipCount = 0; added = 0;
         sips = new HashSet<SipPreview>();
+        TreeVisitor visitor;
 
         switch (type){
             case SIPPERFILE:
-                SipPerFileHandler creator = new SipPerFileHandler(source.getPath());
-                creator.addObserver(this);
-                sipCreator = creator;
+                SipPerFileVisitor visitorFile = new SipPerFileVisitor(source.getPath());
+                visitorFile.addObserver(this);
+                visitor = visitorFile;
+                /*sipCreator = creator;
                 treeWalker = new WalkFileTree(source.getPath(), sipCreator);
-                treeWalker.start();
+                treeWalker.start();*/
                 break;
+            default:
             case SIPPERFOLDER:
-                SipPerFolderHandler perFolder = new SipPerFolderHandler(source.getPath(), level);
-                perFolder.addObserver(this);
-                sipCreator = perFolder;
-                treeWalker = new WalkFileTree(source.getPath(), sipCreator);
-                treeWalker.start();
+                SipPerFolderVisitor visitorFolder = new SipPerFolderVisitor(source.getPath(), level);
+                visitorFolder.addObserver(this);
+                visitor = visitorFolder;
+                /*treeWalker = new WalkFileTree(source.getPath(), sipCreator);
+                treeWalker.start();*/
                 break;
         }
-
-        schemaNode.addRule(this);
+        return visitor;
     }
 
     public void update(Observable o, Object arg) {
-        if(o instanceof SipPerFileHandler){
-            SipPerFileHandler handler = (SipPerFileHandler) o;
-            sipCount = handler.getCount();
-            while(handler.hasNext() && added < 100){
+        if(o instanceof SipPerFileVisitor){
+            SipPerFileVisitor visitor = (SipPerFileVisitor) o;
+            sipCount = visitor.getCount();
+            while(visitor.hasNext() && added < 100){
                 added++;
-                sipNodes.add(new SipPreviewNode(handler.getNext(), icon));
+                sipNodes.add(new SipPreviewNode(visitor.getNext(), icon));
             }
-        }else if(o instanceof SipPerFolderHandler){
-            SipPerFolderHandler handler = (SipPerFolderHandler) o;
-            sipCount = handler.getCount();
-            while(handler.hasNext() && added < 100) {
+        }else if(o instanceof SipPerFolderVisitor){
+            SipPerFolderVisitor visitor = (SipPerFolderVisitor) o;
+            sipCount = visitor.getCount();
+            while(visitor.hasNext() && added < 100) {
                 added++;
-                sipNodes.add(new SipPreviewNode(handler.getNext(), icon));
+                sipNodes.add(new SipPreviewNode(visitor.getNext(), icon));
             }
         }
         setChanged();

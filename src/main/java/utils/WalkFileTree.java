@@ -12,9 +12,9 @@ import java.nio.file.attribute.BasicFileAttributes;
 public class WalkFileTree extends Thread{
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(WalkFileTree.class.getName());
     private String startPath;
-    private TreeWalkHandler handler;
+    private TreeVisitor handler;
 
-    public WalkFileTree(String startPath, TreeWalkHandler handler){
+    public WalkFileTree(String startPath, TreeVisitor handler){
         this.startPath = startPath;
         this.handler = handler;
     }

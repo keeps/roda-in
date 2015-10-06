@@ -8,22 +8,25 @@ import java.util.Observable;
 import org.slf4j.LoggerFactory;
 
 import schema.SipPreview;
-import utils.TreeWalkHandler;
+import utils.RandomIdGenerator;
+import utils.TreeVisitor;
 
 /**
  * Created by adrapereira on 05-10-2015.
  */
-public class SipPerFileHandler extends Observable implements TreeWalkHandler {
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(SipPerFileHandler.class.getName());
+public class SipPerFileVisitor extends Observable implements TreeVisitor {
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(SipPerFileVisitor.class.getName());
     private final int UPDATEFREQUENCY = 500; //in milliseconds
     private String startPath;
     private ArrayList<SipPreview> sips;
     private int added = 0, returned = 0;
     private long lastUIUpdate = 0;
+    private String id;
 
-    public SipPerFileHandler(String startPath){
+    public SipPerFileVisitor(String startPath){
         this.startPath = startPath;
         sips = new ArrayList<SipPreview>();
+        id = RandomIdGenerator.GetBase62(5);
     }
 
     public ArrayList<SipPreview> getSips() {return sips;}
@@ -55,4 +58,6 @@ public class SipPerFileHandler extends Observable implements TreeWalkHandler {
         setChanged();
         notifyObservers();
     }
+
+    public String getId(){return id;}
 }

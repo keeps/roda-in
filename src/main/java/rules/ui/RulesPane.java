@@ -19,6 +19,7 @@ import javafx.stage.Stage;
 
 import org.slf4j.LoggerFactory;
 
+import rules.VisitorStack;
 import schema.ui.SchemaNode;
 import source.ui.items.SourceTreeDirectory;
 import source.ui.items.SourceTreeItem;
@@ -32,6 +33,7 @@ public class RulesPane extends BorderPane {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(RulesPane.class.getName());
     private HBox createRule;
     private ListView<RuleComponent> listView;
+    private VisitorStack visitors = new VisitorStack();
 
     public RulesPane(Stage stage){
         createCreateRule();
@@ -62,7 +64,7 @@ public class RulesPane extends BorderPane {
                 SchemaNode descObj = Main.getSchemaSelectedItem();
                 if (source != null && descObj != null) { //both trees need to have 1 element selected
                     if (source instanceof SourceTreeDirectory) { //the source needs to be a directory
-                        RuleComponent ruleC = new RuleComponent((SourceTreeDirectory) source, descObj);
+                        RuleComponent ruleC = new RuleComponent((SourceTreeDirectory) source, descObj, visitors);
                         listView.getItems().add(ruleC);
                     }
                 }

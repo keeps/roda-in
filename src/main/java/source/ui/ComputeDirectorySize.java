@@ -5,12 +5,12 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Observable;
 
 import org.slf4j.LoggerFactory;
-import utils.TreeWalkHandler;
+import utils.TreeVisitor;
 
 /**
  * Created by adrapereira on 24-09-2015.
  */
-public class ComputeDirectorySize extends Observable implements TreeWalkHandler {
+public class ComputeDirectorySize extends Observable implements TreeVisitor {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(ComputeDirectorySize.class.getName());
     private final int UPDATEFREQUENCY = 500; //in milliseconds
     private long filesCount = 0, directoryCount, size = 0;
@@ -58,4 +58,5 @@ public class ComputeDirectorySize extends Observable implements TreeWalkHandler 
     public long getSize() {
         return size;
     }
+    public String getId(){return "dirSize";}
 }

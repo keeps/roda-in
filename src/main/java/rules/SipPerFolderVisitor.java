@@ -10,13 +10,14 @@ import java.util.Stack;
 import org.slf4j.LoggerFactory;
 
 import schema.SipPreview;
-import utils.TreeWalkHandler;
+import utils.RandomIdGenerator;
+import utils.TreeVisitor;
 
 /**
  * Created by adrapereira on 05-10-2015.
  */
-public class SipPerFolderHandler extends Observable implements TreeWalkHandler {
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(SipPerFolderHandler.class.getName());
+public class SipPerFolderVisitor extends Observable implements TreeVisitor {
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(SipPerFolderVisitor.class.getName());
     private final int UPDATEFREQUENCY = 500; //in milliseconds
     private long lastUIUpdate = 0;
     private String startPath;
@@ -24,12 +25,14 @@ public class SipPerFolderHandler extends Observable implements TreeWalkHandler {
     private int maxLevel;
     private int added = 0, returned = 0;
     private Stack<TreeNode> nodes;
+    private String id;
 
-    public SipPerFolderHandler(String startPath, int maxLevel){
+    public SipPerFolderVisitor(String startPath, int maxLevel){
         this.startPath = startPath;
         this.maxLevel = maxLevel;
         sips = new ArrayList<SipPreview>();
         nodes = new Stack<TreeNode>();
+        id = RandomIdGenerator.GetBase62(5);
     }
 
     public ArrayList<SipPreview> getSips() {return sips;}
@@ -77,5 +80,9 @@ public class SipPerFolderHandler extends Observable implements TreeWalkHandler {
     public void end() {
         setChanged();
         notifyObservers();
+    }
+
+    public String getId() {
+        return id;
     }
 }

@@ -18,9 +18,11 @@ import org.slf4j.LoggerFactory;
 
 import rules.Rule;
 import rules.RuleTypes;
+import rules.VisitorStack;
 import schema.ui.SchemaNode;
 import source.ui.items.SourceTreeDirectory;
 import core.Main;
+import utils.TreeVisitor;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -31,17 +33,25 @@ import java.util.Observer;
 public class RuleComponent extends BorderPane implements Observer {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(RuleComponent.class.getName());
     private RuleComponent toRemove = this; //we need a pointer to this object so we can send it when the "remove" button is pressed
+    private SchemaNode schema;
     private Rule rule;
     private ToggleGroup group;
     private ComboBox<Integer> level;
     private Label sipCount;
 
-    public RuleComponent(SourceTreeDirectory sourcePath, SchemaNode descriptionObject){
+    private VisitorStack visitors;
+
+    public RuleComponent(SourceTreeDirectory sourcePath, SchemaNode schemaNode, VisitorStack visitors){
         super();
+        schema = schemaNode;
+        this.visitors = visitors;
         setStyle("-fx-border-color: lightgray; -fx-border-width: 2px; -fx-background-color: white;");
 
-        rule = new Rule(sourcePath, descriptionObject);
+        rule = new Rule(sourcePath);
         rule.addObserver(this);
+        rule.addObserver(schema);
+
+        schema.addRule(rule);
 
         createTop();
         createCenter();
@@ -63,10 +73,10 @@ public class RuleComponent extends BorderPane implements Observer {
         source.setFont(new Font("System", 14));
         source.setGraphic(new ImageView(SourceTreeDirectory.folderCollapseImage));
 
-        Label descObj = new Label(rule.getDescObjName());
+        Label descObj = new Label(schema.dob.getTitle());
         descObj.setMinHeight(24);
         descObj.setFont(new Font("System", 14));
-        descObj.setGraphic(new ImageView(rule.getSchemaNode().getImage()));
+        descObj.setGraphic(new ImageView(schema.getImage()));
         descObj.setTextAlignment(TextAlignment.LEFT);
 
         HBox spaceLeft = new HBox();
@@ -127,13 +137,14 @@ public class RuleComponent extends BorderPane implements Observer {
         apply.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
                 apply();
+                schema.addRule(rule);
             }
         });
 
         remove.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
                 //remove the count on the associated schema node
-                rule.getSchemaNode().removeRule(rule);
+                schema.removeRule(rule);
                 Main.removeRule(toRemove);
             }
         });
@@ -148,7 +159,6 @@ public class RuleComponent extends BorderPane implements Observer {
                     sipCount.setText(rule.getSipCount() + " items");
                 }
             });
-
         }
     }
 
@@ -157,7 +167,8 @@ public class RuleComponent extends BorderPane implements Observer {
         if (active.getUserData() instanceof RuleTypes) {
             RuleTypes type = (RuleTypes) active.getUserData();
             int lev = level.getValue();
-            rule.apply(type, lev);
+            TreeVisitor visitor = rule.apply(type, lev);
+            visitors.add(rule.getSource().getPath(), visitor);
         }
     }
 

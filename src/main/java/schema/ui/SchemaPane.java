@@ -163,13 +163,13 @@ public class SchemaPane extends BorderPane {
         sipMetadata.setVgap(10);
         sipMetadata.setPadding(new Insets(25, 25, 25, 25));
 
-        Label name = new Label("Name:");
+        Label name = new Label("Name");
         name.setFont(Font.font("System", FontWeight.BOLD, 14));
         sipMetadata.add(name, 0, 1);
         l_name = new Label();
-        sipMetadata.add(l_name, 1, 1);
+        sipMetadata.add(l_name, 1, 1, 4, 1);
 
-        Label content = new Label("Content:");
+        Label content = new Label("Content");
         content.setFont(Font.font("System", FontWeight.BOLD, 14));
         GridPane.setValignment(content, VPos.BASELINE);
         sipMetadata.add(content, 0, 2);
@@ -183,13 +183,14 @@ public class SchemaPane extends BorderPane {
         // add everything to the tree pane
         treeBox.getChildren().addAll(sipFiles);
         VBox.setVgrow(sipFiles, Priority.ALWAYS);
+        HBox.setHgrow(sipFiles, Priority.ALWAYS);
 
         sipRoot = new TreeItem<Object>();
         sipRoot.setExpanded(true);
         sipFiles.setRoot(sipRoot);
         sipFiles.setShowRoot(false);
 
-        sipMetadata.add(treeBox, 1, 2);
+        sipMetadata.add(treeBox, 1, 2, 4, 1);
     }
 
     private void createDescObjsMetadata(){
@@ -199,32 +200,32 @@ public class SchemaPane extends BorderPane {
         descObjsMetadata.setVgap(10);
         descObjsMetadata.setPadding(new Insets(25, 25, 25, 25));
 
-        Label id = new Label("ID:");
+        Label id = new Label("ID");
         id.setFont(Font.font("System", FontWeight.BOLD, 14));
         descObjsMetadata.add(id, 0, 1);
         l_id = new Label();
         descObjsMetadata.add(l_id, 1, 1);
 
-        Label title = new Label("Title:");
+        Label title = new Label("Title");
         title.setFont(Font.font("System", FontWeight.BOLD, 14));
         descObjsMetadata.add(title, 0, 2);
         l_title = new Label();
         l_title.setWrapText(true);
         descObjsMetadata.add(l_title, 1, 2);
 
-        Label parID = new Label("Parent ID:");
+        Label parID = new Label("Parent ID");
         parID.setFont(Font.font("System", FontWeight.BOLD, 14));
         descObjsMetadata.add(parID, 0, 3);
         l_parentId = new Label();
         descObjsMetadata.add(l_parentId, 1, 3);
 
-        Label level = new Label("Level:");
+        Label level = new Label("Level");
         level.setFont(Font.font("System", FontWeight.BOLD, 14));
         descObjsMetadata.add(level, 0, 4);
         l_level = new Label();
         descObjsMetadata.add(l_level, 1, 4);
 
-        Label descriptionLevel = new Label("Description Level:");
+        Label descriptionLevel = new Label("Description Level");
         descriptionLevel.setFont(Font.font("System", FontWeight.BOLD, 14));
         descriptionLevel.setMinWidth(100); //don't allow the label to minimize when the pane is shrunk
         descObjsMetadata.add(descriptionLevel, 0, 5);
@@ -236,13 +237,13 @@ public class SchemaPane extends BorderPane {
         data.setFont(Font.font("System", FontWeight.BOLD, 16));
         descObjsMetadata.add(data, 0, 8);
 
-        Label sips = new Label("SIPs:");
+        Label sips = new Label("SIPs");
         sips.setFont(Font.font("System", FontWeight.BOLD, 14));
         descObjsMetadata.add(sips, 0, 9);
         l_sipsCount = new Label();
         descObjsMetadata.add(l_sipsCount, 1, 9);
 
-        Label content = new Label("Content:");
+        Label content = new Label("Content");
         content.setFont(Font.font("System", FontWeight.BOLD, 14));
         descObjsMetadata.add(content, 0, 10);
         l_sipsSize = new Label();
