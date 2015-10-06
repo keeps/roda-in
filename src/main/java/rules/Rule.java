@@ -1,9 +1,6 @@
 package rules;
 
-import java.util.HashSet;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import javafx.scene.image.Image;
 
@@ -23,12 +20,20 @@ public class Rule extends Observable implements Observer {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(Rule.class.getName());
     private SourceTreeDirectory source;
     private RuleTypes type;
-    private HashSet<SipPreview> sips;
+    private ArrayList<SipPreview> sips;
     private HashSet<SipPreviewNode> sipNodes = new HashSet<SipPreviewNode>();
     private TreeVisitor visitor;
     private Image icon;
     private int sipCount = 0, added = 0;
+    private int level;
     private String id;
+
+    public Rule(SourceTreeDirectory source, RuleTypes type, int level) {
+        this.source = source;
+        this.type = type;
+        this.level = level;
+        id = RandomIdGenerator.GetBase62(5);
+    }
 
     public Rule(SourceTreeDirectory source){
         this.source = source;
@@ -50,6 +55,10 @@ public class Rule extends Observable implements Observer {
         return id;
     }
 
+    public ArrayList<SipPreview> getSips() {
+        return sips;
+    }
+
     public void setSource(SourceTreeDirectory source) {
         this.source = source;
     }
@@ -65,10 +74,14 @@ public class Rule extends Observable implements Observer {
 
     public HashSet<SipPreviewNode> getSipNodes(){return sipNodes;}
 
+    public TreeVisitor apply(){
+        return apply(type, level);
+    }
+
     public TreeVisitor apply(RuleTypes type, int level){
         this.type = type;
         sipCount = 0; added = 0;
-        sips = new HashSet<SipPreview>();
+        sips = new ArrayList<SipPreview>();
         sipNodes = new HashSet<SipPreviewNode>();
         TreeVisitor visitor;
 
@@ -96,6 +109,7 @@ public class Rule extends Observable implements Observer {
             while(visitor.hasNext() && added < 100){
                 added++;
                 sipNodes.add(new SipPreviewNode(visitor.getNext(), icon));
+                sips = visitor.getSips();
             }
         }else if(o instanceof SipPerFolderVisitor){
             SipPerFolderVisitor visitor = (SipPerFolderVisitor) o;
@@ -103,6 +117,7 @@ public class Rule extends Observable implements Observer {
             while(visitor.hasNext() && added < 100) {
                 added++;
                 sipNodes.add(new SipPreviewNode(visitor.getNext(), icon));
+                sips = visitor.getSips();
             }
         }
         setChanged();

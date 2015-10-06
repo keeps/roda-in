@@ -97,6 +97,7 @@ public class SchemaPane extends BorderPane {
 
         // create the tree view
         treeView=new TreeView<String>(rootNode);
+        treeView.setStyle("-fx-background-color:white;");
         treeView.setShowRoot(false);
         // add everything to the tree pane
         treeBox.getChildren().add(treeView);
@@ -180,6 +181,7 @@ public class SchemaPane extends BorderPane {
         treeBox.setSpacing(10);
 
         sipFiles = new TreeView<Object>();
+        sipFiles.setStyle("-fx-background-color:white;");
         // add everything to the tree pane
         treeBox.getChildren().addAll(sipFiles);
         VBox.setVgrow(sipFiles, Priority.ALWAYS);

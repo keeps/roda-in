@@ -38,7 +38,7 @@ public class RuleComponent extends BorderPane implements Observer {
     private Rule rule;
     private ToggleGroup group;
     private ComboBox<Integer> level;
-    private Label l_sipCount, l_state;
+    private Label l_state;
 
     private HBox buttons;
     private Button apply, remove, cancel;
@@ -55,8 +55,6 @@ public class RuleComponent extends BorderPane implements Observer {
         rule = new Rule(sourcePath);
         rule.addObserver(this);
         rule.addObserver(schema);
-
-        //schema.addRule(rule);
 
         createTop();
         createCenter();
@@ -84,17 +82,11 @@ public class RuleComponent extends BorderPane implements Observer {
         descObj.setGraphic(new ImageView(schema.getImage()));
         descObj.setTextAlignment(TextAlignment.LEFT);
 
-        HBox spaceLeft = new HBox();
-        HBox.setHgrow(spaceLeft, Priority.ALWAYS);
-        HBox spaceRight = new HBox();
-        HBox.setHgrow(spaceRight, Priority.ALWAYS);
+        HBox space = new HBox();
+        HBox.setHgrow(space, Priority.ALWAYS);
 
-        l_sipCount = new Label();
-        l_sipCount.setMinHeight(24);
-        l_sipCount.setFont(Font.font("System", FontPosture.ITALIC, 12));
-        l_sipCount.setStyle("-fx-opacity: 0.5;");
 
-        hbox.getChildren().addAll(source, spaceLeft, l_sipCount, spaceRight, descObj);
+        hbox.getChildren().addAll(source, space, descObj);
 
         setTop(pane);
     }
@@ -106,12 +98,12 @@ public class RuleComponent extends BorderPane implements Observer {
 
         group = new ToggleGroup();
 
-        RadioButton byFile = new RadioButton("1 SIP por ficheiro");
+        RadioButton byFile = new RadioButton("1 SIP per file");
         byFile.setToggleGroup(group);
         byFile.setUserData(RuleTypes.SIPPERFILE);
         byFile.setSelected(true);
 
-        RadioButton byFolder = new RadioButton("1 SIP por pasta até ao nível");
+        RadioButton byFolder = new RadioButton("1 SIP per folder until level");
         byFolder.setUserData(RuleTypes.SIPPERFOLDER);
         byFolder.setToggleGroup(group);
 
@@ -157,13 +149,13 @@ public class RuleComponent extends BorderPane implements Observer {
 
         remove.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
-                if(remove.getText().contains("Cancel")){
+                if (remove.getText().contains("Cancel")) {
                     boolean cancelled = visitors.cancel(rule.getVisitor());
-                    if(cancelled) {
+                    if (cancelled) {
                         apply.setDisable(false);
                         remove.setText("Remove");
                     }
-                }else {
+                } else {
                     //remove the count on the associated schema node
                     schema.removeRule(rule);
                     Main.removeRule(toRemove);
@@ -178,7 +170,7 @@ public class RuleComponent extends BorderPane implements Observer {
         if(o == rule){
             Platform.runLater(new Runnable() {
                 public void run() {
-                    l_sipCount.setText(rule.getSipCount() + " items");
+                    l_state.setText(rule.getSipCount() + " items ...");
                 }
             });
         }else if(o == visitors){
@@ -186,18 +178,19 @@ public class RuleComponent extends BorderPane implements Observer {
             switch (state){
                 case VISITOR_DONE:
                     apply.setDisable(false);
+                    schema.setExpanded(true);
                     remove.setText("Remove");
-                    l_state.setText("Finished!");
+                    l_state.setText(rule.getSipCount() + " items");
                     break;
                 case VISITOR_RUNNING:
-                    l_state.setText("Processing!");
+                    l_state.setText(rule.getSipCount() + " items ...");
                     break;
                 case VISITOR_NOTSUBMITTED:
                     break;
                 case VISITOR_QUEUED:
                     remove.setText("Cancel");
                     apply.setDisable(true);
-                    l_state.setText("Queued!");
+                    l_state.setText("Waiting in queue...");
                     break;
                 default:
                     break;
@@ -215,4 +208,10 @@ public class RuleComponent extends BorderPane implements Observer {
         }
     }
 
+    public Rule getRule(){return rule;}
+    public RuleTypes getType(){
+        Toggle active = group.getSelectedToggle();
+        return (RuleTypes)active.getUserData();
+    }
+    public int getLevel(){return level.getValue();}
 }

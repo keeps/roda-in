@@ -19,12 +19,16 @@ import javafx.stage.Stage;
 
 import org.slf4j.LoggerFactory;
 
+import rules.Rule;
+import rules.RuleTypes;
 import rules.VisitorStack;
 import schema.ui.SchemaNode;
 import source.ui.items.SourceTreeDirectory;
 import source.ui.items.SourceTreeItem;
 import core.Footer;
 import core.Main;
+
+import java.util.HashSet;
 
 /**
  * Created by adrapereira on 24-09-2015.
@@ -86,7 +90,17 @@ public class RulesPane extends BorderPane {
 //            }
 //        });
     }
-
+    public HashSet<Rule> getRules(){
+        HashSet<Rule> rules = new HashSet<Rule>();
+        for(RuleComponent rc: listView.getItems()) {
+            // create new Rule objects to avoid interfering with the existing ones
+            SourceTreeDirectory source = rc.getRule().getSource();
+            RuleTypes type = rc.getType();
+            int level = rc.getLevel();
+            rules.add(new Rule(source, type, level));
+        }
+        return rules;
+    }
     public void removeChild(RuleComponent rule){
         listView.getItems().remove(rule);
     }

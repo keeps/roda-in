@@ -83,6 +83,11 @@
             <artifactId>logback-core</artifactId>
             <version>1.1.2</version>
         </dependency>
+        <dependency>
+            <groupId>gov.loc</groupId>
+            <artifactId>bagit</artifactId>
+            <version>4.9.0</version>
+        </dependency>
     </dependencies>
 
 </project>

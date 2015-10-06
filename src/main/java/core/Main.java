@@ -16,6 +16,7 @@ import javafx.stage.Stage;
 
 import org.slf4j.LoggerFactory;
 
+import rules.Rule;
 import rules.ui.RuleComponent;
 import rules.ui.RulesPane;
 import schema.ui.SchemaNode;
@@ -24,6 +25,7 @@ import source.ui.FileExplorerPane;
 import source.ui.items.SourceTreeItem;
 
 import java.io.IOException;
+import java.util.HashSet;
 
 public class Main extends Application {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(Main.class.getName());
@@ -70,7 +72,7 @@ public class Main extends Application {
         split.getItems().addAll(previewExplorer, rulesPane, schemaPane);
 
         //Create Footer
-        HBox footer = new Footer();
+        HBox footer = new Footer(stage);
 
         BorderPane mainPane = new BorderPane();
         mainPane.setCenter(split);
@@ -91,5 +93,8 @@ public class Main extends Application {
     }
     public static void removeRule(RuleComponent rule){
         rulesPane.removeChild(rule);
+    }
+    public static HashSet<Rule> getRules(){
+        return rulesPane.getRules();
     }
 }
