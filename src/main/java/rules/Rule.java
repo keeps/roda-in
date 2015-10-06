@@ -69,6 +69,7 @@ public class Rule extends Observable implements Observer {
         this.type = type;
         sipCount = 0; added = 0;
         sips = new HashSet<SipPreview>();
+        sipNodes = new HashSet<SipPreviewNode>();
         TreeVisitor visitor;
 
         switch (type){

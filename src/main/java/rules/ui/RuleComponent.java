@@ -38,7 +38,7 @@ public class RuleComponent extends BorderPane implements Observer {
     private Rule rule;
     private ToggleGroup group;
     private ComboBox<Integer> level;
-    private Label sipCount;
+    private Label l_sipCount, l_state;
 
     private HBox buttons;
     private Button apply, remove, cancel;
@@ -56,7 +56,7 @@ public class RuleComponent extends BorderPane implements Observer {
         rule.addObserver(this);
         rule.addObserver(schema);
 
-        schema.addRule(rule);
+        //schema.addRule(rule);
 
         createTop();
         createCenter();
@@ -89,12 +89,12 @@ public class RuleComponent extends BorderPane implements Observer {
         HBox spaceRight = new HBox();
         HBox.setHgrow(spaceRight, Priority.ALWAYS);
 
-        sipCount = new Label();
-        sipCount.setMinHeight(24);
-        sipCount.setFont(Font.font("System", FontPosture.ITALIC, 12));
-        sipCount.setStyle("-fx-opacity: 0.5;");
+        l_sipCount = new Label();
+        l_sipCount.setMinHeight(24);
+        l_sipCount.setFont(Font.font("System", FontPosture.ITALIC, 12));
+        l_sipCount.setStyle("-fx-opacity: 0.5;");
 
-        hbox.getChildren().addAll(source, spaceLeft, sipCount, spaceRight, descObj);
+        hbox.getChildren().addAll(source, spaceLeft, l_sipCount, spaceRight, descObj);
 
         setTop(pane);
     }
@@ -129,6 +129,10 @@ public class RuleComponent extends BorderPane implements Observer {
     private void createBottom(){
         remove = new Button("Remove");
         apply = new Button("Apply");
+        l_state = new Label("");
+        VBox.setVgrow(l_state, Priority.ALWAYS);
+        l_state.setAlignment(Pos.BOTTOM_CENTER);
+        l_state.setOpacity(0.6);
 
         HBox space = new HBox();
         HBox.setHgrow(space, Priority.ALWAYS);
@@ -136,14 +140,16 @@ public class RuleComponent extends BorderPane implements Observer {
         buttons = new HBox();
         buttons.setPadding(new Insets(10, 10, 10, 10));
         buttons.setSpacing(10);
-        buttons.setAlignment(Pos.TOP_RIGHT);
-        buttons.getChildren().addAll(remove, space, apply);
+        buttons.setAlignment(Pos.CENTER);
+        buttons.getChildren().addAll(remove, space, l_state, apply);
 
 
         apply.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
                 apply.setDisable(true);
                 remove.setText("Cancel");
+                //we need to remove the traces of this rule in the schema node, so we can then add the new SIPs
+                schema.removeRule(rule);
                 apply();
                 schema.addRule(rule);
             }
@@ -172,7 +178,7 @@ public class RuleComponent extends BorderPane implements Observer {
         if(o == rule){
             Platform.runLater(new Runnable() {
                 public void run() {
-                    sipCount.setText(rule.getSipCount() + " items");
+                    l_sipCount.setText(rule.getSipCount() + " items");
                 }
             });
         }else if(o == visitors){
@@ -181,12 +187,17 @@ public class RuleComponent extends BorderPane implements Observer {
                 case VISITOR_DONE:
                     apply.setDisable(false);
                     remove.setText("Remove");
+                    l_state.setText("Finished!");
+                    break;
+                case VISITOR_RUNNING:
+                    l_state.setText("Processing!");
                     break;
                 case VISITOR_NOTSUBMITTED:
                     break;
                 case VISITOR_QUEUED:
                     remove.setText("Cancel");
                     apply.setDisable(true);
+                    l_state.setText("Queued!");
                     break;
                 default:
                     break;

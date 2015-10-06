@@ -22,6 +22,7 @@ public class VisitorStack extends Observable{
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(VisitorStack.class.getName());
     private ExecutorService visitors;
     private HashMap<String, Future> futures;
+    private String runningTask;
 
     public VisitorStack(){
         visitors = Executors.newSingleThreadExecutor();
@@ -30,6 +31,7 @@ public class VisitorStack extends Observable{
 
     public void add(String path, TreeVisitor vis){
         final WalkFileTree walker = new WalkFileTree(path, vis);
+        final String id = vis.getId();
         Task toRun = new Task<Void>() {
             public Void call() {
                 walker.start();
@@ -42,18 +44,26 @@ public class VisitorStack extends Observable{
                 return null;
             }
         };
+        toRun.setOnRunning(new EventHandler<WorkerStateEvent>() {
+            public void handle(WorkerStateEvent workerStateEvent) {
+                runningTask = id;
+                update();
+            }
+        });
         //notify the observers when the task finishes
         toRun.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
             public void handle(WorkerStateEvent workerStateEvent) {
-                finished();
+                runningTask = null;
+                update();
             }
         });
 
         Future fut = visitors.submit(toRun);
         futures.put(vis.getId(), fut);
+        update();
     }
 
-    private void finished(){
+    private void update(){
         setChanged();
         notifyObservers();
     }
@@ -61,6 +71,7 @@ public class VisitorStack extends Observable{
     public VisitorState isDone(String visitorId){
         Future fut = futures.get(visitorId);
         if(fut == null) return VisitorState.VISITOR_NOTSUBMITTED;
+        if(runningTask != null && visitorId.equals(runningTask)) return VisitorState.VISITOR_RUNNING;
         if(fut.isDone()) return VisitorState.VISITOR_DONE;
         else return VisitorState.VISITOR_QUEUED;
     }

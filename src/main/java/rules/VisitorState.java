@@ -6,5 +6,6 @@ package rules;
 public enum VisitorState {
     VISITOR_DONE,
     VISITOR_QUEUED,
-    VISITOR_NOTSUBMITTED
+    VISITOR_NOTSUBMITTED,
+    VISITOR_RUNNING
 }
