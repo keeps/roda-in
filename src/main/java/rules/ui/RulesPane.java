@@ -19,11 +19,16 @@ import javafx.stage.Stage;
 
 import org.slf4j.LoggerFactory;
 
+import rules.Rule;
+import rules.RuleTypes;
+import rules.VisitorStack;
 import schema.ui.SchemaNode;
 import source.ui.items.SourceTreeDirectory;
 import source.ui.items.SourceTreeItem;
 import core.Footer;
 import core.Main;
+
+import java.util.HashSet;
 
 /**
  * Created by adrapereira on 24-09-2015.
@@ -32,6 +37,7 @@ public class RulesPane extends BorderPane {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(RulesPane.class.getName());
     private HBox createRule;
     private ListView<RuleComponent> listView;
+    private VisitorStack visitors = new VisitorStack();
 
     public RulesPane(Stage stage){
         createCreateRule();
@@ -39,7 +45,7 @@ public class RulesPane extends BorderPane {
 
         this.setTop(createRule);
         this.setCenter(listView);
-        this.minWidthProperty().bind(stage.widthProperty().multiply(0.2));
+        this.minWidthProperty().bind(stage.widthProperty().multiply(0.33));
     }
 
     private void createCreateRule(){
@@ -60,9 +66,9 @@ public class RulesPane extends BorderPane {
             public void handle(ActionEvent e) {
                 SourceTreeItem source = Main.getSourceSelectedItem();
                 SchemaNode descObj = Main.getSchemaSelectedItem();
-                if(source != null && descObj != null) { //both trees need to have 1 element selected
-                    if(source instanceof SourceTreeDirectory) { //the source needs to be a directory
-                        RuleComponent ruleC = new RuleComponent((SourceTreeDirectory) source, descObj);
+                if (source != null && descObj != null) { //both trees need to have 1 element selected
+                    if (source instanceof SourceTreeDirectory) { //the source needs to be a directory
+                        RuleComponent ruleC = new RuleComponent((SourceTreeDirectory) source, descObj, visitors);
                         listView.getItems().add(ruleC);
                     }
                 }
@@ -73,17 +79,29 @@ public class RulesPane extends BorderPane {
 
     private void createListView(){
         listView = new ListView<RuleComponent>();
-
         //Disable selection in listview
-        listView.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
-                Platform.runLater(new Runnable() {
-                    public void run() {
-                        listView.getSelectionModel().select(-1);
-                    }
-                });
-            }
-        });
-
+//        listView.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+//            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+//                Platform.runLater(new Runnable() {
+//                    public void run() {
+//                        listView.getSelectionModel().select(-1);
+//                    }
+//                });
+//            }
+//        });
+    }
+    public HashSet<Rule> getRules(){
+        HashSet<Rule> rules = new HashSet<Rule>();
+        for(RuleComponent rc: listView.getItems()) {
+            // create new Rule objects to avoid interfering with the existing ones
+            SourceTreeDirectory source = rc.getRule().getSource();
+            RuleTypes type = rc.getType();
+            int level = rc.getLevel();
+            rules.add(new Rule(source, type, level));
+        }
+        return rules;
+    }
+    public void removeChild(RuleComponent rule){
+        listView.getItems().remove(rule);
     }
 }

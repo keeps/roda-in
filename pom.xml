@@ -8,12 +8,51 @@
     <artifactId>roda-in</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <source>${version.java}</source>
+                    <target>${version.java}</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+           <!-- <plugin>
+                &lt;!&ndash; Build an executable JAR &ndash;&gt;
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <mainClass>core.Main</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+            </plugin>-->
+        </plugins>
+    </build>
+
     <profiles>
         <profile>
             <id>JDK_1.7</id>
             <activation>
                 <jdk>1.7</jdk>
+                <activeByDefault>true</activeByDefault>
             </activation>
+            <properties>
+                <version.java>1.7</version.java>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>com.oracle</groupId>
@@ -29,6 +68,9 @@
             <activation>
                 <jdk>1.8</jdk>
             </activation>
+            <properties>
+                <version.java>1.8</version.java>
+            </properties>
         </profile>
     </profiles>
 
@@ -62,6 +104,11 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
             <version>1.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>gov.loc</groupId>
+            <artifactId>bagit</artifactId>
+            <version>4.9.0</version>
         </dependency>
     </dependencies>
 
