@@ -25,7 +25,6 @@ public class SourceTreeCell extends TreeCell<String> {
             setText(null);
             setGraphic(null);
         } else {
-            log.info(getTreeItem().getClass().toString());
             HBox hbox = new HBox();
             Label lab = new Label(item);
             Image icon = null;

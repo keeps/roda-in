@@ -11,6 +11,9 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.control.*;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -23,12 +26,14 @@ import rules.TreeNode;
 import schema.ClassificationSchema;
 import schema.DescriptionObject;
 import core.Footer;
+import source.ui.items.SourceTreeCell;
 
 /**
  * Created by adrapereira on 28-09-2015.
  */
 public class SchemaPane extends BorderPane {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(SchemaPane.class.getName());
+    private Stage stage;
     private TreeView<String> treeView;
     private HBox refresh;
     private GridPane descObjsMetadata, sipMetadata, emptyGrid;
@@ -42,6 +47,8 @@ public class SchemaPane extends BorderPane {
 
     public SchemaPane(Stage stage){
         super();
+
+        this.stage = stage;
 
         createTreeView();
         createTop();
@@ -102,7 +109,9 @@ public class SchemaPane extends BorderPane {
         treeView.setShowRoot(false);
         treeView.setCellFactory((new Callback<TreeView<String>, TreeCell<String>>() {
             public TreeCell<String> call(TreeView<String> p) {
-                return new SchemaTreeCell();
+                SchemaTreeCell cell = new SchemaTreeCell();
+                setDropEvent(stage, cell);
+                return cell;
             }
         }));
 
@@ -163,7 +172,7 @@ public class SchemaPane extends BorderPane {
         }
         return result;
     }
-    
+
     public void createSipMetadata(){
         sipMetadata = new GridPane();
         sipMetadata.setAlignment(Pos.TOP_LEFT);
@@ -257,6 +266,67 @@ public class SchemaPane extends BorderPane {
         descObjsMetadata.add(content, 0, 10);
         l_sipsSize = new Label();
         descObjsMetadata.add(l_sipsSize, 1, 10);
+    }
+
+    private void setDropEvent(Stage stage, final SchemaTreeCell cell) {
+        // on a Target
+        cell.setOnDragOver(new EventHandler<DragEvent>() {
+            public void handle(DragEvent event) {
+                TreeItem<String> treeItem = cell.getTreeItem();
+                if (treeItem instanceof SchemaNode) {
+                    SchemaNode item = (SchemaNode) cell.getTreeItem();
+                    if ((item != null /*&& !item.isLeaf()*/) &&
+                            event.getGestureSource() != cell &&
+                            event.getDragboard().hasString()) {
+                        event.acceptTransferModes(TransferMode.COPY);
+                    }
+                }
+                event.consume();
+            }
+        });
+        // on a Target
+        cell.setOnDragEntered(new EventHandler<DragEvent>() {
+            public void handle(DragEvent event) {
+                TreeItem<String> treeItem = cell.getTreeItem();
+                if (treeItem instanceof SchemaNode) {
+                    SchemaNode item = (SchemaNode) cell.getTreeItem();
+                    if ((item != null /* && !item.isLeaf()*/) &&
+                            event.getGestureSource() != cell &&
+                            event.getDragboard().hasString()) {
+                        cell.setStyle("-fx-background-color: powderblue;");
+                    }
+                }
+                event.consume();
+            }
+        });
+        // on a Target
+        cell.setOnDragExited(new EventHandler<DragEvent>() {
+                                 public void handle(DragEvent event) {
+                                     cell.setStyle("-fx-background-color: white");
+                                     event.consume();
+                                 }
+                             }
+        );
+        // on a Target
+        cell.setOnDragDropped(
+            new EventHandler<DragEvent>() {
+                public void handle(DragEvent event) {
+                    Dragboard db = event.getDragboard();
+                    boolean success = false;
+                    if (db.hasString()) {
+                        success = true;
+                        log.info(db.getString());
+                    }
+                    event.setDropCompleted(success);
+                    event.consume();
+                }
+            }
+        );
+        // on a Source
+        cell.setOnDragDone(new EventHandler<DragEvent>() {
+                               public void handle(DragEvent event) {}
+                           }
+        );
     }
 
     public TreeView<String> getTreeView() {

@@ -18,6 +18,10 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -123,7 +127,9 @@ public class FileExplorerPane extends BorderPane implements Observer {
         VBox.setVgrow(treeView, Priority.ALWAYS);
         treeView.setCellFactory((new Callback<TreeView<String>, TreeCell<String>>() {
             public TreeCell<String> call(TreeView<String> p) {
-                return new SourceTreeCell();
+                SourceTreeCell cell = new SourceTreeCell();
+                setDragEvent(stage, cell);
+                return cell;
             }
         }));
 
@@ -250,6 +256,23 @@ public class FileExplorerPane extends BorderPane implements Observer {
                 result.append(Utils.formatSize(size));
                 l_content.setText(result.toString());
                 }
+        });
+    }
+
+    private void setDragEvent(Stage stage, final SourceTreeCell cell){
+        // The drag starts on a gesture source
+        cell.setOnDragDetected(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent event) {
+                SourceTreeItem item = (SourceTreeItem) cell.getTreeItem();
+                if (item != null /*&& item.isLeaf()*/) {
+                    Dragboard db = cell.startDragAndDrop(TransferMode.COPY);
+                    ClipboardContent content = new ClipboardContent();
+                    String s = item.getPath().toString();
+                    content.putString(s);
+                    db.setContent(content);
+                    event.consume();
+                }
+            }
         });
     }
 

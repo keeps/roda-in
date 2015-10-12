@@ -53,4 +53,6 @@ public class SchemaTreeCell extends TreeCell<String> {
             setGraphic(hbox);
         }
     }
-}
+
+
+    }
