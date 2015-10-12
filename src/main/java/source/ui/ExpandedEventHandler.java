@@ -22,11 +22,6 @@ public class ExpandedEventHandler implements EventHandler<TreeItem.TreeModificat
         if(source.expanded) return;
         source.expanded = true;
 
-        if (source.isExpanded()) {
-            ImageView iv = (ImageView) source.getGraphic();
-            iv.setImage(SourceTreeDirectory.folderExpandImage);
-        }
-
         // We only load new items if this hasn't been done before
         if(!source.directory.hasFirstLoaded())
             source.loadMore();

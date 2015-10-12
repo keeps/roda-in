@@ -12,7 +12,6 @@ import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +22,7 @@ import source.ui.ExpandedEventHandler;
 /**
  * Created by adrapereira on 17-09-2015.
  */
-public class SourceTreeDirectory extends TreeItem<Object> implements SourceTreeItem{
+public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeItem{
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(SourceTreeDirectory.class.getName());
     public static final Image folderCollapseImage = new Image(ClassLoader.getSystemResourceAsStream("icons/folder.png"));
     public static final Image folderExpandImage = new Image(ClassLoader.getSystemResourceAsStream("icons/folder-open.png"));
@@ -40,14 +39,15 @@ public class SourceTreeDirectory extends TreeItem<Object> implements SourceTreeI
         super(file.toString());
         this.directory = directory;
         this.fullPath = file.toString();
-        this.setGraphic(new ImageView(folderCollapseImage));
+        //this.setGraphic(new ImageView(folderCollapseImage));
 
         this.getChildren().add(new SourceTreeLoading());
 
+        String value = file.toString();
         //set the value
         if (!fullPath.endsWith(File.separator)) {
             //set the value (which is what is displayed in the tree)
-            String value = file.toString();
+
             int indexOf = value.lastIndexOf(File.separator);
             if (indexOf > 0) {
                 this.setValue(value.substring(indexOf + 1));
@@ -56,14 +56,13 @@ public class SourceTreeDirectory extends TreeItem<Object> implements SourceTreeI
             }
         }
 
+
         this.addEventHandler(SourceTreeDirectory.branchExpandedEvent(), new ExpandedEventHandler());
 
         this.addEventHandler(TreeItem.branchCollapsedEvent(), new EventHandler<TreeModificationEvent<Object>>() {
             public void handle(TreeItem.TreeModificationEvent<Object> e) {
                 SourceTreeDirectory source = (SourceTreeDirectory) e.getSource();
                 if (!source.isExpanded()) {
-                    ImageView iv = (ImageView) source.getGraphic();
-                    iv.setImage(folderCollapseImage);
                     source.expanded = false;
                 }
             }
@@ -74,7 +73,7 @@ public class SourceTreeDirectory extends TreeItem<Object> implements SourceTreeI
     * We need to create a task to load the items to a temporary collection, otherwise the UI will hang while we access the disk.
     * */
     public void loadMore(){
-        final ArrayList<TreeItem<Object>> children = new ArrayList<TreeItem<Object>>(getChildren());
+        final ArrayList<TreeItem<String>> children = new ArrayList<TreeItem<String>>(getChildren());
 
         // First we access the disk and save the loaded items to a temporary collection
         Task<Integer> task = new Task<Integer>() {

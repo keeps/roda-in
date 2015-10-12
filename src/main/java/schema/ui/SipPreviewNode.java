@@ -10,14 +10,21 @@ import schema.SipPreview;
  */
 public class SipPreviewNode extends TreeItem<String> {
     private SipPreview sip;
+    private Image icon;
+
     public SipPreviewNode(SipPreview sip, Image icon){
         super(sip.getName());
         this.sip = sip;
+        this.icon = icon;
         setGraphic(new ImageView(icon));
     }
     public String toString(){return sip.toString();}
 
     public SipPreview getSip() {
         return sip;
+    }
+
+    public Image getIcon() {
+        return icon;
     }
 }

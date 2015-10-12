@@ -15,6 +15,7 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 import org.slf4j.LoggerFactory;
 
@@ -99,6 +100,12 @@ public class SchemaPane extends BorderPane {
         treeView=new TreeView<String>(rootNode);
         treeView.setStyle("-fx-background-color:white;");
         treeView.setShowRoot(false);
+        treeView.setCellFactory((new Callback<TreeView<String>, TreeCell<String>>() {
+            public TreeCell<String> call(TreeView<String> p) {
+                return new SchemaTreeCell();
+            }
+        }));
+
         // add everything to the tree pane
         treeBox.getChildren().add(treeView);
         treeView.setOnMouseClicked(new SchemaClickedEventHandler(this));

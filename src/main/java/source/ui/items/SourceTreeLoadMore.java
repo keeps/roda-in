@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by adrapereira on 17-09-2015.
  */
-public class SourceTreeLoadMore extends TreeItem<Object> implements SourceTreeItem{
+public class SourceTreeLoadMore extends TreeItem<String> implements SourceTreeItem{
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(SourceTreeLoadMore.class.getName());
     public static final Image fileImage = new Image(ClassLoader.getSystemResourceAsStream("icons/list-add.png"));
 

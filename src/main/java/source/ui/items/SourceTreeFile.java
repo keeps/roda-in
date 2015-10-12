@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by adrapereira on 17-09-2015.
  */
-public class SourceTreeFile extends TreeItem<Object> implements SourceTreeItem{
+public class SourceTreeFile extends TreeItem<String> implements SourceTreeItem{
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(SourceTreeFile.class.getName());
     public static final Image fileImage = new Image(ClassLoader.getSystemResourceAsStream("icons/file.png"));
 

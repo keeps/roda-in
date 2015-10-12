@@ -24,9 +24,11 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
+import javafx.util.Callback;
 import org.slf4j.LoggerFactory;
 
 import source.representation.SourceDirectory;
+import source.ui.items.SourceTreeCell;
 import source.ui.items.SourceTreeDirectory;
 import source.ui.items.SourceTreeItem;
 import utils.Utils;
@@ -39,7 +41,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(FileExplorerPane.class.getName());
     private HBox top;
     private StackPane fileExplorer;
-    private TreeView<Object> treeView;
+    private TreeView<String> treeView;
     private Stage stage;
 
     private GridPane metadata;
@@ -97,14 +99,14 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
         toggleFiles.selectedProperty().addListener(new ChangeListener<Boolean>() {
             public void changed(ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) {
-                TreeItem<Object> root = treeView.getRoot();
+                TreeItem<String> root = treeView.getRoot();
                 if (root == null) return;
                 if (!(root instanceof SourceTreeDirectory)) return;
                 SourceTreeDirectory rootCasted = (SourceTreeDirectory) root;
                 String pathString = rootCasted.getPath();
                 Path path = Paths.get(pathString);
                 setFileExplorerRoot(path, new_val);
-                }
+            }
         });
     }
 
@@ -114,11 +116,16 @@ public class FileExplorerPane extends BorderPane implements Observer {
         treeBox.setPadding(new Insets(10, 10, 10, 10));
         treeBox.setSpacing(10);
 
-        treeView = new TreeView<Object>();
+        treeView = new TreeView<String>();
         treeView.setStyle("-fx-background-color:white;");
         // add everything to the tree pane
         treeBox.getChildren().addAll(treeView);
         VBox.setVgrow(treeView, Priority.ALWAYS);
+        treeView.setCellFactory((new Callback<TreeView<String>, TreeCell<String>>() {
+            public TreeCell<String> call(TreeView<String> p) {
+                return new SourceTreeCell();
+            }
+        }));
 
         fileExplorer = new StackPane();
         fileExplorer.getChildren().add(treeBox);
@@ -218,7 +225,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
         }
     }
 
-    public TreeView<Object> getTreeView() {
+    public TreeView<String> getTreeView() {
         return treeView;
     }
 
