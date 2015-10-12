@@ -69,7 +69,7 @@ public class Main extends Application {
         rulesPane = new RulesPane(stage);
         schemaPane = new SchemaPane(stage);
 
-        split.getItems().addAll(previewExplorer, rulesPane, schemaPane);
+        split.getItems().addAll(previewExplorer, schemaPane, rulesPane);
 
         //Create Footer
         HBox footer = new Footer(stage);

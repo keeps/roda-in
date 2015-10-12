@@ -40,7 +40,7 @@ public class SourceTreeCell extends TreeCell<String> {
             }
             hbox.getChildren().addAll(new ImageView(icon), lab);
             setGraphic(hbox);
-            setText(item);
+            //setText(item);
         }
     }
 

@@ -1,8 +1,7 @@
 package rules.ui;
 
-import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import java.util.HashSet;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -28,15 +27,13 @@ import source.ui.items.SourceTreeItem;
 import core.Footer;
 import core.Main;
 
-import java.util.HashSet;
-
 /**
  * Created by adrapereira on 24-09-2015.
  */
 public class RulesPane extends BorderPane {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(RulesPane.class.getName());
     private HBox createRule;
-    private ListView<RuleComponent> listView;
+    private static ListView<RuleComponent> listView;
     private VisitorStack visitors = new VisitorStack();
 
     public RulesPane(Stage stage){
@@ -104,4 +101,7 @@ public class RulesPane extends BorderPane {
     public void removeChild(RuleComponent rule){
         listView.getItems().remove(rule);
     }
+
+    /* TEMP !!!!!!*/
+    public static void addChild(RuleComponent comp){listView.getItems().add(comp);}
 }

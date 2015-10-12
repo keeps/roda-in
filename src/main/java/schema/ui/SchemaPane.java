@@ -1,20 +1,17 @@
 package schema.ui;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
-import javafx.geometry.VPos;
 import javafx.scene.control.*;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
@@ -22,11 +19,16 @@ import javafx.util.Callback;
 
 import org.slf4j.LoggerFactory;
 
-import rules.TreeNode;
+import rules.VisitorStack;
+import rules.ui.RuleComponent;
+import rules.ui.RulesPane;
 import schema.ClassificationSchema;
 import schema.DescriptionObject;
-import core.Footer;
 import source.ui.items.SourceTreeCell;
+import source.ui.items.SourceTreeDirectory;
+import source.ui.items.SourceTreeItem;
+import core.Footer;
+import core.Main;
 
 /**
  * Created by adrapereira on 28-09-2015.
@@ -36,14 +38,9 @@ public class SchemaPane extends BorderPane {
     private Stage stage;
     private TreeView<String> treeView;
     private HBox refresh;
-    private GridPane descObjsMetadata, sipMetadata, emptyGrid;
-    private SplitPane split;
-    //descObjsMetadata
-    private Label l_id, l_title, l_parentId, l_level, l_descrpLevel, l_sipsCount, l_sipsSize;
-    //sipMetadata
-    private Label l_name;
-    private TreeView<Object> sipFiles;
-    private TreeItem<Object> sipRoot;
+    private HBox bottom;
+    private VisitorStack visitors = new VisitorStack();
+
 
     public SchemaPane(Stage stage){
         super();
@@ -52,16 +49,11 @@ public class SchemaPane extends BorderPane {
 
         createTreeView();
         createTop();
-        createMetadata();
-
-        emptyGrid = new GridPane();
-
-        split  = new SplitPane();
-        split.setOrientation(Orientation.VERTICAL);
-        split.getItems().addAll(treeView, emptyGrid);
+        createBottom();
 
         this.setTop(refresh);
-        this.setCenter(split);
+        this.setCenter(treeView);
+        this.setBottom(bottom);
 
         this.minWidthProperty().bind(stage.widthProperty().multiply(0.25));
     }
@@ -120,153 +112,35 @@ public class SchemaPane extends BorderPane {
         treeView.setOnMouseClicked(new SchemaClickedEventHandler(this));
     }
 
-    private void createMetadata(){
-        createDescObjsMetadata();
-        createSipMetadata();
-    }
-
     public SchemaNode getSelectedItem(){
         int selIndex = treeView.getSelectionModel().getSelectedIndex();
         if(selIndex == -1) return null;
         return (SchemaNode)treeView.getTreeItem(selIndex);
     }
-    public void updateMetadata(SchemaNode node){
-        split.getItems().remove(emptyGrid);
-        split.getItems().remove(sipMetadata);
-        if(!split.getItems().contains(descObjsMetadata))
-            split.getItems().add(descObjsMetadata);
 
-        DescriptionObject dobject = node.dob;
-        l_id.setText(dobject.getId());
-        l_descrpLevel.setText(dobject.getDescriptionlevel());
-        l_level.setText(dobject.getLevel());
-        l_parentId.setText(dobject.getParentId());
-        l_title.setText(dobject.getTitle());
-        l_sipsCount.setText(node.getSipCount() + " items");
+    public void createBottom(){
+        bottom = new HBox();
+        bottom.setPadding(new Insets(10,10,10,10));
+
+        Button associate = new Button("Associate");
+        associate.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                SourceTreeItem source = Main.getSourceSelectedItem();
+                SchemaNode descObj = Main.getSchemaSelectedItem();
+                if (source != null && descObj != null) { //both trees need to have 1 element selected
+                    if (source instanceof SourceTreeDirectory) { //the source needs to be a directory
+                        RuleComponent ruleC = new RuleComponent((SourceTreeDirectory) source, descObj, visitors);
+                        RulesPane.addChild(ruleC);
+                    }
+                }
+                Footer.setStatus("Carregou no \"Create Rule\": " + source + " <-> " + descObj);
+            }
+        });
+
+        bottom.getChildren().add(associate);
     }
 
-    public void updateMetadata(SipPreviewNode node){
-        split.getItems().remove(emptyGrid);
-        split.getItems().remove(descObjsMetadata);
-        if(!split.getItems().contains(sipMetadata))
-            split.getItems().add(sipMetadata);
-
-        l_name.setText(node.getValue());
-        sipRoot.getChildren().clear();
-        TreeNode startingNode = node.getSip().getFiles();
-        TreeItem<Object> startingItem = rec_CreateSipContent(startingNode);
-        startingItem.setExpanded(true);
-        sipRoot.getChildren().add(startingItem);
-    }
-
-    private TreeItem<Object> rec_CreateSipContent(TreeNode node){
-        TreeItem<Object> result;
-        Path path = Paths.get(node.getPath());
-        if(Files.isDirectory(path))
-            result = new SipContentDirectory(path);
-        else return new SipContentFile(path);
-
-        for(String key: node.getKeys()){
-            TreeItem<Object> temp = rec_CreateSipContent(node.get(key));
-            result.getChildren().add(temp);
-        }
-        return result;
-    }
-
-    public void createSipMetadata(){
-        sipMetadata = new GridPane();
-        sipMetadata.setAlignment(Pos.TOP_LEFT);
-        sipMetadata.setHgap(10);
-        sipMetadata.setVgap(10);
-        sipMetadata.setPadding(new Insets(25, 25, 25, 25));
-
-        Label name = new Label("Name");
-        name.setFont(Font.font("System", FontWeight.BOLD, 14));
-        sipMetadata.add(name, 0, 1);
-        l_name = new Label();
-        sipMetadata.add(l_name, 1, 1, 4, 1);
-
-        Label content = new Label("Content");
-        content.setFont(Font.font("System", FontWeight.BOLD, 14));
-        GridPane.setValignment(content, VPos.BASELINE);
-        sipMetadata.add(content, 0, 2);
-
-        //create tree pane
-        VBox treeBox=new VBox();
-        treeBox.setPadding(new Insets(10, 10, 10, 10));
-        treeBox.setSpacing(10);
-
-        sipFiles = new TreeView<Object>();
-        sipFiles.setStyle("-fx-background-color:white;");
-        // add everything to the tree pane
-        treeBox.getChildren().addAll(sipFiles);
-        VBox.setVgrow(sipFiles, Priority.ALWAYS);
-        HBox.setHgrow(sipFiles, Priority.ALWAYS);
-
-        sipRoot = new TreeItem<Object>();
-        sipRoot.setExpanded(true);
-        sipFiles.setRoot(sipRoot);
-        sipFiles.setShowRoot(false);
-
-        sipMetadata.add(treeBox, 1, 2, 4, 1);
-    }
-
-    private void createDescObjsMetadata(){
-        descObjsMetadata = new GridPane();
-        descObjsMetadata.setAlignment(Pos.TOP_LEFT);
-        descObjsMetadata.setHgap(10);
-        descObjsMetadata.setVgap(10);
-        descObjsMetadata.setPadding(new Insets(25, 25, 25, 25));
-
-        Label id = new Label("ID");
-        id.setFont(Font.font("System", FontWeight.BOLD, 14));
-        descObjsMetadata.add(id, 0, 1);
-        l_id = new Label();
-        descObjsMetadata.add(l_id, 1, 1);
-
-        Label title = new Label("Title");
-        title.setFont(Font.font("System", FontWeight.BOLD, 14));
-        descObjsMetadata.add(title, 0, 2);
-        l_title = new Label();
-        l_title.setWrapText(true);
-        descObjsMetadata.add(l_title, 1, 2);
-
-        Label parID = new Label("Parent ID");
-        parID.setFont(Font.font("System", FontWeight.BOLD, 14));
-        descObjsMetadata.add(parID, 0, 3);
-        l_parentId = new Label();
-        descObjsMetadata.add(l_parentId, 1, 3);
-
-        Label level = new Label("Level");
-        level.setFont(Font.font("System", FontWeight.BOLD, 14));
-        descObjsMetadata.add(level, 0, 4);
-        l_level = new Label();
-        descObjsMetadata.add(l_level, 1, 4);
-
-        Label descriptionLevel = new Label("Description Level");
-        descriptionLevel.setFont(Font.font("System", FontWeight.BOLD, 14));
-        descriptionLevel.setMinWidth(100); //don't allow the label to minimize when the pane is shrunk
-        descObjsMetadata.add(descriptionLevel, 0, 5);
-        l_descrpLevel = new Label();
-        l_descrpLevel.setWrapText(true);
-        descObjsMetadata.add(l_descrpLevel, 1, 5);
-
-        Label data = new Label("Data");
-        data.setFont(Font.font("System", FontWeight.BOLD, 16));
-        descObjsMetadata.add(data, 0, 8);
-
-        Label sips = new Label("SIPs");
-        sips.setFont(Font.font("System", FontWeight.BOLD, 14));
-        descObjsMetadata.add(sips, 0, 9);
-        l_sipsCount = new Label();
-        descObjsMetadata.add(l_sipsCount, 1, 9);
-
-        Label content = new Label("Content");
-        content.setFont(Font.font("System", FontWeight.BOLD, 14));
-        descObjsMetadata.add(content, 0, 10);
-        l_sipsSize = new Label();
-        descObjsMetadata.add(l_sipsSize, 1, 10);
-    }
 
     private void setDropEvent(Stage stage, final SchemaTreeCell cell) {
         // on a Target
@@ -316,6 +190,16 @@ public class SchemaPane extends BorderPane {
                     if (db.hasString()) {
                         success = true;
                         log.info(db.getString());
+                        SourceTreeCell sourceCell = (SourceTreeCell) event.getGestureSource();
+                        SourceTreeItem source = (SourceTreeItem) sourceCell.getTreeItem();
+                        SchemaNode descObj = (SchemaNode)cell.getTreeItem();
+                        if (source != null && descObj != null) { //both trees need to have 1 element selected
+                            if (source instanceof SourceTreeDirectory) { //the source needs to be a directory
+                                RuleComponent ruleC = new RuleComponent((SourceTreeDirectory) source, descObj, visitors);
+                                RulesPane.addChild(ruleC);
+                            }
+                        }
+                        Footer.setStatus("Carregou no \"Create Rule\": " + source + " <-> " + descObj);
                     }
                     event.setDropCompleted(success);
                     event.consume();

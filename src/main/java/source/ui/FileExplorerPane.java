@@ -10,12 +10,9 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.input.ClipboardContent;
@@ -27,8 +24,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
-
 import javafx.util.Callback;
+
 import org.slf4j.LoggerFactory;
 
 import source.representation.SourceDirectory;
@@ -37,6 +34,7 @@ import source.ui.items.SourceTreeDirectory;
 import source.ui.items.SourceTreeItem;
 import utils.Utils;
 import utils.WalkFileTree;
+import core.Footer;
 
 /**
  * Created by adrapereira on 24-09-2015.
@@ -48,10 +46,11 @@ public class FileExplorerPane extends BorderPane implements Observer {
     private TreeView<String> treeView;
     private Stage stage;
 
-    private GridPane metadata;
-    private Label l_title, l_type, l_content, l_path, l_metadata;
-    private CheckBox toggleFiles;
+    private HBox filterButtons;
     private ComputeDirectorySize computeSize;
+
+    //Filter control
+    private boolean showFiles = false;
 
     //This thread is used to walk a directory's file tree and update the UI periodically with the size and file count
     private WalkFileTree computeThread;
@@ -63,20 +62,16 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
         createTop();
         createFileExplorer();
-        createMetadata();
-
-        SplitPane split  = new SplitPane();
-        split.setOrientation(Orientation.VERTICAL);
-        split.getItems().addAll(fileExplorer, metadata);
+        createFilterButtons();
 
         this.setTop(top);
-        this.setCenter(split);
+        this.setCenter(fileExplorer);
+        this.setBottom(filterButtons);
         this.minWidthProperty().bind(stage.widthProperty().multiply(0.25));
     }
 
     private void createTop(){
         Button btn = new Button("Open Folder");
-        toggleFiles = new CheckBox("Show Files");
         Label title = new Label("Source File Explorer");
         title.setFont(Font.font("System", FontWeight.BOLD, 14));
 
@@ -87,7 +82,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
         top.setPadding(new Insets(10, 10, 10, 10));
         top.setSpacing(10);
         top.setAlignment(Pos.TOP_RIGHT);
-        top.getChildren().addAll(title, space, toggleFiles, btn);
+        top.getChildren().addAll(title, space, btn);
 
         btn.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
@@ -96,20 +91,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
                 File selectedDirectory = chooser.showDialog(stage);
                 if (selectedDirectory == null) return;
                 Path path = selectedDirectory.toPath();
-                boolean showFiles = toggleFiles.isSelected();
-                setFileExplorerRoot(path, showFiles);
-            }
-        });
-
-        toggleFiles.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            public void changed(ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) {
-                TreeItem<String> root = treeView.getRoot();
-                if (root == null) return;
-                if (!(root instanceof SourceTreeDirectory)) return;
-                SourceTreeDirectory rootCasted = (SourceTreeDirectory) root;
-                String pathString = rootCasted.getPath();
-                Path path = Paths.get(pathString);
-                setFileExplorerRoot(path, new_val);
+                setFileExplorerRoot(path);
             }
         });
     }
@@ -139,55 +121,43 @@ public class FileExplorerPane extends BorderPane implements Observer {
         treeView.setOnMouseClicked(new SourceClickedEventHandler(this));
     }
 
-    public void setFileExplorerRoot(Path rootPath, boolean showFiles){
+    public void setFileExplorerRoot(Path rootPath){
         SourceTreeDirectory rootNode = new SourceTreeDirectory(rootPath, new SourceDirectory(rootPath, showFiles));
         rootNode.setExpanded(true);
         treeView.setRoot(rootNode);
         updateMetadata(rootPath);
     }
 
-    private void createMetadata(){
-        metadata = new GridPane();
-        metadata.setAlignment(Pos.TOP_LEFT);
-        metadata.setHgap(10);
-        metadata.setVgap(10);
-        metadata.setPadding(new Insets(25, 25, 25, 25));
+    private void createFilterButtons(){
+        filterButtons = new HBox();
+        filterButtons.setPadding(new Insets(10, 10, 10, 10));
 
-        Label title = new Label("Title");
-        title.setFont(Font.font("System", FontWeight.BOLD, 14));
-        metadata.add(title, 0, 1);
-        l_title = new Label();
-        l_title.setWrapText(true);
-        metadata.add(l_title, 1, 1);
+        final Button toggleFiles = new Button("Show Files");
+        toggleFiles.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent e) {
+                TreeItem<String> root = treeView.getRoot();
+                if (root == null) return;
+                if (!(root instanceof SourceTreeDirectory)) return;
+                showFiles = !showFiles;
+                if(showFiles) toggleFiles.setText("Hide files");
+                else toggleFiles.setText("Show files");
 
-        Label type = new Label("Type");
-        type.setFont(Font.font("System", FontWeight.BOLD, 14));
-        metadata.add(type, 0, 2);
-        l_type = new Label();
-        l_type.setWrapText(true);
-        metadata.add(l_type, 1, 2);
+                SourceTreeDirectory rootCasted = (SourceTreeDirectory) root;
+                String pathString = rootCasted.getPath();
+                Path path = Paths.get(pathString);
+                setFileExplorerRoot(path);
+            }
+        });
 
-        Label content = new Label("Content");
-        content.setFont(Font.font("System", FontWeight.BOLD, 14));
-        metadata.add(content, 0, 3);
-        l_content = new Label();
-        l_content.setWrapText(true);
-        metadata.add(l_content, 1, 3);
+        Button toggleIgnored = new Button ("Show ignored");
+        Button toggleMapped = new Button ("Show mapped");
 
-        Label path = new Label("Path");
-        path.setFont(Font.font("System", FontWeight.BOLD, 14));
-        metadata.add(path, 0, 4);
-        l_path = new Label();
-        l_path.setWrapText(true);
-        metadata.add(l_path, 1, 4);
+        HBox spaceLeft = new HBox();
+        HBox.setHgrow(spaceLeft, Priority.ALWAYS);
+        HBox spaceRight = new HBox();
+        HBox.setHgrow(spaceRight, Priority.ALWAYS);
 
-        Label metadataLabel = new Label("Metadata");
-        metadataLabel.setFont(Font.font("System", FontWeight.BOLD, 14));
-        metadataLabel.setMinWidth(100); //don't allow the label to minimize when the pane is shrunk
-        metadata.add(metadataLabel, 0, 5);
-        l_metadata = new Label();
-        l_metadata.setWrapText(true);
-        metadata.add(l_metadata, 1, 5);
+        filterButtons.getChildren().addAll(toggleFiles, spaceLeft, toggleIgnored, spaceRight, toggleMapped);
     }
 
     public void updateMetadata(Path path){
@@ -195,25 +165,11 @@ public class FileExplorerPane extends BorderPane implements Observer {
         stopComputeThread();
         try {
             BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class);
-
-            String title;
-            if(path.getFileName() != null) title = path.getFileName().toString();
-            else title = path.toString();
-            l_title.setText(title);
-            l_path.setText(path.toString());
-            l_metadata.setText("dummy.xml");
-
             if(attr.isDirectory()){
-                l_type.setText("Directory");
-                l_content.setText("");
                 computeSize = new ComputeDirectorySize();
                 computeSize.addObserver(this);
                 computeThread = new WalkFileTree(path.toString(), computeSize);
                 computeThread.start();
-            }
-            else{
-                l_type.setText("File");
-                l_content.setText(Utils.formatSize(attr.size()));
             }
         } catch (IOException e) {
             log.error(e.getMessage());
@@ -254,7 +210,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
                 result.append(", ");
                 result.append(Utils.formatSize(size));
-                l_content.setText(result.toString());
+                Footer.setStatus(result.toString());
                 }
         });
     }

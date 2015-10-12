@@ -1,7 +1,6 @@
 package schema.ui;
 
 import javafx.event.EventHandler;
-import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
 
@@ -22,7 +21,7 @@ public class SchemaClickedEventHandler implements EventHandler<MouseEvent> {
 
     public void handle(MouseEvent mouseEvent) {
         if (mouseEvent.getClickCount() == 1) {
-            TreeItem<String> item = treeView.getSelectionModel().getSelectedItem();
+            /*TreeItem<String> item = treeView.getSelectionModel().getSelectedItem();
             if(item instanceof SchemaNode) {
                 SchemaNode node = (SchemaNode) item;
                 if (node != null)
@@ -30,7 +29,7 @@ public class SchemaClickedEventHandler implements EventHandler<MouseEvent> {
             }else if(item instanceof SipPreviewNode){
                 SipPreviewNode node = (SipPreviewNode)item;
                 spane.updateMetadata(node);
-            }
+            }*/
         }
     }
 }
