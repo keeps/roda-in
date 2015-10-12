@@ -36,6 +36,7 @@ public class CreateBagits extends Thread implements Observer {
         visitors.addObserver(this);
     }
 
+    @Override
     public void run(){
         for(Rule rule: Main.getRules()){
             log.info(rule.getId());
@@ -46,6 +47,7 @@ public class CreateBagits extends Thread implements Observer {
         updateFooter();
     }
 
+    @Override
     public void update(Observable o, Object arg) {
         for(String id: unfinished.keySet()){
             if(visitors.isDone(id) == VisitorState.VISITOR_DONE){
@@ -94,7 +96,7 @@ public class CreateBagits extends Thread implements Observer {
                 numSips++;
             }
             catch (Exception e) {
-                e.printStackTrace();
+                log.error("" + e);
                 error++;
             }
         }

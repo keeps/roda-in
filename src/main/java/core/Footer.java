@@ -1,5 +1,8 @@
 package core;
 
+import java.io.File;
+import java.nio.file.Path;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -9,24 +12,16 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
-import org.slf4j.LoggerFactory;
-import rules.Rule;
-import rules.VisitorStack;
-import utils.TreeVisitor;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.util.HashSet;
+import org.slf4j.LoggerFactory;
 
 
 /**
  * Created by adrapereira on 28-09-2015.
  */
 public class Footer extends HBox {
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(Footer.class.getName());
     public static final Label status = new Label();
     private Stage stage;
     static Button btn;
@@ -45,11 +40,13 @@ public class Footer extends HBox {
         this.getChildren().addAll(status, space, btn);
 
         btn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
             public void handle(ActionEvent e) {
                 DirectoryChooser chooser = new DirectoryChooser();
                 chooser.setTitle("Please choose a folder");
                 File selectedDirectory = chooser.showDialog(stage);
-                if (selectedDirectory == null) return;
+                if (selectedDirectory == null)
+                    return;
                 Path path = selectedDirectory.toPath();
                 Footer.setStatus("Creating BagIts...");
                 btn.setDisable(true);
@@ -61,6 +58,7 @@ public class Footer extends HBox {
 
     public static void setStatus(final String st){
         Platform.runLater(new Runnable() {
+            @Override
             public void run() {
                 status.setText(st);
             }
@@ -69,6 +67,7 @@ public class Footer extends HBox {
 
     public static void activeButton(){
         Platform.runLater(new Runnable() {
+            @Override
             public void run() {
                 btn.setDisable(false);
             }

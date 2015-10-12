@@ -38,7 +38,7 @@ public class VisitorStack extends Observable{
                 try {
                     walker.join();
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    log.debug(e.getMessage());
                     walker.interrupt();
                 }
                 return null;

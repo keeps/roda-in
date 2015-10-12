@@ -57,7 +57,7 @@ public class SourceDirectory implements SourceItem {
             if(directoryStream != null)
                 directoryStream.close();
         } catch (IOException e) {
-            log.error(e.getMessage());
+            log.error("" + e);
         }
     }
 
@@ -69,10 +69,10 @@ public class SourceDirectory implements SourceItem {
             iterator = directoryStream.iterator();
         }
         catch (AccessDeniedException e){
-            log.info(e.getMessage());
+            log.info("" + e);
         }
         catch (IOException e) {
-            log.error(e.getMessage());
+            log.error("" + e);
         }
     }
 

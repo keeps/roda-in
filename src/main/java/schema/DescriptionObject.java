@@ -1,25 +1,22 @@
 package schema;
 
-import java.util.ArrayList;
-
-import org.slf4j.LoggerFactory;
+import java.util.List;
 
 /**
  * Created by adrapereira on 22-09-2015.
  */
 public class DescriptionObject {
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(DescriptionObject.class.getName());
     private String id;
     private String title;
     private String parentId;
     private String level;
     private String descriptionlevel;
-    private ArrayList<DescriptionObject> children;
+    private List<DescriptionObject> children;
 
     public DescriptionObject() {
     }
 
-    public DescriptionObject(String id, String title, String parentId, String level, String descriptionlevel, ArrayList<DescriptionObject> children) {
+    public DescriptionObject(String id, String title, String parentId, String level, String descriptionlevel, List<DescriptionObject> children) {
         this.id = id;
         this.title = title;
         this.parentId = parentId;
@@ -68,11 +65,11 @@ public class DescriptionObject {
         this.descriptionlevel = descriptionlevel;
     }
 
-    public ArrayList<DescriptionObject> getChildren() {
+    public List<DescriptionObject> getChildren() {
         return children;
     }
 
-    public void setChildren(ArrayList<DescriptionObject> children) {
+    public void setChildren(List<DescriptionObject> children) {
         this.children = children;
     }
 

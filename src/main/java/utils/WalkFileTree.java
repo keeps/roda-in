@@ -50,7 +50,7 @@ public class WalkFileTree extends Thread{
                 }
             });
         } catch (IOException e) {
-            log.error(e.getMessage());
+            log.error("" + e);
         }
         handler.end();
     }

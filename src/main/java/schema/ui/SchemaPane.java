@@ -55,7 +55,7 @@ public class SchemaPane extends BorderPane {
         this.setCenter(treeView);
         this.setBottom(bottom);
 
-        this.minWidthProperty().bind(stage.widthProperty().multiply(0.25));
+        this.minWidthProperty().bind(stage.widthProperty().multiply(0.33));
     }
 
     public void createTop(){
@@ -73,6 +73,7 @@ public class SchemaPane extends BorderPane {
         refresh.getChildren().addAll(title, space, btn);
 
         btn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
             public void handle(ActionEvent e) {
                 Footer.setStatus("Update Classification Schema");
             }
@@ -99,13 +100,14 @@ public class SchemaPane extends BorderPane {
         treeView=new TreeView<String>(rootNode);
         treeView.setStyle("-fx-background-color:white;");
         treeView.setShowRoot(false);
-        treeView.setCellFactory((new Callback<TreeView<String>, TreeCell<String>>() {
+        treeView.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
+            @Override
             public TreeCell<String> call(TreeView<String> p) {
                 SchemaTreeCell cell = new SchemaTreeCell();
                 setDropEvent(stage, cell);
                 return cell;
             }
-        }));
+        });
 
         // add everything to the tree pane
         treeBox.getChildren().add(treeView);
@@ -114,7 +116,8 @@ public class SchemaPane extends BorderPane {
 
     public SchemaNode getSelectedItem(){
         int selIndex = treeView.getSelectionModel().getSelectedIndex();
-        if(selIndex == -1) return null;
+        if(selIndex == -1)
+            return null;
         return (SchemaNode)treeView.getTreeItem(selIndex);
     }
 
@@ -145,6 +148,7 @@ public class SchemaPane extends BorderPane {
     private void setDropEvent(Stage stage, final SchemaTreeCell cell) {
         // on a Target
         cell.setOnDragOver(new EventHandler<DragEvent>() {
+            @Override
             public void handle(DragEvent event) {
                 TreeItem<String> treeItem = cell.getTreeItem();
                 if (treeItem instanceof SchemaNode) {
@@ -160,6 +164,7 @@ public class SchemaPane extends BorderPane {
         });
         // on a Target
         cell.setOnDragEntered(new EventHandler<DragEvent>() {
+            @Override
             public void handle(DragEvent event) {
                 TreeItem<String> treeItem = cell.getTreeItem();
                 if (treeItem instanceof SchemaNode) {
@@ -175,6 +180,7 @@ public class SchemaPane extends BorderPane {
         });
         // on a Target
         cell.setOnDragExited(new EventHandler<DragEvent>() {
+                                @Override
                                  public void handle(DragEvent event) {
                                      cell.setStyle("-fx-background-color: white");
                                      event.consume();
@@ -184,12 +190,12 @@ public class SchemaPane extends BorderPane {
         // on a Target
         cell.setOnDragDropped(
             new EventHandler<DragEvent>() {
+                @Override
                 public void handle(DragEvent event) {
                     Dragboard db = event.getDragboard();
                     boolean success = false;
                     if (db.hasString()) {
                         success = true;
-                        log.info(db.getString());
                         SourceTreeCell sourceCell = (SourceTreeCell) event.getGestureSource();
                         SourceTreeItem source = (SourceTreeItem) sourceCell.getTreeItem();
                         SchemaNode descObj = (SchemaNode)cell.getTreeItem();
@@ -208,6 +214,7 @@ public class SchemaPane extends BorderPane {
         );
         // on a Source
         cell.setOnDragDone(new EventHandler<DragEvent>() {
+                              @Override
                                public void handle(DragEvent event) {}
                            }
         );

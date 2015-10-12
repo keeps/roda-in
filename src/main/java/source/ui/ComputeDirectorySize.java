@@ -11,28 +11,43 @@ import utils.TreeVisitor;
  * Created by adrapereira on 24-09-2015.
  */
 public class ComputeDirectorySize extends Observable implements TreeVisitor {
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(ComputeDirectorySize.class.getName());
-    private final int UPDATEFREQUENCY = 500; //in milliseconds
+    private static final int UPDATE_FREQUENCY = 500; //in milliseconds
     private long filesCount = 0, directoryCount, size = 0;
     private long lastUIUpdate = 0;
 
-    public ComputeDirectorySize(){ }
+    public ComputeDirectorySize(){
+    }
 
-    public void preVisitDirectory(Path path, BasicFileAttributes attrs) {}
+    @Override
 
+    public void preVisitDirectory(Path path, BasicFileAttributes attrs) {
+        /*
+        * This FileVisitor doesn't need to need to do anything before visiting a directory
+        */
+    }
+
+    @Override
     public void postVisitDirectory(Path path) {
         directoryCount++;
         update();
     }
 
+    @Override
     public void visitFile(Path path, BasicFileAttributes attrs) {
         size += attrs.size();
         filesCount++;
         update();
     }
 
-    public void visitFileFailed(Path path) {}
+    @Override
 
+    public void visitFileFailed(Path path) {
+        /*
+        * This FileVisitor doesn't need to need to do anything if the visit failed
+        */
+    }
+
+    @Override
     public void end() {
         setChanged();
         notifyObservers();
@@ -40,7 +55,7 @@ public class ComputeDirectorySize extends Observable implements TreeVisitor {
 
     private void update(){
         long now = System.currentTimeMillis();
-        if(now - lastUIUpdate > UPDATEFREQUENCY) {
+        if(now - lastUIUpdate > UPDATE_FREQUENCY) {
             setChanged();
             notifyObservers();
             lastUIUpdate = now;
@@ -58,5 +73,9 @@ public class ComputeDirectorySize extends Observable implements TreeVisitor {
     public long getSize() {
         return size;
     }
-    public String getId(){return "dirSize";}
+
+    @Override
+    public String getId(){
+        return "dirSize";
+    }
 }

@@ -3,6 +3,7 @@ package schema;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.LoggerFactory;
 
@@ -13,21 +14,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class ClassificationSchema {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(ClassificationSchema.class.getName());
-    private ArrayList<DescriptionObject> dos;
+    private List<DescriptionObject> dos;
 
     public ClassificationSchema(){
         dos = new ArrayList<DescriptionObject>();
     }
 
-    public ArrayList<DescriptionObject> getDos() {
-        return dos;
-    }
-
-    public void setDos(ArrayList<DescriptionObject> dos) {
+    public ClassificationSchema(List<DescriptionObject> dos) {
         this.dos = dos;
     }
 
-    public ClassificationSchema(ArrayList<DescriptionObject> dos) {
+    public List<DescriptionObject> getDos() {
+        return dos;
+    }
+
+    public void setDos(List<DescriptionObject> dos) {
         this.dos = dos;
     }
 
@@ -42,7 +43,7 @@ public class ClassificationSchema {
             //convert json string to object
             return objectMapper.readValue(input, ClassificationSchema.class);
         } catch (IOException e) {
-            log.debug(e.getMessage());
+            log.error("" + e);
         }
         return null;
     }

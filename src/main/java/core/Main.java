@@ -4,6 +4,9 @@ package core;
  * Created by adrapereira on 16-09-2015.
  */
 
+import java.io.IOException;
+import java.util.Set;
+
 import javafx.application.Application;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
@@ -24,9 +27,6 @@ import schema.ui.SchemaPane;
 import source.ui.FileExplorerPane;
 import source.ui.items.SourceTreeItem;
 
-import java.io.IOException;
-import java.util.HashSet;
-
 public class Main extends Application {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(Main.class.getName());
     private Stage stage;
@@ -46,7 +46,7 @@ public class Main extends Application {
         try {
             stage.getIcons().add(new Image(ClassLoader.getSystemResource("roda2-logo.png").openStream()));
         } catch (IOException e) {
-            log.error(e.getMessage());
+            log.error("" + e);
         }
 
         createFrameStructure();
@@ -94,7 +94,7 @@ public class Main extends Application {
     public static void removeRule(RuleComponent rule){
         rulesPane.removeChild(rule);
     }
-    public static HashSet<Rule> getRules(){
+    public static Set<Rule> getRules(){
         return rulesPane.getRules();
     }
 }

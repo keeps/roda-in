@@ -52,7 +52,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     //Filter control
     private boolean showFiles = false;
 
-    //This thread is used to walk a directory's file tree and update the UI periodically with the size and file count
+    //This thread is used to walk a directory's file tree and update the UI periodically with the SIZE and file count
     private WalkFileTree computeThread;
 
     public FileExplorerPane(Stage stage){
@@ -67,7 +67,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
         this.setTop(top);
         this.setCenter(fileExplorer);
         this.setBottom(filterButtons);
-        this.minWidthProperty().bind(stage.widthProperty().multiply(0.25));
+        this.minWidthProperty().bind(stage.widthProperty().multiply(0.33));
     }
 
     private void createTop(){
@@ -85,11 +85,13 @@ public class FileExplorerPane extends BorderPane implements Observer {
         top.getChildren().addAll(title, space, btn);
 
         btn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
             public void handle(ActionEvent e) {
                 DirectoryChooser chooser = new DirectoryChooser();
                 chooser.setTitle("Please choose a folder");
                 File selectedDirectory = chooser.showDialog(stage);
-                if (selectedDirectory == null) return;
+                if (selectedDirectory == null)
+                    return;
                 Path path = selectedDirectory.toPath();
                 setFileExplorerRoot(path);
             }
@@ -107,13 +109,14 @@ public class FileExplorerPane extends BorderPane implements Observer {
         // add everything to the tree pane
         treeBox.getChildren().addAll(treeView);
         VBox.setVgrow(treeView, Priority.ALWAYS);
-        treeView.setCellFactory((new Callback<TreeView<String>, TreeCell<String>>() {
+        treeView.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
+            @Override
             public TreeCell<String> call(TreeView<String> p) {
                 SourceTreeCell cell = new SourceTreeCell();
                 setDragEvent(stage, cell);
                 return cell;
             }
-        }));
+        });
 
         fileExplorer = new StackPane();
         fileExplorer.getChildren().add(treeBox);
@@ -134,12 +137,16 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
         final Button toggleFiles = new Button("Show Files");
         toggleFiles.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
             public void handle(ActionEvent e) {
                 TreeItem<String> root = treeView.getRoot();
-                if (root == null) return;
-                if (!(root instanceof SourceTreeDirectory)) return;
+                if (root == null)
+                    return;
+                if (!(root instanceof SourceTreeDirectory))
+                    return;
                 showFiles = !showFiles;
-                if(showFiles) toggleFiles.setText("Hide files");
+                if(showFiles)
+                    toggleFiles.setText("Hide files");
                 else toggleFiles.setText("Show files");
 
                 SourceTreeDirectory rootCasted = (SourceTreeDirectory) root;
@@ -172,7 +179,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
                 computeThread.start();
             }
         } catch (IOException e) {
-            log.error(e.getMessage());
+            log.error("" + e);
         }
     }
 
@@ -180,7 +187,8 @@ public class FileExplorerPane extends BorderPane implements Observer {
         Path path = Paths.get(pathString);
         updateMetadata(path);
     }
-    
+
+    @Override
     public void update(Observable o, Object arg) {
         if(o == computeSize){
             updateSize(computeSize.getFilesCount(), computeSize.getDirectoryCount(), computeSize.getSize());
@@ -192,20 +200,24 @@ public class FileExplorerPane extends BorderPane implements Observer {
     }
 
     private void stopComputeThread(){
-        if(computeThread != null) computeThread.interrupt();
+        if(computeThread != null)
+            computeThread.interrupt();
     }
 
     public void updateSize(final long fileCount, final long dirCount, final long size){
         Platform.runLater(new Runnable() {
+            @Override
             public void run() {
                 StringBuilder result = new StringBuilder(dirCount + " ");
-                if(dirCount == 1) result.append("directory");
+                if(dirCount == 1)
+                    result.append("directory");
                 else result.append("directories");
 
                 result.append(", ");
 
                 result.append(fileCount).append(" ");
-                if(fileCount == 1) result.append("file");
+                if(fileCount == 1)
+                    result.append("file");
                 else result.append("files");
 
                 result.append(", ");
@@ -218,6 +230,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     private void setDragEvent(Stage stage, final SourceTreeCell cell){
         // The drag starts on a gesture source
         cell.setOnDragDetected(new EventHandler<MouseEvent>() {
+            @Override
             public void handle(MouseEvent event) {
                 SourceTreeItem item = (SourceTreeItem) cell.getTreeItem();
                 if (item != null /*&& item.isLeaf()*/) {
@@ -233,9 +246,11 @@ public class FileExplorerPane extends BorderPane implements Observer {
     }
 
     public SourceTreeItem getSelectedItem(){
-        if(treeView == null) return null;
+        if(treeView == null)
+            return null;
         int selIndex = treeView.getSelectionModel().getSelectedIndex();
-        if(selIndex == -1) return null;
+        if(selIndex == -1)
+            return null;
         return (SourceTreeItem)treeView.getTreeItem(selIndex);
     }
 }
