@@ -1,10 +1,9 @@
 package source.ui;
 
-import java.nio.file.*;
+import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Observable;
 
-import org.slf4j.LoggerFactory;
 import utils.TreeVisitor;
 
 /**

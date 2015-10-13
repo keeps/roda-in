@@ -8,8 +8,7 @@ import org.slf4j.LoggerFactory;
  * Created by adrapereira on 17-09-2015.
  */
 public class SourceFile implements SourceItem{
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(SourceFile.class.getName());
-    public Path path;
+    private Path path;
 
     public SourceFile(Path path) {
         this.path = path;

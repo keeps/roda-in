@@ -8,23 +8,16 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import org.slf4j.LoggerFactory;
-
 import source.ui.items.SourceTreeItem;
 
 /**
  * Created by adrapereira on 17-09-2015.
  */
 public class SipContentDirectory extends TreeItem<Object> implements SourceTreeItem{
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(SipContentDirectory.class.getName());
     public static final Image folderCollapseImage = new Image(ClassLoader.getSystemResourceAsStream("icons/folder.png"));
     public static final Image folderExpandImage = new Image(ClassLoader.getSystemResourceAsStream("icons/folder-open.png"));
     //this stores the full path to the file or directory
     private String fullPath;
-
-    public String getPath() {
-        return (this.fullPath);
-    }
 
     public SipContentDirectory(Path file) {
         super(file.toString());
@@ -44,6 +37,7 @@ public class SipContentDirectory extends TreeItem<Object> implements SourceTreeI
         }
 
         this.addEventHandler(TreeItem.branchExpandedEvent(), new EventHandler<TreeModificationEvent<Object>>() {
+            @Override
             public void handle(TreeModificationEvent<Object> e) {
                 SipContentDirectory source = (SipContentDirectory) e.getSource();
                 if (source.isExpanded()) {
@@ -54,6 +48,7 @@ public class SipContentDirectory extends TreeItem<Object> implements SourceTreeI
         });
 
         this.addEventHandler(TreeItem.branchCollapsedEvent(), new EventHandler<TreeModificationEvent<Object>>() {
+            @Override
             public void handle(TreeModificationEvent<Object> e) {
                 SipContentDirectory source = (SipContentDirectory) e.getSource();
                 if (!source.isExpanded()) {
@@ -62,5 +57,10 @@ public class SipContentDirectory extends TreeItem<Object> implements SourceTreeI
                 }
             }
         });
+    }
+
+    @Override
+    public String getPath() {
+        return this.fullPath;
     }
 }

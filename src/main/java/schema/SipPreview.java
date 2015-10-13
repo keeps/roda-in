@@ -1,15 +1,13 @@
 package schema;
 
 import org.slf4j.LoggerFactory;
-import rules.TreeNode;
 
-import java.util.Map;
+import rules.TreeNode;
 
 /**
  * Created by adrapereira on 01-10-2015.
  */
 public class SipPreview {
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(SipPreview.class.getName());
     private String name;
     private String path;
     private TreeNode files;

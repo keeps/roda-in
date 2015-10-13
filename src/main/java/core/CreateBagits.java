@@ -1,8 +1,8 @@
 package core;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -66,7 +66,7 @@ public class CreateBagits extends Thread implements Observer {
     }
 
     private void createBagits(Rule rule){
-        ArrayList<SipPreview> sips = rule.getSips();
+        List<SipPreview> sips = rule.getSips();
 
         String path = startPath + "/" + rule.getId() + "/";
         File ruleDir = new File(path);

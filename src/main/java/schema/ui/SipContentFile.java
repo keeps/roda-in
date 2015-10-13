@@ -7,23 +7,16 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import org.slf4j.LoggerFactory;
-
 import source.ui.items.SourceTreeItem;
 
 /**
  * Created by adrapereira on 17-09-2015.
  */
 public class SipContentFile extends TreeItem<Object> implements SourceTreeItem{
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(SipContentFile.class.getName());
     public static final Image fileImage = new Image(ClassLoader.getSystemResourceAsStream("icons/file.png"));
 
     //this stores the full path to the file
     private String fullPath;
-
-    public String getPath() {
-        return (this.fullPath);
-    }
 
     public SipContentFile(Path file) {
         super(file.toString());
@@ -41,5 +34,10 @@ public class SipContentFile extends TreeItem<Object> implements SourceTreeItem{
                 this.setValue(value);
             }
         }
+    }
+
+    @Override
+    public String getPath() {
+        return this.fullPath;
     }
 }

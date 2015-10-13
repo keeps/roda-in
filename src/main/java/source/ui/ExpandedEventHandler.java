@@ -21,7 +21,7 @@ public class ExpandedEventHandler implements EventHandler<TreeItem.TreeModificat
         source.expanded = true;
 
         // We only load new items if this hasn't been done before
-        if(!source.directory.hasFirstLoaded())
+        if(!source.getDirectory().hasFirstLoaded())
             source.loadMore();
     }
 }

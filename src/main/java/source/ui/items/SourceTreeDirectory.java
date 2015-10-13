@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 import javafx.concurrent.Task;
@@ -23,23 +24,17 @@ import source.ui.ExpandedEventHandler;
  * Created by adrapereira on 17-09-2015.
  */
 public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeItem{
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(SourceTreeDirectory.class.getName());
     public static final Image folderCollapseImage = new Image(ClassLoader.getSystemResourceAsStream("icons/folder.png"));
     public static final Image folderExpandImage = new Image(ClassLoader.getSystemResourceAsStream("icons/folder-open.png"));
-    public SourceDirectory directory;
+    private SourceDirectory directory;
     public boolean expanded = false;
     //this stores the full path to the file or directory
     private String fullPath;
-
-    public String getPath() {
-        return (this.fullPath);
-    }
 
     public SourceTreeDirectory(Path file, SourceDirectory directory) {
         super(file.toString());
         this.directory = directory;
         this.fullPath = file.toString();
-        //this.setGraphic(new ImageView(folderCollapseImage));
 
         this.getChildren().add(new SourceTreeLoading());
 
@@ -60,6 +55,7 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
         this.addEventHandler(SourceTreeDirectory.branchExpandedEvent(), new ExpandedEventHandler());
 
         this.addEventHandler(TreeItem.branchCollapsedEvent(), new EventHandler<TreeModificationEvent<Object>>() {
+            @Override
             public void handle(TreeItem.TreeModificationEvent<Object> e) {
                 SourceTreeDirectory source = (SourceTreeDirectory) e.getSource();
                 if (!source.isExpanded()) {
@@ -69,9 +65,19 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
         });
     }
 
+
+    @Override
+    public String getPath() {
+        return (this.fullPath);
+    }
+
+    public SourceDirectory getDirectory() {
+        return directory;
+    }
+
     /*
-    * We need to create a task to load the items to a temporary collection, otherwise the UI will hang while we access the disk.
-    * */
+        * We need to create a task to load the items to a temporary collection, otherwise the UI will hang while we access the disk.
+        * */
     public void loadMore(){
         final ArrayList<TreeItem<String>> children = new ArrayList<TreeItem<String>>(getChildren());
 
@@ -79,36 +85,36 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
         Task<Integer> task = new Task<Integer>() {
             @Override
             protected Integer call() throws Exception {
-            TreeMap<String, SourceItem> loaded;
-            loaded = directory.loadMore();
-
-            if (loaded.size() != 0) {
-                //Add new items
-                for (String sourceItem : loaded.keySet()) {
-                    Path sourcePath = Paths.get(sourceItem);
-                    if (Files.isDirectory(sourcePath)) {
-                        children.add(new SourceTreeDirectory(sourcePath, directory.getChildDirectory(sourcePath)));
-                    } else children.add(new SourceTreeFile(sourcePath));
+                SortedMap<String, SourceItem> loaded;
+                loaded = getDirectory().loadMore();
+                if (loaded.size() != 0) {
+                    //Add new items
+                    for (String sourceItem : loaded.keySet()) {
+                        Path sourcePath = Paths.get(sourceItem);
+                        if (Files.isDirectory(sourcePath)) {
+                            children.add(new SourceTreeDirectory(sourcePath, directory.getChildDirectory(sourcePath)));
+                        } else children.add(new SourceTreeFile(sourcePath));
+                    }
+                    // check if there's more files to load
+                    if (directory.isStreamOpen())
+                        children.add(new SourceTreeLoadMore());
                 }
-                // check if there's more files to load
-                if (directory.isStreamOpen())
-                    children.add(new SourceTreeLoadMore());
-            }
-            return loaded.size();
+                return loaded.size();
             }
         };
 
         // After everything is loaded, we add all the items to the TreeView at once.
         task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+            @Override
             public void handle(WorkerStateEvent workerStateEvent) {
-            // Remove "loading" items
-            ArrayList<Object> toRemove = new ArrayList<Object>();
-            for(Object o: children)
-                if(o instanceof SourceTreeLoading)
-                    toRemove.add(o);
-            children.removeAll(toRemove);
-            // Set the children
-            getChildren().setAll(children);
+                // Remove "loading" items
+                ArrayList<Object> toRemove = new ArrayList<Object>();
+                for(Object o: children)
+                    if(o instanceof SourceTreeLoading)
+                        toRemove.add(o);
+                children.removeAll(toRemove);
+                // Set the children
+                getChildren().setAll(children);
             }
         });
 

@@ -13,15 +13,9 @@ import org.slf4j.LoggerFactory;
  * Created by adrapereira on 17-09-2015.
  */
 public class SourceTreeFile extends TreeItem<String> implements SourceTreeItem{
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(SourceTreeFile.class.getName());
     public static final Image fileImage = new Image(ClassLoader.getSystemResourceAsStream("icons/file.png"));
-
     //this stores the full path to the file
     private String fullPath;
-
-    public String getPath() {
-        return (this.fullPath);
-    }
 
     public SourceTreeFile(Path file) {
         super(file.toString());
@@ -39,5 +33,10 @@ public class SourceTreeFile extends TreeItem<String> implements SourceTreeItem{
                 this.setValue(value);
             }
         }
+    }
+
+    @Override
+    public String getPath() {
+        return this.fullPath;
     }
 }

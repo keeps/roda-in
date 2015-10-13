@@ -15,8 +15,6 @@ import javafx.scene.layout.Priority;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
-import org.slf4j.LoggerFactory;
-
 
 /**
  * Created by adrapereira on 28-09-2015.

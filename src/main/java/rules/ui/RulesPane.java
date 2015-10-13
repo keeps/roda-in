@@ -1,6 +1,7 @@
 package rules.ui;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -16,8 +17,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
-import org.slf4j.LoggerFactory;
-
 import rules.Rule;
 import rules.RuleTypes;
 import rules.VisitorStack;
@@ -31,14 +30,13 @@ import core.Main;
  * Created by adrapereira on 24-09-2015.
  */
 public class RulesPane extends BorderPane {
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(RulesPane.class.getName());
     private HBox createRule;
     private static ListView<RuleComponent> listView;
     private VisitorStack visitors = new VisitorStack();
 
     public RulesPane(Stage stage){
+        listView = new ListView<>();
         createCreateRule();
-        createListView();
 
         this.setTop(createRule);
         this.setCenter(listView);
@@ -60,6 +58,7 @@ public class RulesPane extends BorderPane {
         createRule.getChildren().addAll(title, space, btn);
 
         btn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
             public void handle(ActionEvent e) {
                 SourceTreeItem source = Main.getSourceSelectedItem();
                 SchemaNode descObj = Main.getSchemaSelectedItem();
@@ -74,21 +73,8 @@ public class RulesPane extends BorderPane {
         });
     }
 
-    private void createListView(){
-        listView = new ListView<RuleComponent>();
-        //Disable selection in listview
-//        listView.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
-//            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
-//                Platform.runLater(new Runnable() {
-//                    public void run() {
-//                        listView.getSelectionModel().select(-1);
-//                    }
-//                });
-//            }
-//        });
-    }
-    public HashSet<Rule> getRules(){
-        HashSet<Rule> rules = new HashSet<Rule>();
+    public Set<Rule> getRules(){
+        HashSet<Rule> rules = new HashSet<>();
         for(RuleComponent rc: listView.getItems()) {
             // create new Rule objects to avoid interfering with the existing ones
             SourceTreeDirectory source = rc.getRule().getSource();
@@ -102,6 +88,10 @@ public class RulesPane extends BorderPane {
         listView.getItems().remove(rule);
     }
 
-    /* TEMP !!!!!!*/
-    public static void addChild(RuleComponent comp){listView.getItems().add(comp);}
+    /* TEMP !!!!!!
+    * TODO
+    * */
+    public static void addChild(RuleComponent comp){
+        listView.getItems().add(comp);
+    }
 }

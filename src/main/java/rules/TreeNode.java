@@ -14,13 +14,21 @@ public class TreeNode {
 
     public TreeNode(String path){
         this.path = path;
-        files = new HashMap<String, TreeNode>();
+        files = new HashMap<>();
     }
     public void add(TreeNode node){
         files.put(node.getPath(), node);
     }
-    public void add(String node){files.put(node, new TreeNode(node));}
-    public String getPath(){return path;}
-    public Set<String> getKeys(){return files.keySet();}
-    public TreeNode get(String key){return files.get(key);}
+    public void add(String node){
+        files.put(node, new TreeNode(node));
+    }
+    public String getPath(){
+        return path;
+    }
+    public Set<String> getKeys(){
+        return files.keySet();
+    }
+    public TreeNode get(String key){
+        return files.get(key);
+    }
 }

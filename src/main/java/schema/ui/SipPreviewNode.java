@@ -18,7 +18,10 @@ public class SipPreviewNode extends TreeItem<String> {
         this.icon = icon;
         setGraphic(new ImageView(icon));
     }
-    public String toString(){return sip.toString();}
+    @Override
+    public String toString(){
+        return sip.toString();
+    }
 
     public SipPreview getSip() {
         return sip;

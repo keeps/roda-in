@@ -17,7 +17,6 @@ import source.ui.items.SourceTreeLoading;
  * Created by adrapereira on 21-09-2015.
  */
 public class SourceClickedEventHandler implements EventHandler<MouseEvent> {
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(SourceClickedEventHandler.class.getName());
     private TreeView<String> treeView;
     private FileExplorerPane fep;
 
@@ -26,6 +25,7 @@ public class SourceClickedEventHandler implements EventHandler<MouseEvent> {
         fep = pane;
     }
 
+    @Override
     public void handle(MouseEvent mouseEvent) {
         if (mouseEvent.getClickCount() == 1) {
             TreeItem<String> item = treeView.getSelectionModel().getSelectedItem();
@@ -36,6 +36,7 @@ public class SourceClickedEventHandler implements EventHandler<MouseEvent> {
                 parent.getChildren().add(loading);
 
                 Platform.runLater(new Runnable() {
+                    @Override
                     public void run() {
                         parent.loadMore();
                     }

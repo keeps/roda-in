@@ -6,6 +6,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Iterator;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.slf4j.LoggerFactory;
@@ -15,7 +16,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SourceDirectory implements SourceItem {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(SourceDirectory.class.getName());
-    public Path path;
+    private Path path;
     private int itemsToLoad = 0;
     private TreeMap<String, SourceItem> children;
     private DirectoryStream<Path> directoryStream;
@@ -25,14 +26,14 @@ public class SourceDirectory implements SourceItem {
     public SourceDirectory(Path path, boolean showFiles) {
         this.path = path;
         this.showFiles = showFiles;
-        children = new TreeMap<String, SourceItem>();
+        children = new TreeMap<>();
     }
 
     public Path getPath() {
         return path;
     }
 
-    public TreeMap<String, SourceItem> getChildren() {
+    public SortedMap<String, SourceItem> getChildren() {
         return children;
     }
 
@@ -46,7 +47,9 @@ public class SourceDirectory implements SourceItem {
         return null;
     }
 
-    public boolean isStreamOpen(){return iterator.hasNext();}
+    public boolean isStreamOpen(){
+        return iterator.hasNext();
+    }
 
     public void addChild(Path p, SourceItem item){
         children.put(p.toString(), item);
@@ -62,7 +65,8 @@ public class SourceDirectory implements SourceItem {
     }
 
     private void startDirectoryStream(){
-        if(directoryStream != null) return;
+        if(directoryStream != null)
+            return;
 
         try {
             directoryStream = Files.newDirectoryStream(path);
@@ -76,22 +80,26 @@ public class SourceDirectory implements SourceItem {
         }
     }
 
-    public boolean hasFirstLoaded(){return children.size() > 1;}
+    public boolean hasFirstLoaded(){
+        return children.size() > 1;
+    }
 
-    public TreeMap<String, SourceItem> loadMore(){
+    public SortedMap<String, SourceItem> loadMore(){
         startDirectoryStream();
         int loaded = 0, childrenSize = children.size();
         TreeMap<String, SourceItem> result = new TreeMap<String, SourceItem>();
         itemsToLoad += 50;
         while(iterator.hasNext() && (childrenSize + loaded < itemsToLoad)){
             Path file = iterator.next();
-            if(!showFiles && !Files.isDirectory(file)) continue;
+            if(!showFiles && !Files.isDirectory(file))
+                continue;
             SourceItem added = loadChild(file);
             result.put(file.toString(), added);
             loaded++;
         }
         //we can close the directory stream if there's no more files to load in the iterator
-        if(!iterator.hasNext()) closeDirectoryStream();
+        if(!iterator.hasNext())
+            closeDirectoryStream();
 
         return result;
     }

@@ -17,8 +17,6 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
-import org.slf4j.LoggerFactory;
-
 import rules.VisitorStack;
 import rules.ui.RuleComponent;
 import rules.ui.RulesPane;
@@ -34,8 +32,6 @@ import core.Main;
  * Created by adrapereira on 28-09-2015.
  */
 public class SchemaPane extends BorderPane {
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(SchemaPane.class.getName());
-    private Stage stage;
     private TreeView<String> treeView;
     private HBox refresh;
     private HBox bottom;
@@ -44,8 +40,6 @@ public class SchemaPane extends BorderPane {
 
     public SchemaPane(Stage stage){
         super();
-
-        this.stage = stage;
 
         createTreeView();
         createTop();
@@ -104,7 +98,7 @@ public class SchemaPane extends BorderPane {
             @Override
             public TreeCell<String> call(TreeView<String> p) {
                 SchemaTreeCell cell = new SchemaTreeCell();
-                setDropEvent(stage, cell);
+                setDropEvent(cell);
                 return cell;
             }
         });
@@ -145,7 +139,15 @@ public class SchemaPane extends BorderPane {
     }
 
 
-    private void setDropEvent(Stage stage, final SchemaTreeCell cell) {
+    private void setDropEvent(SchemaTreeCell cell) {
+        setOnDragOver(cell);
+        setOnDragEntered(cell);
+        setOnDragExited(cell);
+        setOnDragDropped(cell);
+        setOnDragDone(cell);
+    }
+
+    private void setOnDragOver(final SchemaTreeCell cell){
         // on a Target
         cell.setOnDragOver(new EventHandler<DragEvent>() {
             @Override
@@ -162,6 +164,9 @@ public class SchemaPane extends BorderPane {
                 event.consume();
             }
         });
+    }
+
+    private void setOnDragEntered(final SchemaTreeCell cell){
         // on a Target
         cell.setOnDragEntered(new EventHandler<DragEvent>() {
             @Override
@@ -178,44 +183,53 @@ public class SchemaPane extends BorderPane {
                 event.consume();
             }
         });
+    }
+
+    private void setOnDragExited(final SchemaTreeCell cell){
         // on a Target
         cell.setOnDragExited(new EventHandler<DragEvent>() {
-                                @Override
+                                 @Override
                                  public void handle(DragEvent event) {
                                      cell.setStyle("-fx-background-color: white");
                                      event.consume();
                                  }
                              }
         );
+    }
+
+    private void setOnDragDropped(final SchemaTreeCell cell){
         // on a Target
         cell.setOnDragDropped(
-            new EventHandler<DragEvent>() {
-                @Override
-                public void handle(DragEvent event) {
-                    Dragboard db = event.getDragboard();
-                    boolean success = false;
-                    if (db.hasString()) {
-                        success = true;
-                        SourceTreeCell sourceCell = (SourceTreeCell) event.getGestureSource();
-                        SourceTreeItem source = (SourceTreeItem) sourceCell.getTreeItem();
-                        SchemaNode descObj = (SchemaNode)cell.getTreeItem();
-                        if (source != null && descObj != null) { //both trees need to have 1 element selected
-                            if (source instanceof SourceTreeDirectory) { //the source needs to be a directory
-                                RuleComponent ruleC = new RuleComponent((SourceTreeDirectory) source, descObj, visitors);
-                                RulesPane.addChild(ruleC);
+                new EventHandler<DragEvent>() {
+                    @Override
+                    public void handle(DragEvent event) {
+                        Dragboard db = event.getDragboard();
+                        boolean success = false;
+                        if (db.hasString()) {
+                            success = true;
+                            SourceTreeCell sourceCell = (SourceTreeCell) event.getGestureSource();
+                            SourceTreeItem source = (SourceTreeItem) sourceCell.getTreeItem();
+                            SchemaNode descObj = (SchemaNode)cell.getTreeItem();
+                            if (source != null && descObj != null) { //both trees need to have 1 element selected
+                                if (source instanceof SourceTreeDirectory) { //the source needs to be a directory
+                                    RuleComponent ruleC = new RuleComponent((SourceTreeDirectory) source, descObj, visitors);
+                                    RulesPane.addChild(ruleC);
+                                }
                             }
                         }
-                        Footer.setStatus("Carregou no \"Create Rule\": " + source + " <-> " + descObj);
+                        event.setDropCompleted(success);
+                        event.consume();
                     }
-                    event.setDropCompleted(success);
-                    event.consume();
                 }
-            }
         );
+    }
+
+    private void setOnDragDone(final SchemaTreeCell cell){
         // on a Source
         cell.setOnDragDone(new EventHandler<DragEvent>() {
-                              @Override
-                               public void handle(DragEvent event) {}
+                               @Override
+                               public void handle(DragEvent event) {
+                               }
                            }
         );
     }

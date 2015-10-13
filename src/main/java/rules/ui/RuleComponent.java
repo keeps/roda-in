@@ -14,10 +14,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
 import javafx.scene.text.TextAlignment;
-
-import org.slf4j.LoggerFactory;
 
 import rules.Rule;
 import rules.RuleTypes;
@@ -32,16 +29,15 @@ import core.Main;
  * Created by adrapereira on 28-09-2015.
  */
 public class RuleComponent extends BorderPane implements Observer {
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(RuleComponent.class.getName());
     private RuleComponent toRemove = this; //we need a pointer to this object so we can send it when the "remove" button is pressed
     private SchemaNode schema;
     private Rule rule;
     private ToggleGroup group;
     private ComboBox<Integer> level;
-    private Label l_state;
+    private Label lState;
 
     private HBox buttons;
-    private Button apply, remove, cancel;
+    private Button apply, remove;
 
     private VisitorStack visitors;
 
@@ -76,7 +72,7 @@ public class RuleComponent extends BorderPane implements Observer {
         source.setFont(new Font("System", 14));
         source.setGraphic(new ImageView(SourceTreeDirectory.folderCollapseImage));
 
-        Label descObj = new Label(schema.dob.getTitle());
+        Label descObj = new Label(schema.getDob().getTitle());
         descObj.setMinHeight(24);
         descObj.setFont(new Font("System", 14));
         descObj.setGraphic(new ImageView(schema.getImage()));
@@ -121,10 +117,10 @@ public class RuleComponent extends BorderPane implements Observer {
     private void createBottom(){
         remove = new Button("Remove");
         apply = new Button("Apply");
-        l_state = new Label("");
-        VBox.setVgrow(l_state, Priority.ALWAYS);
-        l_state.setAlignment(Pos.BOTTOM_CENTER);
-        l_state.setOpacity(0.6);
+        lState = new Label("");
+        VBox.setVgrow(lState, Priority.ALWAYS);
+        lState.setAlignment(Pos.BOTTOM_CENTER);
+        lState.setOpacity(0.6);
 
         HBox space = new HBox();
         HBox.setHgrow(space, Priority.ALWAYS);
@@ -133,10 +129,11 @@ public class RuleComponent extends BorderPane implements Observer {
         buttons.setPadding(new Insets(10, 10, 10, 10));
         buttons.setSpacing(10);
         buttons.setAlignment(Pos.CENTER);
-        buttons.getChildren().addAll(remove, space, l_state, apply);
+        buttons.getChildren().addAll(remove, space, lState, apply);
 
 
         apply.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
             public void handle(ActionEvent e) {
                 apply.setDisable(true);
                 remove.setText("Cancel");
@@ -148,6 +145,7 @@ public class RuleComponent extends BorderPane implements Observer {
         });
 
         remove.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
             public void handle(ActionEvent e) {
                 if (remove.getText().contains("Cancel")) {
                     boolean cancelled = visitors.cancel(rule.getVisitor());
@@ -166,11 +164,13 @@ public class RuleComponent extends BorderPane implements Observer {
         setBottom(buttons);
     }
 
+    @Override
     public void update(Observable o, Object arg) {
         if(o == rule){
             Platform.runLater(new Runnable() {
+                @Override
                 public void run() {
-                    l_state.setText(rule.getSipCount() + " items ...");
+                    lState.setText(rule.getSipCount() + " items ...");
                 }
             });
         }else if(o == visitors){
@@ -180,17 +180,17 @@ public class RuleComponent extends BorderPane implements Observer {
                     apply.setDisable(false);
                     schema.setExpanded(true);
                     remove.setText("Remove");
-                    l_state.setText(rule.getSipCount() + " items");
+                    lState.setText(rule.getSipCount() + " items");
                     break;
                 case VISITOR_RUNNING:
-                    l_state.setText(rule.getSipCount() + " items ...");
+                    lState.setText(rule.getSipCount() + " items ...");
                     break;
                 case VISITOR_NOTSUBMITTED:
                     break;
                 case VISITOR_QUEUED:
                     remove.setText("Cancel");
                     apply.setDisable(true);
-                    l_state.setText("Waiting in queue...");
+                    lState.setText("Waiting in queue...");
                     break;
                 default:
                     break;
@@ -208,10 +208,14 @@ public class RuleComponent extends BorderPane implements Observer {
         }
     }
 
-    public Rule getRule(){return rule;}
+    public Rule getRule(){
+        return rule;
+    }
     public RuleTypes getType(){
         Toggle active = group.getSelectedToggle();
         return (RuleTypes)active.getUserData();
     }
-    public int getLevel(){return level.getValue();}
+    public int getLevel(){
+        return level.getValue();
+    }
 }

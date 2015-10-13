@@ -3,9 +3,8 @@ package rules;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
-
-import org.slf4j.LoggerFactory;
 
 import schema.SipPreview;
 import utils.TreeVisitor;
@@ -14,29 +13,40 @@ import utils.TreeVisitor;
  * Created by adrapereira on 05-10-2015.
  */
 public class SipPerFileVisitor extends Observable implements TreeVisitor {
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(SipPerFileVisitor.class.getName());
-    private final int UPDATEFREQUENCY = 500; //in milliseconds
-    private String startPath;
+    private static final int UPDATEFREQUENCY = 500; //in milliseconds
     private ArrayList<SipPreview> sips;
     private int added = 0, returned = 0;
     private long lastUIUpdate = 0;
     private String id;
 
-    public SipPerFileVisitor(String startPath, String id){
-        this.startPath = startPath;
-        sips = new ArrayList<SipPreview>();
+    public SipPerFileVisitor(String id){
+        sips = new ArrayList<>();
         this.id = id;
     }
 
-    public ArrayList<SipPreview> getSips() {return sips;}
-    public int getCount(){return added;}
-    public SipPreview getNext(){return sips.get(returned++);}
-    public boolean hasNext(){return returned < added;}
+    public List<SipPreview> getSips() {
+        return sips;
+    }
+    public int getCount(){
+        return added;
+    }
+    public SipPreview getNext(){
+        return sips.get(returned++);
+    }
+    public boolean hasNext(){
+        return returned < added;
+    }
 
-    public void preVisitDirectory(Path path, BasicFileAttributes attrs) {    }
+    @Override
+    public void preVisitDirectory(Path path, BasicFileAttributes attrs) {
+    }
 
-    public void postVisitDirectory(Path path) {    }
+    @Override
+    public void postVisitDirectory(Path path) {
 
+    }
+
+    @Override
     public void visitFile(Path path, BasicFileAttributes attrs) {
         String name = "sip_" + path.getFileName().toString();
         TreeNode files = new TreeNode(path.toString());
@@ -51,12 +61,18 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor {
         }
     }
 
-    public void visitFileFailed(Path path) {    }
+    @Override
+    public void visitFileFailed(Path path) {
+    }
 
+    @Override
     public void end() {
         setChanged();
         notifyObservers();
     }
 
-    public String getId(){return id;}
+    @Override
+    public String getId(){
+        return id;
+    }
 }

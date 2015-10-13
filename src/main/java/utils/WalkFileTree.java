@@ -30,19 +30,16 @@ public class WalkFileTree extends Thread{
                     handler.visitFile(file, attrs);
                     return isTerminated();
                 }
-
                 @Override
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
                     handler.preVisitDirectory(dir, attrs);
                     return isTerminated();
                 }
-
                 @Override
                 public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
                     handler.postVisitDirectory(dir);
                     return isTerminated();
                 }
-
                 @Override
                 public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
                     handler.visitFileFailed(file);
@@ -60,6 +57,7 @@ public class WalkFileTree extends Thread{
         if (Thread.interrupted()) {
             handler.end();
             return FileVisitResult.TERMINATE;
-        }return FileVisitResult.CONTINUE;
+        }
+        return FileVisitResult.CONTINUE;
     }
 }

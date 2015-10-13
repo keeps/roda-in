@@ -7,8 +7,6 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import org.slf4j.LoggerFactory;
-
 import rules.Rule;
 import schema.DescriptionObject;
 
@@ -16,17 +14,16 @@ import schema.DescriptionObject;
  * Created by adrapereira on 17-09-2015.
  */
 public class SchemaNode extends TreeItem<String> implements Observer {
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(SchemaNode.class.getName());
-    public DescriptionObject dob;
-    private HashMap<String, Integer> rules;
-    private HashMap<String, HashSet<SipPreviewNode>> sips;
+    private DescriptionObject dob;
+    private Map<String, Integer> rules;
+    private Map<String, Set<SipPreviewNode>> sips;
     private Image icon;
 
     public SchemaNode(DescriptionObject dobject) {
         super(dobject.getTitle());
         dob = dobject;
-        rules = new HashMap<String, Integer>();
-        sips = new HashMap<String, HashSet<SipPreviewNode>>();
+        rules = new HashMap<>();
+        sips = new HashMap<>();
 
         ResourceBundle hierarchyConfig = ResourceBundle.getBundle("properties/roda-description-levels-hierarchy");
         String category = hierarchyConfig.getString("category." + dobject.getDescriptionlevel());
@@ -43,9 +40,11 @@ public class SchemaNode extends TreeItem<String> implements Observer {
         }
     }
 
+    @Override
     public void update(final Observable o, Object arg) {
         if(o instanceof Rule){
             Platform.runLater(new Runnable() {
+                @Override
                 public void run() {
                     Rule rule = (Rule) o;
                     String id = rule.getId();
@@ -84,15 +83,23 @@ public class SchemaNode extends TreeItem<String> implements Observer {
 
         String text = dob.getTitle();
         int count = getSipCount();
-        if(count > 0) text += "  (" + count + " items)";
+        if(count > 0)
+            text += "  (" + count + " items)";
         setValue(text);
     }
 
     public int getSipCount(){
         int result = 0;
-        for(int i: rules.values()) result += i;
+        for(int i: rules.values())
+            result += i;
         return result;
     }
 
-    public Image getImage(){return icon;}
+    public Image getImage(){
+        return icon;
+    }
+
+    public DescriptionObject getDob() {
+        return dob;
+    }
 }

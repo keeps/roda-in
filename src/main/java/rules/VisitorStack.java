@@ -33,6 +33,7 @@ public class VisitorStack extends Observable{
         final WalkFileTree walker = new WalkFileTree(path, vis);
         final String id = vis.getId();
         Task toRun = new Task<Void>() {
+            @Override
             public Void call() {
                 walker.start();
                 try {
@@ -45,6 +46,7 @@ public class VisitorStack extends Observable{
             }
         };
         toRun.setOnRunning(new EventHandler<WorkerStateEvent>() {
+            @Override
             public void handle(WorkerStateEvent workerStateEvent) {
                 runningTask = id;
                 update();
@@ -52,6 +54,7 @@ public class VisitorStack extends Observable{
         });
         //notify the observers when the task finishes
         toRun.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+            @Override
             public void handle(WorkerStateEvent workerStateEvent) {
                 runningTask = null;
                 update();
@@ -70,9 +73,12 @@ public class VisitorStack extends Observable{
 
     public VisitorState isDone(String visitorId){
         Future fut = futures.get(visitorId);
-        if(fut == null) return VisitorState.VISITOR_NOTSUBMITTED;
-        if(runningTask != null && visitorId.equals(runningTask)) return VisitorState.VISITOR_RUNNING;
-        if(fut.isDone()) return VisitorState.VISITOR_DONE;
+        if(fut == null)
+            return VisitorState.VISITOR_NOTSUBMITTED;
+        if(runningTask != null && visitorId.equals(runningTask))
+            return VisitorState.VISITOR_RUNNING;
+        if(fut.isDone())
+            return VisitorState.VISITOR_DONE;
         else return VisitorState.VISITOR_QUEUED;
     }
 
