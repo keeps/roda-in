@@ -22,7 +22,7 @@ import rules.ui.RuleComponent;
 import rules.ui.RulesPane;
 import schema.ClassificationSchema;
 import schema.DescriptionObject;
-import source.ui.items.SourceTreeCell;
+import source.ui.SourceTreeCell;
 import source.ui.items.SourceTreeDirectory;
 import source.ui.items.SourceTreeItem;
 import core.Footer;

@@ -6,19 +6,19 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 
+import core.HiddenFilesBag;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
+import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -29,7 +29,6 @@ import javafx.util.Callback;
 import org.slf4j.LoggerFactory;
 
 import source.representation.SourceDirectory;
-import source.ui.items.SourceTreeCell;
 import source.ui.items.SourceTreeDirectory;
 import source.ui.items.SourceTreeItem;
 import utils.Utils;
@@ -48,6 +47,8 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
     private HBox filterButtons;
     private ComputeDirectorySize computeSize;
+
+    private ArrayList<Path> deleted; //deleted files and directories
 
     //Filter control
     private boolean showFiles = false;
@@ -100,12 +101,13 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
     private void createFileExplorer(){
         //create tree pane
-        VBox treeBox=new VBox();
+        final VBox treeBox=new VBox();
         treeBox.setPadding(new Insets(10, 10, 10, 10));
         treeBox.setSpacing(10);
 
-        treeView = new TreeView<String>();
+        treeView = new TreeView<>();
         treeView.setStyle("-fx-background-color:white;");
+        treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         // add everything to the tree pane
         treeBox.getChildren().addAll(treeView);
         VBox.setVgrow(treeView, Priority.ALWAYS);
@@ -122,6 +124,19 @@ public class FileExplorerPane extends BorderPane implements Observer {
         fileExplorer.getChildren().add(treeBox);
 
         treeView.setOnMouseClicked(new SourceClickedEventHandler(this));
+        treeView.setOnKeyReleased(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if(event.getCode().getName().equalsIgnoreCase("DELETE")){
+                    Iterator<TreeItem<String>> iterator = treeView.getSelectionModel().getSelectedItems().iterator();
+                    while(iterator.hasNext()){
+                        SourceTreeItem item = (SourceTreeItem) iterator.next();
+                        HiddenFilesBag.ignore(item.getPath());
+                        log.info("Delete " + item.getPath());
+                    }
+                }
+            }
+        });
     }
 
     public void setFileExplorerRoot(Path rootPath){

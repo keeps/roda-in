@@ -25,6 +25,7 @@ public class SchemaTreeCell extends TreeCell<String> {
         } else {
             HBox hbox = new HBox();
             Label lab = new Label(item);
+            lab.setStyle("-fx-text-fill: black");
             Image icon = null;
 
             //Get the correct item
@@ -50,6 +51,4 @@ public class SchemaTreeCell extends TreeCell<String> {
             setGraphic(hbox);
         }
     }
-
-
-    }
+}

@@ -1,4 +1,4 @@
-package source.ui.items;
+package source.ui;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeCell;
@@ -6,6 +6,9 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import source.ui.items.SourceTreeDirectory;
+import source.ui.items.SourceTreeFile;
+import source.ui.items.SourceTreeLoadMore;
 
 /**
  * Created by adrapereira on 12-10-2015.
@@ -25,6 +28,7 @@ public class SourceTreeCell extends TreeCell<String> {
         } else {
             HBox hbox = new HBox();
             Label lab = new Label(item);
+            lab.setStyle("-fx-text-fill: black");
             Image icon = null;
 
             //Get the correct item
