@@ -2,8 +2,6 @@ package source.representation;
 
 import java.nio.file.Path;
 
-import org.slf4j.LoggerFactory;
-
 /**
  * Created by adrapereira on 17-09-2015.
  */

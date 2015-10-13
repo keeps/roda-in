@@ -1,5 +1,8 @@
 package rules.ui;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -24,6 +27,7 @@ import schema.ui.SchemaNode;
 import source.ui.items.SourceTreeDirectory;
 import utils.TreeVisitor;
 import core.Main;
+import utils.Utils;
 
 /**
  * Created by adrapereira on 28-09-2015.
@@ -55,6 +59,8 @@ public class RuleComponent extends BorderPane implements Observer {
         createTop();
         createCenter();
         createBottom();
+
+        apply();
     }
 
     private void createTop(){
@@ -71,12 +77,14 @@ public class RuleComponent extends BorderPane implements Observer {
         source.setMinHeight(24);
         source.setFont(new Font("System", 14));
         source.setGraphic(new ImageView(SourceTreeDirectory.folderCollapseImage));
+        source.setStyle(" -fx-text-fill: black");
 
         Label descObj = new Label(schema.getDob().getTitle());
         descObj.setMinHeight(24);
         descObj.setFont(new Font("System", 14));
         descObj.setGraphic(new ImageView(schema.getImage()));
         descObj.setTextAlignment(TextAlignment.LEFT);
+        descObj.setStyle(" -fx-text-fill: black");
 
         HBox space = new HBox();
         HBox.setHgrow(space, Priority.ALWAYS);
@@ -90,26 +98,43 @@ public class RuleComponent extends BorderPane implements Observer {
     private void createCenter(){
         GridPane gridCenter = new GridPane();
         gridCenter.setPadding(new Insets(0, 10, 0, 10));
+        gridCenter.setVgap(5);
         gridCenter.setHgap(10);
 
         group = new ToggleGroup();
 
-        RadioButton byFile = new RadioButton("1 SIP per file");
-        byFile.setToggleGroup(group);
-        byFile.setUserData(RuleTypes.SIPPERFILE);
-        byFile.setSelected(true);
+        RadioButton singleSip = new RadioButton("Create a single SIP");
+        singleSip.setToggleGroup(group);
+        singleSip.setUserData(RuleTypes.SIPPERFILE);
+        singleSip.setSelected(true);
+        singleSip.setStyle(" -fx-text-fill: black");
 
-        RadioButton byFolder = new RadioButton("1 SIP per folder until level");
+        RadioButton perFile = new RadioButton("Create one SIP per file");
+        perFile.setToggleGroup(group);
+        perFile.setUserData(RuleTypes.SIPPERFILE);
+        perFile.setSelected(true);
+        perFile.setStyle(" -fx-text-fill: black");
+
+        RadioButton byFolder = new RadioButton("Create one SIP per folder until level");
         byFolder.setUserData(RuleTypes.SIPPERFOLDER);
         byFolder.setToggleGroup(group);
+        byFolder.setStyle(" -fx-text-fill: black");
 
-        ObservableList<Integer> options = FXCollections.observableArrayList(1,2,3,4,5,6,7,8,9,10);
-        level = new ComboBox<Integer>(options);
-        level.setValue(3);
+        Path startPath = Paths.get(rule.getSource().getPath());
+        int depth = Utils.getRelativeMaxDepth(startPath);
 
-        gridCenter.add(byFile, 0, 1);
-        gridCenter.add(byFolder, 0, 2);
-        gridCenter.add(level, 1, 2);
+        ArrayList<Integer> levels = new ArrayList<>();
+        for(int i = 1; i <= depth; i++)
+            levels.add(i);
+
+        ObservableList<Integer> options = FXCollections.observableArrayList(levels);
+        level = new ComboBox<>(options);
+        level.setValue((int)Math.ceil(depth/2.0));
+
+        gridCenter.add(singleSip, 0, 1);
+        gridCenter.add(perFile, 0, 2);
+        gridCenter.add(byFolder, 0, 3);
+        gridCenter.add(level, 1, 3);
 
         setCenter(gridCenter);
     }
@@ -120,7 +145,7 @@ public class RuleComponent extends BorderPane implements Observer {
         lState = new Label("");
         VBox.setVgrow(lState, Priority.ALWAYS);
         lState.setAlignment(Pos.BOTTOM_CENTER);
-        lState.setOpacity(0.6);
+        lState.setStyle(" -fx-text-fill: darkgrey");
 
         HBox space = new HBox();
         HBox.setHgrow(space, Priority.ALWAYS);

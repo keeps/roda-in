@@ -70,7 +70,9 @@ public class SchemaNode extends TreeItem<String> implements Observer {
         int count = r.getSipCount();
         String id = r.getId();
         rules.put(id, count);
-        setValue(dob.getTitle() + "  (" + getSipCount() + " items)");
+        int sipCount = getSipCount();
+        if(sipCount > 0)
+            setValue(dob.getTitle() + "  (" + sipCount + " items)");
     }
 
     public void removeRule(Rule r){

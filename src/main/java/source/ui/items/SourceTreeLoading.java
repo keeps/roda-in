@@ -2,8 +2,6 @@ package source.ui.items;
 
 import javafx.scene.control.TreeItem;
 
-import org.slf4j.LoggerFactory;
-
 /**
  * Created by adrapereira on 17-09-2015.
  */

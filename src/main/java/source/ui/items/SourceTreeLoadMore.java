@@ -4,8 +4,6 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import org.slf4j.LoggerFactory;
-
 /**
  * Created by adrapereira on 17-09-2015.
  */

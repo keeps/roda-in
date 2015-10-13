@@ -6,8 +6,6 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
 
-import org.slf4j.LoggerFactory;
-
 import source.ui.items.SourceTreeDirectory;
 import source.ui.items.SourceTreeFile;
 import source.ui.items.SourceTreeLoadMore;

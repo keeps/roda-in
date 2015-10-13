@@ -12,7 +12,7 @@ public class ExpandedEventHandler implements EventHandler<TreeItem.TreeModificat
 
     @Override
     public void handle(TreeItem.TreeModificationEvent<Object> e) {
-        source = (SourceTreeDirectory)e.getSource();
+        source = SourceTreeDirectory.class.cast(e.getSource());
 
         // The event is triggered in the item and all its parents until the root,
         // so we set an additional control variable to only execute the desired code once

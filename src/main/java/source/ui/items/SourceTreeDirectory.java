@@ -6,15 +6,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.SortedMap;
-import java.util.TreeMap;
 
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
-
-import org.slf4j.LoggerFactory;
 
 import source.representation.SourceDirectory;
 import source.representation.SourceItem;
@@ -57,7 +54,7 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
         this.addEventHandler(TreeItem.branchCollapsedEvent(), new EventHandler<TreeModificationEvent<Object>>() {
             @Override
             public void handle(TreeItem.TreeModificationEvent<Object> e) {
-                SourceTreeDirectory source = (SourceTreeDirectory) e.getSource();
+                SourceTreeDirectory source = SourceTreeDirectory.class.cast(e.getSource());
                 if (!source.isExpanded()) {
                     source.expanded = false;
                 }

@@ -7,8 +7,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 
-import org.slf4j.LoggerFactory;
-
 /**
  * Created by adrapereira on 12-10-2015.
  */
