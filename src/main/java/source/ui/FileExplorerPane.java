@@ -6,10 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.*;
 
 import core.HiddenFilesBag;
 import javafx.application.Platform;
@@ -260,12 +257,13 @@ public class FileExplorerPane extends BorderPane implements Observer {
         });
     }
 
-    public SourceTreeItem getSelectedItem(){
+    public Set<SourceTreeItem> getSelectedItems(){
         if(treeView == null)
             return null;
-        int selIndex = treeView.getSelectionModel().getSelectedIndex();
-        if(selIndex == -1)
-            return null;
-        return (SourceTreeItem)treeView.getTreeItem(selIndex);
+        Set<SourceTreeItem> result = new HashSet<>();
+        for(TreeItem item: treeView.getSelectionModel().getSelectedItems()){
+            result.add((SourceTreeItem)item);
+        }
+        return result;
     }
 }

@@ -44,33 +44,15 @@ public class RulesPane extends BorderPane {
     }
 
     private void createCreateRule(){
-        Button btn = new Button("Create Rule");
         Label title = new Label("Mapping Rules");
         title.setFont(Font.font("System", FontWeight.BOLD, 14));
-
-        HBox space = new HBox();
-        HBox.setHgrow(space, Priority.ALWAYS);
 
         createRule = new HBox();
         createRule.setPadding(new Insets(10, 10, 10, 10));
         createRule.setSpacing(10);
-        createRule.setAlignment(Pos.TOP_RIGHT);
-        createRule.getChildren().addAll(title, space, btn);
+        createRule.setAlignment(Pos.TOP_LEFT);
+        createRule.getChildren().add(title);
 
-        btn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                SourceTreeItem source = Main.getSourceSelectedItem();
-                SchemaNode descObj = Main.getSchemaSelectedItem();
-                if (source != null && descObj != null) { //both trees need to have 1 element selected
-                    if (source instanceof SourceTreeDirectory) { //the source needs to be a directory
-                        RuleComponent ruleC = new RuleComponent((SourceTreeDirectory) source, descObj, visitors);
-                        listView.getItems().add(ruleC);
-                    }
-                }
-                Footer.setStatus("Carregou no \"Create Rule\": " + source + " <-> " + descObj);
-            }
-        });
     }
 
     public Set<Rule> getRules(){

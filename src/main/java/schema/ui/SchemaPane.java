@@ -1,5 +1,7 @@
 package schema.ui;
 
+import java.util.Set;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -18,12 +20,11 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import rules.VisitorStack;
-import rules.ui.RuleComponent;
-import rules.ui.RulesPane;
+import rules.ui.RuleModalController;
 import schema.ClassificationSchema;
 import schema.DescriptionObject;
-import source.ui.SourceTreeCell;
 import source.ui.items.SourceTreeDirectory;
+import source.ui.items.SourceTreeFile;
 import source.ui.items.SourceTreeItem;
 import core.Footer;
 import core.Main;
@@ -36,10 +37,13 @@ public class SchemaPane extends BorderPane {
     private HBox refresh;
     private HBox bottom;
     private VisitorStack visitors = new VisitorStack();
+    private Stage primaryStage;
 
 
     public SchemaPane(Stage stage){
         super();
+
+        primaryStage = stage;
 
         createTreeView();
         createTop();
@@ -123,7 +127,7 @@ public class SchemaPane extends BorderPane {
         associate.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                SourceTreeItem source = Main.getSourceSelectedItem();
+                /*Set<SourceTreeItem> set = Main.getSourceSelectedItems();
                 SchemaNode descObj = Main.getSchemaSelectedItem();
                 if (source != null && descObj != null) { //both trees need to have 1 element selected
                     if (source instanceof SourceTreeDirectory) { //the source needs to be a directory
@@ -131,7 +135,7 @@ public class SchemaPane extends BorderPane {
                         RulesPane.addChild(ruleC);
                     }
                 }
-                Footer.setStatus("Carregou no \"Create Rule\": " + source + " <-> " + descObj);
+                Footer.setStatus("Carregou no \"Create Rule\": " + source + " <-> " + descObj);*/
             }
         });
 
@@ -207,15 +211,18 @@ public class SchemaPane extends BorderPane {
                         boolean success = false;
                         if (db.hasString()) {
                             success = true;
-                            SourceTreeCell sourceCell = (SourceTreeCell) event.getGestureSource();
-                            SourceTreeItem source = (SourceTreeItem) sourceCell.getTreeItem();
+                            Set<SourceTreeItem> sourceSet = Main.getSourceSelectedItems();
                             SchemaNode descObj = (SchemaNode)cell.getTreeItem();
-                            if (source != null && descObj != null) { //both trees need to have 1 element selected
-                                if (source instanceof SourceTreeDirectory) { //the source needs to be a directory
-                                    RuleComponent ruleC = new RuleComponent((SourceTreeDirectory) source, descObj, visitors);
-                                    RulesPane.addChild(ruleC);
-                                }
-                            }
+                            boolean valid = true;
+                            if (sourceSet != null && sourceSet.size() > 0 && descObj != null) { //both trees need to have 1 element selected
+                                for(SourceTreeItem source: sourceSet)
+                                    if (!(source instanceof SourceTreeDirectory || source instanceof SourceTreeFile)) {
+                                        valid = false;
+                                        break;
+                                    }
+                            }else valid = false;
+                            if(valid)
+                                RuleModalController.newAssociation(primaryStage, sourceSet, descObj);
                         }
                         event.setDropCompleted(success);
                         event.consume();

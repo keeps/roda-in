@@ -88,8 +88,8 @@ public class Main extends Application {
     public static SchemaNode getSchemaSelectedItem(){
         return schemaPane.getSelectedItem();
     }
-    public static SourceTreeItem getSourceSelectedItem(){
-        return previewExplorer.getSelectedItem();
+    public static Set<SourceTreeItem> getSourceSelectedItems(){
+        return previewExplorer.getSelectedItems();
     }
     public static void removeRule(RuleComponent rule){
         rulesPane.removeChild(rule);
