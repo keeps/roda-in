@@ -26,7 +26,7 @@ public class VisitorStack extends Observable{
 
     public VisitorStack(){
         visitors = Executors.newSingleThreadExecutor();
-        futures = new HashMap<String, Future>();
+        futures = new HashMap<>();
     }
 
     public void add(String path, TreeVisitor vis){

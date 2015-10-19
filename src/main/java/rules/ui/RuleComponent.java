@@ -1,7 +1,5 @@
 package rules.ui;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
@@ -27,7 +25,6 @@ import schema.ui.SchemaNode;
 import source.ui.items.SourceTreeDirectory;
 import utils.TreeVisitor;
 import core.Main;
-import utils.Utils;
 
 /**
  * Created by adrapereira on 28-09-2015.
@@ -52,7 +49,8 @@ public class RuleComponent extends BorderPane implements Observer {
         this.visitors.addObserver(this);
         setStyle("-fx-border-color: lightgray; -fx-border-width: 2px; -fx-background-color: white;");
 
-        rule = new Rule(sourcePath);
+        //TODO
+        //rule = new Rule(Paths.get(sourcePath.getPath()), RuleTypes.SINGLESIP, 1, null, null);
         rule.addObserver(this);
         rule.addObserver(schema);
 
@@ -73,7 +71,7 @@ public class RuleComponent extends BorderPane implements Observer {
         hbox.setPadding(new Insets(5, 5, 5, 5));
         pane.getChildren().add(hbox);
 
-        Label source = new Label(rule.getFolderName());
+        Label source = new Label();//rule.getFolderName());
         source.setMinHeight(24);
         source.setFont(new Font("System", 14));
         source.setGraphic(new ImageView(SourceTreeDirectory.folderCollapseImage));
@@ -120,8 +118,8 @@ public class RuleComponent extends BorderPane implements Observer {
         byFolder.setToggleGroup(group);
         byFolder.setStyle(" -fx-text-fill: black");
 
-        Path startPath = Paths.get(rule.getSource().getPath());
-        int depth = Utils.getRelativeMaxDepth(startPath);
+        //Path startPath = rule.getSource();
+        int depth = 0;//Utils.getRelativeMaxDepth(startPath);
 
         ArrayList<Integer> levels = new ArrayList<>();
         for(int i = 1; i <= depth; i++)
@@ -229,7 +227,7 @@ public class RuleComponent extends BorderPane implements Observer {
             RuleTypes type = (RuleTypes) active.getUserData();
             int lev = level.getValue();
             TreeVisitor visitor = rule.apply(type, lev);
-            visitors.add(rule.getSource().getPath(), visitor);
+            visitors.add(rule.getSourceString(), visitor);
         }
     }
 

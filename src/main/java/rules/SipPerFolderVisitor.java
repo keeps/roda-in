@@ -5,7 +5,6 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
-import schema.SipPreview;
 import utils.TreeVisitor;
 
 /**

@@ -84,7 +84,7 @@ public class SchemaPane extends BorderPane {
         treeBox.setPadding(new Insets(10, 10, 10, 10));
         treeBox.setSpacing(10);
 
-        TreeItem<String> rootNode = new TreeItem<String>();
+        TreeItem<String> rootNode = new TreeItem<>();
         rootNode.setExpanded(true);
 
         // get the classification schema and add all its nodes to the tree

@@ -8,11 +8,7 @@ import java.util.Observer;
 
 import org.slf4j.LoggerFactory;
 
-import rules.Rule;
-import rules.TreeNode;
-import rules.VisitorStack;
-import rules.VisitorState;
-import schema.SipPreview;
+import rules.*;
 import utils.TreeVisitor;
 import gov.loc.repository.bagit.Bag;
 import gov.loc.repository.bagit.BagFactory;
@@ -32,16 +28,16 @@ public class CreateBagits extends Thread implements Observer {
     public CreateBagits(String path){
         startPath = path;
         visitors = new VisitorStack();
-        unfinished = new HashMap<String, Rule>();
+        unfinished = new HashMap<>();
         visitors.addObserver(this);
     }
 
     @Override
     public void run(){
-        for(Rule rule: Main.getRules()){
+        for(Rule rule : Main.getRules()){
             log.info(rule.getId());
             TreeVisitor visitor = rule.apply();
-            visitors.add(rule.getSource().getPath(), visitor);
+            visitors.add(rule.getSourceString(), visitor);
             unfinished.put(rule.getId(), rule);
         }
         updateFooter();

@@ -1,8 +1,4 @@
-package schema;
-
-import org.slf4j.LoggerFactory;
-
-import rules.TreeNode;
+package rules;
 
 /**
  * Created by adrapereira on 01-10-2015.

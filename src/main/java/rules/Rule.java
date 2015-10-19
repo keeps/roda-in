@@ -1,13 +1,13 @@
 package rules;
 
+import java.nio.file.Path;
 import java.util.*;
 
 import javafx.scene.image.Image;
 
-import schema.SipPreview;
 import schema.ui.DescriptionLevelImageCreator;
 import schema.ui.SipPreviewNode;
-import source.ui.items.SourceTreeDirectory;
+import source.ui.items.SourceTreeItem;
 import utils.RandomIdGenerator;
 import utils.TreeVisitor;
 
@@ -15,8 +15,12 @@ import utils.TreeVisitor;
  * Created by adrapereira on 29-09-2015.
  */
 public class Rule extends Observable implements Observer {
-    private SourceTreeDirectory source;
-    private RuleTypes type;
+    private Set<SourceTreeItem> source;
+    private String metadata;
+    private RuleTypes assocType;
+    private MetadataTypes metaType;
+    //private HashMap<ContentFilter> filters;
+
     private List<SipPreview> sips;
     private HashSet<SipPreviewNode> sipNodes = new HashSet<>();
     private TreeVisitor visitor;
@@ -25,15 +29,12 @@ public class Rule extends Observable implements Observer {
     private int level;
     private String id;
 
-    public Rule(SourceTreeDirectory source, RuleTypes type, int level) {
+    public Rule(Set<SourceTreeItem> source, RuleTypes assocType, int level, String metadata, MetadataTypes metaType){
         this.source = source;
-        this.type = type;
+        this.assocType = assocType;
         this.level = level;
-        id = RandomIdGenerator.getBase62(5);
-    }
-
-    public Rule(SourceTreeDirectory source){
-        this.source = source;
+        this.metadata = metadata;
+        this.metaType = metaType;
         id = RandomIdGenerator.getBase62(5);
 
         ResourceBundle hierarchyConfig = ResourceBundle.getBundle("properties/roda-description-levels-hierarchy");
@@ -42,10 +43,22 @@ public class Rule extends Observable implements Observer {
 
         DescriptionLevelImageCreator dlic = new DescriptionLevelImageCreator(unicode);
         icon = dlic.generate();
+
+        apply();
     }
 
-    public SourceTreeDirectory getSource() {
+    /*public Rule(Path source, RuleTypes assocType, int level) {
+        this.source = source;
+        this.assocType = assocType;
+        this.level = level;
+        id = RandomIdGenerator.getBase62(5);
+    }*/
+
+    public Set<SourceTreeItem> getSource() {
         return source;
+    }
+    public String getSourceString() {
+        return source.toString();
     }
 
     public String getId() {
@@ -56,13 +69,13 @@ public class Rule extends Observable implements Observer {
         return sips;
     }
 
-    public void setSource(SourceTreeDirectory source) {
+    public void setSource(Set<SourceTreeItem> source) {
         this.source = source;
     }
 
-    public String getFolderName(){
-        return source.getValue().toString();
-    }
+    /*public String getFolderName(){
+        return source.getFileName().toString();
+    }*/
 
     public TreeVisitor getVisitor(){
         return visitor;
@@ -76,11 +89,11 @@ public class Rule extends Observable implements Observer {
     }
 
     public TreeVisitor apply(){
-        return apply(type, level);
+        return apply(assocType, level);
     }
 
     public TreeVisitor apply(RuleTypes type, int level){
-        this.type = type;
+        this.assocType = type;
         sipCount = 0;
         added = 0;
         sips = new ArrayList<>();
@@ -94,7 +107,7 @@ public class Rule extends Observable implements Observer {
                 break;
             default:
             case SIPPERFOLDER:
-                SipPerFolderVisitor visitorFolder = new SipPerFolderVisitor(source.getPath(), id, level);
+                SipPerFolderVisitor visitorFolder = new SipPerFolderVisitor(source.toString(), id, level);
                 visitorFolder.addObserver(this);
                 visitor = visitorFolder;
                 break;
