@@ -13,13 +13,14 @@ import utils.TreeVisitor;
 /**
  * Created by adrapereira on 05-10-2015.
  */
-public class SipPerFileVisitor extends Observable implements TreeVisitor {
+public class SipPerFileVisitor extends Observable implements TreeVisitor, SipCreator {
     private static final int UPDATEFREQUENCY = 500; //in milliseconds
     private ArrayList<SipPreview> sips;
     private Set<ContentFilter> filters;
     private int added = 0, returned = 0;
     private long lastUIUpdate = 0;
     private String id;
+    private String startPath;
 
     public SipPerFileVisitor(String id, Set<ContentFilter> filters){
         sips = new ArrayList<>();
@@ -38,6 +39,9 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor {
     }
     public boolean hasNext(){
         return returned < added;
+    }
+    public void setStartPath(String st){
+        startPath = st;
     }
 
     @Override

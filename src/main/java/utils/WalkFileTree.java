@@ -23,6 +23,7 @@ public class WalkFileTree extends Thread{
     @Override
     public void run() {
         for(String startPath: paths) {
+            handler.setStartPath(startPath);
             final Path path = Paths.get(startPath);
             try {
                 Files.walkFileTree(path, new SimpleFileVisitor<Path>() {

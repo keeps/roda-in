@@ -125,6 +125,11 @@ public class Rule extends Observable implements Observer {
         sipNodes = new HashSet<>();
 
         switch (type){
+            case SINGLESIP:
+                SipSingle visitorSingle = new SipSingle(id, filters);
+                visitorSingle.addObserver(this);
+                visitor = visitorSingle;
+                break;
             case SIPPERFILE:
                 SipPerFileVisitor visitorFile = new SipPerFileVisitor(id, filters);
                 visitorFile.addObserver(this);
@@ -132,7 +137,7 @@ public class Rule extends Observable implements Observer {
                 break;
             default:
             case SIPPERFOLDER:
-                SipPerFolderVisitor visitorFolder = new SipPerFolderVisitor(source.toString(), id, level);
+                SipPerFolderVisitor visitorFolder = new SipPerFolderVisitor(id, level, filters);
                 visitorFolder.addObserver(this);
                 visitor = visitorFolder;
                 break;
@@ -142,23 +147,16 @@ public class Rule extends Observable implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        if(o instanceof SipPerFileVisitor){
-            SipPerFileVisitor visit = (SipPerFileVisitor) o;
+        if(o instanceof SipCreator){
+            SipCreator visit = (SipCreator) o;
             sipCount = visit.getCount();
             while(visit.hasNext() && added < 100){
                 added++;
                 sipNodes.add(new SipPreviewNode(visit.getNext(), icon));
                 sips = visit.getSips();
             }
-        }else if(o instanceof SipPerFolderVisitor){
-            SipPerFolderVisitor visit = (SipPerFolderVisitor) o;
-            sipCount = visit.getCount();
-            while(visit.hasNext() && added < 100) {
-                added++;
-                sipNodes.add(new SipPreviewNode(visit.getNext(), icon));
-                sips = visit.getSips();
-            }
         }
+
         setChanged();
         notifyObservers();
     }

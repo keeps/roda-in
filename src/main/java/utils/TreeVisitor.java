@@ -13,4 +13,5 @@ public interface TreeVisitor {
     void visitFileFailed(Path path);
     void end();
     String getId();
+    void setStartPath(String path);
 }

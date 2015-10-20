@@ -52,6 +52,13 @@ public class ComputeDirectorySize extends Observable implements TreeVisitor {
         notifyObservers();
     }
 
+    @Override
+    public void setStartPath(String st){
+        /*
+        * This FileVisitor does not need this method to do anything
+        * */
+    }
+
     private void update(){
         long now = System.currentTimeMillis();
         if(now - lastUIUpdate > UPDATE_FREQUENCY) {
