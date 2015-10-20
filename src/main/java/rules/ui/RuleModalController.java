@@ -9,7 +9,9 @@ import rules.RuleTypes;
 import rules.VisitorStack;
 import schema.ui.SchemaNode;
 import source.ui.items.SourceTreeItem;
+import utils.TreeVisitor;
 
+import java.util.HashSet;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
@@ -61,6 +63,16 @@ public class RuleModalController implements Observer {
                 default: break;
             }
             Rule rule = new Rule(sourceSet, assocType, level, metadata, metaType);
+            //rule.addObserver(this);
+            rule.addObserver(schema);
+            TreeVisitor visitor = rule.apply();
+
+            //create set with the selected paths
+            Set<String> sourcePaths = new HashSet<>();
+            for(SourceTreeItem sti: sourceSet)
+                sourcePaths.add(sti.getPath());
+            visitors.add(sourcePaths, visitor);
+
             schema.addRule(rule);
             Main.mapSelected();
         } catch (Exception e) {

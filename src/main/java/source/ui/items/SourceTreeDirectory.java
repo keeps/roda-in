@@ -4,8 +4,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.SortedMap;
+import java.util.*;
 
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
@@ -29,6 +28,9 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
     private String fullPath;
     private SourceTreeItemState state;
 
+    private HashSet<SourceTreeItem> ignored;
+    private HashSet<SourceTreeItem> mapped;
+
     public SourceTreeDirectory(Path file, SourceDirectory directory, SourceTreeItemState st){
         this(file, directory);
         state = st;
@@ -39,6 +41,8 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
         this.directory = directory;
         this.fullPath = file.toString();
         state = SourceTreeItemState.NORMAL;
+        ignored = new HashSet<>();
+        mapped = new HashSet<>();
 
         this.getChildren().add(new SourceTreeLoading());
 
@@ -67,6 +71,51 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
                 }
             }
         });
+    }
+
+    public void hideIgnored(){
+        Set<TreeItem> toRemove = new HashSet<>();
+        for(TreeItem sti: getChildren()){
+            SourceTreeItem item = (SourceTreeItem) sti;
+            if (item.getState() == SourceTreeItemState.IGNORED) {
+                System.out.println(item.getPath() + " está IGNORED!");
+                ignored.add(item);
+                toRemove.add(sti);
+            }
+            if(item instanceof SourceTreeDirectory)
+                ((SourceTreeDirectory) item).hideIgnored();
+        }
+        System.out.println("Removing: " + toRemove.size() + "\nchildren: " + getChildren().size());
+        getChildren().removeAll(toRemove);
+        System.out.println("children then: " + getChildren().size());
+    }
+
+    public void showIgnored(){
+        for(SourceTreeItem sti: ignored) {
+            getChildren().add((TreeItem) sti);
+        }
+        for(TreeItem sti: getChildren()){
+            if(sti instanceof SourceTreeDirectory)
+                ((SourceTreeDirectory) sti).showIgnored();
+        }
+        ignored.clear();
+    }
+
+    public Set<String> getIgnored(){
+        Set<String> result = new HashSet<>();
+        //we need to include the items that are being shown and the hidden
+        for(SourceTreeItem sti: ignored) {
+           result.add(sti.getPath());
+        }
+        for(TreeItem sti: getChildren()) {
+            SourceTreeItem item = (SourceTreeItem) sti;
+            if(item instanceof SourceTreeDirectory)
+                result.addAll(((SourceTreeDirectory)item).getIgnored());
+
+            if (item.getState() == SourceTreeItemState.IGNORED)
+                result.add(item.getPath());
+        }
+        return result;
     }
 
     @Override

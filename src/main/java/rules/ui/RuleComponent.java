@@ -222,13 +222,13 @@ public class RuleComponent extends BorderPane implements Observer {
     }
 
     private void apply(){
-        Toggle active = group.getSelectedToggle();
+        /*Toggle active = group.getSelectedToggle();
         if (active.getUserData() instanceof RuleTypes) {
             RuleTypes type = (RuleTypes) active.getUserData();
             int lev = level.getValue();
             TreeVisitor visitor = rule.apply(type, lev);
             visitors.add(rule.getSourceString(), visitor);
-        }
+        }*/
     }
 
     public Rule getRule(){

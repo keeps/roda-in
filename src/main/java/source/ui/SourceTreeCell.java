@@ -6,6 +6,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 
+import javafx.scene.text.Text;
 import source.ui.items.*;
 
 /**
@@ -46,8 +47,8 @@ public class SourceTreeCell extends TreeCell<String> {
         this.setStyle("-fx-text-fill:orange;");
 
         if (!empty) {
-            HBox hbox = new HBox();
-            Label lab = new Label(item);
+            HBox hbox = new HBox(5);
+            Text lab = new Text(item);
             lab.setStyle("-fx-text-fill: black");
             Image icon = null;
 
@@ -65,14 +66,14 @@ public class SourceTreeCell extends TreeCell<String> {
                 if(!FileExplorerPane.showIgnored){
                     empty();
                     return;
-                }else lab.setStyle("-fx-text-fill: red");
+                }else lab.setStyle("-fx-strikethrough: true;");
 
             //if the item is mapped and we're not showing mapped items, clear the cell and return
             if(sti.getState() == SourceTreeItemState.MAPPED)
                 if(!FileExplorerPane.showMapped){
                     empty();
                     return;
-                }else lab.setStyle("-fx-text-fill: blue");
+                }else lab.setStyle("-fx-fill: darkgray;");
 
 
             if(treeItem instanceof SourceTreeDirectory){

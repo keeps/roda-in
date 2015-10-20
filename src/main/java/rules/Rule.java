@@ -1,13 +1,16 @@
 package rules;
 
-import java.nio.file.Path;
 import java.util.*;
 
 import javafx.scene.image.Image;
 
+import rules.filters.ContentFilter;
+import rules.filters.FilterIgnored;
 import schema.ui.DescriptionLevelImageCreator;
 import schema.ui.SipPreviewNode;
+import source.ui.items.SourceTreeDirectory;
 import source.ui.items.SourceTreeItem;
+import source.ui.items.SourceTreeItemState;
 import utils.RandomIdGenerator;
 import utils.TreeVisitor;
 
@@ -19,7 +22,7 @@ public class Rule extends Observable implements Observer {
     private String metadata;
     private RuleTypes assocType;
     private MetadataTypes metaType;
-    //private HashMap<ContentFilter> filters;
+    private Set<ContentFilter> filters;
 
     private List<SipPreview> sips;
     private HashSet<SipPreviewNode> sipNodes = new HashSet<>();
@@ -35,16 +38,38 @@ public class Rule extends Observable implements Observer {
         this.level = level;
         this.metadata = metadata;
         this.metaType = metaType;
+        filters = new HashSet<>();
         id = RandomIdGenerator.getBase62(5);
 
+        createIcon();
+        createFilters();
+    }
+
+    private void createIcon(){
         ResourceBundle hierarchyConfig = ResourceBundle.getBundle("properties/roda-description-levels-hierarchy");
         String category = hierarchyConfig.getString("category.item");
         String unicode = hierarchyConfig.getString("icon." + category);
 
         DescriptionLevelImageCreator dlic = new DescriptionLevelImageCreator(unicode);
         icon = dlic.generate();
+    }
 
-        apply();
+    private void createFilters(){
+        FilterIgnored ignored = new FilterIgnored();
+        for(SourceTreeItem sti: source) {
+            recursiveIgnore(sti, ignored);
+        }
+        filters.add(ignored);
+    }
+
+    private void recursiveIgnore(SourceTreeItem sti, FilterIgnored ignored){
+        if(sti.getState() == SourceTreeItemState.IGNORED)
+            ignored.add(sti.getPath());
+        if(sti instanceof SourceTreeDirectory) {
+            Set<String> ignoredChildren = ((SourceTreeDirectory) sti).getIgnored();
+            for(String child: ignoredChildren)
+                ignored.add(child);
+        }
     }
 
     /*public Rule(Path source, RuleTypes assocType, int level) {
@@ -101,7 +126,7 @@ public class Rule extends Observable implements Observer {
 
         switch (type){
             case SIPPERFILE:
-                SipPerFileVisitor visitorFile = new SipPerFileVisitor(id);
+                SipPerFileVisitor visitorFile = new SipPerFileVisitor(id, filters);
                 visitorFile.addObserver(this);
                 visitor = visitorFile;
                 break;

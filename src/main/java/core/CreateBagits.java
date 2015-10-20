@@ -37,7 +37,7 @@ public class CreateBagits extends Thread implements Observer {
         for(Rule rule : Main.getRules()){
             log.info(rule.getId());
             TreeVisitor visitor = rule.apply();
-            visitors.add(rule.getSourceString(), visitor);
+            //visitors.add(rule.getSourceString(), visitor);
             unfinished.put(rule.getId(), rule);
         }
         updateFooter();

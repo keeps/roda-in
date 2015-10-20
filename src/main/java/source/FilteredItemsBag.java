@@ -1,4 +1,4 @@
-package core;
+package source;
 
 import source.ui.items.SourceTreeItem;
 import source.ui.items.SourceTreeItemState;

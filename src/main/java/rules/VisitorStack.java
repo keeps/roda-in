@@ -2,6 +2,7 @@ package rules;
 
 import java.util.HashMap;
 import java.util.Observable;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -29,8 +30,8 @@ public class VisitorStack extends Observable{
         futures = new HashMap<>();
     }
 
-    public void add(String path, TreeVisitor vis){
-        final WalkFileTree walker = new WalkFileTree(path, vis);
+    public void add(Set<String> paths, TreeVisitor vis){
+        final WalkFileTree walker = new WalkFileTree(paths, vis);
         final String id = vis.getId();
         Task toRun = new Task<Void>() {
             @Override
