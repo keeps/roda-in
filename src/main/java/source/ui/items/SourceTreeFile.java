@@ -14,6 +14,12 @@ public class SourceTreeFile extends TreeItem<String> implements SourceTreeItem{
     public static final Image fileImage = new Image(ClassLoader.getSystemResourceAsStream("icons/file.png"));
     //this stores the full path to the file
     private String fullPath;
+    private SourceTreeItemState state;
+
+    public SourceTreeFile(Path file, SourceTreeItemState st){
+        this(file);
+        state = st;
+    }
 
     public SourceTreeFile(Path file) {
         super(file.toString());
@@ -31,10 +37,32 @@ public class SourceTreeFile extends TreeItem<String> implements SourceTreeItem{
                 this.setValue(value);
             }
         }
+
+        state = SourceTreeItemState.NORMAL;
     }
 
     @Override
     public String getPath() {
         return this.fullPath;
+    }
+
+    @Override
+    public SourceTreeItemState getState(){
+        return state;
+    }
+
+    @Override
+    public void ignore(){
+        state = SourceTreeItemState.IGNORED;
+    }
+
+    @Override
+    public void map(){
+        state = SourceTreeItemState.MAPPED;
+    }
+
+    @Override
+    public void toNormal(){
+        state = SourceTreeItemState.NORMAL;
     }
 }

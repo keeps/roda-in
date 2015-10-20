@@ -5,4 +5,8 @@ package source.ui.items;
  */
 public interface SourceTreeItem {
     String getPath();
+    SourceTreeItemState getState();
+    void ignore();
+    void map();
+    void toNormal();
 }

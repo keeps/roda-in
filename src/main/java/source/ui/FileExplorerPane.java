@@ -8,8 +8,9 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
-import core.HiddenFilesBag;
+import core.FilteredItemsBag;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -45,10 +46,12 @@ public class FileExplorerPane extends BorderPane implements Observer {
     private HBox filterButtons;
     private ComputeDirectorySize computeSize;
 
-    private ArrayList<Path> deleted; //deleted files and directories
+    private FilteredItemsBag filteredItems = new FilteredItemsBag();
 
     //Filter control
-    private boolean showFiles = false;
+    public static boolean showFiles = false;
+    public static boolean showIgnored = false;
+    public static boolean showMapped = false;
 
     //This thread is used to walk a directory's file tree and update the UI periodically with the SIZE and file count
     private WalkFileTree computeThread;
@@ -125,12 +128,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
             @Override
             public void handle(KeyEvent event) {
                 if(event.getCode().getName().equalsIgnoreCase("DELETE")){
-                    Iterator<TreeItem<String>> iterator = treeView.getSelectionModel().getSelectedItems().iterator();
-                    while(iterator.hasNext()){
-                        SourceTreeItem item = (SourceTreeItem) iterator.next();
-                        HiddenFilesBag.ignore(item.getPath());
-                        log.info("Delete " + item.getPath());
-                    }
+                    ignore();
                 }
             }
         });
@@ -168,8 +166,50 @@ public class FileExplorerPane extends BorderPane implements Observer {
             }
         });
 
-        Button toggleIgnored = new Button ("Show ignored");
-        Button toggleMapped = new Button ("Show mapped");
+        final Button toggleIgnored = new Button ("Show ignored");
+        toggleIgnored.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                showIgnored = !showIgnored;
+                if(showIgnored) {
+                    toggleIgnored.setText("Hide ignored");
+                    Collection<String> ignored = filteredItems.getIgnored();
+                    for(String key: ignored){
+                        TreeItem parent = (TreeItem)filteredItems.getIgnoredParent(key);
+                        TreeItem item = (TreeItem)filteredItems.getIgnored(key);
+                        ObservableList<TreeItem> list = parent.getChildren();
+                        list.add(item);
+                    }
+                }
+                else{
+                    toggleIgnored.setText("Show ignored");
+                    Collection<String> ignored = filteredItems.getIgnored();
+                    for(String key: ignored){
+                        TreeItem parent = (TreeItem)filteredItems.getIgnoredParent(key);
+                        TreeItem item = (TreeItem)filteredItems.getIgnored(key);
+                        ObservableList<TreeItem> list = parent.getChildren();
+                        list.remove(item);
+                    }
+                }
+
+                treeView.getRoot().setExpanded(false);
+                treeView.getRoot().setExpanded(true);
+            }
+        });
+
+        final Button toggleMapped = new Button ("Show mapped");
+        toggleMapped.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                showMapped = !showMapped;
+                if(showMapped)
+                    toggleMapped.setText("Hide mapped");
+                else toggleMapped.setText("Show mapped");
+
+                treeView.getRoot().setExpanded(false);
+                treeView.getRoot().setExpanded(true);
+            }
+        });
 
         HBox spaceLeft = new HBox();
         HBox.setHgrow(spaceLeft, Priority.ALWAYS);
@@ -265,5 +305,29 @@ public class FileExplorerPane extends BorderPane implements Observer {
             result.add((SourceTreeItem)item);
         }
         return result;
+    }
+
+    public void map(){
+        Set<SourceTreeItem> items = getSelectedItems();
+        for(SourceTreeItem item: items){
+            TreeItem treeItem = (TreeItem) item;
+            SourceTreeItem parent = (SourceTreeItem) treeItem.getParent();
+            filteredItems.map(item.getPath(), item, parent);
+            item.map();
+            treeItem.getParent().getChildren().remove(treeItem);
+            log.info("Mapped " + item.getPath());
+        }
+    }
+
+    public void ignore(){
+        Set<SourceTreeItem> items = getSelectedItems();
+        for(SourceTreeItem item: items){
+            TreeItem treeItem = (TreeItem) item;
+            SourceTreeItem parent = (SourceTreeItem) treeItem.getParent();
+            filteredItems.ignore(item.getPath(), item, parent);
+            item.ignore();
+            treeItem.getParent().getChildren().remove(treeItem);
+            log.info("Delete " + item.getPath());
+        }
     }
 }

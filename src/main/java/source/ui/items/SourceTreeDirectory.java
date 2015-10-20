@@ -27,11 +27,18 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
     public boolean expanded = false;
     //this stores the full path to the file or directory
     private String fullPath;
+    private SourceTreeItemState state;
+
+    public SourceTreeDirectory(Path file, SourceDirectory directory, SourceTreeItemState st){
+        this(file, directory);
+        state = st;
+    }
 
     public SourceTreeDirectory(Path file, SourceDirectory directory) {
         super(file.toString());
         this.directory = directory;
         this.fullPath = file.toString();
+        state = SourceTreeItemState.NORMAL;
 
         this.getChildren().add(new SourceTreeLoading());
 
@@ -62,10 +69,39 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
         });
     }
 
-
     @Override
     public String getPath() {
         return (this.fullPath);
+    }
+
+    @Override
+    public SourceTreeItemState getState(){
+        return state;
+    }
+
+    @Override
+    public void ignore(){
+        if(state == SourceTreeItemState.NORMAL)
+            state = SourceTreeItemState.IGNORED;
+        for(TreeItem it: getChildren()){
+            SourceTreeItem item = (SourceTreeItem)it;
+            item.ignore();
+        }
+    }
+
+    @Override
+    public void map(){
+        if(state == SourceTreeItemState.NORMAL)
+            state = SourceTreeItemState.MAPPED;
+        for(TreeItem it: getChildren()){
+            SourceTreeItem item = (SourceTreeItem)it;
+            item.map();
+        }
+    }
+
+    @Override
+    public void toNormal(){
+        state = SourceTreeItemState.NORMAL;
     }
 
     public SourceDirectory getDirectory() {
@@ -76,7 +112,7 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
         * We need to create a task to load the items to a temporary collection, otherwise the UI will hang while we access the disk.
         * */
     public void loadMore(){
-        final ArrayList<TreeItem<String>> children = new ArrayList<TreeItem<String>>(getChildren());
+        final ArrayList<TreeItem<String>> children = new ArrayList<>(getChildren());
 
         // First we access the disk and save the loaded items to a temporary collection
         Task<Integer> task = new Task<Integer>() {
@@ -89,8 +125,8 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
                     for (String sourceItem : loaded.keySet()) {
                         Path sourcePath = Paths.get(sourceItem);
                         if (Files.isDirectory(sourcePath)) {
-                            children.add(new SourceTreeDirectory(sourcePath, directory.getChildDirectory(sourcePath)));
-                        } else children.add(new SourceTreeFile(sourcePath));
+                            children.add(new SourceTreeDirectory(sourcePath, directory.getChildDirectory(sourcePath), state));
+                        } else children.add(new SourceTreeFile(sourcePath, state));
                     }
                     // check if there's more files to load
                     if (directory.isStreamOpen())
@@ -105,7 +141,7 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
             @Override
             public void handle(WorkerStateEvent workerStateEvent) {
                 // Remove "loading" items
-                ArrayList<Object> toRemove = new ArrayList<Object>();
+                ArrayList<Object> toRemove = new ArrayList<>();
                 for(Object o: children)
                     if(o instanceof SourceTreeLoading)
                         toRemove.add(o);

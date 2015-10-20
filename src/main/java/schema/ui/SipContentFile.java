@@ -8,6 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import source.ui.items.SourceTreeItem;
+import source.ui.items.SourceTreeItemState;
 
 /**
  * Created by adrapereira on 17-09-2015.
@@ -39,5 +40,22 @@ public class SipContentFile extends TreeItem<Object> implements SourceTreeItem{
     @Override
     public String getPath() {
         return this.fullPath;
+    }
+
+    @Override
+    public SourceTreeItemState getState(){
+        return SourceTreeItemState.NORMAL;
+    }
+
+    @Override
+    public void ignore(){
+    }
+
+    @Override
+    public void map(){
+    }
+
+    @Override
+    public void toNormal(){
     }
 }

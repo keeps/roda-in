@@ -14,4 +14,21 @@ public class SourceTreeLoading extends TreeItem<String> implements SourceTreeIte
     public String getPath() {
         return null;
     }
+
+    @Override
+    public SourceTreeItemState getState(){
+        return SourceTreeItemState.NORMAL;
+    }
+
+    @Override
+    public void ignore(){
+    }
+
+    @Override
+    public void map(){
+    }
+
+    @Override
+    public void toNormal(){
+    }
 }
