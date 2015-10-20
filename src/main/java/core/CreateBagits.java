@@ -1,14 +1,12 @@
 package core;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.*;
 
 import org.slf4j.LoggerFactory;
 
 import rules.*;
+import rules.sip.SipPreview;
 import utils.TreeVisitor;
 import gov.loc.repository.bagit.Bag;
 import gov.loc.repository.bagit.BagFactory;
@@ -34,12 +32,12 @@ public class CreateBagits extends Thread implements Observer {
 
     @Override
     public void run(){
-        for(Rule rule : Main.getRules()){
+        /*for(Rule rule : Main.getRules()){
             log.info(rule.getId());
             TreeVisitor visitor = rule.apply();
             //visitors.add(rule.getSourceString(), visitor);
             unfinished.put(rule.getId(), rule);
-        }
+        }*/
         updateFooter();
     }
 
@@ -75,11 +73,11 @@ public class CreateBagits extends Thread implements Observer {
             new File(name+"/data").mkdir();
 
             try {
-                TreeNode node = sip.getFiles();
+                Set<TreeNode> files = sip.getFiles();
                 BagFactory bf = new BagFactory();
 
                 Bag b = bf.createBag();
-                b.addFileToPayload(new File(node.getPath()));
+                //b.addFileToPayload(new File(node.getPath()));
                 b.makeComplete();
                 b.close();
 

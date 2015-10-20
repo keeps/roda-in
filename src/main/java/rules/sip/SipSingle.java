@@ -1,33 +1,32 @@
-package rules;
+package rules.sip;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
+import rules.TreeNode;
 import rules.filters.ContentFilter;
 import utils.TreeVisitor;
 
 /**
  * Created by adrapereira on 05-10-2015.
  */
-public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipCreator {
-    private static final int UPDATEFREQUENCY = 500; //in milliseconds
-    private long lastUIUpdate = 0;
+public class SipSingle extends Observable implements TreeVisitor, SipCreator {
     private String startPath;
     private Set<ContentFilter> filters;
     private ArrayList<SipPreview> sips;
-    private int maxLevel;
     private int added = 0, returned = 0;
     private Deque<TreeNode> nodes;
     private String id;
+    private Set<TreeNode> files;
 
-    public SipPerFolderVisitor(String id, int maxLevel, Set<ContentFilter> filters){
-        this.maxLevel = maxLevel;
+    public SipSingle(String id, Set<ContentFilter> filters){
         this.filters = filters;
         sips = new ArrayList<>();
         nodes = new ArrayDeque<>();
         this.id = id;
+        files = new HashSet<>();
     }
 
     public List<SipPreview> getSips() {
@@ -71,32 +70,15 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipC
         TreeNode node = nodes.pop();
         if(!nodes.isEmpty())
             nodes.peek().add(node);
-
-        //Check if we create a new SIP using this node
-        //every directory is a sub-directory of the start path, so if we remove it, we get the relative path to it
-        String relative = path.toString().replace(startPath, "");
-        Path relativePath = Paths.get(relative);
-        int relativeLevel = relativePath.getNameCount();
-
-        if(relativeLevel <= maxLevel){
-            //create a new Sip
-            String name = "sip_" + path.getFileName().toString();
-            sips.add(new SipPreview(name, path.toString(), node));
-            added++;
-
-            long now = System.currentTimeMillis();
-            if(now - lastUIUpdate > UPDATEFREQUENCY) {
-                setChanged();
-                notifyObservers();
-                lastUIUpdate = now;
-            }
-        }
+        else files.add(node);
     }
 
     @Override
     public void visitFile(Path path, BasicFileAttributes attrs) {
         if(filter(path)) return;
-        nodes.peek().add(path.toString());
+        if(nodes.isEmpty())
+            files.add(new TreeNode(path.toString()));
+        else nodes.peek().add(path.toString());
     }
 
     @Override
@@ -105,6 +87,12 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipC
 
     @Override
     public void end() {
+        //create a new Sip
+        Path path = Paths.get(startPath);
+        String name = "sip_" + path.getFileName().toString();
+        sips.add(new SipPreview(name, path.toString(), files));
+        added++;
+
         setChanged();
         notifyObservers();
     }

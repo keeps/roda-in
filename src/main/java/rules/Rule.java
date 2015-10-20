@@ -6,6 +6,7 @@ import javafx.scene.image.Image;
 
 import rules.filters.ContentFilter;
 import rules.filters.FilterIgnored;
+import rules.sip.*;
 import schema.ui.DescriptionLevelImageCreator;
 import schema.ui.SipPreviewNode;
 import source.ui.items.SourceTreeDirectory;

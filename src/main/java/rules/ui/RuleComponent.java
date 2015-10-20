@@ -179,7 +179,7 @@ public class RuleComponent extends BorderPane implements Observer {
                 } else {
                     //remove the count on the associated schema node
                     schema.removeRule(rule);
-                    Main.removeRule(toRemove);
+                    //Main.removeRule(toRemove);
                 }
             }
         });

@@ -1,5 +1,8 @@
 package rules.ui;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -7,15 +10,23 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
 import rules.Rule;
 import rules.RuleTypes;
+import rules.TreeNode;
 import rules.VisitorStack;
+import schema.ui.SipContentDirectory;
+import schema.ui.SipContentFile;
+import schema.ui.SipPreviewNode;
 import source.ui.items.SourceTreeDirectory;
 
 /**
@@ -23,15 +34,31 @@ import source.ui.items.SourceTreeDirectory;
  */
 public class RulesPane extends BorderPane {
     private HBox createRule;
-    private static ListView<RuleComponent> listView;
-    private VisitorStack visitors = new VisitorStack();
+    private TreeView sipFiles;
+    private TreeItem sipRoot;
 
     public RulesPane(Stage stage){
-        listView = new ListView<>();
         createCreateRule();
 
+        //create tree pane
+        VBox treeBox=new VBox();
+        treeBox.setPadding(new Insets(10, 10, 10, 10));
+        treeBox.setSpacing(10);
+
+        sipFiles = new TreeView<>();
+        sipFiles.setStyle("-fx-background-color:white;");
+        // add everything to the tree pane
+        treeBox.getChildren().addAll(sipFiles);
+        VBox.setVgrow(sipFiles, Priority.ALWAYS);
+        HBox.setHgrow(sipFiles, Priority.ALWAYS);
+
+        sipRoot = new TreeItem<>();
+        sipRoot.setExpanded(true);
+        sipFiles.setRoot(sipRoot);
+        sipFiles.setShowRoot(false);
+
         this.setTop(createRule);
-        this.setCenter(listView);
+        this.setCenter(sipFiles);
         this.minWidthProperty().bind(stage.widthProperty().multiply(0.33));
     }
 
@@ -47,25 +74,27 @@ public class RulesPane extends BorderPane {
 
     }
 
-    public Set<Rule> getRules(){
-        HashSet<Rule> rules = new HashSet<>();
-        for(RuleComponent rc: listView.getItems()) {
-            // create new Rule objects to avoid interfering with the existing ones
-            //SourceTreeDirectory source = rc.getRule().getSource();
-            //RuleTypes type = rc.getType();
-            //int level = rc.getLevel();
-            //rules.add(new Rule(source, type, level));
+    public void updateMetadata(SipPreviewNode node){
+        sipRoot.getChildren().clear();
+        Set<TreeNode> files = node.getSip().getFiles();
+        for(TreeNode treeNode: files) {
+            TreeItem<Object> startingItem = rec_CreateSipContent(treeNode);
+            startingItem.setExpanded(true);
+            sipRoot.getChildren().add(startingItem);
         }
-        return rules;
-    }
-    public void removeChild(RuleComponent rule){
-        listView.getItems().remove(rule);
     }
 
-    /* TEMP !!!!!!
-    * TODO
-    * */
-    public static void addChild(RuleComponent comp){
-        listView.getItems().add(comp);
+    private TreeItem<Object> rec_CreateSipContent(TreeNode node){
+        TreeItem<Object> result;
+        Path path = Paths.get(node.getPath());
+        if(Files.isDirectory(path))
+            result = new SipContentDirectory(path);
+        else return new SipContentFile(path);
+
+        for(String key: node.getKeys()){
+            TreeItem<Object> temp = rec_CreateSipContent(node.get(key));
+            result.getChildren().add(temp);
+        }
+        return result;
     }
 }

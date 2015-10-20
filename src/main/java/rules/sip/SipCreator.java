@@ -1,4 +1,4 @@
-package rules;
+package rules.sip;
 
 import java.util.List;
 

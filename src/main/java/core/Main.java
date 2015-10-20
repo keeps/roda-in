@@ -91,11 +91,6 @@ public class Main extends Application {
     public static Set<SourceTreeItem> getSourceSelectedItems(){
         return previewExplorer.getSelectedItems();
     }
-    public static void removeRule(RuleComponent rule){
-        rulesPane.removeChild(rule);
-    }
-    public static Set<Rule> getRules(){
-        return rulesPane.getRules();
-    }
     public static void mapSelected(){previewExplorer.map();}
+    public static RulesPane getRulePane(){return rulesPane;}
 }

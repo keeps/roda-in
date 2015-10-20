@@ -1,12 +1,10 @@
-package rules;
+package rules.sip;
 
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Observable;
-import java.util.Set;
+import java.util.*;
 
+import rules.TreeNode;
 import rules.filters.ContentFilter;
 import utils.TreeVisitor;
 
@@ -67,7 +65,9 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipCre
         if(filter(path)) return;
 
         String name = "sip_" + path.getFileName().toString();
-        TreeNode files = new TreeNode(path.toString());
+        TreeNode node = new TreeNode(path.toString());
+        Set<TreeNode> files = new HashSet<>();
+        files.add(node);
         sips.add(new SipPreview(name, path.toString(), files));
         added ++;
 

@@ -1,4 +1,8 @@
-package rules;
+package rules.sip;
+
+import rules.TreeNode;
+
+import java.util.Set;
 
 /**
  * Created by adrapereira on 01-10-2015.
@@ -6,9 +10,9 @@ package rules;
 public class SipPreview {
     private String name;
     private String path;
-    private TreeNode files;
+    private Set<TreeNode> files;
 
-    public SipPreview(String name, String path, TreeNode files){
+    public SipPreview(String name, String path, Set<TreeNode> files){
         this.name = name;
         this.path = path;
         this.files = files;
@@ -22,7 +26,7 @@ public class SipPreview {
         return path;
     }
 
-    public TreeNode getFiles() {
+    public Set<TreeNode> getFiles() {
         return files;
     }
 
