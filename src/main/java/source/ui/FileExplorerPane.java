@@ -8,7 +8,6 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
-import core.FilteredItemsBag;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -29,8 +28,10 @@ import org.slf4j.LoggerFactory;
 import source.representation.SourceDirectory;
 import source.ui.items.SourceTreeDirectory;
 import source.ui.items.SourceTreeItem;
+import source.ui.items.SourceTreeItemState;
 import utils.Utils;
 import utils.WalkFileTree;
+import core.FilteredItemsBag;
 import core.Footer;
 
 /**
@@ -175,10 +176,11 @@ public class FileExplorerPane extends BorderPane implements Observer {
                     toggleIgnored.setText("Hide ignored");
                     Collection<String> ignored = filteredItems.getIgnored();
                     for(String key: ignored){
-                        TreeItem parent = (TreeItem)filteredItems.getIgnoredParent(key);
+                        SourceTreeItem parent = filteredItems.getIgnoredParent(key);
                         TreeItem item = (TreeItem)filteredItems.getIgnored(key);
-                        ObservableList<TreeItem> list = parent.getChildren();
-                        list.add(item);
+                        ObservableList<TreeItem> list = ((TreeItem)parent).getChildren();
+                        if(!filteredItems.isMapped(parent.getPath()))
+                            list.add(item);
                     }
                 }
                 else{
@@ -202,9 +204,26 @@ public class FileExplorerPane extends BorderPane implements Observer {
             @Override
             public void handle(ActionEvent e) {
                 showMapped = !showMapped;
-                if(showMapped)
+                if(showMapped) {
                     toggleMapped.setText("Hide mapped");
-                else toggleMapped.setText("Show mapped");
+                    Collection<String> mapped = filteredItems.getMapped();
+                    for(String key: mapped){
+                        TreeItem parent = (TreeItem)filteredItems.getMappedParent(key);
+                        TreeItem item = (TreeItem)filteredItems.getMapped(key);
+                        ObservableList<TreeItem> list = parent.getChildren();
+                        if(!list.contains(item))
+                            list.add(item);
+                    }
+                }else{
+                    toggleMapped.setText("Show mapped");
+                    Collection<String> mapped = filteredItems.getMapped();
+                    for(String key: mapped){
+                        TreeItem parent = (TreeItem)filteredItems.getMappedParent(key);
+                        TreeItem item = (TreeItem)filteredItems.getMapped(key);
+                        ObservableList<TreeItem> list = parent.getChildren();
+                        list.remove(item);
+                    }
+                }
 
                 treeView.getRoot().setExpanded(false);
                 treeView.getRoot().setExpanded(true);
@@ -285,7 +304,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
             @Override
             public void handle(MouseEvent event) {
                 SourceTreeItem item = (SourceTreeItem) cell.getTreeItem();
-                if (item != null /*&& item.isLeaf()*/) {
+                if (item != null && item.getState() == SourceTreeItemState.NORMAL) {
                     Dragboard db = cell.startDragAndDrop(TransferMode.COPY);
                     ClipboardContent content = new ClipboardContent();
                     String s = item.getPath().toString();
@@ -311,10 +330,18 @@ public class FileExplorerPane extends BorderPane implements Observer {
         Set<SourceTreeItem> items = getSelectedItems();
         for(SourceTreeItem item: items){
             TreeItem treeItem = (TreeItem) item;
+            item.map();
             SourceTreeItem parent = (SourceTreeItem) treeItem.getParent();
             filteredItems.map(item.getPath(), item, parent);
-            item.map();
-            treeItem.getParent().getChildren().remove(treeItem);
+
+            if(!showMapped)
+                treeItem.getParent().getChildren().remove(treeItem);
+            else {//force update
+                Object value = treeItem.getValue();
+                treeItem.setValue(null);
+                treeItem.setValue(value);
+            }
+
             log.info("Mapped " + item.getPath());
         }
     }
@@ -323,10 +350,17 @@ public class FileExplorerPane extends BorderPane implements Observer {
         Set<SourceTreeItem> items = getSelectedItems();
         for(SourceTreeItem item: items){
             TreeItem treeItem = (TreeItem) item;
+            item.ignore();
             SourceTreeItem parent = (SourceTreeItem) treeItem.getParent();
             filteredItems.ignore(item.getPath(), item, parent);
-            item.ignore();
-            treeItem.getParent().getChildren().remove(treeItem);
+
+            if(!showIgnored)
+                treeItem.getParent().getChildren().remove(treeItem);
+            else {//force update
+                Object value = treeItem.getValue();
+                treeItem.setValue(null);
+                treeItem.setValue(value);
+            }
             log.info("Delete " + item.getPath());
         }
     }

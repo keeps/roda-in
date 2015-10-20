@@ -97,4 +97,5 @@ public class Main extends Application {
     public static Set<Rule> getRules(){
         return rulesPane.getRules();
     }
+    public static void mapSelected(){previewExplorer.map();}
 }

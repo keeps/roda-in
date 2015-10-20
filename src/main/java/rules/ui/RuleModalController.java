@@ -1,5 +1,6 @@
 package rules.ui;
 
+import core.Main;
 import javafx.stage.Stage;
 import org.slf4j.LoggerFactory;
 import rules.MetadataTypes;
@@ -61,7 +62,7 @@ public class RuleModalController implements Observer {
             }
             Rule rule = new Rule(sourceSet, assocType, level, metadata, metaType);
             schema.addRule(rule);
-
+            Main.mapSelected();
         } catch (Exception e) {
             log.debug(e.toString());
         }

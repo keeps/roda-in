@@ -1,6 +1,7 @@
 package core;
 
 import source.ui.items.SourceTreeItem;
+import source.ui.items.SourceTreeItemState;
 
 import java.util.*;
 
@@ -17,10 +18,14 @@ public class FilteredItemsBag {
     }
 
     public void ignore(String ign, SourceTreeItem sti, SourceTreeItem parent){
+        if(sti.getState() != SourceTreeItemState.IGNORED)
+            return;
         ignored.put(ign, sti);
         ignoredParents.put(ign, parent);
     }
     public void map(String mp, SourceTreeItem sti, SourceTreeItem parent){
+        if(sti.getState() != SourceTreeItemState.MAPPED)
+            return;
         mapped.put(mp, sti);
         mappedParents.put(mp, parent);
     }
@@ -31,6 +36,14 @@ public class FilteredItemsBag {
 
     public SourceTreeItem getIgnored(String ign){
         return ignored.get(ign);
+    }
+
+    public SourceTreeItem getMappedParent(String ign){
+        return mappedParents.get(ign);
+    }
+
+    public SourceTreeItem getMapped(String ign){
+        return mapped.get(ign);
     }
 
     public SourceTreeItem removeIgnored(String ign){
@@ -55,6 +68,10 @@ public class FilteredItemsBag {
 
     public Collection<String> getIgnored(){
         return ignored.keySet();
+    }
+
+    public Collection<String> getMapped(){
+        return mapped.keySet();
     }
 
 }

@@ -1,5 +1,6 @@
 package schema.ui;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javafx.event.ActionEvent;
@@ -28,6 +29,7 @@ import source.ui.items.SourceTreeFile;
 import source.ui.items.SourceTreeItem;
 import core.Footer;
 import core.Main;
+import source.ui.items.SourceTreeItemState;
 
 /**
  * Created by adrapereira on 28-09-2015.
@@ -214,13 +216,26 @@ public class SchemaPane extends BorderPane {
                             Set<SourceTreeItem> sourceSet = Main.getSourceSelectedItems();
                             SchemaNode descObj = (SchemaNode)cell.getTreeItem();
                             boolean valid = true;
+
                             if (sourceSet != null && sourceSet.size() > 0 && descObj != null) { //both trees need to have 1 element selected
-                                for(SourceTreeItem source: sourceSet)
+                                Set<SourceTreeItem> toRemove = new HashSet<>();
+                                for(SourceTreeItem source: sourceSet) {
+                                    if(source.getState() != SourceTreeItemState.NORMAL) {
+                                        toRemove.add(source);
+                                        continue;
+                                    }
                                     if (!(source instanceof SourceTreeDirectory || source instanceof SourceTreeFile)) {
                                         valid = false;
                                         break;
                                     }
+                                }
+                                sourceSet.removeAll(toRemove);
                             }else valid = false;
+
+                            //we need to check the size again because we may have deleted some items in the "for" loop
+                            if(sourceSet.size() == 0)
+                                valid = false;
+
                             if(valid)
                                 RuleModalController.newAssociation(primaryStage, sourceSet, descObj);
                         }

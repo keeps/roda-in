@@ -53,12 +53,14 @@ public class SourceTreeFile extends TreeItem<String> implements SourceTreeItem{
 
     @Override
     public void ignore(){
-        state = SourceTreeItemState.IGNORED;
+        if(state == SourceTreeItemState.NORMAL)
+            state = SourceTreeItemState.IGNORED;
     }
 
     @Override
     public void map(){
-        state = SourceTreeItemState.MAPPED;
+        if(state == SourceTreeItemState.NORMAL)
+            state = SourceTreeItemState.MAPPED;
     }
 
     @Override
