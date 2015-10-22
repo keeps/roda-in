@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
+import org.slf4j.LoggerFactory;
 import rodain.rules.TreeNode;
 import rodain.rules.filters.ContentFilter;
 import rodain.utils.TreeVisitor;
@@ -13,6 +14,7 @@ import rodain.utils.TreeVisitor;
  * Created by adrapereira on 05-10-2015.
  */
 public class SipSingle extends Observable implements TreeVisitor, SipCreator {
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(SipSingle.class.getName());
     private String startPath;
     private Set<ContentFilter> filters;
     private ArrayList<SipPreview> sips;
@@ -67,9 +69,9 @@ public class SipSingle extends Observable implements TreeVisitor, SipCreator {
     public void postVisitDirectory(Path path) {
         if(filter(path)) return;
         //pop the node of this directory and add it to its parent (if it exists)
-        TreeNode node = nodes.pop();
+        TreeNode node = nodes.removeLast();
         if(!nodes.isEmpty())
-            nodes.peek().add(node);
+            nodes.peekLast().add(node);
         else files.add(node);
     }
 
@@ -78,7 +80,7 @@ public class SipSingle extends Observable implements TreeVisitor, SipCreator {
         if(filter(path)) return;
         if(nodes.isEmpty())
             files.add(new TreeNode(path.toString()));
-        else nodes.peek().add(path.toString());
+        else nodes.peekLast().add(path.toString());
     }
 
     @Override

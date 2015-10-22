@@ -360,8 +360,6 @@ public class FileExplorerPane extends BorderPane implements Observer {
                 treeItem.setValue(null);
                 treeItem.setValue(value);
             }
-
-            log.info("Mapped " + item.getPath());
         }
     }
 
@@ -382,7 +380,6 @@ public class FileExplorerPane extends BorderPane implements Observer {
                 treeItem.setValue(null);
                 treeItem.setValue(value);
             }
-            log.info("Delete " + item.getPath());
         }
     }
 }

@@ -69,9 +69,9 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipC
     public void postVisitDirectory(Path path) {
         if(filter(path)) return;
         //pop the node of this directory and add it to its parent (if it exists)
-        TreeNode node = nodes.pop();
+        TreeNode node = nodes.removeLast();
         if(!nodes.isEmpty())
-            nodes.peek().add(node);
+            nodes.peekLast().add(node);
 
         //Check if we create a new SIP using this node
         //every directory is a sub-directory of the start path, so if we remove it, we get the relative path to it
@@ -99,7 +99,7 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipC
     @Override
     public void visitFile(Path path, BasicFileAttributes attrs) {
         if(filter(path)) return;
-        nodes.peek().add(path.toString());
+        nodes.peekLast().add(path.toString());
     }
 
     @Override
