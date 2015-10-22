@@ -32,9 +32,9 @@ public class Footer extends HBox {
         HBox space = new HBox();
         HBox.setHgrow(space, Priority.ALWAYS);
 
-        this.setPadding(new Insets(10, 10, 10, 10));
+        this.setPadding(new Insets(5, 5, 5, 5));
         this.setSpacing(10);
-        this.setAlignment(Pos.TOP_RIGHT);
+        this.setAlignment(Pos.CENTER);
         this.getChildren().addAll(status, space, btn);
 
         btn.setOnAction(new EventHandler<ActionEvent>() {

@@ -137,17 +137,26 @@ public class RuleModalPane extends BorderPane {
         perFile.setUserData(RuleTypes.SIPPERFILE);
         perFile.setStyle(" -fx-text-fill: black");
 
+        //count number of folders selected in the source
+        int dirCount = 0;
+        for(SourceTreeItem sti: sourceSet)
+            if(sti instanceof SourceTreeDirectory)
+                dirCount++;
+
         RadioButton byFolder = new RadioButton("Create one SIP per folder until level");
         byFolder.setUserData(RuleTypes.SIPPERFOLDER);
         byFolder.setToggleGroup(groupAssoc);
         byFolder.setStyle(" -fx-text-fill: black");
 
         int depth = 0;
-        for(SourceTreeItem std: sourceSet) {
-            Path startPath = Paths.get(std.getPath());
-            int depthAux = Utils.getRelativeMaxDepth(startPath);
-            if(depthAux > depth) depth = depthAux;
-        }
+        if(dirCount == sourceSet.size()) { //check if the selected items are all directories
+            //we only need to compute the depth if we'll be going to activate the radio button
+            for (SourceTreeItem std : sourceSet) {
+                Path startPath = Paths.get(std.getPath());
+                int depthAux = Utils.getRelativeMaxDepth(startPath);
+                if (depthAux > depth) depth = depthAux;
+            }
+        }else byFolder.setDisable(true); //disable this option because it doesn't make sense if all the top level items aren't directories
 
         ArrayList<Integer> levels = new ArrayList<>();
         for (int i = 1; i <= depth; i++)
@@ -168,8 +177,6 @@ public class RuleModalPane extends BorderPane {
     private VBox createCenterMetadata(){
         VBox gridCenter = new VBox();
         gridCenter.setPadding(new Insets(0, 10, 0, 10));
-        //gridCenter.setVgap(5);
-        //gridCenter.setHgap(10);
 
         groupMetadata = new ToggleGroup();
 

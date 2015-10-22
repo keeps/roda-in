@@ -28,7 +28,9 @@ public class RuleModalStage extends Stage{
         colorAdjust.setBrightness(-0.25);
         primaryStage.getScene().getRoot().setEffect(colorAdjust);
 
-        setScene(new Scene(new HBox(), 400, 200));
+        Scene scene = new Scene(new HBox(), 400, 200);
+        scene.getStylesheets().add(ClassLoader.getSystemResource("Modena.css").toExternalForm());
+        setScene(scene);
 
         show();
     }
