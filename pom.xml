@@ -31,7 +31,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>core.Main</mainClass>
+                            <mainClass>rodain.core.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
