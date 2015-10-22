@@ -22,6 +22,7 @@ import source.ui.ExpandedEventHandler;
 public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeItem{
     public static final Image folderCollapseImage = new Image(ClassLoader.getSystemResourceAsStream("icons/folder.png"));
     public static final Image folderExpandImage = new Image(ClassLoader.getSystemResourceAsStream("icons/folder-open.png"));
+    public static final Comparator<? super TreeItem> comparator = createComparator();
     private SourceDirectory directory;
     public boolean expanded = false;
     //this stores the full path to the file or directory
@@ -50,7 +51,6 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
         //set the value
         if (!fullPath.endsWith(File.separator)) {
             //set the value (which is what is displayed in the tree)
-
             int indexOf = value.lastIndexOf(File.separator);
             if (indexOf > 0) {
                 this.setValue(value.substring(indexOf + 1));
@@ -73,21 +73,57 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
         });
     }
 
+    public void hideMapped(){
+        Set<TreeItem> toRemove = new HashSet<>();
+        for(TreeItem sti: getChildren()){
+            SourceTreeItem item = (SourceTreeItem) sti;
+            if (item.getState() == SourceTreeItemState.MAPPED) {
+                mapped.add(item);
+                toRemove.add(sti);
+            }
+            if(item instanceof SourceTreeDirectory)
+                ((SourceTreeDirectory) item).hideMapped();
+        }
+        getChildren().removeAll(toRemove);
+    }
+
+    public void showMapped(){
+        for(SourceTreeItem sti: mapped) {
+            getChildren().add((TreeItem) sti);
+        }
+        for(TreeItem sti: getChildren()){
+            if(sti instanceof SourceTreeDirectory)
+                ((SourceTreeDirectory) sti).showMapped();
+        }
+        for(SourceTreeItem sti: ignored){
+            if(sti instanceof SourceTreeDirectory)
+                ((SourceTreeDirectory) sti).showMapped();
+        }
+        mapped.clear();
+        sortChildren();
+    }
+
+
     public void hideIgnored(){
         Set<TreeItem> toRemove = new HashSet<>();
         for(TreeItem sti: getChildren()){
             SourceTreeItem item = (SourceTreeItem) sti;
             if (item.getState() == SourceTreeItemState.IGNORED) {
-                System.out.println(item.getPath() + " está IGNORED!");
                 ignored.add(item);
                 toRemove.add(sti);
             }
             if(item instanceof SourceTreeDirectory)
                 ((SourceTreeDirectory) item).hideIgnored();
         }
-        System.out.println("Removing: " + toRemove.size() + "\nchildren: " + getChildren().size());
+        for(SourceTreeItem item: mapped){
+            if (item.getState() == SourceTreeItemState.IGNORED) {
+                ignored.add(item);
+                toRemove.add((TreeItem)item);
+            }
+            if(item instanceof SourceTreeDirectory)
+                ((SourceTreeDirectory) item).hideIgnored();
+        }
         getChildren().removeAll(toRemove);
-        System.out.println("children then: " + getChildren().size());
     }
 
     public void showIgnored(){
@@ -98,7 +134,12 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
             if(sti instanceof SourceTreeDirectory)
                 ((SourceTreeDirectory) sti).showIgnored();
         }
+        for(SourceTreeItem sti: mapped){
+            if(sti instanceof SourceTreeDirectory)
+                ((SourceTreeDirectory) sti).showIgnored();
+        }
         ignored.clear();
+        sortChildren();
     }
 
     public Set<String> getIgnored(){
@@ -116,6 +157,33 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
                 result.add(item.getPath());
         }
         return result;
+    }
+
+    private static Comparator createComparator(){
+        Comparator<? super TreeItem> cmp = new Comparator<TreeItem>() {
+            @Override
+            public int compare(TreeItem o1, TreeItem o2) {
+                if(o1.getClass() == o2.getClass()) { //sort items of the same class by value
+                    String s1 = (String) o1.getValue();
+                    String s2 = (String) o2.getValue();
+                    return s1.compareToIgnoreCase(s2);
+                }
+                //directories must appear first
+                if(o1 instanceof SourceTreeDirectory)
+                    return -1;
+                //"Load More..." item should be at the bottom
+                if(o1 instanceof SourceTreeLoadMore)
+                    return 1;
+                return 0;
+            }
+        };
+        return cmp;
+    }
+
+    private void sortChildren(){
+        ArrayList<TreeItem<String>> aux = new ArrayList<>(getChildren());
+        Collections.sort(aux, comparator);
+        getChildren().setAll(aux);
     }
 
     @Override
@@ -181,6 +249,7 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
                     if (directory.isStreamOpen())
                         children.add(new SourceTreeLoadMore());
                 }
+                Collections.sort(children, comparator);
                 return loaded.size();
             }
         };

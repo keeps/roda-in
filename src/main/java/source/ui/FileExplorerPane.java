@@ -6,10 +6,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Set;
 
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -25,13 +27,13 @@ import javafx.util.Callback;
 
 import org.slf4j.LoggerFactory;
 
+import source.FilteredItemsBag;
 import source.representation.SourceDirectory;
 import source.ui.items.SourceTreeDirectory;
 import source.ui.items.SourceTreeItem;
 import source.ui.items.SourceTreeItemState;
 import utils.Utils;
 import utils.WalkFileTree;
-import source.FilteredItemsBag;
 import core.Footer;
 
 /**
@@ -212,7 +214,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
                 showMapped = !showMapped;
                 if(showMapped) {
                     toggleMapped.setText("Hide mapped");
-                    Collection<String> mapped = filteredItems.getMapped();
+                    /*Collection<String> mapped = filteredItems.getMapped();
 
                     for(String key: mapped){
                         TreeItem parent = (TreeItem)filteredItems.getMappedParent(key);
@@ -220,16 +222,22 @@ public class FileExplorerPane extends BorderPane implements Observer {
                         ObservableList<TreeItem> list = parent.getChildren();
                         if(!list.contains(item))
                             list.add(item);
-                    }
+                    }*/
+                    TreeItem root = treeView.getRoot();
+                    SourceTreeDirectory dir = (SourceTreeDirectory)root;
+                    dir.showMapped();
                 }else{
                     toggleMapped.setText("Show mapped");
-                    Collection<String> mapped = filteredItems.getMapped();
+                    /*Collection<String> mapped = filteredItems.getMapped();
                     for(String key: mapped){
                         TreeItem parent = (TreeItem)filteredItems.getMappedParent(key);
                         TreeItem item = (TreeItem)filteredItems.getMapped(key);
                         ObservableList<TreeItem> list = parent.getChildren();
                         list.remove(item);
-                    }
+                    }*/
+                    TreeItem root = treeView.getRoot();
+                    SourceTreeDirectory dir = (SourceTreeDirectory)root;
+                    dir.hideMapped();
                 }
 
                 treeView.getRoot().setExpanded(false);
@@ -343,8 +351,10 @@ public class FileExplorerPane extends BorderPane implements Observer {
             SourceTreeItem parent = (SourceTreeItem) treeItem.getParent();
             filteredItems.map(item.getPath(), item, parent);
 
+            SourceTreeDirectory dirParent = (SourceTreeDirectory)parent;
             if(!showMapped)
-                treeItem.getParent().getChildren().remove(treeItem);
+                //treeItem.getParent().getChildren().remove(treeItem);
+                dirParent.hideMapped();
             else {//force update
                 Object value = treeItem.getValue();
                 treeItem.setValue(null);
