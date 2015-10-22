@@ -15,6 +15,7 @@ import javafx.scene.image.Image;
 import rodain.source.representation.SourceDirectory;
 import rodain.source.representation.SourceItem;
 import rodain.source.ui.ExpandedEventHandler;
+import rodain.source.ui.FileExplorerPane;
 
 /**
  * Created by adrapereira on 17-09-2015.
@@ -25,12 +26,12 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
     public static final Comparator<? super TreeItem> comparator = createComparator();
     private SourceDirectory directory;
     public boolean expanded = false;
-    //this stores the full path to the file or directory
     private String fullPath;
     private SourceTreeItemState state;
 
     private HashSet<SourceTreeItem> ignored;
     private HashSet<SourceTreeItem> mapped;
+    private HashSet<SourceTreeFile> files;
 
     public SourceTreeDirectory(Path file, SourceDirectory directory, SourceTreeItemState st){
         this(file, directory);
@@ -44,6 +45,7 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
         state = SourceTreeItemState.NORMAL;
         ignored = new HashSet<>();
         mapped = new HashSet<>();
+        files = new HashSet<>();
 
         this.getChildren().add(new SourceTreeLoading());
 
@@ -58,7 +60,6 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
                 this.setValue(value);
             }
         }
-
 
         this.addEventHandler(SourceTreeDirectory.branchExpandedEvent(), new ExpandedEventHandler());
 
@@ -139,6 +140,37 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
                 ((SourceTreeDirectory) sti).showIgnored();
         }
         ignored.clear();
+        sortChildren();
+    }
+
+    public void hideFiles(){
+        Set<TreeItem> toRemove = new HashSet<>();
+        for(TreeItem sti: getChildren()){
+            if(sti instanceof SourceTreeFile){
+                files.add((SourceTreeFile)sti);
+                toRemove.add(sti);
+            }else {
+                SourceTreeItem item = (SourceTreeItem) sti;
+                if (item instanceof SourceTreeDirectory)
+                    ((SourceTreeDirectory) item).hideFiles();
+            }
+        }
+        getChildren().removeAll(toRemove);
+    }
+
+    public void showFiles(){
+        for(SourceTreeItem sti: files) {
+            getChildren().add((TreeItem) sti);
+        }
+        for(TreeItem sti: getChildren()){
+            if(sti instanceof SourceTreeDirectory)
+                ((SourceTreeDirectory) sti).showFiles();
+        }
+        for(SourceTreeItem sti: ignored){
+            if(sti instanceof SourceTreeDirectory)
+                ((SourceTreeDirectory) sti).showFiles();
+        }
+        files.clear();
         sortChildren();
     }
 
@@ -226,8 +258,8 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
     }
 
     /*
-        * We need to create a task to load the items to a temporary collection, otherwise the UI will hang while we access the disk.
-        * */
+    * We need to create a task to load the items to a temporary collection, otherwise the UI will hang while we access the disk.
+    * */
     public void loadMore(){
         final ArrayList<TreeItem<String>> children = new ArrayList<>(getChildren());
 
@@ -240,10 +272,7 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
                 if (loaded.size() != 0) {
                     //Add new items
                     for (String sourceItem : loaded.keySet()) {
-                        Path sourcePath = Paths.get(sourceItem);
-                        if (Files.isDirectory(sourcePath)) {
-                            children.add(new SourceTreeDirectory(sourcePath, directory.getChildDirectory(sourcePath), state));
-                        } else children.add(new SourceTreeFile(sourcePath, state));
+                        addChild(children, sourceItem);
                     }
                     // check if there's more files to load
                     if (directory.isStreamOpen())
@@ -272,4 +301,39 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
         new Thread(task).start();
     }
 
+    private void addChild(List children, String sourceItem){
+        //check if this path has been loaded and ignored. If it hasn't we apply the parent's state
+        SourceTreeItemState newState = state;
+        if(FileExplorerPane.isIgnored(sourceItem))
+            newState = SourceTreeItemState.IGNORED;
+
+        SourceTreeItem item;
+        Path sourcePath = Paths.get(sourceItem);
+        if (Files.isDirectory(sourcePath)) {
+            item = new SourceTreeDirectory(sourcePath, directory.getChildDirectory(sourcePath), newState);
+        } else item = new SourceTreeFile(sourcePath, newState);
+
+        switch (newState){
+            case IGNORED:
+                if(FileExplorerPane.showIgnored)
+                    children.add(item);
+                else ignored.add(item);
+                break;
+            case MAPPED:
+                if(FileExplorerPane.showMapped)
+                    children.add(item);
+                else mapped.add(item);
+                break;
+            case NORMAL:
+                if(item instanceof SourceTreeFile) {
+                    if (FileExplorerPane.showFiles)
+                        children.add(item);
+                    else {
+                        files.add((SourceTreeFile)item);
+                    }
+                }else children.add(item);
+                break;
+            default:
+        }
+    }
 }

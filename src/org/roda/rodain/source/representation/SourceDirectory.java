@@ -87,7 +87,7 @@ public class SourceDirectory implements SourceItem {
     public SortedMap<String, SourceItem> loadMore(){
         startDirectoryStream();
         int loaded = 0, childrenSize = children.size();
-        TreeMap<String, SourceItem> result = new TreeMap<String, SourceItem>();
+        TreeMap<String, SourceItem> result = new TreeMap<>();
         itemsToLoad += 50;
         while(iterator.hasNext() && (childrenSize + loaded < itemsToLoad)){
             Path file = iterator.next();
