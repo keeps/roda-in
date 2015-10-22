@@ -33,7 +33,7 @@ public class RuleModalController implements Observer {
     }
 
     public static void newAssociation(Stage primStage, Set<SourceTreeItem> source, SchemaNode schemaNode){
-        stage = new RuleModalStage(primStage, source, schemaNode);
+        stage = new RuleModalStage(primStage);
         pane = new RuleModalPane(primStage, source, schemaNode);
         sourceSet = source;
         schema = schemaNode;
@@ -76,7 +76,7 @@ public class RuleModalController implements Observer {
             schema.addRule(rule);
             Main.mapSelected();
         } catch (Exception e) {
-            log.debug(e.toString());
+            log.debug("" + e);
         }
     }
 

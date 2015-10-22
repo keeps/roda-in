@@ -72,13 +72,13 @@ public class RulesPane extends BorderPane {
         sipRoot.getChildren().clear();
         Set<TreeNode> files = node.getSip().getFiles();
         for(TreeNode treeNode: files) {
-            TreeItem<Object> startingItem = rec_CreateSipContent(treeNode);
+            TreeItem<Object> startingItem = recCreateSipContent(treeNode);
             startingItem.setExpanded(true);
             sipRoot.getChildren().add(startingItem);
         }
     }
 
-    private TreeItem<Object> rec_CreateSipContent(TreeNode node){
+    private TreeItem<Object> recCreateSipContent(TreeNode node){
         TreeItem<Object> result;
         Path path = Paths.get(node.getPath());
         if(Files.isDirectory(path))
@@ -86,7 +86,7 @@ public class RulesPane extends BorderPane {
         else return new SipContentFile(path);
 
         for(String key: node.getKeys()){
-            TreeItem<Object> temp = rec_CreateSipContent(node.get(key));
+            TreeItem<Object> temp = recCreateSipContent(node.get(key));
             result.getChildren().add(temp);
         }
         return result;

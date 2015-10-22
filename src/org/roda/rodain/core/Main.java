@@ -89,6 +89,10 @@ public class Main extends Application {
     public static Set<SourceTreeItem> getSourceSelectedItems(){
         return previewExplorer.getSelectedItems();
     }
-    public static void mapSelected(){previewExplorer.map();}
-    public static RulesPane getRulePane(){return rulesPane;}
+    public static void mapSelected(){
+        previewExplorer.map();
+    }
+    public static RulesPane getRulePane(){
+        return rulesPane;
+    }
 }

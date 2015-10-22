@@ -192,7 +192,7 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
     }
 
     private static Comparator createComparator(){
-        Comparator<? super TreeItem> cmp = new Comparator<TreeItem>() {
+        return new Comparator<TreeItem>() {
             @Override
             public int compare(TreeItem o1, TreeItem o2) {
                 if(o1.getClass() == o2.getClass()) { //sort items of the same class by value
@@ -209,7 +209,6 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
                 return 0;
             }
         };
-        return cmp;
     }
 
     private void sortChildren(){
@@ -220,7 +219,7 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
 
     @Override
     public String getPath() {
-        return (this.fullPath);
+        return this.fullPath;
     }
 
     @Override
@@ -315,23 +314,21 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
 
         switch (newState){
             case IGNORED:
-                if(FileExplorerPane.showIgnored)
+                if(FileExplorerPane.isShowIgnored())
                     children.add(item);
                 else ignored.add(item);
                 break;
             case MAPPED:
-                if(FileExplorerPane.showMapped)
+                if(FileExplorerPane.isShowMapped())
                     children.add(item);
                 else mapped.add(item);
                 break;
             case NORMAL:
-                if(item instanceof SourceTreeFile) {
-                    if (FileExplorerPane.showFiles)
+                if(item instanceof SourceTreeFile)
+                    if (FileExplorerPane.isShowFiles())
                         children.add(item);
-                    else {
-                        files.add((SourceTreeFile)item);
-                    }
-                }else children.add(item);
+                    else files.add((SourceTreeFile)item);
+                else children.add(item);
                 break;
             default:
         }

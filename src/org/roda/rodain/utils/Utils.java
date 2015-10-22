@@ -44,7 +44,7 @@ public class Utils {
     }
 
     public static String longestCommonPrefix(List<String> strs) {
-        if(strs == null || strs.size() == 0)
+        if(strs == null || strs.isEmpty())
             return "";
 
         int minLen=Integer.MAX_VALUE;
@@ -52,7 +52,8 @@ public class Utils {
             if(minLen > str.length())
                 minLen = str.length();
         }
-        if(minLen == 0) return "";
+        if(minLen == 0)
+            return "";
 
         for(int j=0; j<minLen; j++){
             char prev='0';

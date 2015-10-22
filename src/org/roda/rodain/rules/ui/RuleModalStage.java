@@ -19,7 +19,7 @@ import rodain.source.ui.items.SourceTreeItem;
  * Created by adrapereira on 15-10-2015.
  */
 public class RuleModalStage extends Stage{
-    public RuleModalStage(final Stage primaryStage, Set<SourceTreeItem> source, SchemaNode schema){
+    public RuleModalStage(final Stage primaryStage){
         super(StageStyle.TRANSPARENT);
         initModality(Modality.WINDOW_MODAL);
         initOwner(primaryStage);
@@ -48,6 +48,7 @@ public class RuleModalStage extends Stage{
         final Delta dragDelta = new Delta();
         final RuleModalStage thisDialog = this; //reference to be used in the handlers
         root.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
             public void handle(MouseEvent mouseEvent) {
                 // record a delta distance for the drag and drop operation.
                 dragDelta.x = thisDialog.getX() - mouseEvent.getScreenX();
@@ -55,6 +56,7 @@ public class RuleModalStage extends Stage{
             }
         });
         root.setOnMouseDragged(new EventHandler<MouseEvent>() {
+            @Override
             public void handle(MouseEvent mouseEvent) {
                 thisDialog.setX(mouseEvent.getScreenX() + dragDelta.x);
                 thisDialog.setY(mouseEvent.getScreenY() + dragDelta.y);
@@ -63,5 +65,7 @@ public class RuleModalStage extends Stage{
     }
 
     // records relative x and y co-ordinates.
-    class Delta { double x, y; }
+    class Delta {
+        double x, y;
+    }
 }

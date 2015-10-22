@@ -31,6 +31,7 @@ public class FilterIgnored implements ContentFilter {
         return false;
     }
 
+    @Override
     public String toString(){
         StringBuilder sb = new StringBuilder();
         for(String s: ignored)

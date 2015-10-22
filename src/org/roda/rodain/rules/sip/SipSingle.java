@@ -14,7 +14,6 @@ import rodain.utils.TreeVisitor;
  * Created by adrapereira on 05-10-2015.
  */
 public class SipSingle extends Observable implements TreeVisitor, SipCreator {
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(SipSingle.class.getName());
     private String startPath;
     private Set<ContentFilter> filters;
     private ArrayList<SipPreview> sips;
@@ -31,15 +30,19 @@ public class SipSingle extends Observable implements TreeVisitor, SipCreator {
         files = new HashSet<>();
     }
 
+    @Override
     public List<SipPreview> getSips() {
         return sips;
     }
+    @Override
     public int getCount(){
         return added;
     }
+    @Override
     public SipPreview getNext(){
         return sips.get(returned++);
     }
+    @Override
     public boolean hasNext(){
         return returned < added;
     }

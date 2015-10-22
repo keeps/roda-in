@@ -6,10 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.HashSet;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Set;
+import java.util.*;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -51,9 +48,9 @@ public class FileExplorerPane extends BorderPane implements Observer {
     private static Set<String> oldIgnored;
 
     //Filter control
-    public static boolean showFiles = true;
-    public static boolean showIgnored = false;
-    public static boolean showMapped = false;
+    private static boolean showFiles = true;
+    private static boolean showIgnored = false;
+    private static boolean showMapped = false;
 
     //This thread is used to walk a directory's file tree and update the UI periodically with the SIZE and file count
     private WalkFileTree computeThread;
@@ -71,6 +68,18 @@ public class FileExplorerPane extends BorderPane implements Observer {
         this.setCenter(fileExplorer);
         this.setBottom(filterButtons);
         this.minWidthProperty().bind(stage.widthProperty().multiply(0.33));
+    }
+
+    public static boolean isShowFiles() {
+        return showFiles;
+    }
+
+    public static boolean isShowIgnored() {
+        return showIgnored;
+    }
+
+    public static boolean isShowMapped() {
+        return showMapped;
     }
 
     private void createTop(){
@@ -117,7 +126,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
             @Override
             public TreeCell<String> call(TreeView<String> p) {
                 SourceTreeCell cell = new SourceTreeCell();
-                setDragEvent(stage, cell);
+                setDragEvent(cell);
                 return cell;
             }
         });
@@ -129,7 +138,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
         treeView.setOnKeyReleased(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                if(event.getCode().getName().equalsIgnoreCase("DELETE")){
+                if("DELETE".equalsIgnoreCase(event.getCode().getName())){
                     ignore();
                 }
             }
@@ -140,7 +149,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
         if(treeView.getRoot() != null)
             oldIgnored = ((SourceTreeDirectory) treeView.getRoot()).getIgnored();
 
-        SourceTreeDirectory rootNode = new SourceTreeDirectory(rootPath, new SourceDirectory(rootPath, showFiles));
+        SourceTreeDirectory rootNode = new SourceTreeDirectory(rootPath, new SourceDirectory(rootPath, isShowFiles()));
         rootNode.setExpanded(true);
         treeView.setRoot(rootNode);
         updateMetadata(rootPath);
@@ -154,21 +163,17 @@ public class FileExplorerPane extends BorderPane implements Observer {
         toggleFiles.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
-                TreeItem<String> root = treeView.getRoot();
-                if (root == null)
+                SourceTreeDirectory root = getCastedRoot();
+                if(root == null)
                     return;
-                if (!(root instanceof SourceTreeDirectory))
-                    return;
-                SourceTreeDirectory rootCasted = (SourceTreeDirectory) root;
 
-                showFiles = !showFiles;
-                if(showFiles) {
+                showFiles = !isShowFiles();
+                if(isShowFiles()) {
                     toggleFiles.setText("Hide files");
-                    rootCasted.showFiles();
-                }
-                else{
+                    root.showFiles();
+                } else{
                     toggleFiles.setText("Show files");
-                    rootCasted.hideFiles();
+                    root.hideFiles();
                 }
 
                 //force update
@@ -181,19 +186,18 @@ public class FileExplorerPane extends BorderPane implements Observer {
         toggleIgnored.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
-                TreeItem root = treeView.getRoot();
-                if(! (root instanceof SourceTreeDirectory))
+                SourceTreeDirectory root = getCastedRoot();
+                if(root == null)
                     return;
-                SourceTreeDirectory dir = (SourceTreeDirectory)root;
 
-                showIgnored = !showIgnored;
-                if(showIgnored) {
+                showIgnored = !isShowIgnored();
+                if(isShowIgnored()) {
                     toggleIgnored.setText("Hide ignored");
-                    dir.showIgnored();
+                    root.showIgnored();
                 }
                 else{
                     toggleIgnored.setText("Show ignored");
-                    dir.hideIgnored();
+                    root.hideIgnored();
                 }
 
                 //force update
@@ -206,18 +210,17 @@ public class FileExplorerPane extends BorderPane implements Observer {
         toggleMapped.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
-                TreeItem root = treeView.getRoot();
-                if(! (root instanceof SourceTreeDirectory))
+                SourceTreeDirectory root = getCastedRoot();
+                if(root == null)
                     return;
-                SourceTreeDirectory dir = (SourceTreeDirectory)root;
 
-                showMapped = !showMapped;
-                if(showMapped) {
+                showMapped = !isShowMapped();
+                if(isShowMapped()) {
                     toggleMapped.setText("Hide mapped");
-                    dir.showMapped();
+                    root.showMapped();
                 }else{
                     toggleMapped.setText("Show mapped");
-                    dir.hideMapped();
+                    root.hideMapped();
                 }
 
                 //force update
@@ -232,6 +235,15 @@ public class FileExplorerPane extends BorderPane implements Observer {
         HBox.setHgrow(spaceRight, Priority.ALWAYS);
 
         filterButtons.getChildren().addAll(toggleFiles, spaceLeft, toggleIgnored, spaceRight, toggleMapped);
+    }
+
+    private SourceTreeDirectory getCastedRoot(){
+        TreeItem<String> root = treeView.getRoot();
+        if (root == null)
+            return null;
+        if (!(root instanceof SourceTreeDirectory))
+            return null;
+        return (SourceTreeDirectory) root;
     }
 
     public void updateMetadata(Path path){
@@ -296,7 +308,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
         });
     }
 
-    private void setDragEvent(Stage stage, final SourceTreeCell cell){
+    private void setDragEvent(final SourceTreeCell cell){
         // The drag starts on a gesture source
         cell.setOnDragDetected(new EventHandler<MouseEvent>() {
             @Override
@@ -316,7 +328,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
     public Set<SourceTreeItem> getSelectedItems(){
         if(treeView == null)
-            return null;
+            return Collections.EMPTY_SET;
         Set<SourceTreeItem> result = new HashSet<>();
         for(TreeItem item: treeView.getSelectionModel().getSelectedItems()){
             result.add((SourceTreeItem)item);
@@ -337,7 +349,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
             item.map();
 
             SourceTreeDirectory dirParent = (SourceTreeDirectory)treeItem.getParent();
-            if(!showMapped)
+            if(!isShowMapped())
                 dirParent.hideMapped();
             else {//force update
                 Object value = treeItem.getValue();
@@ -354,7 +366,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
             item.ignore();
             SourceTreeDirectory parent = (SourceTreeDirectory) treeItem.getParent();
 
-            if(!showIgnored)
+            if(!isShowIgnored())
                 parent.hideIgnored();
             else {//force update
                 Object value = treeItem.getValue();

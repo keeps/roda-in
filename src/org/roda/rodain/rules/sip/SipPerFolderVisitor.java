@@ -31,15 +31,19 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipC
         this.id = id;
     }
 
+    @Override
     public List<SipPreview> getSips() {
         return sips;
     }
+    @Override
     public int getCount(){
         return added;
     }
+    @Override
     public SipPreview getNext(){
         return sips.get(returned++);
     }
+    @Override
     public boolean hasNext(){
         return returned < added;
     }

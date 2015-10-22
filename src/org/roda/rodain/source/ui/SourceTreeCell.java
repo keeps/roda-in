@@ -57,20 +57,20 @@ public class SourceTreeCell extends TreeCell<String> {
             SourceTreeItem sti = (SourceTreeItem) treeItem;
 
             //if the item is a file and we're not showing files, clear the cell and return
-            if(sti instanceof SourceTreeFile && !FileExplorerPane.showFiles){
+            if(sti instanceof SourceTreeFile && !FileExplorerPane.isShowFiles()){
                 empty();
                 return;
             }
             //if the item is ignored and we're not showing ignored items, clear the cell and return
             if(sti.getState() == SourceTreeItemState.IGNORED )
-                if(!FileExplorerPane.showIgnored){
+                if(!FileExplorerPane.isShowIgnored()){
                     empty();
                     return;
                 }else lab.setStyle("-fx-strikethrough: true;");
 
             //if the item is mapped and we're not showing mapped items, clear the cell and return
             if(sti.getState() == SourceTreeItemState.MAPPED)
-                if(!FileExplorerPane.showMapped){
+                if(!FileExplorerPane.isShowMapped()){
                     empty();
                     return;
                 }else lab.setStyle("-fx-fill: darkgray;");

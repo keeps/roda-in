@@ -73,13 +73,6 @@ public class Rule extends Observable implements Observer {
         }
     }
 
-    /*public Rule(Path source, RuleTypes assocType, int level) {
-        this.source = source;
-        this.assocType = assocType;
-        this.level = level;
-        id = RandomIdGenerator.getBase62(5);
-    }*/
-
     public Set<SourceTreeItem> getSource() {
         return source;
     }
@@ -98,10 +91,6 @@ public class Rule extends Observable implements Observer {
     public void setSource(Set<SourceTreeItem> source) {
         this.source = source;
     }
-
-    /*public String getFolderName(){
-        return source.getFileName().toString();
-    }*/
 
     public TreeVisitor getVisitor(){
         return visitor;

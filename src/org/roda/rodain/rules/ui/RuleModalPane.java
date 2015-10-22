@@ -35,7 +35,10 @@ import rodain.utils.Utils;
  * Created by adrapereira on 28-09-2015.
  */
 public class RuleModalPane extends BorderPane {
-    private enum States {ASSOCIATION, METADATA}
+    private enum States {
+        ASSOCIATION,
+        METADATA
+    }
     private Stage stage;
     private SchemaNode schema;
     private Set<SourceTreeItem> sourceSet;
@@ -154,7 +157,8 @@ public class RuleModalPane extends BorderPane {
             for (SourceTreeItem std : sourceSet) {
                 Path startPath = Paths.get(std.getPath());
                 int depthAux = Utils.getRelativeMaxDepth(startPath);
-                if (depthAux > depth) depth = depthAux;
+                if (depthAux > depth)
+                    depth = depthAux;
             }
         }else byFolder.setDisable(true); //disable this option because it doesn't make sense if all the top level items aren't directories
 
@@ -303,15 +307,11 @@ public class RuleModalPane extends BorderPane {
         btContinue.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
-                switch (currentState){
-                    case ASSOCIATION:
-                        setCenter(gridMetadata);
-                        currentState = States.METADATA;
-                        break;
-                    case METADATA:
+                if(currentState == States.ASSOCIATION) {
+                    setCenter(gridMetadata);
+                    currentState = States.METADATA;
+                }else if(currentState == States.METADATA)
                         RuleModalController.confirm();
-                        break;
-                }
             }
         });
 
@@ -325,7 +325,9 @@ public class RuleModalPane extends BorderPane {
         setBottom(buttons);
     }
 
-    public Set<SourceTreeItem> getSourceSet(){return sourceSet;}
+    public Set<SourceTreeItem> getSourceSet(){
+        return sourceSet;
+    }
 
     public RuleTypes getAssociationType() throws Exception{
         Toggle selected = groupAssoc.getSelectedToggle();

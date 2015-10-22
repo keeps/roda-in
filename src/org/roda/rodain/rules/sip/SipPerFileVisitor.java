@@ -18,7 +18,6 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipCre
     private int added = 0, returned = 0;
     private long lastUIUpdate = 0;
     private String id;
-    private String startPath;
 
     public SipPerFileVisitor(String id, Set<ContentFilter> filters){
         sips = new ArrayList<>();
@@ -26,20 +25,24 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipCre
         this.filters = filters;
     }
 
+    @Override
     public List<SipPreview> getSips() {
         return sips;
     }
+    @Override
     public int getCount(){
         return added;
     }
+    @Override
     public SipPreview getNext(){
         return sips.get(returned++);
     }
+    @Override
     public boolean hasNext(){
         return returned < added;
     }
+    @Override
     public void setStartPath(String st){
-        startPath = st;
     }
 
     @Override
@@ -62,7 +65,8 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipCre
 
     @Override
     public void visitFile(Path path, BasicFileAttributes attrs) {
-        if(filter(path)) return;
+        if(filter(path))
+            return;
 
         String name = "sip_" + path.getFileName().toString();
         TreeNode node = new TreeNode(path.toString());
