@@ -6,6 +6,7 @@ import javafx.scene.image.Image;
 
 import rodain.rules.filters.ContentFilter;
 import rodain.rules.filters.FilterIgnored;
+import rodain.rules.filters.FilterMapped;
 import rodain.rules.sip.*;
 import rodain.schema.ui.DescriptionLevelImageCreator;
 import rodain.schema.ui.SipPreviewNode;
@@ -57,20 +58,23 @@ public class Rule extends Observable implements Observer {
 
     private void createFilters(){
         FilterIgnored ignored = new FilterIgnored();
+        FilterMapped mapped = new FilterMapped();
         for(SourceTreeItem sti: source) {
-            recursiveIgnore(sti, ignored);
+            // add this item to the filter if it's ignored or mapped
+            if(sti.getState() == SourceTreeItemState.IGNORED)
+                ignored.add(sti.getPath());
+            else if(sti.getState() == SourceTreeItemState.MAPPED)
+                mapped.add(sti.getPath());
+            //if it's a directory, get all its mapped and ignored children and add to the filters
+            if(sti instanceof SourceTreeDirectory) {
+                Set<String> filterIgnored = ((SourceTreeDirectory) sti).getIgnored();
+                ignored.addAll(filterIgnored);
+                Set<String> filterMapped = ((SourceTreeDirectory) sti).getMapped();
+                mapped.addAll(filterMapped);
+            }
         }
         filters.add(ignored);
-    }
-
-    private void recursiveIgnore(SourceTreeItem sti, FilterIgnored ignored){
-        if(sti.getState() == SourceTreeItemState.IGNORED)
-            ignored.add(sti.getPath());
-        if(sti instanceof SourceTreeDirectory) {
-            Set<String> ignoredChildren = ((SourceTreeDirectory) sti).getIgnored();
-            for(String child: ignoredChildren)
-                ignored.add(child);
-        }
+        filters.add(mapped);
     }
 
     public Set<SourceTreeItem> getSource() {

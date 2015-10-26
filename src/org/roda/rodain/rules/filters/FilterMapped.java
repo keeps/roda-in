@@ -6,32 +6,32 @@ import java.util.HashSet;
 /**
  * Created by adrapereira on 20-10-2015.
  */
-public class FilterIgnored implements ContentFilter {
-    private HashSet<String> ignored;
+public class FilterMapped implements ContentFilter {
+    private HashSet<String> mapped;
 
-    public FilterIgnored(){
-        ignored = new HashSet<>();
+    public FilterMapped(){
+        mapped = new HashSet<>();
     }
 
     @Override
     public void add(String st){
-        ignored.add(st);
+        mapped.add(st);
     }
 
     @Override
     public void addAll(Collection col){
-        ignored.addAll(col);
+        mapped.addAll(col);
     }
 
     @Override
     public boolean filter(String st){
-        if(ignored.contains(st))
+        if(mapped.contains(st))
             return true;
         int index = 0, end = st.length(), fromIndex = 0;
         while(index < end && (index = st.indexOf("/", fromIndex)) != -1){
             String sub = st.substring(0, index);
             fromIndex = index + 1;
-            if(ignored.contains(sub))
+            if(mapped.contains(sub))
                 return true;
         }
         return false;
@@ -40,7 +40,7 @@ public class FilterIgnored implements ContentFilter {
     @Override
     public String toString(){
         StringBuilder sb = new StringBuilder();
-        for(String s: ignored)
+        for(String s: mapped)
             sb.append(s + "\n");
         return sb.toString();
     }

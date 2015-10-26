@@ -170,6 +170,9 @@ public class RuleModalPane extends BorderPane {
         level = new ComboBox<>(options);
         level.setValue((int)Math.ceil(depth/2.0));
 
+        if(dirCount != sourceSet.size()) //disable the level comboBox too if this option doesn't make sense
+            level.setDisable(true);
+
         gridCenter.add(singleSip, 0, 1);
         gridCenter.add(perFile, 0, 2);
         gridCenter.add(byFolder, 0, 3);
@@ -180,8 +183,9 @@ public class RuleModalPane extends BorderPane {
 
     private VBox createCenterMetadata(){
         VBox gridCenter = new VBox();
-        gridCenter.setPadding(new Insets(0, 10, 0, 10));
-
+        gridCenter.setPadding(new Insets(0, 5, 0, 5));
+        gridCenter.setSpacing(5);
+        gridCenter.setAlignment(Pos.CENTER_LEFT);
         groupMetadata = new ToggleGroup();
 
         RadioButton newFile = new RadioButton("An empty text area");
@@ -203,7 +207,6 @@ public class RuleModalPane extends BorderPane {
 
     private void rbSingleFile(VBox gridCenter){
         HBox hbox = new HBox();
-        hbox.setPadding(new Insets(5,0,0,0));
 
         final RadioButton singleFile = new RadioButton("A single file");
         singleFile.setToggleGroup(groupMetadata);
@@ -257,7 +260,6 @@ public class RuleModalPane extends BorderPane {
 
     private void rbDiffFolder(VBox gridCenter){
         HBox hbox = new HBox();
-        hbox.setPadding(new Insets(5,0,0,0));
 
         final RadioButton diffFolder = new RadioButton("Another directory");
         diffFolder.setUserData(MetadataTypes.DIFFDIRECTORY);

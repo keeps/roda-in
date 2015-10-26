@@ -191,6 +191,23 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
         return result;
     }
 
+    public Set<String> getMapped(){
+        Set<String> result = new HashSet<>();
+        //we need to include the items that are being shown and the hidden
+        for(SourceTreeItem sti: mapped) {
+            result.add(sti.getPath());
+        }
+        for(TreeItem sti: getChildren()) {
+            SourceTreeItem item = (SourceTreeItem) sti;
+            if(item instanceof SourceTreeDirectory)
+                result.addAll(((SourceTreeDirectory)item).getMapped());
+
+            if (item.getState() == SourceTreeItemState.MAPPED)
+                result.add(item.getPath());
+        }
+        return result;
+    }
+
     private static Comparator createComparator(){
         return new Comparator<TreeItem>() {
             @Override
