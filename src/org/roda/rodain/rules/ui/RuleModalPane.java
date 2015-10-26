@@ -93,14 +93,14 @@ public class RuleModalPane extends BorderPane {
         source.setText(sb.toString());
 
         source.setMinHeight(24);
-        source.setFont(new Font("System", 14));
+        source.setId("title");
         source.setGraphic(new ImageView(SourceTreeDirectory.folderCollapseImage));
         source.setStyle(" -fx-text-fill: black");
         source.setWrapText(true);
 
         Label descObj = new Label(schema.getDob().getTitle());
         descObj.setMinHeight(24);
-        descObj.setFont(new Font("System", 14));
+        descObj.setId("title");
         descObj.setGraphic(new ImageView(schema.getImage()));
         descObj.setTextAlignment(TextAlignment.LEFT);
         descObj.setStyle(" -fx-text-fill: black");
@@ -194,7 +194,7 @@ public class RuleModalPane extends BorderPane {
         newFile.setStyle(" -fx-text-fill: black");
 
         Label metaTitle = new Label("Apply metadata from:");
-        metaTitle.setFont(Font.font("System", FontWeight.BOLD, 13));
+        metaTitle.setId("title");
 
         gridCenter.getChildren().add(metaTitle);
         rbSingleFile(gridCenter);

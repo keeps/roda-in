@@ -89,7 +89,6 @@ is being used to size a border should also be in pixels.
      * The main color palette from which the rest of the colors are derived.   *
      *                                                                         *
      **************************************************************************/
-
     /* A light grey that is the base color for objects.  Instead of using
      * -fx-base directly, the sections in this file will typically use -fx-color.
      */
@@ -1138,8 +1137,7 @@ is being used to size a border should also be in pixels.
 .text-area {
     -fx-padding: 0;
     -fx-cursor: default;
-    -fx-background-color: linear-gradient(to bottom, derive(-fx-text-box-border, -10%), -fx-text-box-border),
-        derive(-fx-base,-1%);
+    -fx-background-color: #fff, #fff;
 }
 .text-area > .scroll-pane {
     -fx-background-color: null;
@@ -1156,8 +1154,7 @@ is being used to size a border should also be in pixels.
 .text-area .content {
     -fx-padding: 0.333em 0.583em 0.333em 0.583em; /* 4 7 4 7 */
     -fx-cursor: text;
-    -fx-background-color: 
-        linear-gradient(from 0px 0px to 0px 4px, derive(-fx-control-inner-background, -8%), -fx-control-inner-background);
+    -fx-background-color:#fff;
     -fx-background-radius: 3;
 }
 
@@ -2975,3 +2972,8 @@ is being used to size a border should also be in pixels.
 .axis-minor-tick-mark { doh: true; }
 .chart-horizontal-zero-line { doh: true; }
 .stacked-bar-chart:horizontal .chart-bar { doh: true; }
+
+#title {
+    -fx-font-size: 14pt;
+    -fx-font-weight: bold;
+}

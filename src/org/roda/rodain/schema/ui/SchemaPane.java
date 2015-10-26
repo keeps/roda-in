@@ -61,15 +61,14 @@ public class SchemaPane extends BorderPane {
     public void createTop(){
         Button btn = new Button("Update");
         Label title = new Label("Classification Schema");
-        title.setFont(Font.font("System", FontWeight.BOLD, 14));
+        title.setId("title");
 
         HBox space = new HBox();
         HBox.setHgrow(space, Priority.ALWAYS);
 
         refresh = new HBox();
         refresh.setPadding(new Insets(10, 10, 10, 10));
-        refresh.setSpacing(10);
-        refresh.setAlignment(Pos.TOP_RIGHT);
+        refresh.setAlignment(Pos.CENTER_LEFT);
         refresh.getChildren().addAll(title, space, btn);
 
         btn.setOnAction(new EventHandler<ActionEvent>() {
@@ -97,7 +96,7 @@ public class SchemaPane extends BorderPane {
         }
 
         // create the tree view
-        treeView=new TreeView<String>(rootNode);
+        treeView=new TreeView<>(rootNode);
         treeView.setStyle("-fx-background-color:white;");
         treeView.setShowRoot(false);
         treeView.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {

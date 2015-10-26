@@ -35,7 +35,7 @@ public class SchemaTreeCell extends TreeCell<String> {
                 int begin = item.lastIndexOf("(");
                 int end = item.lastIndexOf("items)");
                 if(end > begin){
-                    //Example: from "Test ABC (145 items)" we get title="Test ABC" and numItems="145"
+                    //Example: from "Test ABC (145 items)" we get title="Test ABC" and numItems="145 "
                     String title = item.substring(0, begin -1);
                     String numItems = item.substring(begin + 1, end);
                     lab = new Label(title);

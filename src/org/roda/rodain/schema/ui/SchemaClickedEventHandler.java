@@ -21,7 +21,10 @@ public class SchemaClickedEventHandler implements EventHandler<MouseEvent> {
         if (mouseEvent.getClickCount() == 1) {
             TreeItem source = treeView.getSelectionModel().getSelectedItem();
             if(source instanceof SipPreviewNode){
-                Main.getRulePane().updateMetadata((SipPreviewNode)source);
+                Main.getInspectionPane().update((SipPreviewNode) source);
+            }
+            if(source instanceof SchemaNode){
+                Main.getInspectionPane().update((SchemaNode)source);
             }
         }
     }

@@ -19,7 +19,7 @@ import javafx.stage.Stage;
 
 import org.slf4j.LoggerFactory;
 
-import rodain.rules.ui.RulesPane;
+import rodain.inspection.InspectionPane;
 import rodain.schema.ui.SchemaNode;
 import rodain.schema.ui.SchemaPane;
 import rodain.source.ui.FileExplorerPane;
@@ -30,7 +30,7 @@ public class Main extends Application {
     private Stage stage;
 
     private static FileExplorerPane previewExplorer;
-    private static RulesPane rulesPane;
+    private static InspectionPane inspectionPane;
     private static SchemaPane schemaPane;
 
     public static void main(String[] args) {
@@ -64,10 +64,10 @@ public class Main extends Application {
         // Divide center pane in 3
         SplitPane split = new SplitPane();
         previewExplorer = new FileExplorerPane(stage);
-        rulesPane = new RulesPane(stage);
         schemaPane = new SchemaPane(stage);
+        inspectionPane = new InspectionPane(stage);
 
-        split.getItems().addAll(previewExplorer, schemaPane, rulesPane);
+        split.getItems().addAll(previewExplorer, schemaPane, inspectionPane);
 
         //Create Footer
         HBox footer = new Footer(stage);
@@ -92,7 +92,7 @@ public class Main extends Application {
     public static void mapSelected(String ruleId){
         previewExplorer.map(ruleId);
     }
-    public static RulesPane getRulePane(){
-        return rulesPane;
+    public static InspectionPane getInspectionPane(){
+        return inspectionPane;
     }
 }

@@ -65,6 +65,8 @@ public class FileExplorerPane extends BorderPane implements Observer {
         createFileExplorer();
         createFilterButtons();
 
+        setFileExplorerRoot(Paths.get("/home/adrap/Documents/Git/roda-in/"));
+
         this.setTop(top);
         this.setCenter(fileExplorer);
         this.setBottom(filterButtons);
@@ -86,15 +88,14 @@ public class FileExplorerPane extends BorderPane implements Observer {
     private void createTop(){
         Button btn = new Button("Open Folder");
         Label title = new Label("Source File Explorer");
-        title.setFont(Font.font("System", FontWeight.BOLD, 14));
+        title.setId("title");
 
         HBox space = new HBox();
         HBox.setHgrow(space, Priority.ALWAYS);
 
         top = new HBox();
         top.setPadding(new Insets(10, 10, 10, 10));
-        top.setSpacing(10);
-        top.setAlignment(Pos.TOP_RIGHT);
+        top.setAlignment(Pos.CENTER_LEFT);
         top.getChildren().addAll(title, space, btn);
 
         btn.setOnAction(new EventHandler<ActionEvent>() {

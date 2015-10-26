@@ -73,6 +73,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
         int sipCount = getSipCount();
         if(sipCount > 0)
             setValue(dob.getTitle() + "  (" + sipCount + " items)");
+        setExpanded(true);
     }
 
     public void removeRule(Rule r){
