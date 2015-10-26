@@ -221,9 +221,9 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
                 if(o1 instanceof SourceTreeDirectory)
                     return -1;
                 //"Load More..." item should be at the bottom
-                if(o1 instanceof SourceTreeLoadMore)
-                    return 1;
-                return 0;
+                if(o2 instanceof SourceTreeLoadMore)
+                    return -1;
+                return 1;
             }
         };
     }
@@ -318,10 +318,12 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
     }
 
     private void addChild(List children, String sourceItem){
-        //check if this path has been loaded and ignored. If it hasn't we apply the parent's state
+        //check if this path has been loaded and ignored/mapped. If it hasn't we apply the parent's state
         SourceTreeItemState newState = state;
         if(FileExplorerPane.isIgnored(sourceItem))
             newState = SourceTreeItemState.IGNORED;
+        else if(FileExplorerPane.isMapped(sourceItem))
+            newState = SourceTreeItemState.MAPPED;
 
         SourceTreeItem item;
         Path sourcePath = Paths.get(sourceItem);

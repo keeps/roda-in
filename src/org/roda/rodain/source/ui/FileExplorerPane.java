@@ -46,6 +46,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     private ComputeDirectorySize computeSize;
 
     private static Set<String> oldIgnored;
+    private static Set<String> oldMapped;
 
     //Filter control
     private static boolean showFiles = true;
@@ -146,8 +147,10 @@ public class FileExplorerPane extends BorderPane implements Observer {
     }
 
     public void setFileExplorerRoot(Path rootPath){
-        if(treeView.getRoot() != null)
+        if(treeView.getRoot() != null) {
             oldIgnored = ((SourceTreeDirectory) treeView.getRoot()).getIgnored();
+            oldMapped = ((SourceTreeDirectory) treeView.getRoot()).getMapped();
+        }
 
         SourceTreeDirectory rootNode = new SourceTreeDirectory(rootPath, new SourceDirectory(rootPath, isShowFiles()));
         rootNode.setExpanded(true);
@@ -259,6 +262,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
                 computeThread = new WalkFileTree(singlePath, computeSize);
                 computeThread.start();
             }
+            else updateSize(1, 0, attr.size()); //it's a file
         } catch (IOException e) {
             log.error("" + e);
         }
@@ -340,6 +344,12 @@ public class FileExplorerPane extends BorderPane implements Observer {
         if(oldIgnored == null)
             return false;
         return oldIgnored.contains(item);
+    }
+
+    public static boolean isMapped(String item){
+        if(oldMapped == null)
+            return false;
+        return oldMapped.contains(item);
     }
 
     public void map(){
