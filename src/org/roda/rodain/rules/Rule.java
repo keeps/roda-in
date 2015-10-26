@@ -120,12 +120,12 @@ public class Rule extends Observable implements Observer {
 
         switch (type){
             case SINGLESIP:
-                SipSingle visitorSingle = new SipSingle(id, filters);
+                SipSingle visitorSingle = new SipSingle(id, filters, metaType, metadata);
                 visitorSingle.addObserver(this);
                 visitor = visitorSingle;
                 break;
             case SIPPERFILE:
-                SipPerFileVisitor visitorFile = new SipPerFileVisitor(id, filters);
+                SipPerFileVisitor visitorFile = new SipPerFileVisitor(id, filters, metaType, metadata);
                 visitorFile.addObserver(this);
                 visitor = visitorFile;
                 break;

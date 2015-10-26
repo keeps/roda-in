@@ -14,11 +14,9 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import javafx.util.Callback;
 import rodain.rules.TreeNode;
-import rodain.schema.ui.SchemaNode;
-import rodain.schema.ui.SipContentDirectory;
-import rodain.schema.ui.SipContentFile;
-import rodain.schema.ui.SipPreviewNode;
+import rodain.schema.ui.*;
 
 /**
  * Created by adrapereira on 26-10-2015.
@@ -59,7 +57,7 @@ public class InspectionPane extends BorderPane {
         metadata.setStyle("-fx-border-width: 1; -fx-border-color: lightgray");
 
         HBox box = new HBox();
-        box.setPadding(new Insets(5, 5, 5, 5));
+        box.setPadding(new Insets(5, 10, 5, 10));
         box.setAlignment(Pos.CENTER_LEFT);
         box.setStyle("-fx-background-color: lightgray");
 
@@ -71,31 +69,24 @@ public class InspectionPane extends BorderPane {
 
         box.getChildren().addAll(title, space, load);
 
-        HBox wrapper = new HBox();
-        wrapper.setPadding(new Insets(5, 5, 5, 5));
-
         metaText = new TextArea();
-        metaText.setStyle("-fx-background-color:white;");
+        metaText.setStyle("-fx-background-color:white; -fx-focus-color: transparent; fx-faint-focus-color: transparent;");
         HBox.setHgrow(metaText, Priority.ALWAYS);
-        wrapper.getChildren().add(metaText);
-        metadata.getChildren().addAll(box, wrapper);
+        metadata.getChildren().addAll(box, metaText);
     }
 
     private void createContent(){
         content = new BorderPane();
-        content.setStyle("-fx-border-width: 2; -fx-border-color: lightgray");
+        content.setStyle("-fx-border-width: 1; -fx-border-color: lightgray");
         VBox.setVgrow(content, Priority.ALWAYS);
 
         HBox top = new HBox();
         top.setStyle("-fx-background-color: lightgray");
-        top.setPadding(new Insets(5, 5, 5, 5));
+        top.setPadding(new Insets(5, 10, 5, 10));
         Label title = new Label("Content");
         title.setStyle("-fx-font-size: 14pt");
         top.getChildren().add(title);
         content.setTop(top);
-
-        HBox wrapper = new HBox();
-        wrapper.setPadding(new Insets(5, 5, 5, 5));
 
         //create tree pane
         VBox treeBox=new VBox();
@@ -109,13 +100,19 @@ public class InspectionPane extends BorderPane {
         VBox.setVgrow(sipFiles, Priority.ALWAYS);
         HBox.setHgrow(sipFiles, Priority.ALWAYS);
 
+        sipFiles.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
+            @Override
+            public TreeCell<String> call(TreeView<String> p) {
+                InspectionTreeCell cell = new InspectionTreeCell();
+                return cell;
+            }
+        });
+
         sipRoot = new TreeItem<>();
         sipRoot.setExpanded(true);
         sipFiles.setRoot(sipRoot);
         sipFiles.setShowRoot(false);
-
-        wrapper.getChildren().add(sipFiles);
-        content.setCenter(wrapper);
+        content.setCenter(sipFiles);
     }
 
     private void createContent(SipPreviewNode node){
@@ -147,6 +144,8 @@ public class InspectionPane extends BorderPane {
         center.getChildren().clear();
         center.getChildren().addAll(metadata, content);
         setCenter(center);
+
+        metaText.setText(sip.getSip().getMetadata());
 
         Label title = new Label(sip.getValue());
         title.setId("title");

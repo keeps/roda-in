@@ -49,6 +49,8 @@ public class RuleModalPane extends BorderPane {
     //Metadata
     private VBox gridMetadata;
     private ToggleGroup groupMetadata;
+    private RadioButton diffFolder, sameFolder;
+    private Button chooseDir, chooseFile;
 
     private Button btContinue, btCancel;
     private States currentState;
@@ -182,10 +184,13 @@ public class RuleModalPane extends BorderPane {
     }
 
     private VBox createCenterMetadata(){
-        VBox gridCenter = new VBox();
-        gridCenter.setPadding(new Insets(0, 5, 0, 5));
-        gridCenter.setSpacing(5);
-        gridCenter.setAlignment(Pos.CENTER_LEFT);
+        VBox gridCenter = new VBox(10);
+        gridCenter.setPadding(new Insets(0, 10, 0, 10));
+
+        Label metaTitle = new Label("Apply metadata from:");
+        metaTitle.setId("title");
+
+        VBox center = new VBox(5);
         groupMetadata = new ToggleGroup();
 
         RadioButton newFile = new RadioButton("An empty text area");
@@ -193,20 +198,19 @@ public class RuleModalPane extends BorderPane {
         newFile.setToggleGroup(groupMetadata);
         newFile.setStyle(" -fx-text-fill: black");
 
-        Label metaTitle = new Label("Apply metadata from:");
-        metaTitle.setId("title");
+        rbSingleFile(center);
+        rbSameFolder(center);
+        rbDiffFolder(center);
+        center.getChildren().add(newFile);
 
-        gridCenter.getChildren().add(metaTitle);
-        rbSingleFile(gridCenter);
-        rbSameFolder(gridCenter);
-        rbDiffFolder(gridCenter);
-        gridCenter.getChildren().add(newFile);
+        gridCenter.getChildren().addAll(metaTitle, center);
 
         return gridCenter;
     }
 
     private void rbSingleFile(VBox gridCenter){
         HBox hbox = new HBox();
+        hbox.setAlignment(Pos.CENTER_LEFT);
 
         final RadioButton singleFile = new RadioButton("A single file");
         singleFile.setToggleGroup(groupMetadata);
@@ -214,7 +218,7 @@ public class RuleModalPane extends BorderPane {
         singleFile.setSelected(true);
         singleFile.setStyle(" -fx-text-fill: black");
 
-        final Button chooseFile = new Button("Choose File...");
+        chooseFile = new Button("Choose File...");
         chooseFile.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
@@ -226,6 +230,7 @@ public class RuleModalPane extends BorderPane {
                     return;
                 fromFile = selectedFile.toPath().toString();
                 chooseFile.setText(selectedFile.toPath().getFileName().toString());
+                chooseFile.setUserData(fromFile);
             }
         });
 
@@ -250,7 +255,7 @@ public class RuleModalPane extends BorderPane {
         //get the common prefix of the directories
         sameDir = Utils.longestCommonPrefix(directories);
 
-        RadioButton sameFolder = new RadioButton("The directory \"" + sameDir + "\"");
+        sameFolder = new RadioButton("The directory \"" + sameDir + "\"");
         sameFolder.setToggleGroup(groupMetadata);
         sameFolder.setUserData(MetadataTypes.SAMEDIRECTORY);
         sameFolder.setStyle(" -fx-text-fill: black");
@@ -260,13 +265,14 @@ public class RuleModalPane extends BorderPane {
 
     private void rbDiffFolder(VBox gridCenter){
         HBox hbox = new HBox();
+        hbox.setAlignment(Pos.CENTER_LEFT);
 
-        final RadioButton diffFolder = new RadioButton("Another directory");
+        diffFolder = new RadioButton("Another directory");
         diffFolder.setUserData(MetadataTypes.DIFFDIRECTORY);
         diffFolder.setToggleGroup(groupMetadata);
         diffFolder.setStyle(" -fx-text-fill: black");
 
-        final Button chooseDir = new Button("Choose Directory...");
+        chooseDir = new Button("Choose Directory...");
         chooseDir.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
@@ -278,6 +284,7 @@ public class RuleModalPane extends BorderPane {
                     return;
                 diffDir = selectedDirectory.toPath().toString();
                 chooseDir.setText(selectedDirectory.toPath().getFileName().toString());
+                chooseDir.setUserData(diffDir);
             }
         });
 
@@ -312,8 +319,11 @@ public class RuleModalPane extends BorderPane {
                 if(currentState == States.ASSOCIATION) {
                     setCenter(gridMetadata);
                     currentState = States.METADATA;
-                }else if(currentState == States.METADATA)
+                    enableMetaRadioButtons();
+                }else if(currentState == States.METADATA) {
+                    if(metadataCheckContinue())
                         RuleModalController.confirm();
+                }
             }
         });
 
@@ -325,6 +335,36 @@ public class RuleModalPane extends BorderPane {
         });
 
         setBottom(buttons);
+    }
+
+    private boolean metadataCheckContinue(){
+        try {
+            MetadataTypes metaType = getMetadataType();
+            if(metaType == MetadataTypes.SINGLEFILE)
+                return chooseFile.getUserData() != null;
+            if(metaType == MetadataTypes.DIFFDIRECTORY)
+                return chooseDir.getUserData() != null;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+    private void enableMetaRadioButtons(){
+        try {
+            RuleTypes assocType = getAssociationType();
+            if(assocType == RuleTypes.SINGLESIP){
+                sameFolder.setDisable(true);
+                diffFolder.setDisable(true);
+                chooseDir.setDisable(true);
+            }else {
+                sameFolder.setDisable(false);
+                diffFolder.setDisable(false);
+                chooseDir.setDisable(false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public Set<SourceTreeItem> getSourceSet(){

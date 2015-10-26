@@ -1,32 +1,43 @@
 package rodain.rules.sip;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
-import org.slf4j.LoggerFactory;
+import org.apache.commons.io.FilenameUtils;
+
+import rodain.rules.MetadataTypes;
 import rodain.rules.TreeNode;
 import rodain.rules.filters.ContentFilter;
 import rodain.utils.TreeVisitor;
+import rodain.utils.Utils;
 
 /**
  * Created by adrapereira on 05-10-2015.
  */
 public class SipSingle extends Observable implements TreeVisitor, SipCreator {
     private String startPath;
-    private Set<ContentFilter> filters;
     private ArrayList<SipPreview> sips;
     private int added = 0, returned = 0;
     private Deque<TreeNode> nodes;
-    private String id;
     private Set<TreeNode> files;
 
-    public SipSingle(String id, Set<ContentFilter> filters){
+    private String id;
+    private Set<ContentFilter> filters;
+    private MetadataTypes metaType;
+    private String metadata;
+
+    public SipSingle(String id, Set<ContentFilter> filters, MetadataTypes metaType, String metadata){
         this.filters = filters;
         sips = new ArrayList<>();
         nodes = new ArrayDeque<>();
         this.id = id;
+        this.metaType = metaType;
+        this.metadata = metadata;
         files = new HashSet<>();
     }
 
@@ -92,14 +103,34 @@ public class SipSingle extends Observable implements TreeVisitor, SipCreator {
 
     @Override
     public void end() {
+        String meta = getMetadata();
         //create a new Sip
         Path path = Paths.get(startPath);
         String name = "sip_" + path.getFileName().toString();
-        sips.add(new SipPreview(name, path.toString(), files));
+        sips.add(new SipPreview(name, path.toString(), files, meta));
         added++;
 
         setChanged();
         notifyObservers();
+    }
+
+    private String getMetadata(){
+        try {
+            if(metaType == MetadataTypes.SINGLEFILE)
+                return Utils.readFile(metadata, Charset.defaultCharset());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    private Path getFileFromDir(Path path){
+        String fileName = FilenameUtils.removeExtension(path.getFileName().toString());
+        Path newPath = Paths.get(metadata + "/" + fileName + ".xml");
+        if(Files.exists(newPath)){
+            return newPath;
+        }
+        return null;
     }
 
     @Override

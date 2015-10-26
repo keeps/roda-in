@@ -10,12 +10,14 @@ import java.util.Set;
 public class SipPreview {
     private String name;
     private String path;
+    private String metadata;
     private Set<TreeNode> files;
 
-    public SipPreview(String name, String path, Set<TreeNode> files){
+    public SipPreview(String name, String path, Set<TreeNode> files, String metadata){
         this.name = name;
         this.path = path;
         this.files = files;
+        this.metadata = metadata;
     }
 
     public String getName() {
@@ -28,6 +30,10 @@ public class SipPreview {
 
     public Set<TreeNode> getFiles() {
         return files;
+    }
+
+    public String getMetadata(){
+        return metadata;
     }
 
     @Override

@@ -83,7 +83,6 @@ public class SchemaPane extends BorderPane {
         //create tree pane
         VBox treeBox=new VBox();
         treeBox.setPadding(new Insets(10, 10, 10, 10));
-        treeBox.setSpacing(10);
 
         TreeItem<String> rootNode = new TreeItem<>();
         rootNode.setExpanded(true);

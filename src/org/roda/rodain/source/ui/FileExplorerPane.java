@@ -116,7 +116,6 @@ public class FileExplorerPane extends BorderPane implements Observer {
         //create tree pane
         final VBox treeBox=new VBox();
         treeBox.setPadding(new Insets(10, 10, 10, 10));
-        treeBox.setSpacing(10);
 
         treeView = new TreeView<>();
         treeView.setStyle("-fx-background-color:white;");

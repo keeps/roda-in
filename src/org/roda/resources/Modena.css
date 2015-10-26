@@ -520,7 +520,7 @@ is being used to size a border should also be in pixels.
 .table-view, 
 .tree-table-view {
     -fx-background-color: -fx-box-border, -fx-control-inner-background;
-    -fx-background-insets: 0, 1;
+    -fx-background-insets: 0, 0, 1, 2;
     -fx-padding: 1;
 }
 .scroll-pane:focused,
@@ -528,8 +528,8 @@ is being used to size a border should also be in pixels.
 .list-view:focused,
 .tree-view:focused,
 .tree-table-view:focused {
-    -fx-background-color: -fx-faint-focus-color, -fx-focus-color, -fx-control-inner-background; 
-    -fx-background-insets: -2, -0.3, 1;
+    -fx-background-color: -fx-faint-focus-color, -fx-focus-color, -fx-control-inner-background;
+    -fx-background-insets: 0, 0, 1, 2;
 }
 /* ones with grey -fx-background not lighter -fx-control-inner-background */
 .scroll-pane,
@@ -1156,6 +1156,10 @@ is being used to size a border should also be in pixels.
     -fx-cursor: text;
     -fx-background-color:#fff;
     -fx-background-radius: 3;
+}
+
+.text-area:focused {
+    -fx-background-insets: 0, 0, 1, 2;
 }
 
 /*******************************************************************************
@@ -2077,11 +2081,11 @@ is being used to size a border should also be in pixels.
 }
 .tree-view:focused > .virtual-flow > .clipped-container > .sheet > .tree-cell:focused {
     -fx-background-color: -fx-focus-color, -fx-cell-focus-inner-border, -fx-control-inner-background;
-    -fx-background-insets: 0, 1, 2;
+    -fx-background-insets: 0, 0, 1, 2;
 }
 .tree-view:focused > .virtual-flow > .clipped-container > .sheet > .tree-cell:filled:focused:selected {
     -fx-background-color: -fx-focus-color, -fx-cell-focus-inner-border, -fx-selection-bar;
-    -fx-background-insets: 0, 1, 2;
+    -fx-background-insets: 0, 0, 1, 2;
     -fx-background: -fx-accent;
     -fx-text-fill: -fx-selection-bar-text;
 }
@@ -2089,10 +2093,11 @@ is being used to size a border should also be in pixels.
 .tree-view:focused > .virtual-flow > .clipped-container > .sheet > .tree-cell:filled:selected:hover {
     -fx-background-color: -fx-selection-bar;
     -fx-text-fill: -fx-selection-bar-text;
+    -fx-background-insets: 0, 0, 1, 2;
 }
 .tree-view:focused > .virtual-flow > .clipped-container > .sheet > .tree-cell:filled:focused:selected:hover {
     -fx-background-color: -fx-focus-color, -fx-cell-focus-inner-border, -fx-selection-bar;
-    -fx-background-insets: 0, 1, 2;
+    -fx-background-insets: 0, 0, 1, 2;
     -fx-text-fill: -fx-selection-bar-text;
 }
 /* When the TreeView is _not_ focused, we show alternate selection colors */
@@ -2100,6 +2105,7 @@ is being used to size a border should also be in pixels.
 .tree-cell:filled:selected {
     -fx-background-color: lightgray;
     -fx-text-fill: -fx-selection-bar-text;
+    -fx-background-insets: 0, 0, 1, 2;
 }
 .tree-cell:filled:selected:focused:disabled, 
 .tree-cell:filled:selected:disabled {
@@ -2141,7 +2147,7 @@ is being used to size a border should also be in pixels.
 .tree-view:focused > .virtual-flow > .clipped-container > .sheet > .tree-cell:filled:focused:hover,
 .tree-table-view:focused > .virtual-flow > .clipped-container > .sheet > .tree-table-row-cell:filled:focused:hover {
     -fx-background-color: -fx-focus-color, -fx-cell-focus-inner-border, -fx-cell-hover-color;
-    -fx-background-insets: 0, 1, 2;
+    -fx-background-insets: 0, 0, 1, 2;
     -fx-text-fill: -fx-text-inner-color;
 }
 .tree-cell:filled:selected:hover > .tree-disclosure-node > .arrow,

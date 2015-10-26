@@ -1,10 +1,8 @@
 package rodain.utils;
 
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
+import java.nio.charset.Charset;
+import java.nio.file.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -69,5 +67,10 @@ public class Utils {
             }
         }
         return strs.get(0).substring(0, minLen);
+    }
+
+    public static String readFile(String path, Charset encoding) throws IOException {
+        byte[] encoded = Files.readAllBytes(Paths.get(path));
+        return new String(encoded, encoding);
     }
 }

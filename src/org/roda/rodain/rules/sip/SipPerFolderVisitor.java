@@ -88,7 +88,7 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipC
             String name = "sip_" + path.getFileName().toString();
             Set<TreeNode> files = new HashSet<>();
             files.add(node);
-            sips.add(new SipPreview(name, path.toString(), files));
+            sips.add(new SipPreview(name, path.toString(), files, ""));
             added++;
 
             long now = System.currentTimeMillis();
