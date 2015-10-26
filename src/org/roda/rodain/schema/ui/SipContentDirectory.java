@@ -75,10 +75,15 @@ public class SipContentDirectory extends TreeItem<Object> implements SourceTreeI
     }
 
     @Override
-    public void map(){
+    public void map(String s){
     }
 
     @Override
-    public void toNormal(){
+    public void unignore(){
+    }
+
+    @Override
+    public void unmap(String s){
+
     }
 }

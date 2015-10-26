@@ -28,6 +28,7 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
     public boolean expanded = false;
     private String fullPath;
     private SourceTreeItemState state;
+    private String mappingRuleId;
 
     private HashSet<SourceTreeItem> ignored;
     private HashSet<SourceTreeItem> mapped;
@@ -255,20 +256,36 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
     }
 
     @Override
-    public void map(){
+    public void map(String ruleId){
         if(state == SourceTreeItemState.NORMAL)
             state = SourceTreeItemState.MAPPED;
+        mappingRuleId = ruleId;
         for(TreeItem it: getChildren()){
             SourceTreeItem item = (SourceTreeItem)it;
-            item.map();
+            item.map(ruleId);
         }
     }
 
     @Override
-    public void toNormal(){
-        state = SourceTreeItemState.NORMAL;
+    public void unignore(){
+        if(state == SourceTreeItemState.IGNORED)
+            state = SourceTreeItemState.NORMAL;
+        for(TreeItem it: getChildren()){
+            SourceTreeItem item = (SourceTreeItem)it;
+            item.unignore();
+        }
     }
 
+    @Override
+    public void unmap(String ruleId){
+        if(state == SourceTreeItemState.MAPPED && mappingRuleId.equals(ruleId))
+            state = SourceTreeItemState.NORMAL;
+        mappingRuleId = "";
+        for(TreeItem it: getChildren()){
+            SourceTreeItem item = (SourceTreeItem)it;
+            item.unmap(ruleId);
+        }
+    }
     public SourceDirectory getDirectory() {
         return directory;
     }

@@ -352,11 +352,11 @@ public class FileExplorerPane extends BorderPane implements Observer {
         return oldMapped.contains(item);
     }
 
-    public void map(){
+    public void map(String ruleId){
         Set<SourceTreeItem> items = getSelectedItems();
         for(SourceTreeItem item: items){
             TreeItem treeItem = (TreeItem) item;
-            item.map();
+            item.map(ruleId);
 
             SourceTreeDirectory dirParent = (SourceTreeDirectory)treeItem.getParent();
             if(!isShowMapped())
@@ -369,13 +369,22 @@ public class FileExplorerPane extends BorderPane implements Observer {
         }
     }
 
+    /*
+    * Ignores or unignores the selected items, depending on its current state.
+    * If an item is ignored, this method unignores it.
+    * If an item is normal, this method ignores it.
+    * In the same call it can ignore and unignore items.
+    * */
     public void ignore(){
         Set<SourceTreeItem> items = getSelectedItems();
         for(SourceTreeItem item: items){
             TreeItem treeItem = (TreeItem) item;
-            item.ignore();
-            SourceTreeDirectory parent = (SourceTreeDirectory) treeItem.getParent();
+            if(item.getState() == SourceTreeItemState.NORMAL)
+                item.ignore();
+            else if(item.getState() == SourceTreeItemState.IGNORED)
+                item.unignore();
 
+            SourceTreeDirectory parent = (SourceTreeDirectory) treeItem.getParent();
             if(!isShowIgnored())
                 parent.hideIgnored();
             else {//force update

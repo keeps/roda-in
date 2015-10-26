@@ -7,6 +7,7 @@ public interface SourceTreeItem {
     String getPath();
     SourceTreeItemState getState();
     void ignore();
-    void map();
-    void toNormal();
+    void map(String ruleId);
+    void unignore();
+    void unmap(String ruleId);
 }

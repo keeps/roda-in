@@ -74,7 +74,7 @@ public class RuleModalController implements Observer {
             visitors.add(sourcePaths, visitor);
 
             schema.addRule(rule);
-            Main.mapSelected();
+            Main.mapSelected(rule.getId());
         } catch (Exception e) {
             log.debug("" + e);
         }

@@ -30,10 +30,16 @@ public class SourceTreeLoadMore extends TreeItem<String> implements SourceTreeIt
     }
 
     @Override
-    public void map(){
+    public void map(String s){
     }
 
     @Override
-    public void toNormal(){
+    public void unmap(String ruleId) {
+
+    }
+
+    @Override
+    public void unignore() {
+
     }
 }

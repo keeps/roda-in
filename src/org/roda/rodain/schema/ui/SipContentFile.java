@@ -52,10 +52,15 @@ public class SipContentFile extends TreeItem<Object> implements SourceTreeItem{
     }
 
     @Override
-    public void map(){
+    public void map(String s){
     }
 
     @Override
-    public void toNormal(){
+    public void unignore(){
+    }
+
+    @Override
+    public void unmap(String s){
+
     }
 }

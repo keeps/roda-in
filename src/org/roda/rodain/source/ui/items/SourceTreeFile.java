@@ -15,6 +15,7 @@ public class SourceTreeFile extends TreeItem<String> implements SourceTreeItem{
     //this stores the full path to the file
     private String fullPath;
     private SourceTreeItemState state;
+    private String mappingRuleId;
 
     public SourceTreeFile(Path file, SourceTreeItemState st){
         this(file);
@@ -58,13 +59,22 @@ public class SourceTreeFile extends TreeItem<String> implements SourceTreeItem{
     }
 
     @Override
-    public void map(){
+    public void map(String ruleId){
         if(state == SourceTreeItemState.NORMAL)
             state = SourceTreeItemState.MAPPED;
+        mappingRuleId = ruleId;
     }
 
     @Override
-    public void toNormal(){
-        state = SourceTreeItemState.NORMAL;
+    public void unignore(){
+        if(state == SourceTreeItemState.IGNORED)
+            state = SourceTreeItemState.NORMAL;
+    }
+
+    @Override
+    public void unmap(String ruleId){
+        if(state == SourceTreeItemState.MAPPED && mappingRuleId.equals(ruleId))
+            state = SourceTreeItemState.NORMAL;
+        mappingRuleId = "";
     }
 }

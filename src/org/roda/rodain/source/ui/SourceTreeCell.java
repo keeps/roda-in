@@ -16,7 +16,7 @@ public class SourceTreeCell extends TreeCell<String> {
     private ContextMenu addMenu = new ContextMenu();
 
     public SourceTreeCell(){
-        MenuItem ignoreMenu = new MenuItem("Set Ignored");
+        MenuItem ignoreMenu = new MenuItem("Remove Ignored");
         addMenu.getItems().add(ignoreMenu);
         ignoreMenu.setOnAction(new javafx.event.EventHandler<ActionEvent>() {
             @Override
@@ -27,24 +27,11 @@ public class SourceTreeCell extends TreeCell<String> {
                 updateItem(treeItem.getValue(), false);
             }
         });
-
-        MenuItem mapMenu = new MenuItem("Set Mapped");
-        addMenu.getItems().add(mapMenu);
-        mapMenu.setOnAction(new javafx.event.EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                TreeItem<String> treeItem = getTreeItem();
-                SourceTreeItem sti = (SourceTreeItem) treeItem;
-                sti.map();
-                updateItem(treeItem.getValue(), false);
-            }
-        });
     }
 
     @Override
     public void updateItem(String item, boolean empty) {
         super.updateItem(item, empty);
-        this.setStyle("-fx-text-fill:orange;");
 
         if (!empty) {
             HBox hbox = new HBox(5);
