@@ -1,7 +1,7 @@
 package rodain.inspection;
 
 import java.io.File;
-import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -11,6 +11,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import rodain.rules.TreeNode;
 import rodain.source.ui.items.SourceTreeItem;
 import rodain.source.ui.items.SourceTreeItemState;
 
@@ -23,16 +24,18 @@ public class SipContentDirectory extends TreeItem<Object> implements SourceTreeI
     private static final Comparator comparator = createComparator();
     //this stores the full path to the file or directory
     private String fullPath;
+    private TreeNode treeNode;
 
-    public SipContentDirectory(Path file) {
-        super(file.toString());
-        this.fullPath = file.toString();
+    public SipContentDirectory(TreeNode treeNode) {
+        super(treeNode.getPath());
+        this.treeNode = treeNode;
+        this.fullPath = treeNode.getPath();
         this.setGraphic(new ImageView(folderCollapseImage));
 
         //set the value
         if (!fullPath.endsWith(File.separator)) {
             //set the value (which is what is displayed in the tree)
-            String value = file.toString();
+            String value = treeNode.getPath();
             int indexOf = value.lastIndexOf(File.separator);
             if (indexOf > 0) {
                 this.setValue(value.substring(indexOf + 1));
@@ -62,6 +65,27 @@ public class SipContentDirectory extends TreeItem<Object> implements SourceTreeI
                 }
             }
         });
+    }
+
+    public TreeNode getTreeNode(){
+        return treeNode;
+    }
+
+    public void skip(){
+        SipContentDirectory parent = (SipContentDirectory)getParent();
+        TreeNode parentTreeNode = parent.getTreeNode();
+        parentTreeNode.remove(treeNode.getPath()); //remove this treeNode from the parent
+        parentTreeNode.addAll(treeNode.getAllFiles()); // add this treeNode's children to this parent
+    }
+
+    public void flatten(){
+        treeNode.flatten();
+        getChildren().clear();
+        for(String path: treeNode.getKeys()){
+            SipContentFile file = new SipContentFile(Paths.get(path));
+            getChildren().add(file);
+        }
+        sortChildren();
     }
 
     public void sortChildren(){

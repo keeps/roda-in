@@ -45,7 +45,7 @@ public class SchemaTreeCell extends TreeCell<String> {
                 if(treeItem instanceof SipPreviewNode) {
                     SipPreviewNode sipNode = (SipPreviewNode) treeItem;
                     icon = sipNode.getIcon();
-                    if(sipNode.isModified()) {
+                    if(sipNode.isMetaModified() || sipNode.isContentModified()) {
                         setText("*");
                     }else setText("");
                 }

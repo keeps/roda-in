@@ -11,6 +11,7 @@ import java.util.Set;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -27,6 +28,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import org.slf4j.LoggerFactory;
+
 import rodain.rules.TreeNode;
 import rodain.schema.ui.SchemaNode;
 import rodain.schema.ui.SipPreviewNode;
@@ -101,11 +103,8 @@ public class InspectionPane extends BorderPane {
                     String newMetadata = metaText.getText();
                     if(! oldMetadata.equals(newMetadata)) { //only update if there's been modifications
                         currentSIP.getSip().setMetadata(metaText.getText());
-                        currentSIP.setModified();
-                        //update ui
-                        String value = currentSIP.getValue();
-                        currentSIP.setValue("");
-                        currentSIP.setValue(value);
+                        currentSIP.setMetaModified();
+                        updateItem();
                     }
                 }
             }
@@ -173,13 +172,43 @@ public class InspectionPane extends BorderPane {
         createContentBottom();
     }
 
-    private void createContentBottom(){
+    private void createContentBottom() {
         HBox box = new HBox();
         HBox.setHgrow(box, Priority.ALWAYS);
 
         Button ignore = new Button("Ignore");
         Button flatten = new Button("Flatten directory");
+        flatten.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                Object selected = sipFiles.getSelectionModel().getSelectedItem();
+                if(selected instanceof SipContentDirectory){
+                    SipContentDirectory dir = (SipContentDirectory) selected;
+                    dir.flatten();
+                    currentSIP.setContentModified();
+                    updateItem();
+                }
+            }
+        });
         Button skip = new Button("Skip Directory");
+        skip.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                Object selected = sipFiles.getSelectionModel().getSelectedItem();
+                if(selected instanceof SipContentDirectory){
+                    SipContentDirectory dir = (SipContentDirectory) selected;
+                    dir.skip();
+                    // clear the parent and recreate the children based on the updated tree nodes
+                    SipContentDirectory parent = (SipContentDirectory)dir.getParent();
+                    TreeItem newParent = recCreateSipContent(parent.getTreeNode());
+                    parent.getChildren().clear();
+                    parent.getChildren().addAll(newParent.getChildren());
+                    parent.sortChildren();
+
+                    currentSIP.setContentModified();
+                }
+            }
+        });
 
         ignore.minWidthProperty().bind(content.widthProperty().multiply(0.32));
         flatten.minWidthProperty().bind(content.widthProperty().multiply(0.32));
@@ -187,6 +216,13 @@ public class InspectionPane extends BorderPane {
 
         box.getChildren().addAll(ignore, flatten, skip);
         content.setBottom(box);
+    }
+
+    private void updateItem(){
+        //update ui
+        String value = currentSIP.getValue();
+        currentSIP.setValue("");
+        currentSIP.setValue(value);
     }
 
     private void createContent(SipPreviewNode node){
@@ -200,18 +236,17 @@ public class InspectionPane extends BorderPane {
     }
 
     private TreeItem<Object> recCreateSipContent(TreeNode node){
-        TreeItem<Object> result;
+        SipContentDirectory result;
         Path path = Paths.get(node.getPath());
         if(Files.isDirectory(path))
-            result = new SipContentDirectory(path);
+            result = new SipContentDirectory(node);
         else return new SipContentFile(path);
 
         for(String key: node.getKeys()){
             TreeItem<Object> temp = recCreateSipContent(node.get(key));
             result.getChildren().add(temp);
         }
-        if(result instanceof SipContentDirectory)
-            ((SipContentDirectory) result).sortChildren();
+        result.sortChildren();
         return result;
     }
 
@@ -223,7 +258,7 @@ public class InspectionPane extends BorderPane {
         setCenter(center);
 
         String meta = sip.getSip().getMetadata();
-        if(sip.isModified() || meta.equals(""))
+        if(sip.isMetaModified() || meta.equals(""))
             metaText.setText(meta);
         else{
             try {
