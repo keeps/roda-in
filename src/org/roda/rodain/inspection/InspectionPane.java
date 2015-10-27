@@ -49,12 +49,15 @@ public class InspectionPane extends BorderPane {
     private TreeView sipFiles;
     private TreeItem sipRoot;
 
+    private Button remove;
+
     private SipPreviewNode currentSIP;
 
     public InspectionPane(Stage stage){
         createTop();
         createMetadata();
         createContent();
+        createBottom();
 
         center = new VBox(10);
         center.setPadding(new Insets(10, 10, 10, 10));
@@ -250,6 +253,17 @@ public class InspectionPane extends BorderPane {
         return result;
     }
 
+    public void createBottom(){
+        HBox bottom = new HBox();
+        bottom.setPadding(new Insets(10,10,10,10));
+        bottom.setAlignment(Pos.CENTER_LEFT);
+
+        remove = new Button("Remove");
+        bottom.getChildren().add(remove);
+
+        setBottom(bottom);
+    }
+
     public void update(SipPreviewNode sip){
         currentSIP = sip;
         createContent(sip);
@@ -272,6 +286,8 @@ public class InspectionPane extends BorderPane {
         title.setId("title");
         topBox.getChildren().clear();
         topBox.getChildren().addAll(sip.getGraphic(), title);
+
+        remove.setDisable(false);
     }
 
     public void update(SchemaNode node){
@@ -284,5 +300,7 @@ public class InspectionPane extends BorderPane {
         title.setId("title");
         topBox.getChildren().clear();
         topBox.getChildren().addAll(node.getGraphic(), title);
+
+        remove.setDisable(true);
     }
 }
