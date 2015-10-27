@@ -7,6 +7,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.Set;
 
 import javafx.beans.value.ChangeListener;
@@ -29,9 +30,12 @@ import javafx.util.Callback;
 
 import org.slf4j.LoggerFactory;
 
+import rodain.core.Main;
 import rodain.rules.TreeNode;
 import rodain.schema.ui.SchemaNode;
 import rodain.schema.ui.SipPreviewNode;
+import rodain.source.ui.FileExplorerPane;
+import rodain.source.ui.items.SourceTreeItem;
 import rodain.utils.Utils;
 
 /**

@@ -42,8 +42,7 @@ public class RuleModalController implements Observer {
     public static void newAssociation(final Stage primStage, Set<SourceTreeItem> source, SchemaNode schemaNode){
         if(stage == null)
             stage = new RuleModalStage(primStage);
-        if(loadingPane == null)
-            loadingPane = new LoadingPane(source, schemaNode);
+        loadingPane = new LoadingPane(source, schemaNode);
         stage.setRoot(loadingPane);
 
         sourceSet = source;

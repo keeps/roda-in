@@ -52,7 +52,8 @@ public class RuleModalPane extends BorderPane {
     private RadioButton diffFolder, sameFolder;
     private Button chooseDir, chooseFile;
 
-    private Button btContinue, btCancel;
+    private Button btContinue, btCancel, btBack;
+    private HBox space, buttons;
     private States currentState;
     private String fromFile, diffDir, sameDir;
 
@@ -298,20 +299,33 @@ public class RuleModalPane extends BorderPane {
     private void createBottom(){
         btCancel = new Button("Cancel");
         btContinue = new Button("Continue");
-        Label lState = new Label("");
-        VBox.setVgrow(lState, Priority.ALWAYS);
-        lState.setAlignment(Pos.BOTTOM_CENTER);
-        lState.setStyle(" -fx-text-fill: darkgrey");
+        btBack = new Button("Back");
 
-        HBox space = new HBox();
+        space = new HBox();
         HBox.setHgrow(space, Priority.ALWAYS);
 
-        HBox buttons = new HBox();
+        buttons = new HBox(5);
         buttons.setPadding(new Insets(10, 10, 10, 10));
         buttons.setSpacing(10);
         buttons.setAlignment(Pos.CENTER);
-        buttons.getChildren().addAll(btCancel, space, lState, btContinue);
+        buttons.getChildren().addAll(btCancel, space, btContinue);
 
+        btBack.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                if(currentState == States.ASSOCIATION) {
+                    setCenter(gridMetadata);
+                    currentState = States.METADATA;
+                    enableMetaRadioButtons();
+                }else if(currentState == States.METADATA) {
+                    setCenter(gridAssociation);
+                    currentState = States.ASSOCIATION;
+                    buttons.getChildren().clear();
+                    buttons.getChildren().addAll(btCancel, space, btContinue);
+                    btContinue.setText("Continue");
+                }
+            }
+        });
 
         btContinue.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -320,6 +334,9 @@ public class RuleModalPane extends BorderPane {
                     setCenter(gridMetadata);
                     currentState = States.METADATA;
                     enableMetaRadioButtons();
+                    buttons.getChildren().clear();
+                    buttons.getChildren().addAll(btCancel, btBack, space, btContinue);
+                    btContinue.setText("Confirm");
                 }else if(currentState == States.METADATA) {
                     if(metadataCheckContinue())
                         RuleModalController.confirm();

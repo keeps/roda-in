@@ -22,6 +22,7 @@ import rodain.source.ui.items.SourceTreeItem;
  * Created by adrapereira on 27-10-2015.
  */
 public class LoadingPane extends BorderPane {
+    private static Image loadingGif;
     private Set<SourceTreeItem> sourceSet;
     private SchemaNode schema;
 
@@ -37,7 +38,8 @@ public class LoadingPane extends BorderPane {
         HBox centerBox = new HBox();
         centerBox.setAlignment(Pos.CENTER);
         try {
-            Image loadingGif = new Image(ClassLoader.getSystemResource("loading.GIF").openStream());
+            if(loadingGif == null)
+                loadingGif = new Image(ClassLoader.getSystemResource("loading.GIF").openStream());
             centerBox.getChildren().add(new ImageView(loadingGif));
         } catch (IOException e) {
             e.printStackTrace();

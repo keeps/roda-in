@@ -378,8 +378,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     * If an item is normal, this method ignores it.
     * In the same call it can ignore and unignore items.
     * */
-    public void ignore(){
-        Set<SourceTreeItem> items = getSelectedItems();
+    public void ignore(Set<SourceTreeItem> items){
         for(SourceTreeItem item: items){
             TreeItem treeItem = (TreeItem) item;
             if(item.getState() == SourceTreeItemState.NORMAL)
@@ -396,5 +395,10 @@ public class FileExplorerPane extends BorderPane implements Observer {
                 treeItem.setValue(value);
             }
         }
+    }
+
+    public void ignore(){
+        Set<SourceTreeItem> items = getSelectedItems();
+        ignore(items);
     }
 }

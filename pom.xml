@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.roda</groupId>
-    <artifactId>roda-in</artifactId>
+    <artifactId>rodain</artifactId>
     <version>1.0.0-alpha.2</version>
 
     <properties>

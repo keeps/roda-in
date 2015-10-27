@@ -94,6 +94,9 @@ public class Main extends Application {
     public static void mapSelected(String ruleId){
         previewExplorer.map(ruleId);
     }
+    public static void ignore(Set<SourceTreeItem> items){
+        previewExplorer.ignore(items);
+    }
     public static InspectionPane getInspectionPane(){
         return inspectionPane;
     }
