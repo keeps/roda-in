@@ -11,6 +11,7 @@ import rodain.rules.sip.SipPreview;
 public class SipPreviewNode extends TreeItem<String> {
     private SipPreview sip;
     private Image icon;
+    private boolean modified = false;
 
     public SipPreviewNode(SipPreview sip, Image icon){
         super(sip.getName());
@@ -29,5 +30,13 @@ public class SipPreviewNode extends TreeItem<String> {
 
     public Image getIcon() {
         return icon;
+    }
+
+    public boolean isModified() {
+        return modified;
+    }
+
+    public void setModified(){
+        modified = true;
     }
 }

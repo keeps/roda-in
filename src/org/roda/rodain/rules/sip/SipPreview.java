@@ -36,6 +36,10 @@ public class SipPreview {
         return metadata;
     }
 
+    public void setMetadata(String meta){
+        metadata = meta;
+    }
+
     @Override
     public String toString() {
         return "SipPreview{" +

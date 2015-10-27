@@ -37,6 +37,8 @@ public class InspectionPane extends BorderPane {
     private TreeView sipFiles;
     private TreeItem sipRoot;
 
+    private SipPreviewNode currentSIP;
+
     public InspectionPane(Stage stage){
         createTop();
         createMetadata();
@@ -78,10 +80,24 @@ public class InspectionPane extends BorderPane {
         VBox.setVgrow(metaText, Priority.ALWAYS);
         metadata.getChildren().addAll(box, metaText);
 
-        metaText.textProperty().addListener(new ChangeListener<String>() {
+        /* We listen to the focused property and not the text property because we only need to update when the text area loses focus
+        * Using text property, we would update after every single character modification, making the application slower
+        */
+        metaText.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
-            public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
-                System.out.println("Text changed!");
+            public void changed(ObservableValue<? extends Boolean> observableValue, Boolean aBoolean, Boolean t1) {
+                if(!t1) { //lost focus, so update
+                    String oldMetadata = currentSIP.getSip().getMetadata();
+                    String newMetadata = metaText.getText();
+                    if(! oldMetadata.equals(newMetadata)) { //only update if there's been modifications
+                        currentSIP.getSip().setMetadata(metaText.getText());
+                        currentSIP.setModified();
+                        //update ui
+                        String value = currentSIP.getValue();
+                        currentSIP.setValue("");
+                        currentSIP.setValue(value);
+                    }
+                }
             }
         });
     }
@@ -169,6 +185,7 @@ public class InspectionPane extends BorderPane {
     }
 
     public void update(SipPreviewNode sip){
+        currentSIP = sip;
         createContent(sip);
         center.getChildren().clear();
         center.getChildren().addAll(metadata, content);
@@ -183,6 +200,7 @@ public class InspectionPane extends BorderPane {
     }
 
     public void update(SchemaNode node){
+        currentSIP = null;
         center.getChildren().clear();
         center.getChildren().add(metadata);
         setCenter(center);

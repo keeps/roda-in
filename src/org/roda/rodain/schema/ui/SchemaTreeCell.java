@@ -43,8 +43,11 @@ public class SchemaTreeCell extends TreeCell<String> {
                 }
             }else{
                 if(treeItem instanceof SipPreviewNode) {
-                    icon = ((SipPreviewNode) treeItem).getIcon();
-                    setText("");
+                    SipPreviewNode sipNode = (SipPreviewNode) treeItem;
+                    icon = sipNode.getIcon();
+                    if(sipNode.isModified()) {
+                        setText("*");
+                    }else setText("");
                 }
             }
             hbox.getChildren().addAll(new ImageView(icon), lab);
