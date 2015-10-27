@@ -5,6 +5,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Set;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -13,10 +15,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
 import javafx.util.Callback;
+
 import rodain.rules.TreeNode;
-import rodain.schema.ui.*;
+import rodain.schema.ui.SchemaNode;
+import rodain.schema.ui.SipContentDirectory;
+import rodain.schema.ui.SipContentFile;
+import rodain.schema.ui.SipPreviewNode;
 
 /**
  * Created by adrapereira on 26-10-2015.
@@ -40,6 +45,7 @@ public class InspectionPane extends BorderPane {
         center = new VBox(10);
         center.setPadding(new Insets(10, 10, 10, 10));
 
+        metadata.minHeightProperty().bind(stage.heightProperty().multiply(0.40));
         this.minWidthProperty().bind(stage.widthProperty().multiply(0.33));
     }
 
@@ -63,21 +69,27 @@ public class InspectionPane extends BorderPane {
 
         Label title = new Label("Metadata");
         title.setStyle("-fx-font-size: 14pt");
-        Button load = new Button("Load from file");
-        HBox space = new HBox();
-        HBox.setHgrow(space, Priority.ALWAYS);
 
-        box.getChildren().addAll(title, space, load);
+        box.getChildren().add(title);
 
         metaText = new TextArea();
         metaText.setStyle("-fx-background-color:white; -fx-focus-color: transparent; fx-faint-focus-color: transparent;");
         HBox.setHgrow(metaText, Priority.ALWAYS);
+        VBox.setVgrow(metaText, Priority.ALWAYS);
         metadata.getChildren().addAll(box, metaText);
+
+        metaText.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
+                System.out.println("Text changed!");
+            }
+        });
     }
 
     private void createContent(){
         content = new BorderPane();
         content.setStyle("-fx-border-width: 1; -fx-border-color: lightgray");
+        content.setPadding(new Insets(10, 10, 10, 10));
         VBox.setVgrow(content, Priority.ALWAYS);
 
         HBox top = new HBox();
@@ -113,6 +125,23 @@ public class InspectionPane extends BorderPane {
         sipFiles.setRoot(sipRoot);
         sipFiles.setShowRoot(false);
         content.setCenter(sipFiles);
+        createContentBottom();
+    }
+
+    private void createContentBottom(){
+        HBox box = new HBox();
+        HBox.setHgrow(box, Priority.ALWAYS);
+
+        Button ignore = new Button("Ignore");
+        Button flatten = new Button("Flatten directory");
+        Button skip = new Button("Skip Directory");
+
+        ignore.minWidthProperty().bind(content.widthProperty().multiply(0.32));
+        flatten.minWidthProperty().bind(content.widthProperty().multiply(0.32));
+        skip.minWidthProperty().bind(content.widthProperty().multiply(0.32));
+
+        box.getChildren().addAll(ignore, flatten, skip);
+        content.setBottom(box);
     }
 
     private void createContent(SipPreviewNode node){

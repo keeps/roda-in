@@ -163,6 +163,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
         filterButtons.setPadding(new Insets(10, 10, 10, 10));
 
         final Button toggleFiles = new Button("Hide Files");
+        toggleFiles.minWidthProperty().bind(filterButtons.widthProperty().multiply(0.32));
         toggleFiles.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
@@ -186,6 +187,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
         });
 
         final Button toggleIgnored = new Button ("Show ignored");
+        toggleIgnored.minWidthProperty().bind(filterButtons.widthProperty().multiply(0.32));
         toggleIgnored.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
@@ -210,6 +212,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
         });
 
         final Button toggleMapped = new Button ("Show mapped");
+        toggleMapped.minWidthProperty().bind(filterButtons.widthProperty().multiply(0.32));
         toggleMapped.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {

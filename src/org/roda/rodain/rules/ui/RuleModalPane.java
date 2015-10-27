@@ -353,14 +353,14 @@ public class RuleModalPane extends BorderPane {
     private void enableMetaRadioButtons(){
         try {
             RuleTypes assocType = getAssociationType();
-            if(assocType == RuleTypes.SINGLESIP){
-                sameFolder.setDisable(true);
-                diffFolder.setDisable(true);
-                chooseDir.setDisable(true);
-            }else {
+            if(assocType == RuleTypes.SIPPERFILE){
                 sameFolder.setDisable(false);
                 diffFolder.setDisable(false);
                 chooseDir.setDisable(false);
+            }else {
+                sameFolder.setDisable(true);
+                diffFolder.setDisable(true);
+                chooseDir.setDisable(true);
             }
         } catch (Exception e) {
             e.printStackTrace();

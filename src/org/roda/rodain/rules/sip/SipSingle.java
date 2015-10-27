@@ -124,15 +124,6 @@ public class SipSingle extends Observable implements TreeVisitor, SipCreator {
         return "";
     }
 
-    private Path getFileFromDir(Path path){
-        String fileName = FilenameUtils.removeExtension(path.getFileName().toString());
-        Path newPath = Paths.get(metadata + "/" + fileName + ".xml");
-        if(Files.exists(newPath)){
-            return newPath;
-        }
-        return null;
-    }
-
     @Override
     public String getId() {
         return id;

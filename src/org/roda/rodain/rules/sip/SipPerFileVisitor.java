@@ -128,6 +128,10 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipCre
         if(Files.exists(newPath)){
             return newPath;
         }
+        newPath = Paths.get(metadata + "/" + path.getFileName() + ".xml");
+        if(Files.exists(newPath)){
+            return newPath;
+        }
         return null;
     }
 

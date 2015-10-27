@@ -1,13 +1,17 @@
 package rodain.rules.sip;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
+import rodain.rules.MetadataTypes;
 import rodain.rules.TreeNode;
 import rodain.rules.filters.ContentFilter;
 import rodain.utils.TreeVisitor;
+import rodain.utils.Utils;
 
 /**
  * Created by adrapereira on 05-10-2015.
@@ -16,16 +20,21 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipC
     private static final int UPDATEFREQUENCY = 500; //in milliseconds
     private long lastUIUpdate = 0;
     private String startPath;
-    private Set<ContentFilter> filters;
     private ArrayList<SipPreview> sips;
-    private int maxLevel;
     private int added = 0, returned = 0;
     private Deque<TreeNode> nodes;
-    private String id;
 
-    public SipPerFolderVisitor(String id, int maxLevel, Set<ContentFilter> filters){
+    private String id;
+    private int maxLevel;
+    private Set<ContentFilter> filters;
+    private MetadataTypes metaType;
+    private String metadata;
+
+    public SipPerFolderVisitor(String id, int maxLevel, Set<ContentFilter> filters, MetadataTypes metaType, String metadata){
         this.maxLevel = maxLevel;
         this.filters = filters;
+        this.metaType = metaType;
+        this.metadata = metadata;
         sips = new ArrayList<>();
         nodes = new ArrayDeque<>();
         this.id = id;
@@ -84,11 +93,12 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipC
         int relativeLevel = relativePath.getNameCount();
 
         if(relativeLevel <= maxLevel){
+            String meta = getMetadata();
             //create a new Sip
             String name = "sip_" + path.getFileName().toString();
             Set<TreeNode> files = new HashSet<>();
             files.add(node);
-            sips.add(new SipPreview(name, path.toString(), files, ""));
+            sips.add(new SipPreview(name, path.toString(), files, meta));
             added++;
 
             long now = System.currentTimeMillis();
@@ -108,6 +118,16 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipC
 
     @Override
     public void visitFileFailed(Path path) {
+    }
+
+    private String getMetadata(){
+        try {
+            if(metaType == MetadataTypes.SINGLEFILE)
+                return Utils.readFile(metadata, Charset.defaultCharset());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
     @Override

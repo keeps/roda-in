@@ -131,7 +131,7 @@ public class Rule extends Observable implements Observer {
                 break;
             default:
             case SIPPERFOLDER:
-                SipPerFolderVisitor visitorFolder = new SipPerFolderVisitor(id, level, filters);
+                SipPerFolderVisitor visitorFolder = new SipPerFolderVisitor(id, level, filters, metaType, metadata);
                 visitorFolder.addObserver(this);
                 visitor = visitorFolder;
                 break;

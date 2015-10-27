@@ -40,6 +40,8 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         stage = primaryStage;
+        stage.setMinWidth(1024);
+        stage.setMinHeight(512);
 
         try {
             stage.getIcons().add(new Image(ClassLoader.getSystemResource("roda2-logo.png").openStream()));

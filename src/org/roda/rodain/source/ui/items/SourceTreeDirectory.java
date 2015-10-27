@@ -229,7 +229,7 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
         };
     }
 
-    private void sortChildren(){
+    public void sortChildren(){
         ArrayList<TreeItem<String>> aux = new ArrayList<>(getChildren());
         Collections.sort(aux, comparator);
         getChildren().setAll(aux);
