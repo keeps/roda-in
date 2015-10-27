@@ -1,5 +1,7 @@
 package rodain.inspection;
 
+import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -9,9 +11,14 @@ import java.util.Set;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -19,6 +26,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
+import org.slf4j.LoggerFactory;
 import rodain.rules.TreeNode;
 import rodain.schema.ui.SchemaNode;
 import rodain.schema.ui.SipPreviewNode;
@@ -28,6 +36,7 @@ import rodain.utils.Utils;
  * Created by adrapereira on 26-10-2015.
  */
 public class InspectionPane extends BorderPane {
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(InspectionPane.class.getName());
     private HBox topBox;
     private VBox center;
 
@@ -137,6 +146,25 @@ public class InspectionPane extends BorderPane {
             }
         });
 
+        sipFiles.setOnMouseClicked(
+                new EventHandler<MouseEvent>() {
+                   @Override
+                   public void handle(MouseEvent mouseEvent) {
+                       if (mouseEvent.getClickCount() == 2) {
+                           Object source = sipFiles.getSelectionModel().getSelectedItem();
+                           if(source instanceof SipContentFile) {
+                               SipContentFile sipFile = (SipContentFile) source;
+                               try {
+                                   Desktop.getDesktop().open(new File(sipFile.getPath()));
+                               } catch (IOException e) {
+                                   log.info("" + e);
+                               }
+                           }
+                       }
+                   }
+               }
+        );
+
         sipRoot = new TreeItem<>();
         sipRoot.setExpanded(true);
         sipFiles.setRoot(sipRoot);
@@ -201,7 +229,7 @@ public class InspectionPane extends BorderPane {
             try {
                 metaText.setText(Utils.readFile(meta, Charset.defaultCharset()));
             } catch (IOException e) {
-                e.printStackTrace();
+                log.debug("" + e);
             }
         }
 
