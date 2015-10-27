@@ -198,19 +198,19 @@ public class RuleModalPane extends BorderPane {
         newFile.setToggleGroup(groupMetadata);
         newFile.setStyle(" -fx-text-fill: black");
 
-        rbSingleFile(center);
-        rbSameFolder(center);
-        rbDiffFolder(center);
-        center.getChildren().add(newFile);
+        rbSameFolder();
+        HBox singleFileBox = rbSingleFile();
+        HBox diffFolderBox = rbDiffFolder();
+        center.getChildren().addAll(singleFileBox, sameFolder, diffFolderBox, newFile);
 
         gridCenter.getChildren().addAll(metaTitle, center);
 
         return gridCenter;
     }
 
-    private void rbSingleFile(VBox gridCenter){
-        HBox hbox = new HBox();
-        hbox.setAlignment(Pos.CENTER_LEFT);
+    private HBox rbSingleFile(){
+        HBox box = new HBox();
+        box.setAlignment(Pos.CENTER_LEFT);
 
         final RadioButton singleFile = new RadioButton("A single file");
         singleFile.setToggleGroup(groupMetadata);
@@ -225,6 +225,7 @@ public class RuleModalPane extends BorderPane {
                 singleFile.setSelected(true);
                 FileChooser chooser = new FileChooser();
                 chooser.setTitle("Please choose a file");
+                chooser.setInitialDirectory(new File(sameDir));
                 File selectedFile = chooser.showOpenDialog(stage);
                 if (selectedFile == null)
                     return;
@@ -237,11 +238,11 @@ public class RuleModalPane extends BorderPane {
         HBox space = new HBox();
         HBox.setHgrow(space, Priority.ALWAYS);
 
-        hbox.getChildren().addAll(singleFile, space, chooseFile);
-        gridCenter.getChildren().add(hbox);
+        box.getChildren().addAll(singleFile, space, chooseFile);
+        return box;
     }
 
-    private void rbSameFolder(VBox gridCenter){
+    private void rbSameFolder(){
         //fill list with the directories in the source set
         List<String> directories = new ArrayList<>();
         for(SourceTreeItem sti: sourceSet){
@@ -259,13 +260,11 @@ public class RuleModalPane extends BorderPane {
         sameFolder.setToggleGroup(groupMetadata);
         sameFolder.setUserData(MetadataTypes.SAMEDIRECTORY);
         sameFolder.setStyle(" -fx-text-fill: black");
-
-        gridCenter.getChildren().add(sameFolder);
     }
 
-    private void rbDiffFolder(VBox gridCenter){
-        HBox hbox = new HBox();
-        hbox.setAlignment(Pos.CENTER_LEFT);
+    private HBox rbDiffFolder(){
+        HBox box = new HBox();
+        box.setAlignment(Pos.CENTER_LEFT);
 
         diffFolder = new RadioButton("Another directory");
         diffFolder.setUserData(MetadataTypes.DIFFDIRECTORY);
@@ -279,6 +278,7 @@ public class RuleModalPane extends BorderPane {
                 diffFolder.setSelected(true);
                 DirectoryChooser chooser = new DirectoryChooser();
                 chooser.setTitle("Please choose a folder");
+                chooser.setInitialDirectory(new File(sameDir));
                 File selectedDirectory = chooser.showDialog(stage);
                 if (selectedDirectory == null)
                     return;
@@ -291,8 +291,8 @@ public class RuleModalPane extends BorderPane {
         HBox space = new HBox();
         HBox.setHgrow(space, Priority.ALWAYS);
 
-        hbox.getChildren().addAll(diffFolder, space, chooseDir);
-        gridCenter.getChildren().add(hbox);
+        box.getChildren().addAll(diffFolder, space, chooseDir);
+        return box;
     }
 
     private void createBottom(){

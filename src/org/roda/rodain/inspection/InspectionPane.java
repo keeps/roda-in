@@ -21,8 +21,6 @@ import javafx.util.Callback;
 
 import rodain.rules.TreeNode;
 import rodain.schema.ui.SchemaNode;
-import rodain.schema.ui.SipContentDirectory;
-import rodain.schema.ui.SipContentFile;
 import rodain.schema.ui.SipPreviewNode;
 import rodain.utils.Utils;
 
@@ -184,6 +182,8 @@ public class InspectionPane extends BorderPane {
             TreeItem<Object> temp = recCreateSipContent(node.get(key));
             result.getChildren().add(temp);
         }
+        if(result instanceof SipContentDirectory)
+            ((SipContentDirectory) result).sortChildren();
         return result;
     }
 

@@ -1,7 +1,10 @@
-package rodain.schema.ui;
+package rodain.inspection;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
@@ -17,6 +20,7 @@ import rodain.source.ui.items.SourceTreeItemState;
 public class SipContentDirectory extends TreeItem<Object> implements SourceTreeItem{
     public static final Image folderCollapseImage = new Image(ClassLoader.getSystemResourceAsStream("icons/folder.png"));
     public static final Image folderExpandImage = new Image(ClassLoader.getSystemResourceAsStream("icons/folder-open.png"));
+    private static final Comparator comparator = createComparator();
     //this stores the full path to the file or directory
     private String fullPath;
 
@@ -58,6 +62,34 @@ public class SipContentDirectory extends TreeItem<Object> implements SourceTreeI
                 }
             }
         });
+    }
+
+    public void sortChildren(){
+        ArrayList<TreeItem<Object>> aux = new ArrayList<>(getChildren());
+        Collections.sort(aux, comparator);
+        getChildren().setAll(aux);
+
+        for(TreeItem ti: getChildren()){
+            if(ti instanceof SipContentDirectory)
+                ((SipContentDirectory)ti).sortChildren();
+        }
+    }
+
+    private static Comparator createComparator(){
+        return new Comparator<TreeItem>() {
+            @Override
+            public int compare(TreeItem o1, TreeItem o2) {
+                if(o1.getClass() == o2.getClass()) { //sort items of the same class by value
+                    String s1 = (String) o1.getValue();
+                    String s2 = (String) o2.getValue();
+                    return s1.compareToIgnoreCase(s2);
+                }
+                //directories must appear first
+                if(o1 instanceof SipContentDirectory)
+                    return -1;
+                return 1;
+            }
+        };
     }
 
     @Override

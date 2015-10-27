@@ -1,4 +1,4 @@
-package rodain.schema.ui;
+package rodain.inspection;
 
 import java.io.File;
 import java.nio.file.Path;
