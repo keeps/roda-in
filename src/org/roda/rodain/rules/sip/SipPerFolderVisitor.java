@@ -121,12 +121,8 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipC
     }
 
     private String getMetadata(){
-        try {
-            if(metaType == MetadataTypes.SINGLEFILE)
-                return Utils.readFile(metadata, Charset.defaultCharset());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        if(metaType == MetadataTypes.SINGLEFILE)
+            return metadata;
         return "";
     }
 

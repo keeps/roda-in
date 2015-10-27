@@ -1,8 +1,13 @@
 package rodain.rules.ui;
 
+import javafx.application.Platform;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
 import rodain.core.Main;
 import javafx.stage.Stage;
 import org.slf4j.LoggerFactory;
+import rodain.inspection.LoadingPane;
 import rodain.rules.MetadataTypes;
 import rodain.rules.Rule;
 import rodain.rules.RuleTypes;
@@ -26,19 +31,46 @@ public class RuleModalController implements Observer {
     private static Set<SourceTreeItem> sourceSet;
     private static SchemaNode schema;
 
+    private static LoadingPane loadingPane;
+
     private static VisitorStack visitors = new VisitorStack();
 
     private RuleModalController(){
         visitors.addObserver(this);
     }
 
-    public static void newAssociation(Stage primStage, Set<SourceTreeItem> source, SchemaNode schemaNode){
-        stage = new RuleModalStage(primStage);
-        pane = new RuleModalPane(primStage, source, schemaNode);
+    public static void newAssociation(final Stage primStage, Set<SourceTreeItem> source, SchemaNode schemaNode){
+        if(stage == null)
+            stage = new RuleModalStage(primStage);
+        if(loadingPane == null)
+            loadingPane = new LoadingPane(source, schemaNode);
+        stage.setRoot(loadingPane);
+
         sourceSet = source;
         schema = schemaNode;
 
-        stage.setRoot(pane);
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                pane = new RuleModalPane(primStage, sourceSet, schema);
+                return null;
+            }
+        };
+
+        // After everything is loaded, we add all the items to the TreeView at once.
+        task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent workerStateEvent) {
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        stage.setRoot(pane);
+                    }
+                });
+            }
+        });
+
+        new Thread(task).start();
     }
 
     public static void confirm(){

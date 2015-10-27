@@ -1,7 +1,5 @@
 package rodain.rules.ui;
 
-import java.util.Set;
-
 import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -12,27 +10,24 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import rodain.schema.ui.SchemaNode;
-import rodain.source.ui.items.SourceTreeItem;
-
 /**
  * Created by adrapereira on 15-10-2015.
  */
 public class RuleModalStage extends Stage{
-    public RuleModalStage(final Stage primaryStage){
+    private ColorAdjust colorAdjust;
+    private Stage primaryStage;
+    public RuleModalStage(Stage primaryStage){
         super(StageStyle.TRANSPARENT);
+        this.primaryStage = primaryStage;
         initModality(Modality.WINDOW_MODAL);
         initOwner(primaryStage);
 
-        ColorAdjust colorAdjust = new ColorAdjust();
+        colorAdjust = new ColorAdjust();
         colorAdjust.setBrightness(-0.25);
-        primaryStage.getScene().getRoot().setEffect(colorAdjust);
 
         Scene scene = new Scene(new HBox(), 400, 250);
         scene.getStylesheets().add(ClassLoader.getSystemResource("Modena.css").toExternalForm());
         setScene(scene);
-
-        show();
     }
 
     @Override
@@ -43,6 +38,8 @@ public class RuleModalStage extends Stage{
 
     public void setRoot(Parent root){
         this.getScene().setRoot(root);
+
+        primaryStage.getScene().getRoot().setEffect(colorAdjust);
 
         // allow the dialog to be dragged around.
         final Delta dragDelta = new Delta();
@@ -62,6 +59,8 @@ public class RuleModalStage extends Stage{
                 thisDialog.setY(mouseEvent.getScreenY() + dragDelta.y);
             }
         });
+
+        show();
     }
 
     // records relative x and y co-ordinates.

@@ -29,7 +29,6 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipCre
     private Set<ContentFilter> filters;
     private MetadataTypes metaType;
     private String metadata;
-    private String contentFile;
 
     public SipPerFileVisitor(String id, Set<ContentFilter> filters, MetadataTypes metaType, String metadata){
         sips = new ArrayList<>();
@@ -100,24 +99,18 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipCre
     }
 
     private String getMetadata(Path path){
-        try {
-            switch (metaType){
-                case SINGLEFILE:
-                    if(contentFile == null) //optimization, since the file is always the same we only read it once
-                        contentFile = Utils.readFile(metadata, Charset.defaultCharset());
-                    return contentFile;
-                case DIFFDIRECTORY: // uses the same logic as the next case
-                case SAMEDIRECTORY:
-                    Path metaFile = getFileFromDir(path);
-                    if(metaFile != null){
-                        return Utils.readFile(metaFile.toString(), Charset.defaultCharset());
-                    }
-                    break;
-                default:
-                    return "";
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        switch (metaType){
+            case SINGLEFILE:
+                return metadata;
+            case DIFFDIRECTORY: // uses the same logic as the next case
+            case SAMEDIRECTORY:
+                Path metaFile = getFileFromDir(path);
+                if(metaFile != null){
+                    return metaFile.toString();
+                }
+                break;
+            default:
+                return "";
         }
         return "";
     }

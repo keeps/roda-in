@@ -1,5 +1,7 @@
 package rodain.inspection;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,6 +24,7 @@ import rodain.schema.ui.SchemaNode;
 import rodain.schema.ui.SipContentDirectory;
 import rodain.schema.ui.SipContentFile;
 import rodain.schema.ui.SipPreviewNode;
+import rodain.utils.Utils;
 
 /**
  * Created by adrapereira on 26-10-2015.
@@ -191,7 +194,16 @@ public class InspectionPane extends BorderPane {
         center.getChildren().addAll(metadata, content);
         setCenter(center);
 
-        metaText.setText(sip.getSip().getMetadata());
+        String meta = sip.getSip().getMetadata();
+        if(sip.isModified() || meta.equals(""))
+            metaText.setText(meta);
+        else{
+            try {
+                metaText.setText(Utils.readFile(meta, Charset.defaultCharset()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
         Label title = new Label(sip.getValue());
         title.setId("title");
