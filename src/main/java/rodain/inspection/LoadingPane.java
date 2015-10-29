@@ -13,6 +13,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.TextAlignment;
+import org.slf4j.LoggerFactory;
 import rodain.schema.ui.SchemaNode;
 import rodain.source.ui.items.SourceTreeDirectory;
 import rodain.source.ui.items.SourceTreeFile;
@@ -22,6 +23,7 @@ import rodain.source.ui.items.SourceTreeItem;
  * Created by adrapereira on 27-10-2015.
  */
 public class LoadingPane extends BorderPane {
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(LoadingPane.class.getName());
     private static Image loadingGif;
     private Set<SourceTreeItem> sourceSet;
     private SchemaNode schema;
@@ -42,7 +44,7 @@ public class LoadingPane extends BorderPane {
                 loadingGif = new Image(ClassLoader.getSystemResource("loading.GIF").openStream());
             centerBox.getChildren().add(new ImageView(loadingGif));
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("" + e);
         }
         setCenter(centerBox);
     }

@@ -16,13 +16,12 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
-
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
+import org.slf4j.LoggerFactory;
 import rodain.rules.MetadataTypes;
 import rodain.rules.RuleTypes;
 import rodain.schema.ui.SchemaNode;
@@ -35,6 +34,7 @@ import rodain.utils.Utils;
  * Created by adrapereira on 28-09-2015.
  */
 public class RuleModalPane extends BorderPane {
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(RuleModalPane.class.getName());
     private enum States {
         ASSOCIATION,
         METADATA
@@ -108,11 +108,11 @@ public class RuleModalPane extends BorderPane {
         descObj.setTextAlignment(TextAlignment.LEFT);
         descObj.setStyle(" -fx-text-fill: black");
 
-        HBox space = new HBox();
-        HBox.setHgrow(space, Priority.ALWAYS);
-        space.setMinWidth(50);
+        HBox spaceTop = new HBox();
+        HBox.setHgrow(spaceTop, Priority.ALWAYS);
+        spaceTop.setMinWidth(50);
 
-        hbox.getChildren().addAll(source, space, descObj);
+        hbox.getChildren().addAll(source, spaceTop, descObj);
 
         setTop(pane);
     }
@@ -236,10 +236,10 @@ public class RuleModalPane extends BorderPane {
             }
         });
 
-        HBox space = new HBox();
-        HBox.setHgrow(space, Priority.ALWAYS);
+        HBox spaceSingleFile = new HBox();
+        HBox.setHgrow(spaceSingleFile, Priority.ALWAYS);
 
-        box.getChildren().addAll(singleFile, space, chooseFile);
+        box.getChildren().addAll(singleFile, spaceSingleFile, chooseFile);
         return box;
     }
 
@@ -289,10 +289,10 @@ public class RuleModalPane extends BorderPane {
             }
         });
 
-        HBox space = new HBox();
-        HBox.setHgrow(space, Priority.ALWAYS);
+        HBox spaceDiffFolder = new HBox();
+        HBox.setHgrow(spaceDiffFolder, Priority.ALWAYS);
 
-        box.getChildren().addAll(diffFolder, space, chooseDir);
+        box.getChildren().addAll(diffFolder, spaceDiffFolder, chooseDir);
         return box;
     }
 
@@ -337,10 +337,9 @@ public class RuleModalPane extends BorderPane {
                     buttons.getChildren().clear();
                     buttons.getChildren().addAll(btCancel, btBack, space, btContinue);
                     btContinue.setText("Confirm");
-                }else if(currentState == States.METADATA) {
-                    if(metadataCheckContinue())
+                }else
+                    if(currentState == States.METADATA && metadataCheckContinue())
                         RuleModalController.confirm();
-                }
             }
         });
 
@@ -362,7 +361,7 @@ public class RuleModalPane extends BorderPane {
             if(metaType == MetadataTypes.DIFFDIRECTORY)
                 return chooseDir.getUserData() != null;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("" + e);
         }
         return true;
     }
@@ -380,7 +379,7 @@ public class RuleModalPane extends BorderPane {
                 chooseDir.setDisable(true);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("" + e);
         }
     }
 
@@ -388,22 +387,22 @@ public class RuleModalPane extends BorderPane {
         return sourceSet;
     }
 
-    public RuleTypes getAssociationType() throws Exception{
+    public RuleTypes getAssociationType() throws UnexpectedDataTypeException{
         Toggle selected = groupAssoc.getSelectedToggle();
         if(selected.getUserData() instanceof RuleTypes)
             return (RuleTypes)selected.getUserData();
-        else throw new Exception("Unexpected user data type.");
+        else throw new UnexpectedDataTypeException();
     }
 
     public int getLevel(){
         return level.getValue();
     }
 
-    public MetadataTypes getMetadataType() throws Exception{
+    public MetadataTypes getMetadataType() throws UnexpectedDataTypeException{
         Toggle selected = groupMetadata.getSelectedToggle();
         if(selected.getUserData() instanceof MetadataTypes)
             return (MetadataTypes)selected.getUserData();
-        else throw new Exception("Unexpected user data type.");
+        else throw new UnexpectedDataTypeException();
     }
 
     public String getFromFile() {

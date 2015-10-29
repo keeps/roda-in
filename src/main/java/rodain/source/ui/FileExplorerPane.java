@@ -16,8 +16,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -335,7 +333,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
     public Set<SourceTreeItem> getSelectedItems(){
         if(treeView == null)
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         Set<SourceTreeItem> result = new HashSet<>();
         for(TreeItem item: treeView.getSelectionModel().getSelectedItems()){
             result.add((SourceTreeItem)item);

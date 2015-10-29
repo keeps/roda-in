@@ -20,7 +20,7 @@ public class SipPreview {
 
     public SipPreview(String path, Set<TreeNode> files, String metadata){
         Path pa = Paths.get(path);
-        name = "KEEPS " + RandomIdGenerator.getBase62(4) + " " + pa.getFileName().toString();;
+        name = "KEEPS " + RandomIdGenerator.getBase62(4) + " " + pa.getFileName().toString();
         this.path = path;
         this.files = files;
         this.metadata = metadata;

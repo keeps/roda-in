@@ -126,15 +126,7 @@ public class SchemaPane extends BorderPane {
         associate.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                /*Set<SourceTreeItem> set = Main.getSourceSelectedItems();
-                SchemaNode descObj = Main.getSchemaSelectedItem();
-                if (source != null && descObj != null) { //both trees need to have 1 element selected
-                    if (source instanceof SourceTreeDirectory) { //the source needs to be a directory
-                        RuleComponent ruleC = new RuleComponent((SourceTreeDirectory) source, descObj, visitors);
-                        RulesPane.addChild(ruleC);
-                    }
-                }
-                Footer.setStatus("Carregou no \"Create Rule\": " + source + " <-> " + descObj);*/
+
             }
         });
 
@@ -214,7 +206,7 @@ public class SchemaPane extends BorderPane {
                             SchemaNode descObj = (SchemaNode)cell.getTreeItem();
                             boolean valid = true;
 
-                            if (sourceSet != null && sourceSet.size() > 0 && descObj != null) { //both trees need to have 1 element selected
+                            if (sourceSet != null && !sourceSet.isEmpty() && descObj != null) { //both trees need to have 1 element selected
                                 Set<SourceTreeItem> toRemove = new HashSet<>();
                                 for(SourceTreeItem source: sourceSet) {
                                     if(source.getState() != SourceTreeItemState.NORMAL) {
@@ -230,7 +222,7 @@ public class SchemaPane extends BorderPane {
                             }else valid = false;
 
                             //we need to check the size again because we may have deleted some items in the "for" loop
-                            if(sourceSet.size() == 0)
+                            if(!sourceSet.isEmpty())
                                 valid = false;
 
                             if(valid)

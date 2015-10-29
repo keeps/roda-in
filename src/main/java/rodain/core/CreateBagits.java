@@ -99,8 +99,7 @@ public class CreateBagits extends Thread {
             successful ++;
         }
         catch (Exception e) {
-            //log.error("" + e);
-            e.printStackTrace();
+            log.error("" + e);
             error++;
         }
     }
@@ -110,14 +109,14 @@ public class CreateBagits extends Thread {
         String rawMetadata = null;
         try {
             if(preview.isMetaModified()){
-                if(!preview.getMetadata().equals(""))
+                if(!"".equals(preview.getMetadata()))
                     rawMetadata = preview.getMetadata();
             }else{
-                if(!preview.getMetadata().equals(""))
+                if(!"".equals(preview.getMetadata()))
                     rawMetadata = Utils.readFile(preview.getMetadata(), Charset.defaultCharset());
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("" + e);
         }
         if(rawMetadata != null){
             String transformed = transformXML(rawMetadata);
@@ -147,9 +146,9 @@ public class CreateBagits extends Thread {
 
             return writer.toString();
         } catch (TransformerException e) {
-            e.printStackTrace();
+            log.error("" + e);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("" + e);
         }
         return null;
     }

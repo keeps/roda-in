@@ -70,7 +70,8 @@ public class SourceTreeCell extends TreeCell<String> {
             }else{
                 if(treeItem instanceof SourceTreeFile)
                     icon = SourceTreeFile.fileImage;
-                else if(treeItem instanceof SourceTreeLoadMore) icon = SourceTreeLoadMore.fileImage;
+                else if(treeItem instanceof SourceTreeLoadMore)
+                    icon = SourceTreeLoadMore.fileImage;
             }
             hbox.getChildren().addAll(new ImageView(icon), lab);
             setGraphic(hbox);

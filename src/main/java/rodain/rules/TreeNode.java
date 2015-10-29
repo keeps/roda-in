@@ -22,11 +22,11 @@ public class TreeNode {
 
     public void flatten(){
         Map<String, TreeNode> newFiles = new HashMap<>();
-        for(String path: files.keySet()){
-            if(Files.isDirectory(Paths.get(path))){
-                files.get(path).flatten(); //flatten the children
-                newFiles.putAll(files.get(path).getOnlyFiles()); //add its files to the new Map
-            }else newFiles.put(path, files.get(path));
+        for(String file: files.keySet()){
+            if(Files.isDirectory(Paths.get(file))){
+                files.get(file).flatten(); //flatten the children
+                newFiles.putAll(files.get(file).getOnlyFiles()); //add its files to the new Map
+            }else newFiles.put(file, files.get(file));
         }
         files = newFiles;
     }
@@ -37,9 +37,9 @@ public class TreeNode {
 
     public Map<String, TreeNode> getOnlyFiles(){
         Map<String, TreeNode> result = new HashMap<>();
-        for(String path: files.keySet()){
-            if(!Files.isDirectory(Paths.get(path))) //add to result if it's a file
-                result.put(path, files.get(path));
+        for(String file: files.keySet()){
+            if(!Files.isDirectory(Paths.get(file))) //add to result if it's a file
+                result.put(file, files.get(file));
         }
         return result;
     }

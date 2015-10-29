@@ -142,8 +142,7 @@ public class InspectionPane extends BorderPane {
         sipFiles.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
             @Override
             public TreeCell<String> call(TreeView<String> p) {
-                InspectionTreeCell cell = new InspectionTreeCell();
-                return cell;
+                return new InspectionTreeCell();
             }
         });
 
@@ -272,7 +271,7 @@ public class InspectionPane extends BorderPane {
         setCenter(center);
 
         String meta = sip.getSip().getMetadata();
-        if(sip.isMetaModified() || meta.equals(""))
+        if(sip.isMetaModified() || "".equals(meta))
             metaText.setText(meta);
         else{
             try {

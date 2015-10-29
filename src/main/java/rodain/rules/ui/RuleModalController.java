@@ -94,7 +94,6 @@ public class RuleModalController implements Observer {
                 default: break;
             }
             Rule rule = new Rule(sourceSet, assocType, level, metadata, metaType);
-            //rule.addObserver(this);
             rule.addObserver(schema);
             TreeVisitor visitor = rule.apply();
 

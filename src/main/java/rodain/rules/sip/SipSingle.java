@@ -1,20 +1,14 @@
 package rodain.rules.sip;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
-import org.apache.commons.io.FilenameUtils;
-
 import rodain.rules.MetadataTypes;
 import rodain.rules.TreeNode;
 import rodain.rules.filters.ContentFilter;
 import rodain.utils.TreeVisitor;
-import rodain.utils.Utils;
 
 /**
  * Created by adrapereira on 05-10-2015.
@@ -74,14 +68,16 @@ public class SipSingle extends Observable implements TreeVisitor, SipCreator {
 
     @Override
     public void preVisitDirectory(Path path, BasicFileAttributes attrs) {
-        if(filter(path)) return;
+        if(filter(path))
+            return;
         TreeNode newNode = new TreeNode(path.toString());
         nodes.add(newNode);
     }
 
     @Override
     public void postVisitDirectory(Path path) {
-        if(filter(path)) return;
+        if(filter(path))
+            return;
         //pop the node of this directory and add it to its parent (if it exists)
         TreeNode node = nodes.removeLast();
         if(!nodes.isEmpty())
@@ -91,7 +87,8 @@ public class SipSingle extends Observable implements TreeVisitor, SipCreator {
 
     @Override
     public void visitFile(Path path, BasicFileAttributes attrs) {
-        if(filter(path)) return;
+        if(filter(path))
+            return;
         if(nodes.isEmpty())
             files.add(new TreeNode(path.toString()));
         else nodes.peekLast().add(path.toString());

@@ -32,7 +32,7 @@ import rodain.source.ui.items.SourceTreeItem;
 
 public class Main extends Application {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(Main.class.getName());
-    private Stage stage;
+    private static Stage stage;
 
     private static FileExplorerPane previewExplorer;
     private static InspectionPane inspectionPane;
@@ -40,6 +40,13 @@ public class Main extends Application {
 
     public static void main(String[] args) {
         launch(args);
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent e) {
+                Platform.exit();
+                System.exit(0);
+            }
+        });
     }
 
     @Override
@@ -54,13 +61,7 @@ public class Main extends Application {
             log.error("" + e);
         }
 
-        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent e) {
-                Platform.exit();
-                System.exit(0);
-            }
-        });
+
 
         createFrameStructure();
         stage.show();
