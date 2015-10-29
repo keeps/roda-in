@@ -1,7 +1,10 @@
 package rodain.rules.sip;
 
 import rodain.rules.TreeNode;
+import rodain.utils.RandomIdGenerator;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Set;
 
 /**
@@ -12,9 +15,12 @@ public class SipPreview {
     private String path;
     private String metadata;
     private Set<TreeNode> files;
+    private boolean metaModified = false;
+    private boolean contentModified = false;
 
-    public SipPreview(String name, String path, Set<TreeNode> files, String metadata){
-        this.name = name;
+    public SipPreview(String path, Set<TreeNode> files, String metadata){
+        Path pa = Paths.get(path);
+        name = "KEEPS " + RandomIdGenerator.getBase62(4) + " " + pa.getFileName().toString();;
         this.path = path;
         this.files = files;
         this.metadata = metadata;
@@ -38,6 +44,22 @@ public class SipPreview {
 
     public void setMetadata(String meta){
         metadata = meta;
+    }
+
+    public boolean isMetaModified() {
+        return metaModified;
+    }
+
+    public void setMetaModified(){
+        metaModified = true;
+    }
+
+    public boolean isContentModified() {
+        return contentModified;
+    }
+
+    public void setContentModified() {
+        this.contentModified = true;
     }
 
     @Override

@@ -95,10 +95,9 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipC
         if(relativeLevel <= maxLevel){
             String meta = getMetadata();
             //create a new Sip
-            String name = "sip_" + path.getFileName().toString();
             Set<TreeNode> files = new HashSet<>();
             files.add(node);
-            sips.add(new SipPreview(name, path.toString(), files, meta));
+            sips.add(new SipPreview(path.toString(), files, meta));
             added++;
 
             long now = System.currentTimeMillis();

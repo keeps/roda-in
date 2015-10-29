@@ -106,8 +106,7 @@ public class SipSingle extends Observable implements TreeVisitor, SipCreator {
         String meta = getMetadata();
         //create a new Sip
         Path path = Paths.get(startPath);
-        String name = "sip_" + path.getFileName().toString();
-        sips.add(new SipPreview(name, path.toString(), files, meta));
+        sips.add(new SipPreview(path.toString(), files, meta));
         added++;
 
         setChanged();

@@ -7,7 +7,6 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashSet;
 import java.util.Set;
 
 import javafx.beans.value.ChangeListener;
@@ -30,12 +29,9 @@ import javafx.util.Callback;
 
 import org.slf4j.LoggerFactory;
 
-import rodain.core.Main;
 import rodain.rules.TreeNode;
 import rodain.schema.ui.SchemaNode;
 import rodain.schema.ui.SipPreviewNode;
-import rodain.source.ui.FileExplorerPane;
-import rodain.source.ui.items.SourceTreeItem;
 import rodain.utils.Utils;
 
 /**
@@ -121,7 +117,6 @@ public class InspectionPane extends BorderPane {
     private void createContent(){
         content = new BorderPane();
         content.setStyle("-fx-border-width: 1; -fx-border-color: lightgray");
-        content.setPadding(new Insets(10, 10, 10, 10));
         VBox.setVgrow(content, Priority.ALWAYS);
 
         HBox top = new HBox();
@@ -181,6 +176,7 @@ public class InspectionPane extends BorderPane {
 
     private void createContentBottom() {
         HBox box = new HBox();
+        box.setPadding(new Insets(10,10,10,10));
         HBox.setHgrow(box, Priority.ALWAYS);
 
         Button ignore = new Button("Ignore");

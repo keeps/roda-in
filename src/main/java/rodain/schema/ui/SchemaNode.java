@@ -8,6 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import rodain.rules.Rule;
+import rodain.rules.sip.SipPreview;
 import rodain.schema.DescriptionObject;
 
 /**
@@ -16,14 +17,19 @@ import rodain.schema.DescriptionObject;
 public class SchemaNode extends TreeItem<String> implements Observer {
     private DescriptionObject dob;
     private Map<String, Integer> rules;
+    private Map<String, Rule> ruleObjects;
     private Map<String, Set<SipPreviewNode>> sips;
     private Image icon;
+
+    private List<SchemaNode> schemaNodes;
 
     public SchemaNode(DescriptionObject dobject) {
         super(dobject.getTitle());
         dob = dobject;
         rules = new HashMap<>();
         sips = new HashMap<>();
+        ruleObjects = new HashMap<>();
+        schemaNodes = new ArrayList<>();
 
         ResourceBundle hierarchyConfig = ResourceBundle.getBundle("properties/roda-description-levels-hierarchy");
         String category = hierarchyConfig.getString("category." + dobject.getDescriptionlevel());
@@ -37,6 +43,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
         for(DescriptionObject obj: dob.getChildren()){
             SchemaNode child = new SchemaNode(obj);
             this.getChildren().add(child);
+            schemaNodes.add(child);
         }
     }
 
@@ -70,6 +77,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
         int count = r.getSipCount();
         String id = r.getId();
         rules.put(id, count);
+        ruleObjects.put(id, r);
         int sipCount = getSipCount();
         if(sipCount > 0)
             setValue(dob.getTitle() + "  (" + sipCount + " items)");
@@ -104,5 +112,18 @@ public class SchemaNode extends TreeItem<String> implements Observer {
 
     public DescriptionObject getDob() {
         return dob;
+    }
+
+    public Map<SipPreview, String> getSipPreviews(){
+        Map<SipPreview, String> result = new HashMap<>();
+        //this node's sips
+        for(Rule r: ruleObjects.values())
+            for(SipPreview sp: r.getSips())
+                result.put(sp, dob.getId());
+
+        //children sips
+        for(SchemaNode sn: schemaNodes)
+            result.putAll(sn.getSipPreviews());
+        return result;
     }
 }

@@ -1,7 +1,6 @@
 package rodain.schema.ui;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -15,20 +14,18 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
-import rodain.rules.VisitorStack;
+import rodain.core.Footer;
+import rodain.core.Main;
+import rodain.rules.sip.SipPreview;
 import rodain.rules.ui.RuleModalController;
 import rodain.schema.ClassificationSchema;
 import rodain.schema.DescriptionObject;
 import rodain.source.ui.items.SourceTreeDirectory;
 import rodain.source.ui.items.SourceTreeFile;
 import rodain.source.ui.items.SourceTreeItem;
-import rodain.core.Footer;
-import rodain.core.Main;
 import rodain.source.ui.items.SourceTreeItemState;
 
 /**
@@ -38,14 +35,15 @@ public class SchemaPane extends BorderPane {
     private TreeView<String> treeView;
     private HBox refresh;
     private HBox bottom;
-    private VisitorStack visitors = new VisitorStack();
     private Stage primaryStage;
 
+    private ArrayList<SchemaNode> schemaNodes;
 
     public SchemaPane(Stage stage){
         super();
-
         primaryStage = stage;
+
+        schemaNodes = new ArrayList<>();
 
         createTreeView();
         createTop();
@@ -92,6 +90,7 @@ public class SchemaPane extends BorderPane {
         for(DescriptionObject obj: cs.getDos()){
             SchemaNode sn = new SchemaNode(obj);
             rootNode.getChildren().add(sn);
+            schemaNodes.add(sn);
         }
 
         // create the tree view
@@ -256,5 +255,13 @@ public class SchemaPane extends BorderPane {
 
     public TreeView<String> getTreeView() {
         return treeView;
+    }
+
+    public Map<SipPreview, String> getSipPreviews(){
+        Map<SipPreview, String> result = new HashMap<>();
+        for(SchemaNode sn: schemaNodes){
+            result.putAll(sn.getSipPreviews());
+        }
+        return result;
     }
 }

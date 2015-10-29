@@ -5,9 +5,12 @@ package rodain.core;
  */
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
@@ -17,9 +20,11 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
+import javafx.stage.WindowEvent;
 import org.slf4j.LoggerFactory;
 
 import rodain.inspection.InspectionPane;
+import rodain.rules.sip.SipPreview;
 import rodain.schema.ui.SchemaNode;
 import rodain.schema.ui.SchemaPane;
 import rodain.source.ui.FileExplorerPane;
@@ -48,6 +53,14 @@ public class Main extends Application {
         } catch (IOException e) {
             log.error("" + e);
         }
+
+        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent e) {
+                Platform.exit();
+                System.exit(0);
+            }
+        });
 
         createFrameStructure();
         stage.show();
@@ -99,5 +112,8 @@ public class Main extends Application {
     }
     public static InspectionPane getInspectionPane(){
         return inspectionPane;
+    }
+    public static Map<SipPreview, String> getSipPreviews(){
+        return schemaPane.getSipPreviews();
     }
 }

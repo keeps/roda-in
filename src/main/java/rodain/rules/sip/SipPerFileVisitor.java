@@ -1,7 +1,5 @@
 package rodain.rules.sip;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,7 +12,6 @@ import rodain.rules.MetadataTypes;
 import rodain.rules.TreeNode;
 import rodain.rules.filters.ContentFilter;
 import rodain.utils.TreeVisitor;
-import rodain.utils.Utils;
 
 /**
  * Created by adrapereira on 05-10-2015.
@@ -82,12 +79,10 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipCre
             return;
 
         String meta = getMetadata(path);
-
-        String name = "sip_" + path.getFileName().toString();
         TreeNode node = new TreeNode(path.toString());
         Set<TreeNode> files = new HashSet<>();
         files.add(node);
-        sips.add(new SipPreview(name, path.toString(), files, meta));
+        sips.add(new SipPreview(path.toString(), files, meta));
         added ++;
 
         long now = System.currentTimeMillis();

@@ -11,8 +11,7 @@ import rodain.rules.sip.SipPreview;
 public class SipPreviewNode extends TreeItem<String> {
     private SipPreview sip;
     private Image icon;
-    private boolean metaModified = false;
-    private boolean contentModified = false;
+
 
     public SipPreviewNode(SipPreview sip, Image icon){
         super(sip.getName());
@@ -34,18 +33,18 @@ public class SipPreviewNode extends TreeItem<String> {
     }
 
     public boolean isMetaModified() {
-        return metaModified;
+        return sip.isMetaModified();
     }
 
     public void setMetaModified(){
-        metaModified = true;
+        sip.setMetaModified();
     }
 
     public boolean isContentModified() {
-        return contentModified;
+        return sip.isContentModified();
     }
 
     public void setContentModified() {
-        this.contentModified = true;
+        sip.setContentModified();
     }
 }
