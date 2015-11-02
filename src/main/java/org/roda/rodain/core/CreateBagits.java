@@ -3,7 +3,6 @@ package org.roda.rodain.core;
 import static java.nio.file.StandardCopyOption.COPY_ATTRIBUTES;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -20,7 +19,6 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
-import org.roda.rodain.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,17 +109,8 @@ public class CreateBagits extends Thread {
     private Map<String, String> createMetadata(SipPreview preview){
         Map<String, String> result = new HashMap<>();
         String rawMetadata = null;
-        try {
-            if(preview.isMetaModified()){
-                if(!"".equals(preview.getMetadata()))
-                    rawMetadata = preview.getMetadata();
-            }else{
-                if(!"".equals(preview.getMetadata()))
-                    rawMetadata = Utils.readFile(preview.getMetadata(), Charset.defaultCharset());
-            }
-        } catch (IOException e) {
-            log.error("Error reading metadata file", e);
-        }
+        rawMetadata = preview.getMetadataContent();
+
         if(rawMetadata != null){
             String transformed = transformXML(rawMetadata);
 

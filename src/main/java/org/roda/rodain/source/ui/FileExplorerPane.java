@@ -63,7 +63,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
         createFileExplorer();
         createFilterButtons();
 
-        //setFileExplorerRoot(Paths.get("/home/adrap/Documents/Git/roda-in/"));
+        setFileExplorerRoot(Paths.get(System.getProperty("user.home")));
 
         this.setTop(top);
         this.setCenter(fileExplorer);
@@ -357,7 +357,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
         Set<SourceTreeItem> items = getSelectedItems();
         for(SourceTreeItem item: items){
             TreeItem treeItem = (TreeItem) item;
-            item.map(ruleId);
+            item.addMapping(ruleId);
 
             SourceTreeDirectory dirParent = (SourceTreeDirectory)treeItem.getParent();
             if(!isShowMapped())
@@ -380,9 +380,9 @@ public class FileExplorerPane extends BorderPane implements Observer {
         for(SourceTreeItem item: items){
             TreeItem treeItem = (TreeItem) item;
             if(item.getState() == SourceTreeItemState.NORMAL)
-                item.ignore();
+                item.addIgnore();
             else if(item.getState() == SourceTreeItemState.IGNORED)
-                item.unignore();
+                item.removeIgnore();
 
             SourceTreeDirectory parent = (SourceTreeDirectory) treeItem.getParent();
             if(!isShowIgnored())

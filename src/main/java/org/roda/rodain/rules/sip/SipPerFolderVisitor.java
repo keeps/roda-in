@@ -26,13 +26,16 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipC
     private int maxLevel;
     private Set<ContentFilter> filters;
     private MetadataTypes metaType;
-    private String metadata;
+    private Path metadataPath;
+    private String metadataContent;
 
-    public SipPerFolderVisitor(String id, int maxLevel, Set<ContentFilter> filters, MetadataTypes metaType, String metadata){
+    public SipPerFolderVisitor(String id, int maxLevel, Set<ContentFilter> filters, MetadataTypes metaType,
+                               Path metadataPath, String metadataContent){
         this.maxLevel = maxLevel;
         this.filters = filters;
         this.metaType = metaType;
-        this.metadata = metadata;
+        this.metadataPath = metadataPath;
+        this.metadataContent = metadataContent;
         sips = new ArrayList<>();
         nodes = new ArrayDeque<>();
         this.id = id;
@@ -93,11 +96,15 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipC
         int relativeLevel = relativePath.getNameCount();
 
         if(relativeLevel <= maxLevel){
-            String meta = getMetadata();
+            Path metaPath = getMetadataPath();
             //create a new Sip
             Set<TreeNode> files = new HashSet<>();
             files.add(node);
-            sips.add(new SipPreview(path.toString(), files, meta));
+
+            SipPreview sipPreview = new SipPreview(path.getFileName().toString(), files, metaPath, metadataContent);
+            node.addObserver(sipPreview);
+
+            sips.add(sipPreview);
             added++;
 
             long now = System.currentTimeMillis();
@@ -120,10 +127,11 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipC
     public void visitFileFailed(Path path) {
     }
 
-    private String getMetadata(){
+    private Path getMetadataPath(){
+        Path result = null;
         if(metaType == MetadataTypes.SINGLEFILE)
-            return metadata;
-        return "";
+            result = metadataPath;
+        return result;
     }
 
     @Override

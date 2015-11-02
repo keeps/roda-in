@@ -24,7 +24,7 @@ public class SourceTreeCell extends TreeCell<String> {
             public void handle(ActionEvent actionEvent) {
                 TreeItem<String> treeItem = getTreeItem();
                 SourceTreeItem sti = (SourceTreeItem) treeItem;
-                sti.ignore();
+                sti.addIgnore();
                 updateItem(treeItem.getValue(), false);
             }
         });

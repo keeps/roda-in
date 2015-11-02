@@ -247,44 +247,44 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
     }
 
     @Override
-    public void ignore(){
+    public void addIgnore(){
         if(state == SourceTreeItemState.NORMAL)
             state = SourceTreeItemState.IGNORED;
         for(TreeItem it: getChildren()){
             SourceTreeItem item = (SourceTreeItem)it;
-            item.ignore();
+            item.addIgnore();
         }
     }
 
     @Override
-    public void map(String ruleId){
+    public void addMapping(String ruleId){
         if(state == SourceTreeItemState.NORMAL)
             state = SourceTreeItemState.MAPPED;
         mappingRuleId = ruleId;
         for(TreeItem it: getChildren()){
             SourceTreeItem item = (SourceTreeItem)it;
-            item.map(ruleId);
+            item.addMapping(ruleId);
         }
     }
 
     @Override
-    public void unignore(){
-        if(state == SourceTreeItemState.IGNORED)
+    public void removeIgnore(){
+        if (state == SourceTreeItemState.IGNORED)
             state = SourceTreeItemState.NORMAL;
         for(TreeItem it: getChildren()){
             SourceTreeItem item = (SourceTreeItem)it;
-            item.unignore();
+            item.removeIgnore();
         }
     }
 
     @Override
-    public void unmap(String ruleId){
+    public void removeMapping(String ruleId){
         if(state == SourceTreeItemState.MAPPED && mappingRuleId.equals(ruleId))
             state = SourceTreeItemState.NORMAL;
         mappingRuleId = "";
         for(TreeItem it: getChildren()){
             SourceTreeItem item = (SourceTreeItem)it;
-            item.unmap(ruleId);
+            item.removeMapping(ruleId);
         }
     }
     public SourceDirectory getDirectory() {

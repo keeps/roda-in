@@ -5,11 +5,14 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import org.roda.rodain.rules.sip.SipPreview;
 
+import java.util.Observable;
+import java.util.Observer;
+
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 05-10-2015.
  */
-public class SipPreviewNode extends TreeItem<String> {
+public class SipPreviewNode extends TreeItem<String> implements Observer {
     private SipPreview sip;
     private Image icon;
 
@@ -34,18 +37,17 @@ public class SipPreviewNode extends TreeItem<String> {
     }
 
     public boolean isMetaModified() {
-        return sip.isMetaModified();
-    }
-
-    public void setMetaModified(){
-        sip.setMetaModified();
+        return sip.isMetadataModified();
     }
 
     public boolean isContentModified() {
         return sip.isContentModified();
     }
 
-    public void setContentModified() {
-        sip.setContentModified();
+    @Override
+    public void update(Observable o, Object arg) {
+        String value = getValue();
+        setValue("");
+        setValue(value); //this forces a redraw of the item
     }
 }

@@ -3,10 +3,8 @@ package org.roda.rodain.inspection;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Set;
 
 import javafx.beans.value.ChangeListener;
@@ -27,12 +25,11 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
-import org.slf4j.LoggerFactory;
-
 import org.roda.rodain.rules.TreeNode;
+import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SipPreviewNode;
-import org.roda.rodain.utils.Utils;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -52,7 +49,7 @@ public class InspectionPane extends BorderPane {
 
     private Button remove;
 
-    private SipPreviewNode currentSIP;
+    private SipPreview currentSIP;
 
     public InspectionPane(Stage stage){
         createTop();
@@ -103,12 +100,10 @@ public class InspectionPane extends BorderPane {
             @Override
             public void changed(ObservableValue<? extends Boolean> observableValue, Boolean aBoolean, Boolean t1) {
                 if(!t1) { //lost focus, so update
-                    String oldMetadata = currentSIP.getSip().getMetadata();
+                    String oldMetadata = currentSIP.getMetadataContent();
                     String newMetadata = metaText.getText();
                     if(! oldMetadata.equals(newMetadata)) { //only update if there's been modifications
-                        currentSIP.getSip().setMetadata(metaText.getText());
-                        currentSIP.setMetaModified();
-                        updateItem();
+                        currentSIP.updateMetadata(metaText.getText());
                     }
                 }
             }
@@ -188,8 +183,6 @@ public class InspectionPane extends BorderPane {
                 if(selected instanceof SipContentDirectory){
                     SipContentDirectory dir = (SipContentDirectory) selected;
                     dir.flatten();
-                    currentSIP.setContentModified();
-                    updateItem();
                 }
             }
         });
@@ -207,8 +200,6 @@ public class InspectionPane extends BorderPane {
                     parent.getChildren().clear();
                     parent.getChildren().addAll(newParent.getChildren());
                     parent.sortChildren();
-
-                    currentSIP.setContentModified();
                 }
             }
         });
@@ -219,13 +210,6 @@ public class InspectionPane extends BorderPane {
 
         box.getChildren().addAll(ignore, flatten, skip);
         content.setBottom(box);
-    }
-
-    private void updateItem(){
-        //update ui
-        String value = currentSIP.getValue();
-        currentSIP.setValue("");
-        currentSIP.setValue(value);
     }
 
     private void createContent(SipPreviewNode node){
@@ -265,22 +249,14 @@ public class InspectionPane extends BorderPane {
     }
 
     public void update(SipPreviewNode sip){
-        currentSIP = sip;
+        currentSIP = sip.getSip();
         createContent(sip);
         center.getChildren().clear();
         center.getChildren().addAll(metadata, content);
         setCenter(center);
 
-        String meta = sip.getSip().getMetadata();
-        if(sip.isMetaModified() || "".equals(meta))
-            metaText.setText(meta);
-        else{
-            try {
-                metaText.setText(Utils.readFile(meta, Charset.defaultCharset()));
-            } catch (IOException e) {
-                log.debug("Error reading metadata file", e);
-            }
-        }
+        String meta = sip.getSip().getMetadataContent();
+        metaText.setText(meta);
 
         Label title = new Label(sip.getValue());
         title.setId("title");

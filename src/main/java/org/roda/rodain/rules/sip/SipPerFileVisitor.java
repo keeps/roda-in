@@ -2,16 +2,14 @@ package org.roda.rodain.rules.sip;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
 import org.apache.commons.io.FilenameUtils;
-
+import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.filters.ContentFilter;
 import org.roda.rodain.utils.TreeVisitor;
-import org.roda.rodain.rules.MetadataTypes;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -27,14 +25,16 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipCre
     private String id;
     private Set<ContentFilter> filters;
     private MetadataTypes metaType;
-    private String metadata;
+    private String metadataContent;
+    private Path metadataPath;
 
-    public SipPerFileVisitor(String id, Set<ContentFilter> filters, MetadataTypes metaType, String metadata){
+    public SipPerFileVisitor(String id, Set<ContentFilter> filters, MetadataTypes metaType, Path metadataPath, String metadataContent){
         sips = new ArrayList<>();
         this.id = id;
         this.filters = filters;
         this.metaType = metaType;
-        this.metadata = metadata;
+        this.metadataPath = metadataPath;
+        this.metadataContent = metadataContent;
     }
 
     @Override
@@ -80,11 +80,15 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipCre
         if(filter(path))
             return;
 
-        String meta = getMetadata(path);
+        Path metaPath = getMetadataPath(path);
         TreeNode node = new TreeNode(path);
         Set<TreeNode> files = new HashSet<>();
         files.add(node);
-        sips.add(new SipPreview(path.toString(), files, meta));
+
+        SipPreview sipPreview = new SipPreview(path.getFileName().toString(), files, metaPath, metadataContent);
+        node.addObserver(sipPreview);
+
+        sips.add(sipPreview);
         added ++;
 
         long now = System.currentTimeMillis();
@@ -95,30 +99,29 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipCre
         }
     }
 
-    private String getMetadata(Path path){
+    private Path getMetadataPath(Path path){
+        Path result;
         switch (metaType){
             case SINGLEFILE:
-                return metadata;
+                result = metadataPath;
+                break;
             case DIFFDIRECTORY: // uses the same logic as the next case
             case SAMEDIRECTORY:
-                Path metaFile = getFileFromDir(path);
-                if(metaFile != null){
-                    return metaFile.toString();
-                }
+                result = getFileFromDir(path);
                 break;
             default:
-                return "";
+                return null;
         }
-        return "";
+        return result;
     }
 
     private Path getFileFromDir(Path path){
         String fileName = FilenameUtils.removeExtension(path.getFileName().toString());
-        Path newPath = Paths.get(metadata + "/" + fileName + METADATA_EXT);
+        Path newPath = metadataPath.resolve(fileName + METADATA_EXT);
         if(Files.exists(newPath)){
             return newPath;
         }
-        newPath = Paths.get(metadata + "/" + path.getFileName() + METADATA_EXT);
+        newPath = metadataPath.resolve(path.getFileName() + METADATA_EXT);
         if(Files.exists(newPath)){
             return newPath;
         }

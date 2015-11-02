@@ -1,5 +1,6 @@
 package org.roda.rodain.rules;
 
+import java.nio.file.Path;
 import java.util.*;
 
 import javafx.scene.image.Image;
@@ -22,7 +23,8 @@ import org.roda.rodain.source.ui.items.SourceTreeDirectory;
  */
 public class Rule extends Observable implements Observer {
     private Set<SourceTreeItem> source;
-    private String metadata;
+    private String metadataContent;
+    private Path metadataPath;
     private RuleTypes assocType;
     private MetadataTypes metaType;
     private Set<ContentFilter> filters;
@@ -35,11 +37,12 @@ public class Rule extends Observable implements Observer {
     private int level;
     private String id;
 
-    public Rule(Set<SourceTreeItem> source, RuleTypes assocType, int level, String metadata, MetadataTypes metaType){
+    public Rule(Set<SourceTreeItem> source, RuleTypes assocType, int level, Path metadataPath, String metadataContent, MetadataTypes metaType){
         this.source = source;
         this.assocType = assocType;
         this.level = level;
-        this.metadata = metadata;
+        this.metadataContent = metadataContent;
+        this.metadataPath = metadataPath;
         this.metaType = metaType;
         filters = new HashSet<>();
         id = RandomIdGenerator.getBase62(5);
@@ -121,18 +124,18 @@ public class Rule extends Observable implements Observer {
 
         switch (type){
             case SINGLESIP:
-                SipSingle visitorSingle = new SipSingle(id, filters, metaType, metadata);
+                SipSingle visitorSingle = new SipSingle(id, filters, metaType, metadataPath, metadataContent);
                 visitorSingle.addObserver(this);
                 visitor = visitorSingle;
                 break;
             case SIPPERFILE:
-                SipPerFileVisitor visitorFile = new SipPerFileVisitor(id, filters, metaType, metadata);
+                SipPerFileVisitor visitorFile = new SipPerFileVisitor(id, filters, metaType, metadataPath, metadataContent);
                 visitorFile.addObserver(this);
                 visitor = visitorFile;
                 break;
             default:
             case SIPPERFOLDER:
-                SipPerFolderVisitor visitorFolder = new SipPerFolderVisitor(id, level, filters, metaType, metadata);
+                SipPerFolderVisitor visitorFolder = new SipPerFolderVisitor(id, level, filters, metaType, metadataPath, metadataContent);
                 visitorFolder.addObserver(this);
                 visitor = visitorFolder;
                 break;
@@ -147,7 +150,10 @@ public class Rule extends Observable implements Observer {
             sipCount = visit.getCount();
             while(visit.hasNext() && added < 100){
                 added++;
-                sipNodes.add(new SipPreviewNode(visit.getNext(), icon));
+                SipPreview sipPreview = visit.getNext();
+                SipPreviewNode sipNode = new SipPreviewNode(sipPreview, icon);
+                sipPreview.addObserver(sipNode);
+                sipNodes.add(sipNode);
                 sips = visit.getSips();
             }
         }

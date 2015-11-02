@@ -27,20 +27,20 @@ public class SourceTreeLoadMore extends TreeItem<String> implements SourceTreeIt
     }
 
     @Override
-    public void ignore(){
+    public void addIgnore(){
     }
 
     @Override
-    public void map(String s){
+    public void addMapping(String s){
     }
 
     @Override
-    public void unmap(String ruleId) {
+    public void removeMapping(String ruleId) {
 
     }
 
     @Override
-    public void unignore() {
+    public void removeIgnore() {
 
     }
 }

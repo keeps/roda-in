@@ -85,15 +85,18 @@ public class RuleModalPane extends BorderPane {
 
         Label source = new Label();
         StringBuilder sb = new StringBuilder();
+        boolean first = true;
         for(SourceTreeItem it: sourceSet) {
+            if(first){
+                first = false;
+            }else sb.append(",");
+
             if(it instanceof SourceTreeDirectory)
-                sb.append(((SourceTreeDirectory) it).getValue()).append(",");
+                sb.append(((SourceTreeDirectory) it).getValue());
             else if(it instanceof SourceTreeFile)
-                sb.append(((SourceTreeFile)it).getValue()).append(",");
+                sb.append(((SourceTreeFile)it).getValue());
         }
-        //remove the last comma
-        int lastComma = sb.lastIndexOf(",");
-        sb.replace(lastComma, lastComma + 1,"");
+
         source.setText(sb.toString());
 
         source.setMinHeight(24);
@@ -384,10 +387,6 @@ public class RuleModalPane extends BorderPane {
         }
     }
 
-    public Set<SourceTreeItem> getSourceSet(){
-        return sourceSet;
-    }
-
     public RuleTypes getAssociationType() throws UnexpectedDataTypeException{
         Toggle selected = groupAssoc.getSelectedToggle();
         if(selected.getUserData() instanceof RuleTypes)
@@ -406,15 +405,15 @@ public class RuleModalPane extends BorderPane {
         else throw new UnexpectedDataTypeException();
     }
 
-    public String getFromFile() {
-        return fromFile;
+    public Path getFromFile() {
+        return Paths.get(fromFile);
     }
 
-    public String getDiffDir() {
-        return diffDir;
+    public Path getDiffDir() {
+        return Paths.get(diffDir);
     }
 
-    public String getSameDir() {
-        return sameDir;
+    public Path getSameDir() {
+        return Paths.get(sameDir);
     }
 }

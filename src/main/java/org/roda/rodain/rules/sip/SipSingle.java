@@ -24,15 +24,17 @@ public class SipSingle extends Observable implements TreeVisitor, SipCreator {
     private String id;
     private Set<ContentFilter> filters;
     private MetadataTypes metaType;
-    private String metadata;
+    private Path metadataPath;
+    private String metadataContent;
 
-    public SipSingle(String id, Set<ContentFilter> filters, MetadataTypes metaType, String metadata){
+    public SipSingle(String id, Set<ContentFilter> filters, MetadataTypes metaType, Path metadataPath, String metadataContent){
         this.filters = filters;
         sips = new ArrayList<>();
         nodes = new ArrayDeque<>();
         this.id = id;
         this.metaType = metaType;
-        this.metadata = metadata;
+        this.metadataPath = metadataPath;
+        this.metadataContent = metadataContent;
         files = new HashSet<>();
     }
 
@@ -101,20 +103,27 @@ public class SipSingle extends Observable implements TreeVisitor, SipCreator {
 
     @Override
     public void end() {
-        String meta = getMetadata();
+        Path metaPath = getMetadata();
         //create a new Sip
         Path path = Paths.get(startPath);
-        sips.add(new SipPreview(path.toString(), files, meta));
+        SipPreview sipPreview = new SipPreview(path.getFileName().toString(), files, metaPath, metadataContent);
+
+        for(TreeNode tn: files){
+            tn.addObserver(sipPreview);
+        }
+
+        sips.add(sipPreview);
         added++;
 
         setChanged();
         notifyObservers();
     }
 
-    private String getMetadata(){
+    private Path getMetadata(){
+        Path result = null;
         if(metaType == MetadataTypes.SINGLEFILE)
-            return metadata;
-        return "";
+            result = metadataPath;
+        return result;
     }
 
     @Override

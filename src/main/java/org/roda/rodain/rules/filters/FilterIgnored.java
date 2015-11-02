@@ -26,20 +26,23 @@ public class FilterIgnored implements ContentFilter {
 
     @Override
     public boolean filter(String st){
-        if(ignored.contains(st))
-            return true;
-        int index = 0, end = st.length(), fromIndex = 0;
         boolean result = false;
+        if(ignored.contains(st)) {
+            result = true;
+        } else {
+            int index = 0, end = st.length(), fromIndex = 0;
 
-        while(index < end && !result){ //while we still have string to read and haven't found a matching path
-            index = st.indexOf('/', fromIndex); //get the path until the slash we're checking
-            if(index == -1) {
-                index = end + 1; //end the loop
-            }else {
-                String sub = st.substring(0, index);
-                fromIndex = index + 1; // move the starting index for the next iteration so it's after the slash
-                if (ignored.contains(sub))
-                    result = true;
+            while (index < end && !result) { //while we still have string to read and haven't found a matching path
+                index = st.indexOf('/', fromIndex); //get the path until the slash we're checking
+                if (index == -1) {
+                    break;
+                } else {
+                    String sub = st.substring(0, index);
+                    fromIndex = index + 1; // move the starting index for the next iteration so it's after the slash
+                    if (ignored.contains(sub)) {
+                        result = true;
+                    }
+                }
             }
         }
         return result;

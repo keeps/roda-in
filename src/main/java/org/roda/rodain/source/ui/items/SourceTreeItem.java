@@ -7,8 +7,8 @@ package org.roda.rodain.source.ui.items;
 public interface SourceTreeItem {
     String getPath();
     SourceTreeItemState getState();
-    void ignore();
-    void map(String ruleId);
-    void unignore();
-    void unmap(String ruleId);
+    void addIgnore();
+    void removeIgnore();
+    void addMapping(String ruleId);
+    void removeMapping(String ruleId);
 }

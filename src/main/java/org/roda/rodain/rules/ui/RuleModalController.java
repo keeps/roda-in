@@ -1,25 +1,27 @@
 package org.roda.rodain.rules.ui;
 
-import javafx.application.Platform;
-import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
-import org.roda.rodain.inspection.LoadingPane;
-import org.roda.rodain.rules.VisitorStack;
-import org.roda.rodain.schema.ui.SchemaNode;
-import org.roda.rodain.core.Main;
-import javafx.stage.Stage;
-import org.slf4j.LoggerFactory;
-import org.roda.rodain.rules.MetadataTypes;
-import org.roda.rodain.rules.Rule;
-import org.roda.rodain.rules.RuleTypes;
-import org.roda.rodain.source.ui.items.SourceTreeItem;
-import org.roda.rodain.utils.TreeVisitor;
-
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
+
+import javafx.application.Platform;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
+import javafx.stage.Stage;
+
+import org.roda.rodain.core.Main;
+import org.roda.rodain.inspection.LoadingPane;
+import org.roda.rodain.rules.MetadataTypes;
+import org.roda.rodain.rules.Rule;
+import org.roda.rodain.rules.RuleTypes;
+import org.roda.rodain.rules.VisitorStack;
+import org.roda.rodain.schema.ui.SchemaNode;
+import org.roda.rodain.source.ui.items.SourceTreeItem;
+import org.roda.rodain.utils.TreeVisitor;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -81,20 +83,21 @@ public class RuleModalController implements Observer {
             if(assocType == RuleTypes.SIPPERFOLDER)
                 level = pane.getLevel();
             MetadataTypes metaType = pane.getMetadataType();
-            String metadata = null;
+            Path metadataPath = null;
+            String metadataContent = null;
             switch (metaType){
                 case SAMEDIRECTORY:
-                    metadata = pane.getSameDir();
+                    metadataPath = pane.getSameDir();
                     break;
                 case DIFFDIRECTORY:
-                    metadata = pane.getDiffDir();
+                    metadataPath = pane.getDiffDir();
                     break;
                 case SINGLEFILE:
-                    metadata = pane.getFromFile();
+                    metadataPath = pane.getFromFile();
                     break;
                 default: break;
             }
-            Rule rule = new Rule(sourceSet, assocType, level, metadata, metaType);
+            Rule rule = new Rule(sourceSet, assocType, level, metadataPath, metadataContent, metaType);
             rule.addObserver(schema);
             TreeVisitor visitor = rule.apply();
 

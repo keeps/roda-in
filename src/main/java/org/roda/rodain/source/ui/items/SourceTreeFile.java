@@ -54,26 +54,26 @@ public class SourceTreeFile extends TreeItem<String> implements SourceTreeItem{
     }
 
     @Override
-    public void ignore(){
+    public void addIgnore(){
         if(state == SourceTreeItemState.NORMAL)
             state = SourceTreeItemState.IGNORED;
     }
 
     @Override
-    public void map(String ruleId){
+    public void addMapping(String ruleId){
         if(state == SourceTreeItemState.NORMAL)
             state = SourceTreeItemState.MAPPED;
         mappingRuleId = ruleId;
     }
 
     @Override
-    public void unignore(){
+    public void removeIgnore(){
         if(state == SourceTreeItemState.IGNORED)
             state = SourceTreeItemState.NORMAL;
     }
 
     @Override
-    public void unmap(String ruleId){
+    public void removeMapping(String ruleId){
         if(state == SourceTreeItemState.MAPPED && mappingRuleId.equals(ruleId))
             state = SourceTreeItemState.NORMAL;
         mappingRuleId = "";
