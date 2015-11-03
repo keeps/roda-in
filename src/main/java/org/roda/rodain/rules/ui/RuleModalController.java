@@ -59,7 +59,6 @@ public class RuleModalController implements Observer {
             }
         };
 
-        // After everything is loaded, we add all the items to the TreeView at once.
         task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
             @Override
             public void handle(WorkerStateEvent workerStateEvent) {

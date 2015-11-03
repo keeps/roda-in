@@ -23,6 +23,7 @@ import javafx.stage.Stage;
 
 import javafx.stage.WindowEvent;
 import org.roda.rodain.inspection.InspectionPane;
+import org.roda.rodain.rules.VisitorStack;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.slf4j.LoggerFactory;
@@ -49,13 +50,19 @@ public class Main extends Application {
         stage.setMinWidth(1024);
         stage.setMinHeight(512);
 
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent e) {
+                VisitorStack.end();
+                Platform.exit();
+            }
+        });
+
         try {
             stage.getIcons().add(new Image(ClassLoader.getSystemResource("roda2-logo.png").openStream()));
         } catch (IOException e) {
             log.error("Error reading logo file", e);
         }
-
-
 
         createFrameStructure();
         stage.show();

@@ -34,12 +34,7 @@ public class SourceClickedEventHandler implements EventHandler<MouseEvent> {
                 SourceTreeLoading loading = new SourceTreeLoading();
                 parent.getChildren().add(loading);
 
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        parent.loadMore();
-                    }
-                });
+                parent.loadMore();
             }else if(item instanceof SourceTreeDirectory){
                 SourceTreeDirectory directory = (SourceTreeDirectory)item;
                 fep.updateMetadata(directory.getPath());

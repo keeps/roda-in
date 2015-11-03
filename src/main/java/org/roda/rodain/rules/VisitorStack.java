@@ -22,7 +22,7 @@ import org.roda.rodain.utils.WalkFileTree;
  */
 public class VisitorStack extends Observable{
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(VisitorStack.class.getName());
-    private ExecutorService visitors;
+    private static ExecutorService visitors;
     private HashMap<String, Future> futures;
     private String runningTask;
 
@@ -88,5 +88,10 @@ public class VisitorStack extends Observable{
         if(vis != null && futures.containsKey(vis.getId()))
             return futures.get(vis.getId()).cancel(true);
         else return false;
+    }
+
+    public static void end(){
+        if(visitors != null)
+            visitors.shutdownNow();
     }
 }
