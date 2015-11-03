@@ -14,18 +14,21 @@ import org.roda.rodain.source.ui.items.*;
  * @since 12-10-2015.
  */
 public class SourceTreeCell extends TreeCell<String> {
-    private ContextMenu addMenu = new ContextMenu();
+    private ContextMenu menu = new ContextMenu();
 
     public SourceTreeCell(){
-        MenuItem ignoreMenu = new MenuItem("Remove Ignored");
-        addMenu.getItems().add(ignoreMenu);
-        ignoreMenu.setOnAction(new javafx.event.EventHandler<ActionEvent>() {
+        MenuItem removeIgnore = new MenuItem("Remove Ignore");
+        menu.getItems().add(removeIgnore);
+        removeIgnore.setOnAction(new javafx.event.EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
                 TreeItem<String> treeItem = getTreeItem();
                 SourceTreeItem sti = (SourceTreeItem) treeItem;
-                sti.addIgnore();
-                updateItem(treeItem.getValue(), false);
+                sti.removeIgnore();
+                //force update
+                String value = treeItem.getValue();
+                treeItem.setValue("");
+                treeItem.setValue(value);
             }
         });
     }
@@ -40,6 +43,9 @@ public class SourceTreeCell extends TreeCell<String> {
             lab.setStyle("-fx-text-fill: black");
             Image icon = null;
 
+            //Remove the context menu
+            setContextMenu(null);
+
             //Get the correct item
             TreeItem<String> treeItem = getTreeItem();
             SourceTreeItem sti = (SourceTreeItem) treeItem;
@@ -50,18 +56,22 @@ public class SourceTreeCell extends TreeCell<String> {
                 return;
             }
             //if the item is ignored and we're not showing ignored items, clear the cell and return
-            if(sti.getState() == SourceTreeItemState.IGNORED )
-                if(!FileExplorerPane.isShowIgnored()){
+            if(sti.getState() == SourceTreeItemState.IGNORED ) {
+                //the context menu only makes sense if the item is ignored
+                setContextMenu(menu);
+                if (!FileExplorerPane.isShowIgnored()) {
                     empty();
                     return;
-                }else lab.setStyle("-fx-strikethrough: true;");
+                } else lab.setStyle("-fx-strikethrough: true;");
+            }
 
             //if the item is mapped and we're not showing mapped items, clear the cell and return
-            if(sti.getState() == SourceTreeItemState.MAPPED)
-                if(!FileExplorerPane.isShowMapped()){
+            if(sti.getState() == SourceTreeItemState.MAPPED) {
+                if (!FileExplorerPane.isShowMapped()) {
                     empty();
                     return;
-                }else lab.setStyle("-fx-fill: darkgray;");
+                } else lab.setStyle("-fx-fill: darkgray;");
+            }
 
 
             if(treeItem instanceof SourceTreeDirectory){
@@ -76,8 +86,6 @@ public class SourceTreeCell extends TreeCell<String> {
             }
             hbox.getChildren().addAll(new ImageView(icon), lab);
             setGraphic(hbox);
-
-            setContextMenu(addMenu);
         }else empty();
     }
 

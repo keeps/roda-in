@@ -371,18 +371,15 @@ public class FileExplorerPane extends BorderPane implements Observer {
     }
 
     /*
-    * Ignores or unignores the selected items, depending on its current state.
-    * If an item is ignored, this method unignores it.
+    * Ignores the selected items
     * If an item is normal, this method ignores it.
-    * In the same call it can ignore and unignore items.
+    * Depending on the state of the showIgnored flag, it shows or hides the ignored items.
     * */
     public void ignore(Set<SourceTreeItem> items){
         for(SourceTreeItem item: items){
             TreeItem treeItem = (TreeItem) item;
             if(item.getState() == SourceTreeItemState.NORMAL)
                 item.addIgnore();
-            else if(item.getState() == SourceTreeItemState.IGNORED)
-                item.removeIgnore();
 
             SourceTreeDirectory parent = (SourceTreeDirectory) treeItem.getParent();
             if(!isShowIgnored())

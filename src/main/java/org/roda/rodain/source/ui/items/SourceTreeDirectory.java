@@ -12,8 +12,8 @@ import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 
-import org.roda.rodain.source.representation.SourceItem;
 import org.roda.rodain.source.representation.SourceDirectory;
+import org.roda.rodain.source.representation.SourceItem;
 import org.roda.rodain.source.ui.ExpandedEventHandler;
 import org.roda.rodain.source.ui.FileExplorerPane;
 
@@ -76,104 +76,261 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
         });
     }
 
+    /**
+     * Creates a task to hide all this item's mapped items.
+     * The task is needed to prevent the UI thread from hanging due to the computations.
+     *
+     * First, it removes all the children with the MAPPED state and adds them to the mapped set, so that they can be
+     * shown at a later date. If a child is a directory, this method is called in that item.
+     * Finally, clears the children and adds the new list of items.
+     *
+     * @see #showMapped()
+     */
     public void hideMapped(){
-        Set<TreeItem> toRemove = new HashSet<>();
-        for(TreeItem sti: getChildren()){
-            SourceTreeItem item = (SourceTreeItem) sti;
-            if (item.getState() == SourceTreeItemState.MAPPED) {
-                mapped.add(item);
-                toRemove.add(sti);
+        final ArrayList<TreeItem<String>> newChildren = new ArrayList<>(getChildren());
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                Set<TreeItem> toRemove = new HashSet<>();
+                for (TreeItem sti : newChildren) {
+                    SourceTreeItem item = (SourceTreeItem) sti;
+                    if (item.getState() == SourceTreeItemState.MAPPED) {
+                        mapped.add(item);
+                        toRemove.add(sti);
+                    }
+                    if (item instanceof SourceTreeDirectory)
+                        ((SourceTreeDirectory) item).hideMapped();
+                }
+                newChildren.removeAll(toRemove);
+                return null;
             }
-            if(item instanceof SourceTreeDirectory)
-                ((SourceTreeDirectory) item).hideMapped();
-        }
-        getChildren().removeAll(toRemove);
+        };
+        task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent workerStateEvent) {
+                getChildren().setAll(newChildren);
+            }
+        });
+
+        new Thread(task).start();
     }
 
+    /**
+     * Creates a task to show all this item's mapped items.
+     * The task is needed to prevent the UI thread from hanging due to the computations.
+     *
+     * First, it adds all the items in the mapped set, which are the previously hidden items, and clears the set. We need
+     * to be careful in this step because if the hiddenFiles flag is true, then we must hide the mapped items that are files.
+     * Then makes a call to this method for all its children and hidden ignored items.
+     * Finally, clears the children, adds the new list of items, and sorts them.
+     *
+     * @see #sortChildren()
+     * @see #hideMapped()
+     */
     public void showMapped(){
-        for(SourceTreeItem sti: mapped) {
-            getChildren().add((TreeItem) sti);
-        }
-        for(TreeItem sti: getChildren()){
-            if(sti instanceof SourceTreeDirectory)
-                ((SourceTreeDirectory) sti).showMapped();
-        }
-        for(SourceTreeItem sti: ignored){
-            if(sti instanceof SourceTreeDirectory)
-                ((SourceTreeDirectory) sti).showMapped();
-        }
-        mapped.clear();
-        sortChildren();
+        final ArrayList<TreeItem<String>> newChildren = new ArrayList<>(getChildren());
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                for(SourceTreeItem sti: mapped) {
+                    if(sti instanceof SourceTreeFile && ! FileExplorerPane.isShowFiles()) {
+                        files.add((SourceTreeFile) sti);
+                    }else newChildren.add((TreeItem) sti);
+                }
+                mapped.clear();
+                for(TreeItem sti: newChildren){
+                    if(sti instanceof SourceTreeDirectory)
+                        ((SourceTreeDirectory) sti).showMapped();
+                }
+                for(SourceTreeItem sti: ignored){
+                    if(sti instanceof SourceTreeDirectory)
+                        ((SourceTreeDirectory) sti).showMapped();
+                }
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent workerStateEvent) {
+                getChildren().setAll(newChildren);
+                sortChildren();
+            }
+        });
+
+        new Thread(task).start();
     }
 
-
+    /**
+     * Creates a task to hide all this item's ignored items.
+     * The task is needed to prevent the UI thread from hanging due to the computations.
+     *
+     * First, it removes all the children with the IGNORED state and adds them to the ignored set, so that they can be
+     * shown at a later date. If a child is a directory, this method is called in that item.
+     * Then, calls this method for this item's children directories, that are in the hidden mapped items set.
+     * Finally, clears the children and adds the new list of items.
+     *
+     * @see #showIgnored()
+     */
     public void hideIgnored(){
-        Set<TreeItem> toRemove = new HashSet<>();
-        for(TreeItem sti: getChildren()){
-            SourceTreeItem item = (SourceTreeItem) sti;
-            if (item.getState() == SourceTreeItemState.IGNORED) {
-                ignored.add(item);
-                toRemove.add(sti);
+        final ArrayList<TreeItem<String>> children = new ArrayList<>(getChildren());
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                Set<TreeItem> toRemove = new HashSet<>();
+                for(TreeItem sti: children){
+                    SourceTreeItem item = (SourceTreeItem) sti;
+                    if (item.getState() == SourceTreeItemState.IGNORED) {
+                        ignored.add(item);
+                        toRemove.add(sti);
+                    }
+                    if(item instanceof SourceTreeDirectory)
+                        ((SourceTreeDirectory) item).hideIgnored();
+                }
+                children.removeAll(toRemove);
+                for(SourceTreeItem item: mapped){
+                    if(item instanceof SourceTreeDirectory)
+                        ((SourceTreeDirectory) item).hideIgnored();
+                }
+                return null;
             }
-            if(item instanceof SourceTreeDirectory)
-                ((SourceTreeDirectory) item).hideIgnored();
-        }
-        for(SourceTreeItem item: mapped){
-            if (item.getState() == SourceTreeItemState.IGNORED) {
-                ignored.add(item);
-                toRemove.add((TreeItem)item);
+        };
+        task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent workerStateEvent) {
+                getChildren().setAll(children);
             }
-            if(item instanceof SourceTreeDirectory)
-                ((SourceTreeDirectory) item).hideIgnored();
-        }
-        getChildren().removeAll(toRemove);
+        });
+
+        new Thread(task).start();
     }
 
+    /**
+     * Creates a task to show all this item's ignored items.
+     * The task is needed to prevent the UI thread from hanging due to the computations.
+     *
+     * First, it adds all the items in the ignored set, which are the previously hidden items, and clears the set. We need
+     * to be careful in this step because if the hiddenFiles flag is true, then we must hide the ignored items that are files.
+     * Then makes a call to this method for all its children and hidden mapped items.
+     * Finally, clears the children, adds the new list of items, and sorts them.
+     *
+     * @see #sortChildren()
+     * @see #hideIgnored()
+     */
     public void showIgnored(){
-        for(SourceTreeItem sti: ignored) {
-            getChildren().add((TreeItem) sti);
-        }
-        for(TreeItem sti: getChildren()){
-            if(sti instanceof SourceTreeDirectory)
-                ((SourceTreeDirectory) sti).showIgnored();
-        }
-        for(SourceTreeItem sti: mapped){
-            if(sti instanceof SourceTreeDirectory)
-                ((SourceTreeDirectory) sti).showIgnored();
-        }
-        ignored.clear();
-        sortChildren();
-    }
-
-    public void hideFiles(){
-        Set<TreeItem> toRemove = new HashSet<>();
-        for(TreeItem sti: getChildren()){
-            if(sti instanceof SourceTreeFile){
-                files.add((SourceTreeFile)sti);
-                toRemove.add(sti);
-            }else {
-                SourceTreeItem item = (SourceTreeItem) sti;
-                if (item instanceof SourceTreeDirectory)
-                    ((SourceTreeDirectory) item).hideFiles();
+        final ArrayList<TreeItem<String>> newChildren = new ArrayList<>(getChildren());
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                for(SourceTreeItem sti: ignored) {
+                    if(sti instanceof SourceTreeFile && ! FileExplorerPane.isShowFiles()) {
+                        files.add((SourceTreeFile) sti);
+                    }else newChildren.add((TreeItem) sti);
+                }
+                ignored.clear();
+                for(TreeItem sti: newChildren){
+                    if(sti instanceof SourceTreeDirectory)
+                        ((SourceTreeDirectory) sti).showIgnored();
+                }
+                for(SourceTreeItem sti: mapped){
+                    if(sti instanceof SourceTreeDirectory)
+                        ((SourceTreeDirectory) sti).showIgnored();
+                }
+                return null;
             }
-        }
-        getChildren().removeAll(toRemove);
+        };
+        task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent workerStateEvent) {
+                getChildren().setAll(newChildren);
+                sortChildren();
+            }
+        });
+        new Thread(task).start();
     }
 
+    /**
+     * Creates a task to hide all this item's file items.
+     * The task is needed to prevent the UI thread from hanging due to the computations.
+     *
+     * First, it removes all the children that are a file and adds them to the files set, so that they can be
+     * shown at a later date. If a child is a directory, this method is called in that item.
+     * Finally, clears the children and adds the new list of items.
+     *
+     * @see #showFiles() ()
+     */
+    public void hideFiles(){
+        final ArrayList<TreeItem<String>> children = new ArrayList<>(getChildren());
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                Set<TreeItem> toRemove = new HashSet<>();
+                for (TreeItem sti : children) {
+                    if (sti instanceof SourceTreeFile) {
+                        files.add((SourceTreeFile) sti);
+                        toRemove.add(sti);
+                    } else {
+                        SourceTreeItem item = (SourceTreeItem) sti;
+                        if (item instanceof SourceTreeDirectory)
+                            ((SourceTreeDirectory) item).hideFiles();
+                    }
+                }
+                children.removeAll(toRemove);
+                return null;
+            }
+        };
+        task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent workerStateEvent) {
+                getChildren().setAll(children);
+            }
+        });
+        new Thread(task).start();
+    }
+
+    /**
+     * Creates a task to show all this item's file items.
+     * The task is needed to prevent the UI thread from hanging due to the computations.
+     *
+     * First, it adds all the items in the files set, which are the previously hidden items, and clears the set.
+     * Then makes a call to this method for all its children and hidden ignored/mapped items.
+     * Finally, clears the children, adds the new list of items, and sorts them.
+     *
+     * @see #sortChildren()
+     * @see #hideFiles() ()
+     */
     public void showFiles(){
-        for(SourceTreeItem sti: files) {
-            getChildren().add((TreeItem) sti);
-        }
-        for(TreeItem sti: getChildren()){
-            if(sti instanceof SourceTreeDirectory)
-                ((SourceTreeDirectory) sti).showFiles();
-        }
-        for(SourceTreeItem sti: ignored){
-            if(sti instanceof SourceTreeDirectory)
-                ((SourceTreeDirectory) sti).showFiles();
-        }
-        files.clear();
-        sortChildren();
+        final ArrayList<TreeItem<String>> newChildren = new ArrayList<>(getChildren());
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                for (SourceTreeItem sti : files) {
+                    newChildren.add((TreeItem) sti);
+                }
+                files.clear();
+                for (TreeItem sti : newChildren) {
+                    if (sti instanceof SourceTreeDirectory)
+                        ((SourceTreeDirectory) sti).showFiles();
+                }
+                for (SourceTreeItem sti : ignored) {
+                    if (sti instanceof SourceTreeDirectory)
+                        ((SourceTreeDirectory) sti).showFiles();
+                }
+                for (SourceTreeItem sti : mapped) {
+                    if (sti instanceof SourceTreeDirectory)
+                        ((SourceTreeDirectory) sti).showFiles();
+                }
+                return null;
+            }
+        };
+        task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent workerStateEvent) {
+                getChildren().setAll(newChildren);
+                sortChildren();
+            }
+        });
+        new Thread(task).start();
     }
 
     public Set<String> getIgnored(){
@@ -351,14 +508,10 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
 
         switch (newState){
             case IGNORED:
-                if(FileExplorerPane.isShowIgnored())
-                    children.add(item);
-                else ignored.add(item);
+                addChildIgnored(children, item);
                 break;
             case MAPPED:
-                if(FileExplorerPane.isShowMapped())
-                    children.add(item);
-                else mapped.add(item);
+                addChildMapped(children, item);
                 break;
             case NORMAL:
                 if(item instanceof SourceTreeFile)
@@ -369,5 +522,21 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
                 break;
             default:
         }
+    }
+
+    private void addChildIgnored(List children, SourceTreeItem item){
+        if(FileExplorerPane.isShowIgnored()) {
+            if(item instanceof SourceTreeFile && !FileExplorerPane.isShowFiles()) {
+                files.add((SourceTreeFile) item);
+            } else children.add(item);
+        } else ignored.add(item);
+    }
+
+    private void addChildMapped(List children, SourceTreeItem item){
+        if(FileExplorerPane.isShowMapped()) {
+            if(item instanceof SourceTreeFile && !FileExplorerPane.isShowFiles()) {
+                files.add((SourceTreeFile) item);
+            } else children.add(item);
+        } else mapped.add(item);
     }
 }
