@@ -89,6 +89,7 @@ public class InspectionPane extends BorderPane {
 
         metaText = new TextArea();
         metaText.setStyle("-fx-background-color:white; -fx-focus-color: transparent; fx-faint-focus-color: transparent;");
+        metaText.setWrapText(true);
         HBox.setHgrow(metaText, Priority.ALWAYS);
         VBox.setVgrow(metaText, Priority.ALWAYS);
         metadata.getChildren().addAll(box, metaText);
