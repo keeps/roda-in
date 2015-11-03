@@ -92,7 +92,6 @@ public class SourceTreeCell extends TreeCell<String> {
     private void empty(){
         setText(null);
         setGraphic(null);
-        setDisclosureNode(new HBox());
     }
 
 }

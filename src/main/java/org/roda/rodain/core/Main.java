@@ -35,6 +35,7 @@ import org.roda.rodain.source.ui.FileExplorerPane;
 public class Main extends Application {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(Main.class.getName());
     private static Stage stage;
+    private double javaVersion;
 
     private static FileExplorerPane previewExplorer;
     private static InspectionPane inspectionPane;
@@ -57,6 +58,10 @@ public class Main extends Application {
                 Platform.exit();
             }
         });
+
+        //get the java version
+        String javaString =  Runtime.class.getPackage().getSpecificationVersion();
+        javaVersion = Double.parseDouble(javaString);
 
         try {
             stage.getIcons().add(new Image(ClassLoader.getSystemResource("roda2-logo.png").openStream()));
@@ -96,7 +101,9 @@ public class Main extends Application {
         // setup and show the window
         stage.setTitle("RODA-In");
         Scene scene = new Scene(mainPane, bounds.getWidth(), bounds.getHeight());
-        scene.getStylesheets().add(ClassLoader.getSystemResource("Modena.css").toExternalForm());
+        if(javaVersion < 1.8) {
+            scene.getStylesheets().add(ClassLoader.getSystemResource("Modena.css").toExternalForm());
+        }
         stage.setScene(scene);
     }
 

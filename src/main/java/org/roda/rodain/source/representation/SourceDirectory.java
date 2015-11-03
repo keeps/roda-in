@@ -1,5 +1,7 @@
 package org.roda.rodain.source.representation;
 
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.DirectoryStream;
@@ -8,8 +10,6 @@ import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -89,19 +89,20 @@ public class SourceDirectory implements SourceItem {
         startDirectoryStream();
         int loaded = 0, childrenSize = children.size();
         TreeMap<String, SourceItem> result = new TreeMap<>();
-        itemsToLoad += 50;
-        while(iterator.hasNext() && (childrenSize + loaded < itemsToLoad)){
-            Path file = iterator.next();
-            if(!showFiles && !Files.isDirectory(file))
-                continue;
-            SourceItem added = loadChild(file);
-            result.put(file.toString(), added);
-            loaded++;
+        if(iterator != null){
+            itemsToLoad += 50;
+            while (iterator.hasNext() && (childrenSize + loaded < itemsToLoad)) {
+                Path file = iterator.next();
+                if (!showFiles && !Files.isDirectory(file))
+                    continue;
+                SourceItem added = loadChild(file);
+                result.put(file.toString(), added);
+                loaded++;
+            }
+            //we can close the directory stream if there's no more files to load in the iterator
+            if (!iterator.hasNext())
+                closeDirectoryStream();
         }
-        //we can close the directory stream if there's no more files to load in the iterator
-        if(!iterator.hasNext())
-            closeDirectoryStream();
-
         return result;
     }
 
