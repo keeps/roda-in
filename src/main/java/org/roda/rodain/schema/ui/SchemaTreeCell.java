@@ -18,7 +18,7 @@ public class SchemaTreeCell extends TreeCell<String> {
     @Override
     public void updateItem(String item, boolean empty) {
         super.updateItem(item, empty);
-        this.setStyle("-fx-text-fill:grey;");
+        setStyle("-fx-text-fill: grey");
 
         if (empty) {
             setText(null);
@@ -43,7 +43,7 @@ public class SchemaTreeCell extends TreeCell<String> {
                     setText(numItems + "items");
                 }
             }else{
-                if(treeItem instanceof SipPreviewNode) {
+                if(treeItem instanceof SipPreviewNode){
                     SipPreviewNode sipNode = (SipPreviewNode) treeItem;
                     icon = sipNode.getIcon();
                     if(sipNode.isMetaModified() || sipNode.isContentModified()) {

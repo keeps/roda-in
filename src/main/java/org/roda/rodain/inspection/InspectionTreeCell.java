@@ -13,7 +13,6 @@ public class InspectionTreeCell extends TreeCell<String> {
     @Override
     public void updateItem(String item, boolean empty) {
         super.updateItem(item, empty);
-        this.setStyle("-fx-text-fill:black;");
 
         if (empty) {
             setText(null);

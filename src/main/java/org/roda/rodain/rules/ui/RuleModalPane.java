@@ -64,7 +64,7 @@ public class RuleModalPane extends BorderPane {
         schema = schemaNode;
         this.sourceSet = sourceSet;
         this.stage = stage;
-        setStyle("-fx-border-color: lightgray; -fx-border-width: 2px; -fx-background-color: white;");
+        getStyleClass().add("modal");
 
         createTop();
         createCenter();
@@ -79,7 +79,7 @@ public class RuleModalPane extends BorderPane {
 
         HBox hbox = new HBox();
         HBox.setHgrow(hbox, Priority.ALWAYS);
-        hbox.setStyle("-fx-background-color: lightgray;");
+        hbox.getStyleClass().add("hbox");
         hbox.setPadding(new Insets(5, 5, 5, 5));
         pane.getChildren().add(hbox);
 
@@ -102,7 +102,6 @@ public class RuleModalPane extends BorderPane {
         source.setMinHeight(24);
         source.setId("title");
         source.setGraphic(new ImageView(SourceTreeDirectory.folderCollapseImage));
-        source.setStyle(" -fx-text-fill: black");
         source.setWrapText(true);
 
         Label descObj = new Label(schema.getDob().getTitle());
@@ -110,7 +109,6 @@ public class RuleModalPane extends BorderPane {
         descObj.setId("title");
         descObj.setGraphic(new ImageView(schema.getImage()));
         descObj.setTextAlignment(TextAlignment.LEFT);
-        descObj.setStyle(" -fx-text-fill: black");
 
         HBox spaceTop = new HBox();
         HBox.setHgrow(spaceTop, Priority.ALWAYS);
@@ -140,12 +138,10 @@ public class RuleModalPane extends BorderPane {
         singleSip.setToggleGroup(groupAssoc);
         singleSip.setUserData(RuleTypes.SINGLESIP);
         singleSip.setSelected(true);
-        singleSip.setStyle(" -fx-text-fill: black");
 
         RadioButton perFile = new RadioButton("Create one SIP per file");
         perFile.setToggleGroup(groupAssoc);
         perFile.setUserData(RuleTypes.SIPPERFILE);
-        perFile.setStyle(" -fx-text-fill: black");
 
         //count number of folders selected in the source
         int dirCount = 0;
@@ -156,7 +152,6 @@ public class RuleModalPane extends BorderPane {
         RadioButton byFolder = new RadioButton("Create one SIP per folder until level");
         byFolder.setUserData(RuleTypes.SIPPERFOLDER);
         byFolder.setToggleGroup(groupAssoc);
-        byFolder.setStyle(" -fx-text-fill: black");
 
         int depth = 0;
         if(dirCount == sourceSet.size()) { //check if the selected items are all directories
@@ -201,7 +196,6 @@ public class RuleModalPane extends BorderPane {
         RadioButton newFile = new RadioButton("An empty text area");
         newFile.setUserData(MetadataTypes.NEWTEXT);
         newFile.setToggleGroup(groupMetadata);
-        newFile.setStyle(" -fx-text-fill: black");
 
         rbSameFolder();
         HBox singleFileBox = rbSingleFile();
@@ -221,7 +215,6 @@ public class RuleModalPane extends BorderPane {
         singleFile.setToggleGroup(groupMetadata);
         singleFile.setUserData(MetadataTypes.SINGLEFILE);
         singleFile.setSelected(true);
-        singleFile.setStyle(" -fx-text-fill: black");
 
         chooseFile = new Button("Choose File...");
         chooseFile.setOnAction(new EventHandler<ActionEvent>() {
@@ -264,7 +257,6 @@ public class RuleModalPane extends BorderPane {
         sameFolder = new RadioButton("The directory \"" + sameDir + "\"");
         sameFolder.setToggleGroup(groupMetadata);
         sameFolder.setUserData(MetadataTypes.SAMEDIRECTORY);
-        sameFolder.setStyle(" -fx-text-fill: black");
     }
 
     private HBox rbDiffFolder(){
@@ -274,7 +266,6 @@ public class RuleModalPane extends BorderPane {
         diffFolder = new RadioButton("Another directory");
         diffFolder.setUserData(MetadataTypes.DIFFDIRECTORY);
         diffFolder.setToggleGroup(groupMetadata);
-        diffFolder.setStyle(" -fx-text-fill: black");
 
         chooseDir = new Button("Choose Directory...");
         chooseDir.setOnAction(new EventHandler<ActionEvent>() {

@@ -68,7 +68,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
         this.setTop(top);
         this.setCenter(fileExplorer);
         this.setBottom(filterButtons);
-        this.minWidthProperty().bind(stage.widthProperty().multiply(0.33));
+        this.minWidthProperty().bind(stage.widthProperty().multiply(0.32));
     }
 
     public static boolean isShowFiles() {
@@ -86,7 +86,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     private void createTop(){
         Button btn = new Button("Open Folder");
         Label title = new Label("Source File Explorer");
-        title.setId("title");
+        title.getStyleClass().add("title");
 
         HBox space = new HBox();
         HBox.setHgrow(space, Priority.ALWAYS);
@@ -116,7 +116,6 @@ public class FileExplorerPane extends BorderPane implements Observer {
         treeBox.setPadding(new Insets(10, 10, 10, 10));
 
         treeView = new TreeView<>();
-        treeView.setStyle("-fx-background-color:white;");
         treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         // add everything to the tree pane
         treeBox.getChildren().addAll(treeView);

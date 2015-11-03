@@ -1,15 +1,13 @@
 package org.roda.rodain.source.ui;
 
-import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
-
+import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.source.ui.items.SourceTreeLoadMore;
 import org.roda.rodain.source.ui.items.SourceTreeLoading;
-import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 
 /**
  * @author Andre Pereira apereira@keep.pt

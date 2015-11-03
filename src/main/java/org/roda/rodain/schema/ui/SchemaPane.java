@@ -60,7 +60,7 @@ public class SchemaPane extends BorderPane {
     public void createTop(){
         Button btn = new Button("Update");
         Label title = new Label("Classification Schema");
-        title.setId("title");
+        title.getStyleClass().add("title");
 
         HBox space = new HBox();
         HBox.setHgrow(space, Priority.ALWAYS);
@@ -96,7 +96,6 @@ public class SchemaPane extends BorderPane {
 
         // create the tree view
         treeView=new TreeView<>(rootNode);
-        treeView.setStyle("-fx-background-color:white;");
         treeView.setShowRoot(false);
         treeView.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
             @Override
@@ -173,6 +172,7 @@ public class SchemaPane extends BorderPane {
                     if ((item != null /* && !item.isLeaf()*/) &&
                             event.getGestureSource() != cell &&
                             event.getDragboard().hasString()) {
+                        //there's not a better way to set this style
                         cell.setStyle("-fx-background-color: powderblue;");
                     }
                 }
@@ -186,7 +186,9 @@ public class SchemaPane extends BorderPane {
         cell.setOnDragExited(new EventHandler<DragEvent>() {
                                  @Override
                                  public void handle(DragEvent event) {
-                                     cell.setStyle("-fx-background-color: white");
+                                     //there's not a better way to set this style
+                                     cell.setStyle("-fx-background-color: transparent;");
+                                     cell.updateItem(cell.getItem(), false);
                                      event.consume();
                                  }
                              }

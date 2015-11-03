@@ -70,6 +70,11 @@ public class Main extends Application {
         }
 
         createFrameStructure();
+
+        //the setMaximized method was added in JavaFX 8
+        if(javaVersion >= 1.8)
+            stage.setMaximized(true);
+
         stage.show();
     }
 
@@ -104,6 +109,7 @@ public class Main extends Application {
         if(javaVersion < 1.8) {
             scene.getStylesheets().add(ClassLoader.getSystemResource("Modena.css").toExternalForm());
         }
+        scene.getStylesheets().add(ClassLoader.getSystemResource("mainWindow.css").toExternalForm());
         stage.setScene(scene);
     }
 

@@ -35,8 +35,7 @@ public class LoadingPane extends BorderPane {
         this.sourceSet = sourceSet;
         this.schema = schemaNode;
         createTop();
-
-        setStyle("-fx-border-color: lightgray; -fx-border-width: 2px; -fx-background-color: white;");
+        getStyleClass().add("modal");
 
         HBox centerBox = new HBox();
         centerBox.setAlignment(Pos.CENTER);
@@ -56,7 +55,7 @@ public class LoadingPane extends BorderPane {
 
         HBox hbox = new HBox();
         HBox.setHgrow(hbox, Priority.ALWAYS);
-        hbox.setStyle("-fx-background-color: lightgray;");
+        hbox.getStyleClass().add("hbox");
         hbox.setPadding(new Insets(5, 5, 5, 5));
         pane.getChildren().add(hbox);
 
@@ -76,7 +75,6 @@ public class LoadingPane extends BorderPane {
         source.setMinHeight(24);
         source.setId("title");
         source.setGraphic(new ImageView(SourceTreeDirectory.folderCollapseImage));
-        source.setStyle(" -fx-text-fill: black");
         source.setWrapText(true);
 
         Label descObj = new Label(schema.getDob().getTitle());
@@ -84,7 +82,6 @@ public class LoadingPane extends BorderPane {
         descObj.setId("title");
         descObj.setGraphic(new ImageView(schema.getImage()));
         descObj.setTextAlignment(TextAlignment.LEFT);
-        descObj.setStyle(" -fx-text-fill: black");
 
         HBox space = new HBox();
         HBox.setHgrow(space, Priority.ALWAYS);

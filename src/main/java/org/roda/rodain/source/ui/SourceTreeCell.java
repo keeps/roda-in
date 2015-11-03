@@ -40,7 +40,6 @@ public class SourceTreeCell extends TreeCell<String> {
         if (!empty) {
             HBox hbox = new HBox(5);
             Text lab = new Text(item);
-            lab.setStyle("-fx-text-fill: black");
             Image icon = null;
 
             //Remove the context menu
@@ -62,7 +61,8 @@ public class SourceTreeCell extends TreeCell<String> {
                 if (!FileExplorerPane.isShowIgnored()) {
                     empty();
                     return;
-                } else lab.setStyle("-fx-strikethrough: true;");
+                } else //there's no better way to set this style in JavaFX 2
+                    lab.setStyle("-fx-strikethrough: true;");
             }
 
             //if the item is mapped and we're not showing mapped items, clear the cell and return
@@ -70,7 +70,8 @@ public class SourceTreeCell extends TreeCell<String> {
                 if (!FileExplorerPane.isShowMapped()) {
                     empty();
                     return;
-                } else lab.setStyle("-fx-fill: darkgray;");
+                } else //there's no better way to set this style in JavaFX 2
+                    lab.setStyle("-fx-fill: darkgray;");
             }
 
 

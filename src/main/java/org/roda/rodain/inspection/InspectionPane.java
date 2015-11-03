@@ -61,7 +61,7 @@ public class InspectionPane extends BorderPane {
         center.setPadding(new Insets(10, 10, 10, 10));
 
         metadata.minHeightProperty().bind(stage.heightProperty().multiply(0.40));
-        this.minWidthProperty().bind(stage.widthProperty().multiply(0.33));
+        this.minWidthProperty().bind(stage.widthProperty().multiply(0.32));
     }
 
     private void createTop(){
@@ -75,20 +75,18 @@ public class InspectionPane extends BorderPane {
 
     private void createMetadata(){
         metadata = new VBox();
-        metadata.setStyle("-fx-border-width: 1; -fx-border-color: lightgray");
+        metadata.getStyleClass().add("inspectionPart");
 
         HBox box = new HBox();
+        box.getStyleClass().add("hbox");
         box.setPadding(new Insets(5, 10, 5, 10));
         box.setAlignment(Pos.CENTER_LEFT);
-        box.setStyle("-fx-background-color: lightgray");
 
         Label title = new Label("Metadata");
-        title.setStyle("-fx-font-size: 14pt");
 
         box.getChildren().add(title);
 
         metaText = new TextArea();
-        metaText.setStyle("-fx-background-color:white; -fx-focus-color: transparent; fx-faint-focus-color: transparent;");
         metaText.setWrapText(true);
         HBox.setHgrow(metaText, Priority.ALWAYS);
         VBox.setVgrow(metaText, Priority.ALWAYS);
@@ -103,7 +101,8 @@ public class InspectionPane extends BorderPane {
                 if(!t1) { //lost focus, so update
                     String oldMetadata = currentSIP.getMetadataContent();
                     String newMetadata = metaText.getText();
-                    if(! oldMetadata.equals(newMetadata)) { //only update if there's been modifications
+                    //only update if there's been modifications or there's no old metadata
+                    if(oldMetadata == null || !oldMetadata.equals(newMetadata)) {
                         currentSIP.updateMetadata(metaText.getText());
                     }
                 }
@@ -113,14 +112,14 @@ public class InspectionPane extends BorderPane {
 
     private void createContent(){
         content = new BorderPane();
-        content.setStyle("-fx-border-width: 1; -fx-border-color: lightgray");
+        content.getStyleClass().add("inspectionPart");
         VBox.setVgrow(content, Priority.ALWAYS);
 
         HBox top = new HBox();
-        top.setStyle("-fx-background-color: lightgray");
+        top.getStyleClass().add("hbox");
         top.setPadding(new Insets(5, 10, 5, 10));
+
         Label title = new Label("Content");
-        title.setStyle("-fx-font-size: 14pt");
         top.getChildren().add(title);
         content.setTop(top);
 
@@ -130,7 +129,6 @@ public class InspectionPane extends BorderPane {
         treeBox.setSpacing(10);
 
         sipFiles = new TreeView<>();
-        sipFiles.setStyle("-fx-background-color:white;");
         // add everything to the tree pane
         treeBox.getChildren().addAll(sipFiles);
         VBox.setVgrow(sipFiles, Priority.ALWAYS);
@@ -260,7 +258,7 @@ public class InspectionPane extends BorderPane {
         metaText.setText(meta);
 
         Label title = new Label(sip.getValue());
-        title.setId("title");
+        title.getStyleClass().add("title");
         topBox.getChildren().clear();
         topBox.getChildren().addAll(sip.getGraphic(), title);
 
@@ -274,7 +272,7 @@ public class InspectionPane extends BorderPane {
         setCenter(center);
 
         Label title = new Label(node.getValue());
-        title.setId("title");
+        title.getStyleClass().add("title");
         topBox.getChildren().clear();
         topBox.getChildren().addAll(node.getGraphic(), title);
 
