@@ -6,6 +6,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -71,8 +73,12 @@ public class CreateBagits extends Thread {
     }
 
     private void createBagit(String schemaId, SipPreview sip){
+        //we add a timestamp to the beginning of the SIP name to avoid same name conflicts
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss:SSS");
+        String dateToString = format.format(new Date());
+        String timestampedName = String.format("%s %s", dateToString, sip.getName());
         //make the directories
-        Path name = startPath.resolve(sip.getName());
+        Path name = startPath.resolve(timestampedName);
         Path data = name.resolve(DATAFOLDER);
         new File(data.toString()).mkdirs();
 

@@ -8,6 +8,7 @@ import java.util.Observer;
 import java.util.Set;
 
 import org.roda.rodain.rules.TreeNode;
+import org.roda.rodain.utils.RandomIdGenerator;
 import org.roda.rodain.utils.Utils;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +18,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SipPreview extends Observable implements Observer {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(SipPreview.class.getName());
+    private String id;
     private String name;
     private String metadataContent;
     private Path metadataPath;
@@ -29,6 +31,7 @@ public class SipPreview extends Observable implements Observer {
         this.files = files;
         this.metadataPath = metadataPath;
         this.metadataContent = metadataContent;
+        id = RandomIdGenerator.getBase62(8);
     }
 
     private void loadMetadata(){
@@ -74,6 +77,10 @@ public class SipPreview extends Observable implements Observer {
 
     public boolean isContentModified() {
         return contentModified;
+    }
+
+    public String getId() {
+        return id;
     }
 
     @Override
