@@ -68,7 +68,7 @@ public class InspectionPane extends BorderPane {
         Label top = new Label(" ");
         topBox = new HBox(5);
         topBox.getChildren().add(top);
-        topBox.setPadding(new Insets(15, 10, 5, 10));
+        topBox.setPadding(new Insets(10, 10, 5, 10));
         topBox.setAlignment(Pos.CENTER_LEFT);
         setTop(topBox);
     }
@@ -257,7 +257,8 @@ public class InspectionPane extends BorderPane {
         String meta = sip.getSip().getMetadataContent();
         metaText.setText(meta);
 
-        Label title = new Label(sip.getValue());
+        Label title = new Label(sip.getValue() + " - " + sip.getSip().getId());
+        title.setWrapText(true);
         title.getStyleClass().add("title");
         topBox.getChildren().clear();
         topBox.getChildren().addAll(sip.getGraphic(), title);
@@ -267,6 +268,8 @@ public class InspectionPane extends BorderPane {
 
     public void update(SchemaNode node){
         currentSIP = null;
+        metaText.clear();
+
         center.getChildren().clear();
         center.getChildren().add(metadata);
         setCenter(center);

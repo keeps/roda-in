@@ -1,16 +1,16 @@
 package org.roda.rodain.rules.sip;
 
+import org.roda.rodain.rules.TreeNode;
+import org.roda.rodain.utils.Utils;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
-
-import org.roda.rodain.rules.TreeNode;
-import org.roda.rodain.utils.RandomIdGenerator;
-import org.roda.rodain.utils.Utils;
-import org.slf4j.LoggerFactory;
+import java.util.UUID;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -31,7 +31,7 @@ public class SipPreview extends Observable implements Observer {
         this.files = files;
         this.metadataPath = metadataPath;
         this.metadataContent = metadataContent;
-        id = RandomIdGenerator.getBase62(8);
+        id = UUID.randomUUID().toString();
     }
 
     private void loadMetadata(){

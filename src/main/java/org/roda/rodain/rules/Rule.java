@@ -1,21 +1,19 @@
 package org.roda.rodain.rules;
 
-import java.nio.file.Path;
-import java.util.*;
-
 import javafx.scene.image.Image;
-
 import org.roda.rodain.rules.filters.ContentFilter;
 import org.roda.rodain.rules.filters.FilterIgnored;
 import org.roda.rodain.rules.filters.FilterMapped;
 import org.roda.rodain.rules.sip.*;
 import org.roda.rodain.schema.ui.DescriptionLevelImageCreator;
 import org.roda.rodain.schema.ui.SipPreviewNode;
+import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
-import org.roda.rodain.utils.RandomIdGenerator;
 import org.roda.rodain.utils.TreeVisitor;
-import org.roda.rodain.source.ui.items.SourceTreeDirectory;
+
+import java.nio.file.Path;
+import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -45,7 +43,7 @@ public class Rule extends Observable implements Observer {
         this.metadataPath = metadataPath;
         this.metaType = metaType;
         filters = new HashSet<>();
-        id = RandomIdGenerator.getBase62(5);
+        id = UUID.randomUUID().toString();
 
         createIcon();
         createFilters();
