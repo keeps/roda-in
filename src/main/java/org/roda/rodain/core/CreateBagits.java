@@ -74,7 +74,7 @@ public class CreateBagits extends Thread {
 
     private void createBagit(String schemaId, SipPreview sip){
         //we add a timestamp to the beginning of the SIP name to avoid same name conflicts
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss:SSS");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd kk'h'mm'm'ss's'SSS");
         String dateToString = format.format(new Date());
         String timestampedName = String.format("%s %s", dateToString, sip.getName());
         //make the directories

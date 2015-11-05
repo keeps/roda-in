@@ -16,6 +16,10 @@ import org.roda.rodain.utils.TreeVisitor;
  */
 public class SipSingle extends Observable implements TreeVisitor, SipCreator {
     private String startPath;
+    // This map is returned, in full, to the SipPreviewNode when there's an update
+    private Map<String, SipPreview> sipsMap;
+    // This ArrayList is used to keep the SIPs ordered.
+    // We need them ordered because we have to keep track of which SIPs have already been loaded
     private ArrayList<SipPreview> sips;
     private int added = 0, returned = 0;
     private Deque<TreeNode> nodes;
@@ -29,6 +33,7 @@ public class SipSingle extends Observable implements TreeVisitor, SipCreator {
 
     public SipSingle(String id, Set<ContentFilter> filters, MetadataTypes metaType, Path metadataPath, String metadataContent){
         this.filters = filters;
+        sipsMap = new HashMap<>();
         sips = new ArrayList<>();
         nodes = new ArrayDeque<>();
         this.id = id;
@@ -39,8 +44,8 @@ public class SipSingle extends Observable implements TreeVisitor, SipCreator {
     }
 
     @Override
-    public List<SipPreview> getSips() {
-        return sips;
+    public Map<String, SipPreview> getSips() {
+        return sipsMap;
     }
     @Override
     public int getCount(){
@@ -113,6 +118,7 @@ public class SipSingle extends Observable implements TreeVisitor, SipCreator {
         }
 
         sips.add(sipPreview);
+        sipsMap.put(sipPreview.getId(), sipPreview);
         added++;
 
         setChanged();

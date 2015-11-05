@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * @author Andre Pereira apereira@keep.pt
  * @since 19-10-2015.
  */
-public class RuleModalController implements Observer {
+public class RuleModalController {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(RuleModalController.class.getName());
     private static RuleModalStage stage;
     private static RuleModalPane pane;
@@ -39,7 +39,7 @@ public class RuleModalController implements Observer {
     private static VisitorStack visitors = new VisitorStack();
 
     private RuleModalController(){
-        visitors.addObserver(this);
+
     }
 
     public static void newAssociation(final Stage primStage, Set<SourceTreeItem> source, SchemaNode schemaNode){
@@ -98,12 +98,15 @@ public class RuleModalController implements Observer {
             }
             Rule rule = new Rule(sourceSet, assocType, level, metadataPath, metadataContent, metaType);
             rule.addObserver(schema);
+
             TreeVisitor visitor = rule.apply();
 
             //create set with the selected paths
             Set<String> sourcePaths = new HashSet<>();
-            for(SourceTreeItem sti: sourceSet)
+            for(SourceTreeItem sti: sourceSet) {
                 sourcePaths.add(sti.getPath());
+                rule.addObserver(sti);
+            }
             visitors.add(sourcePaths, visitor);
 
             schema.addRule(rule);
@@ -115,10 +118,5 @@ public class RuleModalController implements Observer {
 
     public static void cancel(){
         stage.close();
-    }
-
-    @Override
-    public void update(Observable o, Object arg) {
-        log.info("Update");
     }
 }

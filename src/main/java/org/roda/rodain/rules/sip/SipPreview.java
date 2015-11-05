@@ -25,6 +25,7 @@ public class SipPreview extends Observable implements Observer {
     private Set<TreeNode> files;
     private boolean metadataLoaded = false, metadataModified = false;
     private boolean contentModified = false;
+    private boolean removed = false;
 
     public SipPreview(String name, Set<TreeNode> files, Path metadataPath, String metadataContent){
         this.name = name;
@@ -79,8 +80,18 @@ public class SipPreview extends Observable implements Observer {
         return contentModified;
     }
 
+    public boolean isRemoved() {
+        return removed;
+    }
+
     public String getId() {
         return id;
+    }
+
+    public void remove(){
+        removed = true;
+        setChanged();
+        notifyObservers();
     }
 
     @Override

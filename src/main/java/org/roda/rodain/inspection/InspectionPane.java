@@ -174,6 +174,13 @@ public class InspectionPane extends BorderPane {
         HBox.setHgrow(box, Priority.ALWAYS);
 
         Button ignore = new Button("Ignore");
+        ignore.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                Object selected = sipFiles.getSelectionModel().getSelectedItem();
+
+            }
+        });
         Button flatten = new Button("Flatten directory");
         flatten.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -242,6 +249,12 @@ public class InspectionPane extends BorderPane {
         bottom.setAlignment(Pos.CENTER_LEFT);
 
         remove = new Button("Remove");
+        remove.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                currentSIP.remove();
+            }
+        });
         bottom.getChildren().add(remove);
 
         setBottom(bottom);

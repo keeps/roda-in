@@ -4,6 +4,9 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import java.util.Observable;
+import java.util.Set;
+
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 17-09-2015.
@@ -31,11 +34,21 @@ public class SourceTreeLoadMore extends TreeItem<String> implements SourceTreeIt
     }
 
     @Override
-    public void addMapping(String s){
+    public void addMapping(){
     }
 
     @Override
-    public void removeMapping(String ruleId) {
+    public void removeMapping(Set<String> removed) {
+
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+
+    }
+
+    @Override
+    public void forceUpdate() {
 
     }
 

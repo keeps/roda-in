@@ -12,6 +12,7 @@ import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 
+import org.roda.rodain.rules.Rule;
 import org.roda.rodain.source.representation.SourceDirectory;
 import org.roda.rodain.source.representation.SourceItem;
 import org.roda.rodain.source.ui.ExpandedEventHandler;
@@ -29,11 +30,12 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
     public boolean expanded = false;
     private String fullPath;
     private SourceTreeItemState state;
-    private String mappingRuleId;
 
     private HashSet<SourceTreeItem> ignored;
     private HashSet<SourceTreeItem> mapped;
     private HashSet<SourceTreeFile> files;
+
+    private Set<String> mappingsRemoved;
 
     public SourceTreeDirectory(Path file, SourceDirectory directory, SourceTreeItemState st){
         this(file, directory);
@@ -414,13 +416,12 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
     }
 
     @Override
-    public void addMapping(String ruleId){
+    public void addMapping(){
         if(state == SourceTreeItemState.NORMAL)
             state = SourceTreeItemState.MAPPED;
-        mappingRuleId = ruleId;
         for(TreeItem it: getChildren()){
             SourceTreeItem item = (SourceTreeItem)it;
-            item.addMapping(ruleId);
+            item.addMapping();
         }
     }
 
@@ -434,16 +435,6 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
         }
     }
 
-    @Override
-    public void removeMapping(String ruleId){
-        if(state == SourceTreeItemState.MAPPED && mappingRuleId.equals(ruleId))
-            state = SourceTreeItemState.NORMAL;
-        mappingRuleId = "";
-        for(TreeItem it: getChildren()){
-            SourceTreeItem item = (SourceTreeItem)it;
-            item.removeMapping(ruleId);
-        }
-    }
     public SourceDirectory getDirectory() {
         return directory;
     }
@@ -500,6 +491,10 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
         else if(FileExplorerPane.isMapped(sourceItem))
             newState = SourceTreeItemState.MAPPED;
 
+        //if the mapping has been removed, set the state to normal
+        if(newState == SourceTreeItemState.MAPPED && mappingsRemoved != null && mappingsRemoved.contains(sourceItem))
+            newState = SourceTreeItemState.NORMAL;
+
         SourceTreeItem item;
         Path sourcePath = Paths.get(sourceItem);
         if (Files.isDirectory(sourcePath)) {
@@ -538,5 +533,94 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
                 files.add((SourceTreeFile) item);
             } else children.add(item);
         } else mapped.add(item);
+    }
+
+    @Override
+    public void removeMapping(Set<String> removed){
+        mappingsRemoved = removed;
+        System.out.println(removed.toString());
+        if(removed.contains(fullPath) && state == SourceTreeItemState.MAPPED) {
+                System.out.println("Estado passou de mapped a normal");
+                state = SourceTreeItemState.NORMAL;
+        }
+        for(TreeItem it: getChildren()){
+            SourceTreeItem item = (SourceTreeItem)it;
+            item.removeMapping(removed);
+        }
+        for(SourceTreeItem it: ignored){
+            it.removeMapping(removed);
+        }
+        Set<SourceTreeItem> toRemove = new HashSet<>();
+        for(SourceTreeItem it: mapped){
+            it.removeMapping(removed);
+            if(it.getState() == SourceTreeItemState.NORMAL){
+                toRemove.add(it);
+                it.forceUpdate();
+                getChildren().add((TreeItem)it);
+            }
+        }
+        mapped.removeAll(toRemove);
+        for(SourceTreeItem it: files){
+            it.removeMapping(removed);
+        }
+
+        verifyState();
+    }
+
+    /**
+     * Verifies if the state of this item is right.
+     * E.g. A directory with state MAPPED must have at least one child mapped
+     */
+    private void verifyState(){
+        int mappedItems = 0, ignoredItems = 0;
+        boolean stateChanged = false;
+        for(TreeItem it: getChildren()){
+            SourceTreeItem item = (SourceTreeItem)it;
+            if(item.getState() == SourceTreeItemState.MAPPED)
+                mappedItems++;
+            else if(item.getState() == SourceTreeItemState.IGNORED)
+                ignoredItems++;
+        }
+        Set<SourceTreeItem> toRemove = new HashSet<>();
+        for(SourceTreeItem sti: mapped){
+            if(sti.getState() == SourceTreeItemState.NORMAL){
+                toRemove.add(sti);
+                getChildren().add((TreeItem) sti);
+            }
+        }
+        mapped.removeAll(toRemove);
+
+        if(state == SourceTreeItemState.MAPPED && mappedItems == 0 && mapped.isEmpty()) {
+            state = SourceTreeItemState.NORMAL;
+            stateChanged = true;
+        }else if(state == SourceTreeItemState.IGNORED && ignoredItems == 0 && ignored.isEmpty()) {
+            state = SourceTreeItemState.NORMAL;
+            stateChanged = true;
+        }
+
+        if(stateChanged){
+            SourceTreeItem parent = (SourceTreeItem)getParent();
+            if(parent != null)
+                parent.forceUpdate();
+        }
+
+    }
+
+    @Override
+    public void forceUpdate() {
+        verifyState();
+        String value = getValue();
+        setValue("");
+        setValue(value);
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        System.out.print("Update do " + fullPath);
+        if(o instanceof Rule){
+            Rule rule = (Rule) o;
+            System.out.println(" é uma rule e o removed tem " + rule.getRemoved().size() + " elementos");
+            removeMapping(rule.getRemoved());
+        }
     }
 }

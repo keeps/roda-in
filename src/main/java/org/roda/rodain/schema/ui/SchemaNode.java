@@ -50,28 +50,36 @@ public class SchemaNode extends TreeItem<String> implements Observer {
 
     @Override
     public void update(final Observable o, Object arg) {
+        System.out.println("SchemaNode/update");
         if(o instanceof Rule){
+            System.out.println("é uma rule");
+            final Rule rule = (Rule) o;
+            final String id = rule.getId();
+            //set the title with the sip count
+            int count = rule.getSipCount();
+            rules.put(id, count);
+            updateValue();
+
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    Rule rule = (Rule) o;
-                    String id = rule.getId();
-
                     //replace sips from this rule
-                    if(sips.get(id) != null) {
+                    if (sips.get(id) != null) {
                         getChildren().removeAll(sips.get(id));
                     }
-                    sips.put(id, rule.getSipNodes());
-
+                    HashSet<SipPreviewNode> nodes = new HashSet<>(rule.getSipNodes());
+                    sips.put(id, nodes);
                     getChildren().addAll(rule.getSipNodes());
-
-                    //set the title with the sip count
-                    int count = rule.getSipCount();
-                    rules.put(id, count);
-                    setValue(String.format("%s  (%d items)", dob.getTitle(), getSipCount()));
                 }
             });
         }
+    }
+
+    private void updateValue(){
+        int sipCount = getSipCount();
+        if(sipCount > 0)
+            setValue(String.format("%s  (%d items)", dob.getTitle(), getSipCount()));
+        else setValue(dob.getTitle());
     }
 
     public void addRule(Rule r){

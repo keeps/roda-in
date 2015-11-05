@@ -356,7 +356,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
         Set<SourceTreeItem> items = getSelectedItems();
         for(SourceTreeItem item: items){
             TreeItem treeItem = (TreeItem) item;
-            item.addMapping(ruleId);
+            item.addMapping();
 
             SourceTreeDirectory dirParent = (SourceTreeDirectory)treeItem.getParent();
             if(!isShowMapped())

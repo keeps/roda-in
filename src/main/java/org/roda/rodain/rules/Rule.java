@@ -2,8 +2,6 @@ package org.roda.rodain.rules;
 
 import javafx.scene.image.Image;
 import org.roda.rodain.rules.filters.ContentFilter;
-import org.roda.rodain.rules.filters.FilterIgnored;
-import org.roda.rodain.rules.filters.FilterMapped;
 import org.roda.rodain.rules.sip.*;
 import org.roda.rodain.schema.ui.DescriptionLevelImageCreator;
 import org.roda.rodain.schema.ui.SipPreviewNode;
@@ -27,13 +25,18 @@ public class Rule extends Observable implements Observer {
     private MetadataTypes metaType;
     private Set<ContentFilter> filters;
 
-    private List<SipPreview> sips;
-    private HashSet<SipPreviewNode> sipNodes = new HashSet<>();
+    // map of SipPreview id -> SipPreview
+    private Map<String, SipPreview> sips;
+    // map of SipPreview id -> SipPreviewNode
+    private HashMap<String, SipPreviewNode> sipNodes = new HashMap<>();
     private TreeVisitor visitor;
     private Image icon;
-    private int sipCount = 0, added = 0;
+    private int added = 0;
     private int level;
     private String id;
+
+    // removed items
+    private Set<String> removed;
 
     public Rule(Set<SourceTreeItem> source, RuleTypes assocType, int level, Path metadataPath, String metadataContent, MetadataTypes metaType){
         this.source = source;
@@ -43,6 +46,7 @@ public class Rule extends Observable implements Observer {
         this.metadataPath = metadataPath;
         this.metaType = metaType;
         filters = new HashSet<>();
+        removed = new HashSet<>();
         id = UUID.randomUUID().toString();
 
         createIcon();
@@ -59,24 +63,22 @@ public class Rule extends Observable implements Observer {
     }
 
     private void createFilters(){
-        FilterIgnored ignored = new FilterIgnored();
-        FilterMapped mapped = new FilterMapped();
+        ContentFilter filter = new ContentFilter();
         for(SourceTreeItem sti: source) {
             // add this item to the filter if it's ignored or mapped
             if(sti.getState() == SourceTreeItemState.IGNORED)
-                ignored.add(sti.getPath());
+                filter.addIgnored(sti.getPath());
             else if(sti.getState() == SourceTreeItemState.MAPPED)
-                mapped.add(sti.getPath());
+                filter.addMapped(sti.getPath());
             //if it's a directory, get all its mapped and ignored children and add to the filters
             if(sti instanceof SourceTreeDirectory) {
                 Set<String> filterIgnored = ((SourceTreeDirectory) sti).getIgnored();
-                ignored.addAll(filterIgnored);
+                filter.addAllIgnored(filterIgnored);
                 Set<String> filterMapped = ((SourceTreeDirectory) sti).getMapped();
-                mapped.addAll(filterMapped);
+                filter.addAllMapped(filterMapped);
             }
         }
-        filters.add(ignored);
-        filters.add(mapped);
+        filters.add(filter);
     }
 
     public Set<SourceTreeItem> getSource() {
@@ -90,8 +92,8 @@ public class Rule extends Observable implements Observer {
         return id;
     }
 
-    public List<SipPreview> getSips() {
-        return sips;
+    public Collection<SipPreview> getSips() {
+        return sips.values();
     }
 
     public void setSource(Set<SourceTreeItem> source) {
@@ -102,11 +104,11 @@ public class Rule extends Observable implements Observer {
         return visitor;
     }
     public int getSipCount() {
-        return sipCount;
+        return sips.size();
     }
 
-    public Set<SipPreviewNode> getSipNodes(){
-        return sipNodes;
+    public Collection<SipPreviewNode> getSipNodes(){
+        return sipNodes.values();
     }
 
     public TreeVisitor apply(){
@@ -115,10 +117,9 @@ public class Rule extends Observable implements Observer {
 
     public TreeVisitor apply(RuleTypes type, int level){
         this.assocType = type;
-        sipCount = 0;
         added = 0;
-        sips = new ArrayList<>();
-        sipNodes = new HashSet<>();
+        sips = new HashMap<>();
+        sipNodes = new HashMap<>();
 
         switch (type){
             case SINGLESIP:
@@ -145,18 +146,38 @@ public class Rule extends Observable implements Observer {
     public void update(Observable o, Object arg) {
         if(o instanceof SipCreator){
             SipCreator visit = (SipCreator) o;
-            sipCount = visit.getCount();
             while(visit.hasNext() && added < 100){
                 added++;
                 SipPreview sipPreview = visit.getNext();
                 SipPreviewNode sipNode = new SipPreviewNode(sipPreview, icon);
                 sipPreview.addObserver(sipNode);
-                sipNodes.add(sipNode);
+                sipPreview.addObserver(this);
+                sipNodes.put(sipPreview.getId(), sipNode);
                 sips = visit.getSips();
+            }
+        }else if(o instanceof SipPreview){
+            SipPreview sip = (SipPreview) o;
+            if(sip.isRemoved()){
+                sipNodes.remove(sip.getId());
+                sips.remove(sip.getId());
+                for(TreeNode tn: sip.getFiles()){
+                    addNodeToRemoved(tn);
+                }
             }
         }
 
         setChanged();
-        notifyObservers();
+        notifyObservers("Removed SIP");
+    }
+
+    private void addNodeToRemoved(TreeNode tn){
+        removed.add(tn.getPath().toString());
+        for(TreeNode node: tn.getAllFiles().values()){
+            addNodeToRemoved(node);
+        }
+    }
+
+    public Set<String> getRemoved(){
+        return removed;
     }
 }

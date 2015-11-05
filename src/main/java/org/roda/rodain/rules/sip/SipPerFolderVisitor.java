@@ -18,6 +18,10 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipC
     private static final int UPDATEFREQUENCY = 500; //in milliseconds
     private long lastUIUpdate = 0;
     private String startPath;
+    // This map is returned, in full, to the SipPreviewNode when there's an update
+    private Map<String, SipPreview> sipsMap;
+    // This ArrayList is used to keep the SIPs ordered.
+    // We need them ordered because we have to keep track of which SIPs have already been loaded
     private ArrayList<SipPreview> sips;
     private int added = 0, returned = 0;
     private Deque<TreeNode> nodes;
@@ -37,13 +41,14 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipC
         this.metadataPath = metadataPath;
         this.metadataContent = metadataContent;
         sips = new ArrayList<>();
+        sipsMap = new HashMap<>();
         nodes = new ArrayDeque<>();
         this.id = id;
     }
 
     @Override
-    public List<SipPreview> getSips() {
-        return sips;
+    public Map<String, SipPreview> getSips() {
+        return sipsMap;
     }
     @Override
     public int getCount(){
@@ -105,6 +110,7 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipC
             node.addObserver(sipPreview);
 
             sips.add(sipPreview);
+            sipsMap.put(sipPreview.getId(), sipPreview);
             added++;
 
             long now = System.currentTimeMillis();

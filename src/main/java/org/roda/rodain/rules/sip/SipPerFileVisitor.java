@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.io.FilenameUtils;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.TreeNode;
@@ -18,6 +19,10 @@ import org.roda.rodain.utils.TreeVisitor;
 public class SipPerFileVisitor extends Observable implements TreeVisitor, SipCreator {
     private static final int UPDATEFREQUENCY = 500; //in milliseconds
     private static final String METADATA_EXT = ".xml";
+    // This map is returned, in full, to the SipPreviewNode when there's an update
+    private Map<String, SipPreview> sipsMap;
+    // This ArrayList is used to keep the SIPs ordered.
+    // We need them ordered because we have to keep track of which SIPs have already been loaded
     private ArrayList<SipPreview> sips;
     private int added = 0, returned = 0;
     private long lastUIUpdate = 0;
@@ -30,6 +35,7 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipCre
 
     public SipPerFileVisitor(String id, Set<ContentFilter> filters, MetadataTypes metaType, Path metadataPath, String metadataContent){
         sips = new ArrayList<>();
+        sipsMap = new HashMap<>();
         this.id = id;
         this.filters = filters;
         this.metaType = metaType;
@@ -38,8 +44,8 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipCre
     }
 
     @Override
-    public List<SipPreview> getSips() {
-        return sips;
+    public Map<String ,SipPreview> getSips() {
+        return sipsMap;
     }
     @Override
     public int getCount(){
@@ -89,6 +95,7 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipCre
         node.addObserver(sipPreview);
 
         sips.add(sipPreview);
+        sipsMap.put(sipPreview.getId(), sipPreview);
         added ++;
 
         long now = System.currentTimeMillis();

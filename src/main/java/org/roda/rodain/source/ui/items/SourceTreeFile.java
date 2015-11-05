@@ -2,10 +2,13 @@ package org.roda.rodain.source.ui.items;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Observable;
+import java.util.Set;
 
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import org.roda.rodain.rules.Rule;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -16,7 +19,6 @@ public class SourceTreeFile extends TreeItem<String> implements SourceTreeItem{
     //this stores the full path to the file
     private String fullPath;
     private SourceTreeItemState state;
-    private String mappingRuleId;
 
     public SourceTreeFile(Path file, SourceTreeItemState st){
         this(file);
@@ -60,10 +62,9 @@ public class SourceTreeFile extends TreeItem<String> implements SourceTreeItem{
     }
 
     @Override
-    public void addMapping(String ruleId){
+    public void addMapping(){
         if(state == SourceTreeItemState.NORMAL)
             state = SourceTreeItemState.MAPPED;
-        mappingRuleId = ruleId;
     }
 
     @Override
@@ -73,9 +74,28 @@ public class SourceTreeFile extends TreeItem<String> implements SourceTreeItem{
     }
 
     @Override
-    public void removeMapping(String ruleId){
-        if(state == SourceTreeItemState.MAPPED && mappingRuleId.equals(ruleId))
+    public void removeMapping(Set<String> removed){
+        System.out.println(removed.toString());
+        if(state == SourceTreeItemState.MAPPED && removed.contains(fullPath)) {
+            System.out.println("contem e está mapped");
             state = SourceTreeItemState.NORMAL;
-        mappingRuleId = "";
+        }
+    }
+
+    @Override
+    public void forceUpdate() {
+        String value = getValue();
+        setValue("");
+        setValue(value);
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        System.out.print("Update do " + fullPath);
+        if(o instanceof Rule){
+            Rule rule = (Rule) o;
+            System.out.println(" é uma rule e o removed tem " + rule.getRemoved().size() + " elementos");
+            removeMapping(rule.getRemoved());
+        }
     }
 }
