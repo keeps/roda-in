@@ -1,7 +1,5 @@
 package org.roda.rodain.schema.ui;
 
-import java.util.*;
-
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -16,23 +14,25 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-
 import org.roda.rodain.core.Footer;
 import org.roda.rodain.core.Main;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.rules.ui.RuleModalController;
 import org.roda.rodain.schema.ClassificationSchema;
+import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
-import org.roda.rodain.schema.DescriptionObject;
+
+import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 28-09-2015.
  */
 public class SchemaPane extends BorderPane {
+    private static Properties style;
     private TreeView<String> treeView;
     private HBox refresh;
     private HBox bottom;
@@ -43,7 +43,6 @@ public class SchemaPane extends BorderPane {
     public SchemaPane(Stage stage){
         super();
         primaryStage = stage;
-
         schemaNodes = new ArrayList<>();
 
         createTreeView();
@@ -172,8 +171,7 @@ public class SchemaPane extends BorderPane {
                     if ((item != null /* && !item.isLeaf()*/) &&
                             event.getGestureSource() != cell &&
                             event.getDragboard().hasString()) {
-                        //there's not a better way to set this style
-                        cell.setStyle("-fx-background-color: powderblue;");
+                        cell.setStyle(style.getProperty("schema.cell.selected"));
                     }
                 }
                 event.consume();
@@ -186,8 +184,7 @@ public class SchemaPane extends BorderPane {
         cell.setOnDragExited(new EventHandler<DragEvent>() {
                                  @Override
                                  public void handle(DragEvent event) {
-                                     //there's not a better way to set this style
-                                     cell.setStyle("-fx-background-color: transparent;");
+                                     cell.setStyle(style.getProperty("schema.cell.exited"));
                                      cell.updateItem(cell.getItem(), false);
                                      event.consume();
                                  }
@@ -258,5 +255,9 @@ public class SchemaPane extends BorderPane {
             result.putAll(sn.getSipPreviews());
         }
         return result;
+    }
+
+    public static void setStyleProperties(Properties style){
+        SchemaPane.style = style;
     }
 }

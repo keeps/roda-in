@@ -1,13 +1,17 @@
 package org.roda.rodain.source.ui;
 
 import javafx.event.ActionEvent;
-import javafx.scene.control.*;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TreeCell;
+import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-
 import javafx.scene.text.Text;
 import org.roda.rodain.source.ui.items.*;
+
+import java.util.Properties;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -15,6 +19,7 @@ import org.roda.rodain.source.ui.items.*;
  */
 public class SourceTreeCell extends TreeCell<String> {
     private ContextMenu menu = new ContextMenu();
+    private static Properties style;
 
     public SourceTreeCell(){
         MenuItem removeIgnore = new MenuItem("Remove Ignore");
@@ -62,7 +67,7 @@ public class SourceTreeCell extends TreeCell<String> {
                     empty();
                     return;
                 } else //there's no better way to set this style in JavaFX 2
-                    lab.setStyle("-fx-strikethrough: true;");
+                    lab.setStyle(style.getProperty("source.cell.ignored"));
             }
 
             //if the item is mapped and we're not showing mapped items, clear the cell and return
@@ -71,7 +76,7 @@ public class SourceTreeCell extends TreeCell<String> {
                     empty();
                     return;
                 } else //there's no better way to set this style in JavaFX 2
-                    lab.setStyle("-fx-fill: darkgray;");
+                    lab.setStyle(style.getProperty("source.cell.mapped"));
             }
 
 
@@ -95,4 +100,7 @@ public class SourceTreeCell extends TreeCell<String> {
         setGraphic(null);
     }
 
+    public static void setStyleProperties(Properties style){
+        SourceTreeCell.style = style;
+    }
 }

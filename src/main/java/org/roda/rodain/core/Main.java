@@ -5,10 +5,6 @@ package org.roda.rodain.core;
  * @since 16-09-2015.
  */
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.Set;
-
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -20,17 +16,22 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-
 import javafx.stage.WindowEvent;
 import org.roda.rodain.inspection.InspectionPane;
 import org.roda.rodain.rules.VisitorStack;
+import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.schema.ui.SchemaNode;
+import org.roda.rodain.schema.ui.SchemaPane;
+import org.roda.rodain.schema.ui.SchemaTreeCell;
+import org.roda.rodain.source.ui.FileExplorerPane;
+import org.roda.rodain.source.ui.SourceTreeCell;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.slf4j.LoggerFactory;
 
-import org.roda.rodain.rules.sip.SipPreview;
-import org.roda.rodain.schema.ui.SchemaPane;
-import org.roda.rodain.source.ui.FileExplorerPane;
+import java.io.IOException;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 public class Main extends Application {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(Main.class.getName());
@@ -68,6 +69,8 @@ public class Main extends Application {
         } catch (IOException e) {
             log.error("Error reading logo file", e);
         }
+
+        loadProperties();
 
         createFrameStructure();
 
@@ -111,6 +114,19 @@ public class Main extends Application {
         }
         scene.getStylesheets().add(ClassLoader.getSystemResource("mainWindow.css").toExternalForm());
         stage.setScene(scene);
+    }
+
+    private void loadProperties(){
+        try {
+            Properties style = new Properties();
+            style.load(ClassLoader.getSystemResource("properties/styles.properties").openStream());
+
+            SchemaTreeCell.setStyleProperties(style);
+            SchemaPane.setStyleProperties(style);
+            SourceTreeCell.setStyleProperties(style);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static SchemaNode getSchemaSelectedItem(){
