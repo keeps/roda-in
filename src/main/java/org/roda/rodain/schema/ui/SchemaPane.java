@@ -57,24 +57,13 @@ public class SchemaPane extends BorderPane {
     }
 
     public void createTop(){
-        Button btn = new Button("Update");
         Label title = new Label("Classification Schema");
         title.getStyleClass().add("title");
-
-        HBox space = new HBox();
-        HBox.setHgrow(space, Priority.ALWAYS);
 
         refresh = new HBox();
         refresh.setPadding(new Insets(10, 10, 10, 10));
         refresh.setAlignment(Pos.CENTER_LEFT);
-        refresh.getChildren().addAll(title, space, btn);
-
-        btn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                Footer.setStatus("Update Classification Schema");
-            }
-        });
+        refresh.getChildren().add(title);
     }
 
     public void createTreeView(){
