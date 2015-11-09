@@ -21,7 +21,7 @@ import java.util.*;
  * @author Andre Pereira apereira@keep.pt
  * @since 17-09-2015.
  */
-public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeItem{
+public class SourceTreeDirectory extends SourceTreeItem{
     public static final Image folderCollapseImage = new Image(ClassLoader.getSystemResourceAsStream("icons/folder.png"));
     public static final Image folderExpandImage = new Image(ClassLoader.getSystemResourceAsStream("icons/folder-open.png"));
     public static final Comparator<? super TreeItem> comparator = createComparator();
@@ -642,15 +642,6 @@ public class SourceTreeDirectory extends TreeItem<String> implements SourceTreeI
             if( parent instanceof SourceTreeDirectory) {
                 parent.verifyState();
             }
-        }
-    }
-
-    @Override
-    public void forceUpdate() {
-        String value = getValue();
-        if(value != null && !"".equals(value)) {
-            setValue("");
-            setValue(value);
         }
     }
 

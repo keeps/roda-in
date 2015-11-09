@@ -14,7 +14,7 @@ import org.roda.rodain.rules.Rule;
  * @author Andre Pereira apereira@keep.pt
  * @since 17-09-2015.
  */
-public class SourceTreeFile extends TreeItem<String> implements SourceTreeItem{
+public class SourceTreeFile extends SourceTreeItem{
     public static final Image fileImage = new Image(ClassLoader.getSystemResourceAsStream("icons/file.png"));
     //this stores the full path to the file
     private String fullPath;
@@ -91,13 +91,6 @@ public class SourceTreeFile extends TreeItem<String> implements SourceTreeItem{
             if(parent != null)
                 parent.verifyState();
         }
-    }
-
-    @Override
-    public void forceUpdate() {
-        String value = getValue();
-        setValue("");
-        setValue(value);
     }
 
     @Override
