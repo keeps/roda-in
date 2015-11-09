@@ -152,8 +152,8 @@ public class Main extends Application {
         });
 
         final MenuItem updateCS = new MenuItem("Update classification schema");
-        openFolder.setAccelerator(KeyCombination.keyCombination("Ctrl+U"));
-        openFolder.setOnAction(new EventHandler<ActionEvent>() {
+        updateCS.setAccelerator(KeyCombination.keyCombination("Ctrl+U"));
+        updateCS.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
 
             }

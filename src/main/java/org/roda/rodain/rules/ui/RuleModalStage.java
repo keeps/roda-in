@@ -28,7 +28,7 @@ public class RuleModalStage extends Stage{
 
         setResizable(true);
 
-        Scene scene = new Scene(new HBox(), 400, 250);
+        Scene scene = new Scene(new HBox(), 800, 640);
         scene.getStylesheets().add(ClassLoader.getSystemResource("modal.css").toExternalForm());
         setScene(scene);
     }

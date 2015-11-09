@@ -9,6 +9,12 @@
     -fx-background-color: lightgray;
 }
 
+.modal #title {
+    -fx-font-size: x-large;
+    -fx-text-fill: black;
+}
+
 .modal .label {
-    -fx-font-size: large;
+    -fx-font-size: medium;
+    -fx-text-fill: gray;
 }

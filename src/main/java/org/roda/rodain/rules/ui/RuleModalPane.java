@@ -1,12 +1,5 @@
 package org.roda.rodain.rules.ui;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -20,15 +13,22 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
-import org.roda.rodain.schema.ui.SchemaNode;
-import org.roda.rodain.utils.Utils;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.lang.StringUtils;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.RuleTypes;
+import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
+import org.roda.rodain.utils.Utils;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -77,44 +77,59 @@ public class RuleModalPane extends BorderPane {
         StackPane pane = new StackPane();
         pane.setPadding(new Insets(0, 0, 10, 0));
 
-        HBox hbox = new HBox();
-        HBox.setHgrow(hbox, Priority.ALWAYS);
-        hbox.getStyleClass().add("hbox");
-        hbox.setPadding(new Insets(5, 5, 5, 5));
-        pane.getChildren().add(hbox);
+        VBox box = new VBox(5);
+        box.getStyleClass().add("hbox");
+        box.setPadding(new Insets(5, 5, 5, 5));
+        pane.getChildren().add(box);
 
-        Label source = new Label();
-        StringBuilder sb = new StringBuilder();
-        boolean first = true;
+        Label title = new Label("Association options");
+        title.setId("title");
+
+        ArrayList<String> dirs = new ArrayList<>();
+        ArrayList<String> fil = new ArrayList<>();
         for(SourceTreeItem it: sourceSet) {
-            if(first){
-                first = false;
-            }else sb.append(",");
-
             if(it instanceof SourceTreeDirectory)
-                sb.append(((SourceTreeDirectory) it).getValue());
-            else if(it instanceof SourceTreeFile)
-                sb.append(((SourceTreeFile)it).getValue());
+                dirs.add(it.getValue());
+            else fil.add(it.getValue());
         }
 
-        source.setText(sb.toString());
+        BorderPane middle = new BorderPane();
+        HBox.setHgrow(middle, Priority.ALWAYS);
 
-        source.setMinHeight(24);
-        source.setId("title");
-        source.setGraphic(new ImageView(SourceTreeDirectory.folderCollapseImage));
-        source.setWrapText(true);
+        // source
+        VBox sourceBox = new VBox(5);
+        if(dirs.size() > 0) {
+            Label directories = new Label();
+            directories.setGraphic(new ImageView(SourceTreeDirectory.folderCollapseImage));
+            directories.setWrapText(true);
+            directories.setMaxWidth(600);
+            String directoriesString = StringUtils.join(dirs, ", ");
+            directories.setText(directoriesString);
+            sourceBox.getChildren().add(directories);
+        }
+        if(fil.size() > 0) {
+            Label files = new Label();
+            files.setGraphic(new ImageView(SourceTreeFile.fileImage));
+            files.setWrapText(true);
+            files.setMaxWidth(600);
+            String filesString = StringUtils.join(fil, ", ");
+            files.setText(filesString);
+            sourceBox.getChildren().add(files);
+        }
+
+        // destination
+        VBox destBox = new VBox(5);
 
         Label descObj = new Label(schema.getDob().getTitle());
-        descObj.setMinHeight(24);
-        descObj.setId("title");
         descObj.setGraphic(new ImageView(schema.getImage()));
         descObj.setTextAlignment(TextAlignment.LEFT);
 
-        HBox spaceTop = new HBox();
-        HBox.setHgrow(spaceTop, Priority.ALWAYS);
-        spaceTop.setMinWidth(50);
+        destBox.getChildren().addAll(descObj);
 
-        hbox.getChildren().addAll(source, spaceTop, descObj);
+        middle.setLeft(sourceBox);
+        middle.setRight(destBox);
+
+        box.getChildren().addAll(title, middle);
 
         setTop(pane);
     }
