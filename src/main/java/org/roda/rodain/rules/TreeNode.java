@@ -33,6 +33,14 @@ public class TreeNode extends Observable{
         changed();
     }
 
+    public Set<String> getFullTreePaths(){
+        Set<String> result = new HashSet<>();
+        result.add(path.toString());
+        for(TreeNode tn: files.values())
+            result.addAll(tn.getFullTreePaths());
+        return result;
+    }
+
     public Map<String, TreeNode> getAllFiles(){
         return files;
     }

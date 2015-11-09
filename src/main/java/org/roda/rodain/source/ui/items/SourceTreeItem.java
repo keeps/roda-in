@@ -1,7 +1,8 @@
 package org.roda.rodain.source.ui.items;
 
+import org.roda.rodain.rules.Rule;
+
 import java.util.Observer;
-import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -14,7 +15,7 @@ public interface SourceTreeItem extends Observer {
     SourceTreeItemState getState();
     void addIgnore();
     void removeIgnore();
-    void addMapping();
-    void removeMapping(Set<String> removed);
+    void addMapping(Rule r);
+    void removeMapping(Rule r);
     void forceUpdate();
 }

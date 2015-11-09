@@ -38,6 +38,15 @@ public class Rule extends Observable implements Observer {
     // removed items
     private Set<String> removed;
 
+    /*
+     Keep a set of mapped paths to be used when the source tree needs to find if a file has been mapped.
+     This set will only be filled when the first search is made.
+     Due to the nature of the visitor, we need to save the sips map size to know if between each search there was no modification.
+     If there was a modification then we rebuild the mapped set.
+    */
+    private Set<String> mapped;
+    private int lastSipsSize = -1;
+
     public Rule(Set<SourceTreeItem> source, RuleTypes assocType, int level, Path metadataPath, String metadataContent, MetadataTypes metaType){
         this.source = source;
         this.assocType = assocType;
@@ -146,6 +155,7 @@ public class Rule extends Observable implements Observer {
     public void update(Observable o, Object arg) {
         if(o instanceof SipCreator){
             SipCreator visit = (SipCreator) o;
+            sips = visit.getSips();
             while(visit.hasNext() && added < 100){
                 added++;
                 SipPreview sipPreview = visit.getNext();
@@ -153,15 +163,15 @@ public class Rule extends Observable implements Observer {
                 sipPreview.addObserver(sipNode);
                 sipPreview.addObserver(this);
                 sipNodes.put(sipPreview.getId(), sipNode);
-                sips = visit.getSips();
             }
         }else if(o instanceof SipPreview){
             SipPreview sip = (SipPreview) o;
             if(sip.isRemoved()){
                 sipNodes.remove(sip.getId());
                 sips.remove(sip.getId());
+                removed = new HashSet<>();
                 for(TreeNode tn: sip.getFiles()){
-                    addNodeToRemoved(tn);
+                    removed.addAll(tn.getFullTreePaths());
                 }
             }
         }
@@ -170,14 +180,21 @@ public class Rule extends Observable implements Observer {
         notifyObservers("Removed SIP");
     }
 
-    private void addNodeToRemoved(TreeNode tn){
-        removed.add(tn.getPath().toString());
-        for(TreeNode node: tn.getAllFiles().values()){
-            addNodeToRemoved(node);
-        }
-    }
-
     public Set<String> getRemoved(){
         return removed;
+    }
+
+    public boolean isMapped(String path){
+        if(lastSipsSize != sips.size()){
+            //create the set of mapped paths
+            mapped = new HashSet<>();
+            lastSipsSize = sips.size();
+            for(SipPreview sp: sips.values()){
+                for(TreeNode tn: sp.getFiles()){
+                    mapped.addAll(tn.getFullTreePaths());
+                }
+            }
+        }
+        return mapped.contains(path);
     }
 }

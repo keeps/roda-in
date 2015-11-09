@@ -50,9 +50,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
 
     @Override
     public void update(final Observable o, Object arg) {
-        System.out.println("SchemaNode/update");
         if(o instanceof Rule){
-            System.out.println("é uma rule");
             final Rule rule = (Rule) o;
             final String id = rule.getId();
             //set the title with the sip count

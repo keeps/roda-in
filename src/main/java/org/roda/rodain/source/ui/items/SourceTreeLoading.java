@@ -1,9 +1,9 @@
 package org.roda.rodain.source.ui.items;
 
 import javafx.scene.control.TreeItem;
+import org.roda.rodain.rules.Rule;
 
 import java.util.Observable;
-import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -29,7 +29,7 @@ public class SourceTreeLoading extends TreeItem<String> implements SourceTreeIte
     }
 
     @Override
-    public void addMapping(){
+    public void addMapping(Rule r){
     }
 
     @Override
@@ -38,7 +38,7 @@ public class SourceTreeLoading extends TreeItem<String> implements SourceTreeIte
     }
 
     @Override
-    public void removeMapping(Set<String> removed) {
+    public void removeMapping(Rule r) {
 
     }
 

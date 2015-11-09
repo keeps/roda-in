@@ -18,6 +18,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import org.roda.rodain.inspection.InspectionPane;
+import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.VisitorStack;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.schema.ui.SchemaNode;
@@ -135,8 +136,8 @@ public class Main extends Application {
     public static Set<SourceTreeItem> getSourceSelectedItems(){
         return previewExplorer.getSelectedItems();
     }
-    public static void mapSelected(String ruleId){
-        previewExplorer.map(ruleId);
+    public static void mapSelected(Rule r){
+        previewExplorer.map(r);
     }
     public static void ignore(Set<SourceTreeItem> items){
         previewExplorer.ignore(items);

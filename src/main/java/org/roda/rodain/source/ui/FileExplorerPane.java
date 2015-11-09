@@ -21,6 +21,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import org.roda.rodain.core.Footer;
+import org.roda.rodain.rules.Rule;
 import org.roda.rodain.source.representation.SourceDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
@@ -149,7 +150,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
             oldMapped = ((SourceTreeDirectory) treeView.getRoot()).getMapped();
         }
 
-        SourceTreeDirectory rootNode = new SourceTreeDirectory(rootPath, new SourceDirectory(rootPath, isShowFiles()));
+        SourceTreeDirectory rootNode = new SourceTreeDirectory(rootPath, new SourceDirectory(rootPath, isShowFiles()), null);
         rootNode.setExpanded(true);
         treeView.setRoot(rootNode);
         updateMetadata(rootPath);
@@ -352,11 +353,11 @@ public class FileExplorerPane extends BorderPane implements Observer {
         return oldMapped.contains(item);
     }
 
-    public void map(String ruleId){
+    public void map(Rule r){
         Set<SourceTreeItem> items = getSelectedItems();
         for(SourceTreeItem item: items){
             TreeItem treeItem = (TreeItem) item;
-            item.addMapping();
+            item.addMapping(r);
 
             SourceTreeDirectory dirParent = (SourceTreeDirectory)treeItem.getParent();
             if(!isShowMapped())

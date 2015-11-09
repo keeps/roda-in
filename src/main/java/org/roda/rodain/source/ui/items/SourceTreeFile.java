@@ -19,10 +19,12 @@ public class SourceTreeFile extends TreeItem<String> implements SourceTreeItem{
     //this stores the full path to the file
     private String fullPath;
     private SourceTreeItemState state;
+    private SourceTreeDirectory parent;
 
-    public SourceTreeFile(Path file, SourceTreeItemState st){
+    public SourceTreeFile(Path file, SourceTreeItemState st, SourceTreeDirectory parent){
         this(file);
         state = st;
+        this.parent = parent;
     }
 
     public SourceTreeFile(Path file) {
@@ -57,28 +59,37 @@ public class SourceTreeFile extends TreeItem<String> implements SourceTreeItem{
 
     @Override
     public void addIgnore(){
-        if(state == SourceTreeItemState.NORMAL)
+        if(state == SourceTreeItemState.NORMAL) {
             state = SourceTreeItemState.IGNORED;
+            parent.verifyState();
+        }
     }
 
     @Override
-    public void addMapping(){
-        if(state == SourceTreeItemState.NORMAL)
+    public void addMapping(Rule r){
+        if(state == SourceTreeItemState.NORMAL) {
             state = SourceTreeItemState.MAPPED;
+            if(parent != null)
+                parent.verifyState();
+        }
     }
 
     @Override
     public void removeIgnore(){
-        if(state == SourceTreeItemState.IGNORED)
+        if(state == SourceTreeItemState.IGNORED) {
             state = SourceTreeItemState.NORMAL;
+            if(parent != null)
+                parent.verifyState();
+        }
     }
 
     @Override
-    public void removeMapping(Set<String> removed){
-        System.out.println(removed.toString());
+    public void removeMapping(Rule r){
+        Set<String> removed = r.getRemoved();
         if(state == SourceTreeItemState.MAPPED && removed.contains(fullPath)) {
-            System.out.println("contem e está mapped");
             state = SourceTreeItemState.NORMAL;
+            if(parent != null)
+                parent.verifyState();
         }
     }
 
@@ -91,11 +102,9 @@ public class SourceTreeFile extends TreeItem<String> implements SourceTreeItem{
 
     @Override
     public void update(Observable o, Object arg) {
-        System.out.print("Update do " + fullPath);
         if(o instanceof Rule){
             Rule rule = (Rule) o;
-            System.out.println(" é uma rule e o removed tem " + rule.getRemoved().size() + " elementos");
-            removeMapping(rule.getRemoved());
+            removeMapping(rule);
         }
     }
 }
