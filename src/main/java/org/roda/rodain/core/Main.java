@@ -27,6 +27,7 @@ import org.roda.rodain.inspection.InspectionPane;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.VisitorStack;
 import org.roda.rodain.rules.sip.SipPreview;
+import org.roda.rodain.rules.ui.RuleModalPane;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SchemaPane;
 import org.roda.rodain.schema.ui.SchemaTreeCell;
@@ -45,7 +46,7 @@ import java.util.Set;
 public class Main extends Application {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(Main.class.getName());
     private static Stage stage;
-    private double javaVersion;
+    private static double javaVersion;
 
     private BorderPane mainPane;
     private MenuBar menu;
@@ -92,11 +93,12 @@ public class Main extends Application {
         stage.setTitle("RODA-In");
         Scene scene = new Scene(mainPane, initialWidth, initialHeight);
         if(javaVersion < 1.8) {
-            scene.getStylesheets().add(ClassLoader.getSystemResource("Modena.css").toExternalForm());
+            scene.getStylesheets().add(ClassLoader.getSystemResource("css/Modena.css").toExternalForm());
         }else //the setMaximized method was added in JavaFX 8
             stage.setMaximized(true);
 
-        scene.getStylesheets().add(ClassLoader.getSystemResource("mainWindow.css").toExternalForm());
+        scene.getStylesheets().add(ClassLoader.getSystemResource("css/mainwindow.css").toExternalForm());
+        scene.getStylesheets().add(ClassLoader.getSystemResource("css/shared.css").toExternalForm());
         stage.setScene(scene);
 
         stage.show();
@@ -202,13 +204,20 @@ public class Main extends Application {
         try {
             Properties style = new Properties();
             style.load(ClassLoader.getSystemResource("properties/styles.properties").openStream());
-
             SchemaTreeCell.setStyleProperties(style);
             SchemaPane.setStyleProperties(style);
             SourceTreeCell.setStyleProperties(style);
+
+            Properties config = new Properties();
+            config.load(ClassLoader.getSystemResource("properties/config.properties").openStream());
+            RuleModalPane.setProperties(config);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static double getJavaVersion(){
+        return javaVersion;
     }
 
     public static SchemaNode getSchemaSelectedItem(){

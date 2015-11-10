@@ -1,0 +1,13 @@
+.button {
+    -fx-background-color: white;
+    -fx-background-insets: 0, 1, 2;
+    -fx-background-radius: 5, 4, 3;
+    -fx-padding: 0.333333em 0.666667em 0.416667em 0.666667em; /* 4 8 5 8 */
+    -fx-text-fill: black;
+    -fx-border-radius: 4px;
+    -fx-border-color: gray;
+}
+
+.button:hover {
+    -fx-background-color: lightgray;
+}

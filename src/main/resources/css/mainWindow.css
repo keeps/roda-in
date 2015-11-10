@@ -1,0 +1,42 @@
+.title {
+    -fx-font-size: x-large;
+}
+
+.inspectionPart {
+    -fx-border-width: 1;
+    -fx-border-color: #089de3;
+}
+
+.inspectionPart .hbox {
+    -fx-background-color: #089de3;
+}
+
+.inspectionPart .label{
+    -fx-font-size: large;
+    -fx-text-fill: white;
+}
+
+.tree-view {
+    -fx-background-color: white;
+}
+
+#ignored .text{
+    -fx-strikethrough: true;
+}
+
+.tree-cell:selected {
+    -fx-background-color: #089de3;
+    -fx-text-fill: white;
+}
+
+.tree-cell:focused {
+    -fx-background-color: #089de3;
+    -fx-text-fill: white;
+}
+
+.text-area {
+     -fx-background-color: white;
+     -fx-focus-color: transparent;
+     -fx-faint-focus-color: transparent;
+ }
+

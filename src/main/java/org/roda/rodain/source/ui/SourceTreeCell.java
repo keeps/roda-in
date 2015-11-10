@@ -1,14 +1,10 @@
 package org.roda.rodain.source.ui;
 
 import javafx.event.ActionEvent;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TreeCell;
-import javafx.scene.control.TreeItem;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.scene.text.Text;
 import org.roda.rodain.source.ui.items.*;
 
 import java.util.Properties;
@@ -44,7 +40,8 @@ public class SourceTreeCell extends TreeCell<String> {
 
         if (!empty) {
             HBox hbox = new HBox(5);
-            Text lab = new Text(item);
+            Label lab = new Label(item);
+            lab.setId("");
             Image icon = null;
 
             //Remove the context menu
@@ -66,8 +63,7 @@ public class SourceTreeCell extends TreeCell<String> {
                 if (!FileExplorerPane.isShowIgnored()) {
                     empty();
                     return;
-                } else //there's no better way to set this style in JavaFX 2
-                    lab.setStyle(style.getProperty("source.cell.ignored"));
+                } else lab.setId("ignored");//lab.setStyle(style.getProperty("source.cell.ignored"));
             }
 
             //if the item is mapped and we're not showing mapped items, clear the cell and return
@@ -75,8 +71,7 @@ public class SourceTreeCell extends TreeCell<String> {
                 if (!FileExplorerPane.isShowMapped()) {
                     empty();
                     return;
-                } else //there's no better way to set this style in JavaFX 2
-                    lab.setStyle(style.getProperty("source.cell.mapped"));
+                } else lab.setStyle(style.getProperty("source.cell.mapped"));
             }
 
 

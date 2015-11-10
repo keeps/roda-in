@@ -1,0 +1,40 @@
+.modal {
+    -fx-border-color: #089de3;
+    -fx-border-width: 2px;
+    -fx-background-color: white;
+    -fx-text-fill: black;
+}
+
+.modal .hbox {
+    -fx-background-color: #089de3;
+}
+
+.modal #title {
+    -fx-font-size: x-large;
+    -fx-text-fill: white;
+    -fx-font-weight: 600;
+}
+
+.modal .label {
+    -fx-font-size: medium;
+    -fx-text-fill: gray;
+}
+
+.modal .cell .title {
+    -fx-font-size: large;
+    -fx-text-fill: black;
+    -fx-font-weight: 600;
+}
+
+.modal .cell .description {
+    -fx-text-fill: dimgray;
+}
+
+.list-view{
+    -fx-background-color: white;
+}
+
+.list-cell:focused {
+    -fx-background-color: lightskyblue;
+    -fx-text-fill: white;
+}

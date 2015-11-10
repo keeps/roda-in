@@ -33,7 +33,6 @@ public class SchemaTreeCell extends TreeCell<String> {
         } else {
             HBox hbox = new HBox();
             Label lab = new Label(item);
-            lab.setStyle(style.getProperty("schema.cell.icon.text-color"));
             Image icon = null;
 
             //Get the correct item
