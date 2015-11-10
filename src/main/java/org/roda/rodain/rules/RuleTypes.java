@@ -7,5 +7,6 @@ package org.roda.rodain.rules;
 public enum RuleTypes {
     SINGLESIP,
     SIPPERFILE,
-    SIPPERFOLDER
+    SIPPERFOLDER,
+    SIPPERSELECTION
 }

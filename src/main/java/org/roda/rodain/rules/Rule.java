@@ -130,10 +130,20 @@ public class Rule extends Observable implements Observer {
         sipNodes = new HashMap<>();
 
         switch (type){
-            case SINGLESIP:
-                SipSingle visitorSingle = new SipSingle(id, filters, metaType, metadataPath, metadataContent);
-                visitorSingle.addObserver(this);
-                visitor = visitorSingle;
+            case SIPPERFOLDER:
+                SipPerFolderVisitor visitorFolder = new SipPerFolderVisitor(id, level, filters, metaType, metadataPath, metadataContent);
+                visitorFolder.addObserver(this);
+                visitor = visitorFolder;
+                break;
+            case SIPPERSELECTION:
+                //create a set with the paths of the selected items
+                Set<String> selection = new HashSet<>();
+                for(SourceTreeItem sti: source) {
+                    selection.add(sti.getPath());
+                }
+                SipPerSelection visitorSelection = new SipPerSelection(id, selection, filters, metaType, metadataPath, metadataContent);
+                visitorSelection.addObserver(this);
+                visitor = visitorSelection;
                 break;
             case SIPPERFILE:
                 SipPerFileVisitor visitorFile = new SipPerFileVisitor(id, filters, metaType, metadataPath, metadataContent);
@@ -141,10 +151,10 @@ public class Rule extends Observable implements Observer {
                 visitor = visitorFile;
                 break;
             default:
-            case SIPPERFOLDER:
-                SipPerFolderVisitor visitorFolder = new SipPerFolderVisitor(id, level, filters, metaType, metadataPath, metadataContent);
-                visitorFolder.addObserver(this);
-                visitor = visitorFolder;
+            case SINGLESIP:
+                SipSingle visitorSingle = new SipSingle(id, filters, metaType, metadataPath, metadataContent);
+                visitorSingle.addObserver(this);
+                visitor = visitorSingle;
                 break;
         }
         return visitor;
