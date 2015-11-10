@@ -17,11 +17,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
@@ -37,7 +35,7 @@ import org.slf4j.LoggerFactory;
  */
 public class InspectionPane extends BorderPane {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(InspectionPane.class.getName());
-    private HBox topBox;
+    private VBox topBox;
     private VBox center;
 
     private VBox metadata;
@@ -48,6 +46,7 @@ public class InspectionPane extends BorderPane {
     private TreeItem sipRoot;
 
     private Button remove;
+    private HBox bottom;
 
     private SipPreview currentSIP;
 
@@ -66,7 +65,7 @@ public class InspectionPane extends BorderPane {
 
     private void createTop(){
         Label top = new Label(" ");
-        topBox = new HBox(5);
+        topBox = new VBox(5);
         topBox.getChildren().add(top);
         topBox.setPadding(new Insets(10, 10, 5, 10));
         topBox.setAlignment(Pos.CENTER_LEFT);
@@ -244,7 +243,7 @@ public class InspectionPane extends BorderPane {
     }
 
     public void createBottom(){
-        HBox bottom = new HBox();
+        bottom = new HBox();
         bottom.setPadding(new Insets(10,10,10,10));
         bottom.setAlignment(Pos.CENTER_LEFT);
 
@@ -256,11 +255,33 @@ public class InspectionPane extends BorderPane {
             }
         });
         bottom.getChildren().add(remove);
+    }
 
-        setBottom(bottom);
+    /** @return the passed in label made selectable. */
+    private Label makeSelectable(Label label) {
+        StackPane textStack = new StackPane();
+        textStack.setAlignment(Pos.CENTER_LEFT);
+
+        TextField textField = new TextField(label.getText());
+        textField.setEditable(false);
+        textField.getStyleClass().add("hiddenTextField");
+
+        // the invisible label is a hack to get the textField to size like a label.
+        Label invisibleLabel = new Label();
+        invisibleLabel.setMinWidth(200);
+        invisibleLabel.textProperty().bind(label.textProperty());
+        invisibleLabel.setVisible(false);
+
+        textStack.getChildren().addAll(invisibleLabel, textField);
+        label.textProperty().bindBidirectional(textField.textProperty());
+        label.setGraphic(textStack);
+        label.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+
+        return label;
     }
 
     public void update(SipPreviewNode sip){
+        setBottom(bottom);
         currentSIP = sip.getSip();
         createContent(sip);
         center.getChildren().clear();
@@ -270,16 +291,27 @@ public class InspectionPane extends BorderPane {
         String meta = sip.getSip().getMetadataContent();
         metaText.setText(meta);
 
-        Label title = new Label(sip.getValue() + " - " + sip.getSip().getId());
+        Label title = new Label(sip.getValue());
         title.setWrapText(true);
         title.getStyleClass().add("title");
+
+        Label id = new Label((sip.getSip().getId()));
+        id.setWrapText(true);
+        id.getStyleClass().add("sipId");
+        id = makeSelectable(id);
+
+        HBox top = new HBox(5);
+        top.setAlignment(Pos.CENTER_LEFT);
+        top.getChildren().addAll(sip.getGraphic(), title);
+
         topBox.getChildren().clear();
-        topBox.getChildren().addAll(sip.getGraphic(), title);
+        topBox.getChildren().addAll(top, id);
 
         remove.setDisable(false);
     }
 
     public void update(SchemaNode node){
+        setBottom(bottom);
         currentSIP = null;
         metaText.clear();
 
@@ -289,8 +321,13 @@ public class InspectionPane extends BorderPane {
 
         Label title = new Label(node.getValue());
         title.getStyleClass().add("title");
+
+        HBox top = new HBox(5);
+        top.setAlignment(Pos.CENTER_LEFT);
+        top.getChildren().addAll(node.getGraphic(), title);
+
         topBox.getChildren().clear();
-        topBox.getChildren().addAll(node.getGraphic(), title);
+        topBox.getChildren().add(top);
 
         remove.setDisable(true);
     }

@@ -254,9 +254,10 @@ public class FileExplorerPane extends BorderPane implements Observer {
             item.addMapping(r);
 
             SourceTreeDirectory dirParent = (SourceTreeDirectory)item.getParent();
-            if(!isShowMapped())
+            if(!isShowMapped()) {
                 dirParent.hideMapped();
-            else {//force update
+                treeView.getSelectionModel().clearSelection();
+            } else {//force update
                 String value = item.getValue();
                 item.setValue(null);
                 item.setValue(value);
@@ -275,9 +276,10 @@ public class FileExplorerPane extends BorderPane implements Observer {
                 item.addIgnore();
 
             SourceTreeDirectory parent = (SourceTreeDirectory) item.getParent();
-            if(!isShowIgnored())
+            if(!isShowIgnored()) {
                 parent.hideIgnored();
-            else {//force update
+                treeView.getSelectionModel().clearSelection();
+            } else {//force update
                 String value = item.getValue();
                 item.setValue(null);
                 item.setValue(value);

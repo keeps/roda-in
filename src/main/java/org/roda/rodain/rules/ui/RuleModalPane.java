@@ -121,9 +121,13 @@ public class RuleModalPane extends BorderPane {
     private void createCenterAssociation(){
         boxAssociation = new VBox();
         boxAssociation.setPadding(new Insets(0, 10, 0, 10));
+        boxAssociation.setAlignment(Pos.TOP_CENTER);
+
+        Label subtitle = new Label("Choose the association method");
+        subtitle.setId("sub-title");
 
         assocList = new ListView<>();
-
+        assocList.setMaxHeight(390);
         assocList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<HBoxCell>() {
                     public void changed(ObservableValue<? extends HBoxCell> observable, final HBoxCell oldValue, HBoxCell newValue) {
                         if(newValue != null && newValue.isDisabled()){
@@ -172,7 +176,7 @@ public class RuleModalPane extends BorderPane {
             cellSipPerFolder.setDisable(true);
         }
 
-        boxAssociation.getChildren().add(assocList);
+        boxAssociation.getChildren().addAll(subtitle, assocList);
     }
 
     private HBox createPerFolderOptions(){
@@ -209,7 +213,7 @@ public class RuleModalPane extends BorderPane {
         gridCenter.setPadding(new Insets(0, 10, 0, 10));
 
         Label metaTitle = new Label("Apply metadata from:");
-        metaTitle.setId("title");
+        metaTitle.setId("sub-title");
 
         VBox center = new VBox(5);
         groupMetadata = new ToggleGroup();

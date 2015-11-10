@@ -15,6 +15,12 @@
     -fx-font-weight: 600;
 }
 
+.modal #sub-title {
+    -fx-font-size: large;
+    -fx-text-fill: black;
+    -fx-font-weight: bold;
+}
+
 .modal .label {
     -fx-font-size: medium;
     -fx-text-fill: gray;
