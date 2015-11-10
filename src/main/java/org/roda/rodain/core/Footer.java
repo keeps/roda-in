@@ -9,11 +9,15 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+import org.roda.rodain.utils.FontAwesomeImageCreator;
 
 
 /**
@@ -29,6 +33,10 @@ public class Footer extends HBox {
         super();
         this.stage = st;
         btn = new Button("Create SIPs");
+        Image icon = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.chevron_right);
+        btn.setGraphic(new ImageView(icon));
+        btn.setGraphicTextGap(10);
+        btn.setContentDisplay(ContentDisplay.RIGHT);
 
         HBox space = new HBox();
         HBox.setHgrow(space, Priority.ALWAYS);

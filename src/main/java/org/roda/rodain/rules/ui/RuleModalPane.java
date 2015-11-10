@@ -1,5 +1,8 @@
 package org.roda.rodain.rules.ui;
 
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -7,6 +10,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -16,6 +20,7 @@ import org.roda.rodain.rules.RuleTypes;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
+import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.Utils;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +49,7 @@ public class RuleModalPane extends BorderPane {
     private Set<SourceTreeItem> sourceSet;
     //Association
     private VBox boxAssociation;
-    private ToggleGroup groupAssoc;
+    private ListView<HBoxCell> assocList;
     private ComboBox<Integer> level;
     //Metadata
     private VBox gridMetadata;
@@ -117,8 +122,22 @@ public class RuleModalPane extends BorderPane {
         boxAssociation = new VBox();
         boxAssociation.setPadding(new Insets(0, 10, 0, 10));
 
-        ListView<HBoxCell> assocList = new ListView<>();
-        VBox.setVgrow(assocList, Priority.ALWAYS);
+        assocList = new ListView<>();
+
+        assocList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<HBoxCell>() {
+                    public void changed(ObservableValue<? extends HBoxCell> observable, final HBoxCell oldValue, HBoxCell newValue) {
+                        if(newValue != null && newValue.isDisabled()){
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if(oldValue != null)
+                                        assocList.getSelectionModel().select(oldValue);
+                                    else assocList.getSelectionModel().clearSelection();
+                                }
+                            });
+                        }
+                    }
+                });
 
         String icon = properties.getProperty("association.singleSip.icon");
         String title = properties.getProperty("association.singleSip.title");
@@ -145,9 +164,10 @@ public class RuleModalPane extends BorderPane {
         HBoxCell cellSipPerFolder = new HBoxCell(icon, title, description, options);
         cellSipPerFolder.setUserData(RuleTypes.SIPPERFOLDER);
 
-        assocList.getItems().addAll(cellSingleSip, cellSelected, cellSipPerFile, cellSipPerFolder);
+        ObservableList<HBoxCell> hboxList = FXCollections.observableArrayList();
+        hboxList.addAll(cellSingleSip, cellSelected, cellSipPerFile, cellSipPerFolder);
+        assocList.setItems(hboxList);
 
-        System.out.println("levels size: " + level.getItems().size());
         if(folderCount == 0 || level.getItems().size() == 0){
             cellSipPerFolder.setDisable(true);
         }
@@ -293,9 +313,9 @@ public class RuleModalPane extends BorderPane {
     }
 
     private void createBottom(){
-        btCancel = new Button("Cancel");
-        btContinue = new Button("Continue");
-        btBack = new Button("Back");
+        createContinueButton();
+        createBackButton();
+        createCancelButton();
 
         space = new HBox();
         HBox.setHgrow(space, Priority.ALWAYS);
@@ -305,6 +325,60 @@ public class RuleModalPane extends BorderPane {
         buttons.setAlignment(Pos.CENTER);
         buttons.getStyleClass().add("hbox");
         buttons.getChildren().addAll(btCancel, space, btContinue);
+
+        setBottom(buttons);
+    }
+
+    private void createContinueButton(){
+        btContinue = new Button("Continue");
+        btContinue.setMaxWidth(100);
+        btContinue.setMinWidth(100);
+        btContinue.setGraphic(new ImageView(FontAwesomeImageCreator.im_chevron_right));
+        btContinue.setGraphicTextGap(10);
+        btContinue.setContentDisplay(ContentDisplay.RIGHT);
+
+        btContinue.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                if(currentState == States.ASSOCIATION) {
+                    if(assocList.getSelectionModel().getSelectedIndex() != -1) {
+                        setCenter(gridMetadata);
+                        currentState = States.METADATA;
+                        enableMetaRadioButtons();
+                        buttons.getChildren().clear();
+                        buttons.getChildren().addAll(btCancel, space, btBack, btContinue);
+                        btContinue.setText("Confirm");
+                        btContinue.setGraphicTextGap(16);
+                    }
+                }else
+                    if(currentState == States.METADATA && metadataCheckContinue())
+                        RuleModalController.confirm();
+            }
+        });
+    }
+
+    private void createCancelButton(){
+        btCancel = new Button("Cancel");
+        btCancel.setMaxWidth(100);
+        btCancel.setMinWidth(100);
+        btCancel.setGraphic(new ImageView(FontAwesomeImageCreator.im_times));
+        btCancel.setGraphicTextGap(20);
+        btCancel.setContentDisplay(ContentDisplay.RIGHT);
+
+        btCancel.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                RuleModalController.cancel();
+            }
+        });
+    }
+
+    private void createBackButton(){
+        btBack = new Button("Back");
+        btBack.setMaxWidth(100);
+        btBack.setMinWidth(100);
+        btBack.setGraphic(new ImageView(FontAwesomeImageCreator.im_chevron_left));
+        btBack.setGraphicTextGap(30);
 
         btBack.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -319,34 +393,10 @@ public class RuleModalPane extends BorderPane {
                     buttons.getChildren().clear();
                     buttons.getChildren().addAll(btCancel, space, btContinue);
                     btContinue.setText("Continue");
+                    btContinue.setGraphicTextGap(10);
                 }
             }
         });
-
-        btContinue.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                if(currentState == States.ASSOCIATION) {
-                    setCenter(gridMetadata);
-                    currentState = States.METADATA;
-                    enableMetaRadioButtons();
-                    buttons.getChildren().clear();
-                    buttons.getChildren().addAll(btCancel, btBack, space, btContinue);
-                    btContinue.setText("Confirm");
-                }else
-                    if(currentState == States.METADATA && metadataCheckContinue())
-                        RuleModalController.confirm();
-            }
-        });
-
-        btCancel.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                RuleModalController.cancel();
-            }
-        });
-
-        setBottom(buttons);
     }
 
     private boolean metadataCheckContinue(){
@@ -380,9 +430,9 @@ public class RuleModalPane extends BorderPane {
     }
 
     public RuleTypes getAssociationType() throws UnexpectedDataTypeException{
-        Toggle selected = groupAssoc.getSelectedToggle();
-        if(selected.getUserData() instanceof RuleTypes)
-            return (RuleTypes)selected.getUserData();
+        HBoxCell cell = assocList.getSelectionModel().getSelectedItem();
+        if(cell.getUserData() instanceof RuleTypes)
+            return (RuleTypes)cell.getUserData();
         else throw new UnexpectedDataTypeException();
     }
 

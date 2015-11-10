@@ -10,6 +10,7 @@ import javafx.scene.image.ImageView;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.schema.DescriptionObject;
+import org.roda.rodain.utils.FontAwesomeImageCreator;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -36,8 +37,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
         String category = hierarchyConfig.getString("category." + dobject.getDescriptionlevel());
         String unicode = hierarchyConfig.getString("icon."+category);
 
-        DescriptionLevelImageCreator dlic = new DescriptionLevelImageCreator(unicode);
-        Image im = dlic.generate();
+        Image im = FontAwesomeImageCreator.generate(unicode);
         icon = im;
         this.setGraphic(new ImageView(im));
 

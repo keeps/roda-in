@@ -3,7 +3,7 @@ package org.roda.rodain.rules;
 import javafx.scene.image.Image;
 import org.roda.rodain.rules.filters.ContentFilter;
 import org.roda.rodain.rules.sip.*;
-import org.roda.rodain.schema.ui.DescriptionLevelImageCreator;
+import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.schema.ui.SipPreviewNode;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
@@ -67,8 +67,7 @@ public class Rule extends Observable implements Observer {
         String category = hierarchyConfig.getString("category.item");
         String unicode = hierarchyConfig.getString("icon." + category);
 
-        DescriptionLevelImageCreator dlic = new DescriptionLevelImageCreator(unicode);
-        icon = dlic.generate();
+        icon = FontAwesomeImageCreator.generate(unicode);
     }
 
     private void createFilters(){
