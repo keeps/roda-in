@@ -40,3 +40,15 @@
      -fx-faint-focus-color: transparent;
  }
 
+.sipId {
+    -fx-font-size: small;
+}
+
+.hiddenTextField{
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-padding: 0;
+    -fx-text-fill: gray;
+}
+

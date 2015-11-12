@@ -2,8 +2,6 @@ package org.roda.rodain.rules.ui;
 
 import java.nio.file.Path;
 import java.util.HashSet;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Set;
 
 import javafx.application.Platform;
@@ -13,7 +11,6 @@ import javafx.event.EventHandler;
 import javafx.stage.Stage;
 
 import org.roda.rodain.core.Main;
-import org.roda.rodain.inspection.LoadingPane;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.RuleTypes;
@@ -45,7 +42,7 @@ public class RuleModalController {
     public static void newAssociation(final Stage primStage, Set<SourceTreeItem> source, SchemaNode schemaNode){
         if(stage == null)
             stage = new RuleModalStage(primStage);
-        loadingPane = new LoadingPane(source, schemaNode);
+        loadingPane = new LoadingPane(schemaNode);
         stage.setRoot(loadingPane);
 
         sourceSet = source;

@@ -94,7 +94,6 @@ public class FileExplorerPane extends BorderPane implements Observer {
     private void createFileExplorer(){
         //create tree pane
         final VBox treeBox=new VBox();
-        treeBox.setPadding(new Insets(10, 10, 10, 10));
 
         treeView = new TreeView<>();
         treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);

@@ -127,7 +127,8 @@ public class RuleModalPane extends BorderPane {
         subtitle.setId("sub-title");
 
         assocList = new ListView<>();
-        assocList.setMaxHeight(390);
+        assocList.setMinHeight(410);
+        assocList.setMaxHeight(410);
         assocList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<HBoxCell>() {
                     public void changed(ObservableValue<? extends HBoxCell> observable, final HBoxCell oldValue, HBoxCell newValue) {
                         if(newValue != null && newValue.isDisabled()){
