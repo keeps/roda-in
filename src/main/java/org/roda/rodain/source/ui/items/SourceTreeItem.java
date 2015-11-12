@@ -13,7 +13,7 @@ import java.util.Observer;
 
 public class SourceTreeItem extends TreeItem<String> implements Observer {
     private String path;
-    private SourceTreeItemState state;
+    protected SourceTreeItemState state;
 
     protected SourceTreeItem(String path){
         this.path = path;

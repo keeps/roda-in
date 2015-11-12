@@ -173,6 +173,8 @@ public class Rule extends Observable implements Observer {
                 sipPreview.addObserver(this);
                 sipNodes.put(sipPreview.getId(), sipNode);
             }
+            setChanged();
+            notifyObservers();
         }else if(o instanceof SipPreview){
             SipPreview sip = (SipPreview) o;
             if(sip.isRemoved()){
@@ -182,11 +184,10 @@ public class Rule extends Observable implements Observer {
                 for(TreeNode tn: sip.getFiles()){
                     removed.addAll(tn.getFullTreePaths());
                 }
+                setChanged();
+                notifyObservers("Removed SIP");
             }
         }
-
-        setChanged();
-        notifyObservers("Removed SIP");
     }
 
     public Set<String> getRemoved(){

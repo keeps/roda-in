@@ -1,14 +1,12 @@
 package org.roda.rodain.source.ui.items;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.util.Observable;
-import java.util.Set;
-
-import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import org.roda.rodain.rules.Rule;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.util.Observable;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -18,8 +16,9 @@ public class SourceTreeFile extends SourceTreeItem{
     public static final Image fileImage = new Image(ClassLoader.getSystemResourceAsStream("icons/file.png"));
     //this stores the full path to the file
     private String fullPath;
-    private SourceTreeItemState state;
     private SourceTreeDirectory parent;
+
+    private Rule rule;
 
     public SourceTreeFile(Path file, SourceTreeItemState st, SourceTreeDirectory parent){
         this(file);
@@ -67,6 +66,7 @@ public class SourceTreeFile extends SourceTreeItem{
 
     @Override
     public void addMapping(Rule r){
+        rule = r;
         if(state == SourceTreeItemState.NORMAL) {
             state = SourceTreeItemState.MAPPED;
             if(parent != null)
@@ -85,11 +85,10 @@ public class SourceTreeFile extends SourceTreeItem{
 
     @Override
     public void removeMapping(Rule r){
-        Set<String> removed = r.getRemoved();
-        if(state == SourceTreeItemState.MAPPED && removed.contains(fullPath)) {
-            state = SourceTreeItemState.NORMAL;
-            if(parent != null)
-                parent.verifyState();
+        if(rule == null || r == rule){
+            if (!r.isMapped(fullPath)) {
+                state = SourceTreeItemState.NORMAL;
+            }
         }
     }
 

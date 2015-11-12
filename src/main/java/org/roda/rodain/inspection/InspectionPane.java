@@ -116,15 +116,15 @@ public class InspectionPane extends BorderPane {
 
         HBox top = new HBox();
         top.getStyleClass().add("hbox");
-        top.setPadding(new Insets(5, 10, 5, 10));
+        top.setPadding(new Insets(10, 10, 10, 10));
 
         Label title = new Label("Content");
         top.getChildren().add(title);
         content.setTop(top);
 
         //create tree pane
-        VBox treeBox=new VBox();
-        treeBox.setPadding(new Insets(10, 10, 10, 10));
+        VBox treeBox = new VBox();
+        treeBox.setPadding(new Insets(5, 5, 5, 5));
         treeBox.setSpacing(10);
 
         sipFiles = new TreeView<>();
@@ -163,7 +163,7 @@ public class InspectionPane extends BorderPane {
         sipRoot.setExpanded(true);
         sipFiles.setRoot(sipRoot);
         sipFiles.setShowRoot(false);
-        content.setCenter(sipFiles);
+        content.setCenter(treeBox);
         createContentBottom();
     }
 
