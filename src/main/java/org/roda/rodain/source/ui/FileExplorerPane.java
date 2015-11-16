@@ -113,14 +113,6 @@ public class FileExplorerPane extends BorderPane implements Observer {
         fileExplorer.getChildren().add(treeBox);
 
         treeView.setOnMouseClicked(new SourceClickedEventHandler(this));
-        treeView.setOnKeyReleased(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-                if("DELETE".equalsIgnoreCase(event.getCode().getName())){
-                    ignore();
-                }
-            }
-        });
     }
 
     public void setFileExplorerRoot(Path rootPath){

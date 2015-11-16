@@ -96,7 +96,7 @@ public class Main extends Application {
         createMenu();
 
         // setup and show the window
-        stage.setTitle("RODA-In Alpha 3");
+        stage.setTitle("RODA-In 1.0.0-alpha.3");
         Scene scene = new Scene(mainPane, initialWidth, initialHeight);
         if(javaVersion < 1.8) {
             scene.getStylesheets().add(ClassLoader.getSystemResource("css/Modena.css").toExternalForm());
@@ -142,6 +142,7 @@ public class Main extends Application {
     private void createMenu(){
         menu = new MenuBar();
         Menu menuFile = new Menu("File");
+        Menu menuEdit = new Menu("Edit");
         Menu menuView = new Menu("View");
 
         //File
@@ -167,6 +168,16 @@ public class Main extends Application {
             }
         });
         menuFile.getItems().addAll(openFolder, updateCS);
+
+        // Edit
+        final MenuItem ignoreItems = new MenuItem("Ignore item(s)");
+        ignoreItems.setAccelerator(KeyCombination.keyCombination("DELETE"));
+        ignoreItems.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t) {
+                previewExplorer.ignore();
+            }
+        });
+        menuEdit.getItems().add(ignoreItems);
 
         // View
         final MenuItem showFiles = new MenuItem("Hide Files");
@@ -202,7 +213,7 @@ public class Main extends Application {
 
         menuView.getItems().addAll(showFiles, showIgnored, showMapped);
 
-        menu.getMenus().addAll(menuFile, menuView);
+        menu.getMenus().addAll(menuFile, menuEdit, menuView);
         mainPane.setTop(menu);
     }
 
