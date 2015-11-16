@@ -98,6 +98,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
         }
         rules.remove(id);
         sips.remove(id);
+        r.remove();
 
         String text = dob.getTitle();
         int count = getSipCount();

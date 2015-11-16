@@ -275,7 +275,8 @@ public class InspectionPane extends BorderPane {
         remove.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
-                currentSIP.remove();
+                currentSIP.setRemoved();
+                currentSIP.changedAndNotify();
             }
         });
         bottom.getChildren().add(remove);
@@ -363,7 +364,7 @@ public class InspectionPane extends BorderPane {
     private void updateRuleList(){
         ruleList.getItems().clear();
         for(Rule rule: currentSchema.getRules()){
-            RuleCell cell = new RuleCell(rule);
+            RuleCell cell = new RuleCell(currentSchema, rule);
             ruleList.getItems().add(cell);
         }
         center.getChildren().add(rules);

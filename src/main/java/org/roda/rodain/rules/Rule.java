@@ -220,6 +220,23 @@ public class Rule extends Observable implements Observer, Comparable {
         return mapped.contains(path);
     }
 
+    public void remove(){
+        for(SipPreview sip: sips.values()){
+            sip.setRemoved();
+        }
+
+        sipNodes.clear();
+        removed = new HashSet<>();
+        for(SipPreview sip: sips.values()) {
+            for (TreeNode tn : sip.getFiles()) {
+                removed.addAll(tn.getFullTreePaths());
+            }
+        }
+        sips.clear();
+        setChanged();
+        notifyObservers("Removed SIP");
+    }
+
     @Override
     public int compareTo(Object o) {
         if(o instanceof Rule){

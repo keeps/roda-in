@@ -88,8 +88,11 @@ public class SipPreview extends Observable implements Observer {
         return id;
     }
 
-    public void remove(){
+    public void setRemoved(){
         removed = true;
+    }
+
+    public void changedAndNotify(){
         setChanged();
         notifyObservers();
     }

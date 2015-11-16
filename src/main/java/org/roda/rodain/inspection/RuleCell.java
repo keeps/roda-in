@@ -1,18 +1,25 @@
 package org.roda.rodain.inspection;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.apache.commons.lang.StringUtils;
+import org.roda.rodain.core.Main;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.RuleTypes;
+import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
+import org.roda.rodain.utils.FontAwesomeImageCreator;
 
 import java.util.ArrayList;
 import java.util.Properties;
@@ -25,8 +32,10 @@ import java.util.Set;
 public class RuleCell extends HBox {
     private static Properties properties;
     private Rule rule;
-    public RuleCell(Rule rule){
+    private SchemaNode schemaNode;
+    public RuleCell(SchemaNode node, Rule rule){
         this.rule = rule;
+        this.schemaNode = node;
         this.getStyleClass().add("ruleCell");
 
         VBox root = new VBox(5);
@@ -54,7 +63,19 @@ public class RuleCell extends HBox {
         Label id = new Label("#" + rule.getId());
         id.getStyleClass().add("title");
 
-        Label remove = new Label("X");
+        Button remove = new Button("Remove");
+        remove.setAlignment(Pos.CENTER);
+        remove.setGraphic(new ImageView(FontAwesomeImageCreator.im_times));
+        remove.setContentDisplay(ContentDisplay.RIGHT);
+        remove.setGraphicTextGap(10);
+
+        remove.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                schemaNode.removeRule(rule);
+                Main.inspectionNotifyChanged();
+            }
+        });
 
         String created = String.format("Created %d items", rule.getSipCount());
         Label lCreated = new Label(created);
