@@ -7,25 +7,18 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 
-import java.util.Properties;
-
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 12-10-2015.
  */
 public class SchemaTreeCell extends TreeCell<String> {
-    private static Properties style;
     public SchemaTreeCell(){
-    }
-
-    public static void setStyleProperties(Properties style){
-        SchemaTreeCell.style = style;
+        getStyleClass().add("schemaNode");
     }
 
     @Override
     public void updateItem(String item, boolean empty) {
         super.updateItem(item, empty);
-        setStyle(style.getProperty("schema.cell.text-color"));
 
         if (empty) {
             setText(null);
@@ -33,6 +26,7 @@ public class SchemaTreeCell extends TreeCell<String> {
         } else {
             HBox hbox = new HBox();
             Label lab = new Label(item);
+            lab.getStyleClass().add("cellText");
             Image icon = null;
 
             //Get the correct item

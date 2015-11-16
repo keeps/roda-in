@@ -15,3 +15,8 @@
 .button:hover {
     -fx-background-color: lightgray;
 }
+
+.button:pressed {
+    -fx-background-color: #089de3;
+    -fx-text-fill: white;
+}

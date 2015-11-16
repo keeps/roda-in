@@ -53,7 +53,8 @@ public class SchemaPane extends BorderPane {
         this.setCenter(treeView);
         this.setBottom(bottom);
 
-        this.minWidthProperty().bind(stage.widthProperty().multiply(0.33));
+        this.prefWidthProperty().bind(stage.widthProperty().multiply(0.33));
+        this.minWidthProperty().bind(stage.widthProperty().multiply(0.2));
     }
 
     public void createTop(){

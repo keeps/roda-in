@@ -129,6 +129,7 @@ public class Main extends Application {
         schemaPane = new SchemaPane(stage);
         inspectionPane = new InspectionPane(stage);
 
+        split.setDividerPositions(0.33, 0.66);
         split.getItems().addAll(previewExplorer, schemaPane, inspectionPane);
 
         //Create Footer
@@ -221,7 +222,6 @@ public class Main extends Application {
         try {
             Properties style = new Properties();
             style.load(ClassLoader.getSystemResource("properties/styles.properties").openStream());
-            SchemaTreeCell.setStyleProperties(style);
             SchemaPane.setStyleProperties(style);
             SourceTreeCell.setStyleProperties(style);
 

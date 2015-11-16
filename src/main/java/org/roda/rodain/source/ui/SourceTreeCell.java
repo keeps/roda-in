@@ -41,6 +41,7 @@ public class SourceTreeCell extends TreeCell<String> {
         if (!empty) {
             HBox hbox = new HBox(5);
             Label lab = new Label(item);
+            lab.getStyleClass().add("cellText");
             lab.setId("");
             Image icon = null;
 
@@ -63,7 +64,7 @@ public class SourceTreeCell extends TreeCell<String> {
                 if (!FileExplorerPane.isShowIgnored()) {
                     empty();
                     return;
-                } else lab.setId("ignored");//lab.setStyle(style.getProperty("source.cell.ignored"));
+                } else lab.setId("ignored");
             }
 
             //if the item is mapped and we're not showing mapped items, clear the cell and return

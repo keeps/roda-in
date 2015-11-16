@@ -66,9 +66,11 @@ public class TreeNode extends Observable{
         files.put(node.toString(), new TreeNode(node));
         changed();
     }
-    public void remove(Path path){
+    public TreeNode remove(Path path){
+        TreeNode result = files.get(path.toString());
         files.remove(path.toString());
         changed();
+        return result;
     }
     public Path getPath(){
         return path;

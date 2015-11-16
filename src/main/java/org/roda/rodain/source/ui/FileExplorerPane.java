@@ -66,7 +66,8 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
         this.setTop(top);
         this.setCenter(fileExplorer);
-        this.minWidthProperty().bind(stage.widthProperty().multiply(0.32));
+        this.prefWidthProperty().bind(stage.widthProperty().multiply(0.32));
+        this.minWidthProperty().bind(stage.widthProperty().multiply(0.2));
     }
 
     public static boolean isShowFiles() {
@@ -108,6 +109,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
                 return cell;
             }
         });
+        treeView.getSelectionModel().clearSelection();
 
         fileExplorer = new StackPane();
         fileExplorer.getChildren().add(treeBox);

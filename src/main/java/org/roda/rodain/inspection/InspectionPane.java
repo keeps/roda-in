@@ -65,7 +65,8 @@ public class InspectionPane extends BorderPane {
         center.setPadding(new Insets(10, 10, 10, 10));
 
         metadata.minHeightProperty().bind(stage.heightProperty().multiply(0.40));
-        this.minWidthProperty().bind(stage.widthProperty().multiply(0.32));
+        this.prefWidthProperty().bind(stage.widthProperty().multiply(0.32));
+        this.minWidthProperty().bind(stage.widthProperty().multiply(0.2));
     }
 
     private void createTop(){
@@ -181,8 +182,9 @@ public class InspectionPane extends BorderPane {
     }
 
     private void createContentBottom() {
-        HBox box = new HBox();
+        HBox box = new HBox(10);
         box.setPadding(new Insets(10,10,10,10));
+        box.setAlignment(Pos.CENTER);
         HBox.setHgrow(box, Priority.ALWAYS);
 
         Button ignore = new Button("Ignore");
@@ -222,9 +224,9 @@ public class InspectionPane extends BorderPane {
             }
         });
 
-        ignore.minWidthProperty().bind(content.widthProperty().multiply(0.32));
-        flatten.minWidthProperty().bind(content.widthProperty().multiply(0.32));
-        skip.minWidthProperty().bind(content.widthProperty().multiply(0.32));
+        ignore.minWidthProperty().bind(content.widthProperty().multiply(0.3));
+        flatten.minWidthProperty().bind(content.widthProperty().multiply(0.3));
+        skip.minWidthProperty().bind(content.widthProperty().multiply(0.3));
 
         box.getChildren().addAll(ignore, flatten, skip);
         content.setBottom(box);
@@ -366,6 +368,7 @@ public class InspectionPane extends BorderPane {
         top.getChildren().addAll(node.getGraphic(), title);
 
         updateRuleList();
+        center.getChildren().add(rules);
         setCenter(center);
 
         topBox.getChildren().clear();
@@ -380,7 +383,6 @@ public class InspectionPane extends BorderPane {
             RuleCell cell = new RuleCell(currentSchema, rule);
             ruleList.getItems().add(cell);
         }
-        center.getChildren().add(rules);
     }
 
     /**
