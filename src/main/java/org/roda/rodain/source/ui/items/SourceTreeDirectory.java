@@ -612,7 +612,8 @@ public class SourceTreeDirectory extends SourceTreeItem{
                 if (sti.getState() == SourceTreeItemState.NORMAL) {
                     normalItems++;
                     mappedItems--;
-                }
+                } else
+                    mappedItems++;
             }
 
             if(normalItems == 0){
@@ -638,6 +639,7 @@ public class SourceTreeDirectory extends SourceTreeItem{
 
         if(stateChanged){
             parentVerify();
+            parentMoveChildrenWrongState();
         }
 
     }
@@ -662,6 +664,7 @@ public class SourceTreeDirectory extends SourceTreeItem{
 
     public void moveChildrenWrongState(){
         Set<SourceTreeItem> toRemove = new HashSet<>();
+        boolean modified = false;
         for (SourceTreeItem sti : mapped) {
             if (sti.getState() == SourceTreeItemState.NORMAL) {
                 toRemove.add(sti);
@@ -670,6 +673,21 @@ public class SourceTreeDirectory extends SourceTreeItem{
         }
         mapped.removeAll(toRemove);
         if(toRemove.size() != 0)
+            modified = true;
+
+        toRemove = new HashSet<>();
+        for (TreeItem ti : getChildren()) {
+            SourceTreeItem sti = (SourceTreeItem) ti;
+            if (sti.getState() == SourceTreeItemState.MAPPED) {
+                toRemove.add(sti);
+                mapped.add(sti);
+            }else if(sti.getState() == SourceTreeItemState.IGNORED){
+                toRemove.add(sti);
+                ignored.add(sti);
+            }
+        }
+        getChildren().removeAll(toRemove);
+        if(toRemove.size() != 0 || modified)
             sortChildren();
     }
 
@@ -685,7 +703,7 @@ public class SourceTreeDirectory extends SourceTreeItem{
             Rule rule = (Rule) o;
             removeMapping(rule);
             parent.removeMapping(rule);
-            //parentMoveChildrenWrongState();
+            parentMoveChildrenWrongState();
         }
     }
 }

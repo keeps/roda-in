@@ -1,6 +1,5 @@
 package org.roda.rodain.source.representation;
 
-import org.roda.rodain.source.ui.items.SourceTreeLoading;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
@@ -83,7 +82,7 @@ public class SourceDirectory implements SourceItem {
     }
 
     public boolean isFirstLoaded(){
-        return children.size() > 1;
+        return iterator != null;
     }
 
     public SortedMap<String, SourceItem> loadMore(){
