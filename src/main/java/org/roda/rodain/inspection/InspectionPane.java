@@ -106,10 +106,16 @@ public class InspectionPane extends BorderPane {
                     if(currentSIP != null) {
                         String oldMetadata = currentSIP.getMetadataContent();
                         String newMetadata = metaText.getText();
-                        //only update if there's been modifications or there's no old metadata
-                        if (oldMetadata == null || !oldMetadata.equals(newMetadata)) {
-                            currentSIP.updateMetadata(metaText.getText());
+                        //only update if there's been modifications or there's no old metadata and the new isn't empty
+                        boolean update = false;
+                        if(newMetadata != null){
+                            if(oldMetadata == null)
+                                update = true;
+                            else if (!oldMetadata.equals(newMetadata))
+                                update = true;
                         }
+                        if(update)
+                            currentSIP.updateMetadata(metaText.getText());
                     }
                 }
             }
@@ -321,17 +327,24 @@ public class InspectionPane extends BorderPane {
         title.setWrapText(true);
         title.getStyleClass().add("title");
 
+        // ID labels
+        HBox idBox = new HBox(5);
+        Label idKey = new Label("ID:");
+        idKey.getStyleClass().add("sipId");
+
         Label id = new Label((sip.getSip().getId()));
         id.setWrapText(true);
         id.getStyleClass().add("sipId");
         id = makeSelectable(id);
+
+        idBox.getChildren().addAll(idKey, id);
 
         HBox top = new HBox(5);
         top.setAlignment(Pos.CENTER_LEFT);
         top.getChildren().addAll(sip.getGraphic(), title);
 
         topBox.getChildren().clear();
-        topBox.getChildren().addAll(top, id);
+        topBox.getChildren().addAll(top, idBox);
 
         remove.setDisable(false);
     }
