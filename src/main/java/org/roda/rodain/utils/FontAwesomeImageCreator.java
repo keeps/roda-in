@@ -2,14 +2,11 @@ package org.roda.rodain.utils;
 
 import java.io.InputStream;
 
-import javafx.application.Platform;
 import javafx.geometry.VPos;
-import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
@@ -41,7 +38,7 @@ public class FontAwesomeImageCreator {
     public static Image generate(String unicode){
         // load the font if it hasn't been loaded yet
         if(font == null) {
-            InputStream fontIS = FontAwesomeImageCreator.class.getResourceAsStream("/fontawesome-webfont.ttf");
+            InputStream fontIS = FontAwesomeImageCreator.class.getResourceAsStream("/fonts/fontawesome-webfont.ttf");
             font = Font.loadFont(fontIS, 16);
         }
 

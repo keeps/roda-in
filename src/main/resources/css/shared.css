@@ -1,3 +1,7 @@
+.root{
+    -fx-font-family: "Ubuntu";
+}
+
 .button {
     -fx-background-color: white;
     -fx-background-insets: 0, 1, 2;

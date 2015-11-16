@@ -17,7 +17,7 @@
 
 .modal #sub-title {
     -fx-font-size: large;
-    -fx-text-fill: black;
+    -fx-font-family: "Ubuntu Light";
     -fx-font-weight: bold;
 }
 

@@ -19,6 +19,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.text.Font;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -83,6 +84,10 @@ public class Main extends Application {
         } catch (IOException e) {
             log.error("Error reading logo file", e);
         }
+
+        // load the custom fonts
+        Font.loadFont( ClassLoader.getSystemResource("fonts/Ubuntu-Regular.ttf").toExternalForm(),  10 );
+        Font.loadFont( ClassLoader.getSystemResource("fonts/Ubuntu-Medium.ttf").toExternalForm(),  10 );
 
         loadProperties();
 
