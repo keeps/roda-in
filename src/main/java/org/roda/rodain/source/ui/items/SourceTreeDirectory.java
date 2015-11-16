@@ -675,18 +675,28 @@ public class SourceTreeDirectory extends SourceTreeItem{
         if(toRemove.size() != 0)
             modified = true;
 
-        toRemove = new HashSet<>();
-        for (TreeItem ti : getChildren()) {
-            SourceTreeItem sti = (SourceTreeItem) ti;
-            if (sti.getState() == SourceTreeItemState.MAPPED) {
-                toRemove.add(sti);
-                mapped.add(sti);
-            }else if(sti.getState() == SourceTreeItemState.IGNORED){
-                toRemove.add(sti);
-                ignored.add(sti);
+        if(!FileExplorerPane.isShowMapped()) {
+            toRemove = new HashSet<>();
+            for (TreeItem ti : getChildren()) {
+                SourceTreeItem sti = (SourceTreeItem) ti;
+                if (sti.getState() == SourceTreeItemState.MAPPED) {
+                    toRemove.add(sti);
+                    mapped.add(sti);
+                }
             }
+            getChildren().removeAll(toRemove);
         }
-        getChildren().removeAll(toRemove);
+        if(!FileExplorerPane.isShowIgnored()) {
+            toRemove = new HashSet<>();
+            for (TreeItem ti : getChildren()) {
+                SourceTreeItem sti = (SourceTreeItem) ti;
+                if (sti.getState() == SourceTreeItemState.IGNORED) {
+                    toRemove.add(sti);
+                    ignored.add(sti);
+                }
+            }
+            getChildren().removeAll(toRemove);
+        }
         if(toRemove.size() != 0 || modified)
             sortChildren();
     }

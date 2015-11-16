@@ -77,3 +77,19 @@
     -fx-background-color: lightgray;
 }
 
+.ruleCell .top .button{
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+    -fx-padding: 2px 2px 2px 5px;
+}
+
+.ruleCell .top .button:hover {
+    -fx-background-color: darkgray;
+    -fx-border-color: black;
+}
+
+.ruleCell .top .button:pressed {
+    -fx-background-color: white;
+    -fx-border-color: black;
+}
+
