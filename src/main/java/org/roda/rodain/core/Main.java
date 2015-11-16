@@ -25,6 +25,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import org.roda.rodain.inspection.InspectionPane;
+import org.roda.rodain.inspection.RuleCell;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.VisitorStack;
 import org.roda.rodain.rules.sip.SipPreview;
@@ -95,7 +96,7 @@ public class Main extends Application {
         createMenu();
 
         // setup and show the window
-        stage.setTitle("RODA-In");
+        stage.setTitle("RODA-In Alpha 3");
         Scene scene = new Scene(mainPane, initialWidth, initialHeight);
         if(javaVersion < 1.8) {
             scene.getStylesheets().add(ClassLoader.getSystemResource("css/Modena.css").toExternalForm());
@@ -216,6 +217,7 @@ public class Main extends Application {
             Properties config = new Properties();
             config.load(ClassLoader.getSystemResource("properties/config.properties").openStream());
             RuleModalPane.setProperties(config);
+            RuleCell.setProperties(config);
         } catch (IOException e) {
             e.printStackTrace();
         }

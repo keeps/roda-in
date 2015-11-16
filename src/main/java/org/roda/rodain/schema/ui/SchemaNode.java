@@ -52,7 +52,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     public void update(final Observable o, Object arg) {
         if(o instanceof Rule){
             final Rule rule = (Rule) o;
-            final String id = rule.getId();
+            final String id = "" + rule.getId();
             //set the title with the sip count
             int count = rule.getSipCount();
             rules.put(id, count);
@@ -82,7 +82,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
 
     public void addRule(Rule r){
         int count = r.getSipCount();
-        String id = r.getId();
+        String id = "" + r.getId();
         rules.put(id, count);
         ruleObjects.put(id, r);
         int sipCount = getSipCount();
@@ -92,7 +92,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     }
 
     public void removeRule(Rule r){
-        String id = r.getId();
+        String id = "" + r.getId();
         if(sips.get(id) != null) {
             getChildren().removeAll(sips.get(id));
         }
@@ -119,6 +119,10 @@ public class SchemaNode extends TreeItem<String> implements Observer {
 
     public DescriptionObject getDob() {
         return dob;
+    }
+
+    public Set<Rule> getRules(){
+        return new TreeSet<>(ruleObjects.values());
     }
 
     public Map<SipPreview, String> getSipPreviews(){

@@ -17,7 +17,10 @@ import java.util.*;
  * @author Andre Pereira apereira@keep.pt
  * @since 29-09-2015.
  */
-public class Rule extends Observable implements Observer {
+public class Rule extends Observable implements Observer, Comparable {
+    // this ruleCount is used to determine the ID of each rule
+    private static int ruleCount = 0;
+
     private Set<SourceTreeItem> source;
     private String metadataContent;
     private Path metadataPath;
@@ -33,7 +36,7 @@ public class Rule extends Observable implements Observer {
     private Image icon;
     private int added = 0;
     private int level;
-    private String id;
+    private int id;
 
     // removed items
     private Set<String> removed;
@@ -48,6 +51,7 @@ public class Rule extends Observable implements Observer {
     private int lastSipsSize = -1;
 
     public Rule(Set<SourceTreeItem> source, RuleTypes assocType, int level, Path metadataPath, String metadataContent, MetadataTypes metaType){
+        ruleCount++;
         this.source = source;
         this.assocType = assocType;
         this.level = level;
@@ -56,7 +60,7 @@ public class Rule extends Observable implements Observer {
         this.metaType = metaType;
         filters = new HashSet<>();
         removed = new HashSet<>();
-        id = UUID.randomUUID().toString();
+        id = ruleCount;
 
         createIcon();
         createFilters();
@@ -96,7 +100,7 @@ public class Rule extends Observable implements Observer {
         return source.toString();
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
@@ -119,6 +123,10 @@ public class Rule extends Observable implements Observer {
         return sipNodes.values();
     }
 
+    public RuleTypes getAssocType(){
+        return assocType;
+    }
+
     public TreeVisitor apply(){
         return apply(assocType, level);
     }
@@ -131,7 +139,8 @@ public class Rule extends Observable implements Observer {
 
         switch (type){
             case SIPPERFOLDER:
-                SipPerFolderVisitor visitorFolder = new SipPerFolderVisitor(id, level, filters, metaType, metadataPath, metadataContent);
+                SipPerFolderVisitor visitorFolder = new SipPerFolderVisitor(
+                        ""+id, level, filters, metaType, metadataPath, metadataContent);
                 visitorFolder.addObserver(this);
                 visitor = visitorFolder;
                 break;
@@ -141,18 +150,21 @@ public class Rule extends Observable implements Observer {
                 for(SourceTreeItem sti: source) {
                     selection.add(sti.getPath());
                 }
-                SipPerSelection visitorSelection = new SipPerSelection(id, selection, filters, metaType, metadataPath, metadataContent);
+                SipPerSelection visitorSelection = new SipPerSelection(
+                        ""+id, selection, filters, metaType, metadataPath, metadataContent);
                 visitorSelection.addObserver(this);
                 visitor = visitorSelection;
                 break;
             case SIPPERFILE:
-                SipPerFileVisitor visitorFile = new SipPerFileVisitor(id, filters, metaType, metadataPath, metadataContent);
+                SipPerFileVisitor visitorFile = new SipPerFileVisitor(
+                        ""+id, filters, metaType, metadataPath, metadataContent);
                 visitorFile.addObserver(this);
                 visitor = visitorFile;
                 break;
             default:
             case SINGLESIP:
-                SipSingle visitorSingle = new SipSingle(id, filters, metaType, metadataPath, metadataContent);
+                SipSingle visitorSingle = new SipSingle(
+                        ""+id, filters, metaType, metadataPath, metadataContent);
                 visitorSingle.addObserver(this);
                 visitor = visitorSingle;
                 break;
@@ -206,5 +218,15 @@ public class Rule extends Observable implements Observer {
             }
         }
         return mapped.contains(path);
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        if(o instanceof Rule){
+            Rule rule = (Rule) o;
+            Integer idInt = new Integer(id);
+            return idInt.compareTo(rule.getId());
+        }
+        return 0;
     }
 }

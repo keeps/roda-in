@@ -1,20 +1,13 @@
 package org.roda.rodain.inspection;
 
-import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Set;
-
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
 import javafx.scene.control.Button;
+import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -22,12 +15,19 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-
+import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SipPreviewNode;
 import org.slf4j.LoggerFactory;
+
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -45,6 +45,9 @@ public class InspectionPane extends BorderPane {
     private TreeView sipFiles;
     private TreeItem sipRoot;
 
+    private BorderPane rules;
+    private ListView<RuleCell> ruleList;
+
     private Button remove;
     private HBox bottom;
 
@@ -54,6 +57,7 @@ public class InspectionPane extends BorderPane {
         createTop();
         createMetadata();
         createContent();
+        createRulesList();
         createBottom();
 
         center = new VBox(10);
@@ -98,11 +102,13 @@ public class InspectionPane extends BorderPane {
             @Override
             public void changed(ObservableValue<? extends Boolean> observableValue, Boolean aBoolean, Boolean t1) {
                 if(!t1) { //lost focus, so update
-                    String oldMetadata = currentSIP.getMetadataContent();
-                    String newMetadata = metaText.getText();
-                    //only update if there's been modifications or there's no old metadata
-                    if(oldMetadata == null || !oldMetadata.equals(newMetadata)) {
-                        currentSIP.updateMetadata(metaText.getText());
+                    if(currentSIP != null) {
+                        String oldMetadata = currentSIP.getMetadataContent();
+                        String newMetadata = metaText.getText();
+                        //only update if there's been modifications or there's no old metadata
+                        if (oldMetadata == null || !oldMetadata.equals(newMetadata)) {
+                            currentSIP.updateMetadata(metaText.getText());
+                        }
                     }
                 }
             }
@@ -116,7 +122,7 @@ public class InspectionPane extends BorderPane {
 
         HBox top = new HBox();
         top.getStyleClass().add("hbox");
-        top.setPadding(new Insets(10, 10, 10, 10));
+        top.setPadding(new Insets(5, 10, 5, 10));
 
         Label title = new Label("Content");
         top.getChildren().add(title);
@@ -242,6 +248,23 @@ public class InspectionPane extends BorderPane {
         return result;
     }
 
+    private void createRulesList(){
+        rules = new BorderPane();
+        rules.getStyleClass().add("inspectionPart");
+        VBox.setVgrow(content, Priority.ALWAYS);
+
+        HBox top = new HBox();
+        top.getStyleClass().add("hbox");
+        top.setPadding(new Insets(5, 10, 5, 10));
+
+        Label title = new Label("Rules");
+        top.getChildren().add(title);
+        rules.setTop(top);
+
+        ruleList = new ListView<>();
+        rules.setCenter(ruleList);
+    }
+
     public void createBottom(){
         bottom = new HBox();
         bottom.setPadding(new Insets(10,10,10,10));
@@ -317,7 +340,6 @@ public class InspectionPane extends BorderPane {
 
         center.getChildren().clear();
         center.getChildren().add(metadata);
-        setCenter(center);
 
         Label title = new Label(node.getValue());
         title.getStyleClass().add("title");
@@ -325,6 +347,14 @@ public class InspectionPane extends BorderPane {
         HBox top = new HBox(5);
         top.setAlignment(Pos.CENTER_LEFT);
         top.getChildren().addAll(node.getGraphic(), title);
+
+        ruleList.getItems().clear();
+        for(Rule rule: node.getRules()){
+            RuleCell cell = new RuleCell(rule);
+            ruleList.getItems().add(cell);
+        }
+        center.getChildren().add(rules);
+        setCenter(center);
 
         topBox.getChildren().clear();
         topBox.getChildren().add(top);

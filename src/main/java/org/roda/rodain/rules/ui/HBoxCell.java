@@ -9,7 +9,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 /**
- * Created by apereira on 10/11/2015.
+ * @author Andre Pereira apereira@keep.pt
+ * @since 10-11-2015.
  */
 public class HBoxCell extends HBox {
 
