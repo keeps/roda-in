@@ -52,6 +52,7 @@ public class InspectionPane extends BorderPane {
     private HBox bottom;
 
     private SipPreview currentSIP;
+    private SchemaNode currentSchema;
 
     public InspectionPane(Stage stage){
         createTop();
@@ -306,6 +307,7 @@ public class InspectionPane extends BorderPane {
     public void update(SipPreviewNode sip){
         setBottom(bottom);
         currentSIP = sip.getSip();
+        currentSchema = null;
         createContent(sip);
         center.getChildren().clear();
         center.getChildren().addAll(metadata, content);
@@ -336,6 +338,7 @@ public class InspectionPane extends BorderPane {
     public void update(SchemaNode node){
         setBottom(bottom);
         currentSIP = null;
+        currentSchema = node;
         metaText.clear();
 
         center.getChildren().clear();
@@ -348,17 +351,31 @@ public class InspectionPane extends BorderPane {
         top.setAlignment(Pos.CENTER_LEFT);
         top.getChildren().addAll(node.getGraphic(), title);
 
-        ruleList.getItems().clear();
-        for(Rule rule: node.getRules()){
-            RuleCell cell = new RuleCell(rule);
-            ruleList.getItems().add(cell);
-        }
-        center.getChildren().add(rules);
+        updateRuleList();
         setCenter(center);
 
         topBox.getChildren().clear();
         topBox.getChildren().add(top);
 
         remove.setDisable(true);
+    }
+
+    private void updateRuleList(){
+        ruleList.getItems().clear();
+        for(Rule rule: currentSchema.getRules()){
+            RuleCell cell = new RuleCell(rule);
+            ruleList.getItems().add(cell);
+        }
+        center.getChildren().add(rules);
+    }
+
+    /**
+     * Notifies this pane that something changed.
+     * Currently, checks if the selected schema node's rules changed and updates the rule list.
+     */
+    public void notifyChange(){
+        if(ruleList != null && currentSchema != null && ruleList.getItems().size() != currentSchema.getRules().size()){
+            updateRuleList();
+        }
     }
 }

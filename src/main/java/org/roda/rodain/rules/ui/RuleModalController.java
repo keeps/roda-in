@@ -108,6 +108,7 @@ public class RuleModalController {
 
             schema.addRule(rule);
             Main.mapSelected(rule);
+            Main.inspectionNotifyChanged();
         } catch (Exception e) {
             log.debug("Exception in confirm rule", e);
         }
