@@ -1,6 +1,8 @@
 package org.roda.rodain.rules.sip;
 
+import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.TreeNode;
+import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.Utils;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +35,17 @@ public class SipPreview extends Observable implements Observer {
         this.metadataPath = metadataPath;
         this.metadataContent = metadataContent;
         id = UUID.randomUUID().toString();
+
+        setPathsAsMapped();
+    }
+
+    private void setPathsAsMapped(){
+        for(TreeNode tn: files){
+            Set<String> paths = tn.getFullTreePaths();
+            for(String path: paths){
+                PathCollection.addPath(path, SourceTreeItemState.MAPPED);
+            }
+        }
     }
 
     private void loadMetadata(){

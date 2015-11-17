@@ -5,6 +5,7 @@ import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
+import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.source.representation.SourceDirectory;
 import org.roda.rodain.source.representation.SourceItem;
@@ -40,6 +41,7 @@ public class SourceTreeDirectory extends SourceTreeItem{
     public SourceTreeDirectory(Path file, SourceDirectory directory, SourceTreeItemState st, SourceTreeDirectory parent){
         this(file, directory, parent);
         state = st;
+        PathCollection.addPath(fullPath, state);
     }
 
     public SourceTreeDirectory(Path file, SourceDirectory directory, SourceTreeDirectory parent) {
@@ -75,6 +77,7 @@ public class SourceTreeDirectory extends SourceTreeItem{
                 }
             }
         });
+        PathCollection.addPath(fullPath, state);
     }
 
     /**
@@ -408,6 +411,7 @@ public class SourceTreeDirectory extends SourceTreeItem{
     public void addIgnore(){
         if(state == SourceTreeItemState.NORMAL) {
             state = SourceTreeItemState.IGNORED;
+            PathCollection.addPath(fullPath, state);
         }
         for(TreeItem it: getChildren()){
             SourceTreeItem item = (SourceTreeItem)it;
@@ -421,6 +425,7 @@ public class SourceTreeDirectory extends SourceTreeItem{
         rules.add(r);
         if(state == SourceTreeItemState.NORMAL) {
             state = SourceTreeItemState.MAPPED;
+            PathCollection.addPath(fullPath, state);
         }
         for(TreeItem it: getChildren()){
             SourceTreeItem item = (SourceTreeItem)it;
@@ -433,6 +438,7 @@ public class SourceTreeDirectory extends SourceTreeItem{
     public void removeIgnore(){
         if (state == SourceTreeItemState.IGNORED) {
             state = SourceTreeItemState.NORMAL;
+            PathCollection.addPath(fullPath, state);
         }
         for(TreeItem it: getChildren()){
             SourceTreeItem item = (SourceTreeItem)it;
@@ -495,7 +501,7 @@ public class SourceTreeDirectory extends SourceTreeItem{
 
     private void addChild(List children, String sourceItem, Set<Rule> allRules){
         //check if this path has been loaded and ignored/mapped. If it hasn't we apply the parent's state
-        SourceTreeItemState newState = state;
+        /*SourceTreeItemState newState = state;
         if(FileExplorerPane.isIgnored(sourceItem))
             newState = SourceTreeItemState.IGNORED;
         else if(FileExplorerPane.isMapped(sourceItem))
@@ -504,7 +510,8 @@ public class SourceTreeDirectory extends SourceTreeItem{
         for(Rule rule: allRules){
             if(rule.isMapped(sourceItem))
                 newState = SourceTreeItemState.MAPPED;
-        }
+        }*/
+        SourceTreeItemState newState = PathCollection.getState(sourceItem);
 
         SourceTreeItem item;
         Path sourcePath = Paths.get(sourceItem);
@@ -528,7 +535,7 @@ public class SourceTreeDirectory extends SourceTreeItem{
                 break;
             default:
         }
-
+        PathCollection.addItem(item);
     }
 
     private void addChildIgnored(List children, SourceTreeItem item){
@@ -552,19 +559,15 @@ public class SourceTreeDirectory extends SourceTreeItem{
         Set<String> removed = r.getRemoved();
         if(removed.contains(fullPath) && state == SourceTreeItemState.MAPPED) {
             state = SourceTreeItemState.NORMAL;
+            PathCollection.addPath(fullPath, state);
         }
         // check if this node is parent to any removed mappings. If it is, then set the state normal to keep integrity
         for(String s: removed){
             if(s.contains(fullPath)){
                 state = SourceTreeItemState.NORMAL;
+                PathCollection.addPath(fullPath, state);
             }
         }
-        /*for(Rule rule: rules) {
-            if (!rule.isMapped(fullPath)) {
-                state = SourceTreeItemState.NORMAL;
-            }
-        }*/
-
 
         // remove mappings in the children, ignored list, mapped list and files list
         for(TreeItem it: getChildren()){
@@ -638,6 +641,7 @@ public class SourceTreeDirectory extends SourceTreeItem{
         forceUpdate();
 
         if(stateChanged){
+            PathCollection.addPath(fullPath, state);
             parentVerify();
             parentMoveChildrenWrongState();
         }

@@ -1,6 +1,5 @@
 package org.roda.rodain.source.ui;
 
-import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.utils.TreeVisitor;
 
 import java.nio.file.Path;
@@ -16,21 +15,16 @@ public class ComputeDirectorySize extends Observable implements TreeVisitor {
     private long filesCount = 0, directoryCount, size = 0;
     private long lastUIUpdate = 0;
 
-    private long lastDirectoryCount = 0;
     public ComputeDirectorySize(){
     }
 
     @Override
 
     public void preVisitDirectory(Path path, BasicFileAttributes attrs) {
-        lastDirectoryCount = filesCount;
     }
 
     @Override
     public void postVisitDirectory(Path path) {
-        int dirFileCount = (int)(filesCount - lastDirectoryCount);
-        PathCollection.addSize(path, dirFileCount);
-
         directoryCount++;
         update();
     }

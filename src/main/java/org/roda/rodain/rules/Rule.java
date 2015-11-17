@@ -1,6 +1,7 @@
 package org.roda.rodain.rules;
 
 import javafx.scene.image.Image;
+import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.filters.ContentFilter;
 import org.roda.rodain.rules.sip.*;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
@@ -194,7 +195,9 @@ public class Rule extends Observable implements Observer, Comparable {
                 sips.remove(sip.getId());
                 removed = new HashSet<>();
                 for(TreeNode tn: sip.getFiles()){
-                    removed.addAll(tn.getFullTreePaths());
+                    Set<String> paths = tn.getFullTreePaths();
+                    removed.addAll(paths);
+                    PathCollection.addPaths(paths, SourceTreeItemState.NORMAL);
                 }
                 setChanged();
                 notifyObservers("Removed SIP");
@@ -229,7 +232,9 @@ public class Rule extends Observable implements Observer, Comparable {
         removed = new HashSet<>();
         for(SipPreview sip: sips.values()) {
             for (TreeNode tn : sip.getFiles()) {
-                removed.addAll(tn.getFullTreePaths());
+                Set<String> paths = tn.getFullTreePaths();
+                removed.addAll(paths);
+                PathCollection.addPaths(paths, SourceTreeItemState.NORMAL);
             }
         }
         sips.clear();

@@ -2,6 +2,7 @@ package org.roda.rodain.source.ui.items;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.Rule;
 
 import java.io.File;
@@ -44,6 +45,7 @@ public class SourceTreeFile extends SourceTreeItem{
         }
 
         state = SourceTreeItemState.NORMAL;
+        PathCollection.addPath(fullPath, state);
     }
 
     @Override
@@ -60,6 +62,7 @@ public class SourceTreeFile extends SourceTreeItem{
     public void addIgnore(){
         if(state == SourceTreeItemState.NORMAL) {
             state = SourceTreeItemState.IGNORED;
+            PathCollection.addPath(fullPath, state);
             parent.verifyState();
         }
     }
@@ -69,6 +72,7 @@ public class SourceTreeFile extends SourceTreeItem{
         rule = r;
         if(state == SourceTreeItemState.NORMAL) {
             state = SourceTreeItemState.MAPPED;
+            PathCollection.addPath(fullPath, state);
             if(parent != null)
                 parent.verifyState();
         }
@@ -78,6 +82,7 @@ public class SourceTreeFile extends SourceTreeItem{
     public void removeIgnore(){
         if(state == SourceTreeItemState.IGNORED) {
             state = SourceTreeItemState.NORMAL;
+            PathCollection.addPath(fullPath, state);
             if(parent != null)
                 parent.verifyState();
         }
@@ -88,6 +93,7 @@ public class SourceTreeFile extends SourceTreeItem{
         if(rule == null || r == rule){
             if (!r.isMapped(fullPath)) {
                 state = SourceTreeItemState.NORMAL;
+                PathCollection.addPath(fullPath, state);
             }
         }
     }
