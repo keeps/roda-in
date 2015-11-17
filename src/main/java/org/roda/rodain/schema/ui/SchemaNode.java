@@ -97,6 +97,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
             getChildren().removeAll(sips.get(id));
         }
         rules.remove(id);
+        ruleObjects.remove(id);
         sips.remove(id);
         r.remove();
 
