@@ -30,7 +30,6 @@ public class SourceTreeDirectory extends SourceTreeItem{
     public boolean expanded = false;
     private SourceDirectory directory;
     private String fullPath;
-    private SourceTreeDirectory parent;
 
     private HashSet<SourceTreeItem> ignored;
     private HashSet<SourceTreeItem> mapped;
@@ -45,7 +44,7 @@ public class SourceTreeDirectory extends SourceTreeItem{
     }
 
     public SourceTreeDirectory(Path file, SourceDirectory directory, SourceTreeDirectory parent) {
-        super(file.toString());
+        super(file.toString(), parent);
         this.directory = directory;
         this.fullPath = file.toString();
         this.parent = parent;
@@ -403,6 +402,12 @@ public class SourceTreeDirectory extends SourceTreeItem{
     }
 
     @Override
+    public void setState(SourceTreeItemState st){
+        state = st;
+        verifyState();
+    }
+
+    @Override
     public SourceTreeItemState getState(){
         return state;
     }
@@ -427,10 +432,10 @@ public class SourceTreeDirectory extends SourceTreeItem{
             state = SourceTreeItemState.MAPPED;
             PathCollection.addPath(fullPath, state);
         }
-        for(TreeItem it: getChildren()){
+        /*for(TreeItem it: getChildren()){
             SourceTreeItem item = (SourceTreeItem)it;
             item.addMapping(r);
-        }
+        }*/
         verifyState();
     }
 
@@ -464,11 +469,10 @@ public class SourceTreeDirectory extends SourceTreeItem{
                 SortedMap<String, SourceItem> loaded;
                 loaded = getDirectory().loadMore();
 
-                Set<Rule> allRules = getAllRules();
                 if (loaded.size() != 0) {
                     //Add new items
                     for (String sourceItem : loaded.keySet()) {
-                        addChild(children, sourceItem, allRules);
+                        addChild(children, sourceItem);
                     }
                     // check if there's more files to load
                     if (directory.isStreamOpen())
@@ -499,18 +503,7 @@ public class SourceTreeDirectory extends SourceTreeItem{
         new Thread(task).start();
     }
 
-    private void addChild(List children, String sourceItem, Set<Rule> allRules){
-        //check if this path has been loaded and ignored/mapped. If it hasn't we apply the parent's state
-        /*SourceTreeItemState newState = state;
-        if(FileExplorerPane.isIgnored(sourceItem))
-            newState = SourceTreeItemState.IGNORED;
-        else if(FileExplorerPane.isMapped(sourceItem))
-            newState = SourceTreeItemState.MAPPED;
-
-        for(Rule rule: allRules){
-            if(rule.isMapped(sourceItem))
-                newState = SourceTreeItemState.MAPPED;
-        }*/
+    private void addChild(List children, String sourceItem){
         SourceTreeItemState newState = PathCollection.getState(sourceItem);
 
         SourceTreeItem item;
@@ -554,40 +547,6 @@ public class SourceTreeDirectory extends SourceTreeItem{
         } else mapped.add(item);
     }
 
-    @Override
-    public void removeMapping(Rule r){
-        Set<String> removed = r.getRemoved();
-        if(removed.contains(fullPath) && state == SourceTreeItemState.MAPPED) {
-            state = SourceTreeItemState.NORMAL;
-            PathCollection.addPath(fullPath, state);
-        }
-        // check if this node is parent to any removed mappings. If it is, then set the state normal to keep integrity
-        for(String s: removed){
-            if(s.contains(fullPath)){
-                state = SourceTreeItemState.NORMAL;
-                PathCollection.addPath(fullPath, state);
-            }
-        }
-
-        // remove mappings in the children, ignored list, mapped list and files list
-        for(TreeItem it: getChildren()){
-            SourceTreeItem item = (SourceTreeItem)it;
-            item.removeMapping(r);
-        }
-        for(SourceTreeItem it: ignored){
-            it.removeMapping(r);
-        }
-        for(SourceTreeItem it: mapped){
-            it.removeMapping(r);
-        }
-        for(SourceTreeItem it: files){
-            it.removeMapping(r);
-        }
-        verifyState();
-        parentVerify();
-        moveChildrenWrongState();
-    }
-
     /**
      * Verifies if the state of this item is right.
      * Example: A directory with state MAPPED must have all children mapped
@@ -595,6 +554,8 @@ public class SourceTreeDirectory extends SourceTreeItem{
     public void verifyState(){
         int normalItems = 0, ignoredItems = 0, mappedItems = 0;
         boolean stateChanged = false;
+
+        moveChildrenWrongState();
 
         if(directory.isFirstLoaded()) {
             for (TreeItem it : getChildren()) {
@@ -615,8 +576,7 @@ public class SourceTreeDirectory extends SourceTreeItem{
                 if (sti.getState() == SourceTreeItemState.NORMAL) {
                     normalItems++;
                     mappedItems--;
-                } else
-                    mappedItems++;
+                } else mappedItems++;
             }
 
             if(normalItems == 0){
@@ -643,21 +603,7 @@ public class SourceTreeDirectory extends SourceTreeItem{
         if(stateChanged){
             PathCollection.addPath(fullPath, state);
             parentVerify();
-            parentMoveChildrenWrongState();
         }
-
-    }
-
-    /**
-     * @return a Set of this node's rules and the parent's rules, until the root
-     */
-    public Set<Rule> getAllRules(){
-        Set<Rule> allRules = new HashSet<>();
-        if(parent != null)
-            allRules.addAll(parent.getAllRules());
-        allRules.addAll(rules);
-
-        return allRules;
     }
 
     private void parentVerify(){
@@ -703,21 +649,5 @@ public class SourceTreeDirectory extends SourceTreeItem{
         }
         if(toRemove.size() != 0 || modified)
             sortChildren();
-    }
-
-    private void parentMoveChildrenWrongState(){
-        if(parent != null){
-            parent.moveChildrenWrongState();
-        }
-    }
-
-    @Override
-    public void update(Observable o, Object arg) {
-        if(o instanceof Rule && arg != null && arg.toString().contains("Removed")){
-            Rule rule = (Rule) o;
-            removeMapping(rule);
-            parent.removeMapping(rule);
-            parentMoveChildrenWrongState();
-        }
     }
 }

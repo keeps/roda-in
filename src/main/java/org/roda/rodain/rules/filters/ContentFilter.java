@@ -1,5 +1,8 @@
 package org.roda.rodain.rules.filters;
 
+import org.roda.rodain.core.PathCollection;
+import org.roda.rodain.source.ui.items.SourceTreeItemState;
+
 import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
@@ -35,7 +38,7 @@ public class ContentFilter {
 
     public boolean filter(String st){
         boolean result = false;
-        if(ignored.contains(st) || mapped.contains(st)) {
+        if(ignored.contains(st) || mapped.contains(st) || PathCollection.getState(st) != SourceTreeItemState.NORMAL) {
             result = true;
         } else {
             int index = 0, end = st.length(), fromIndex = 0;

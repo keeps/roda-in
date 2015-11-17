@@ -11,7 +11,7 @@ public class SourceTreeLoadMore extends SourceTreeItem{
     public static final Image fileImage = new Image(ClassLoader.getSystemResourceAsStream("icons/list-add.png"));
 
     public SourceTreeLoadMore(){
-        super("Load More ...");
+        super("Load More ...", null);
         this.setGraphic(new ImageView(fileImage));
     }
 

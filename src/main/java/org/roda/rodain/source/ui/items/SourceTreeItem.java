@@ -14,9 +14,11 @@ import java.util.Observer;
 public class SourceTreeItem extends TreeItem<String> implements Observer {
     private String path;
     protected SourceTreeItemState state;
+    protected SourceTreeDirectory parent;
 
-    protected SourceTreeItem(String path){
+    protected SourceTreeItem(String path, SourceTreeDirectory parent){
         this.path = path;
+        this.parent = parent;
         state = SourceTreeItemState.NORMAL;
     }
 
@@ -26,6 +28,14 @@ public class SourceTreeItem extends TreeItem<String> implements Observer {
 
     public SourceTreeItemState getState(){
         return state;
+    }
+
+    public void setState(SourceTreeItemState st){
+        state = st;
+    }
+
+    public SourceTreeDirectory getParentDir(){
+        return parent;
     }
 
     public void addIgnore(){

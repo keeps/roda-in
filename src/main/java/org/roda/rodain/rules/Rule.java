@@ -39,9 +39,6 @@ public class Rule extends Observable implements Observer, Comparable {
     private int level;
     private int id;
 
-    // removed items
-    private Set<String> removed;
-
     /*
      Keep a set of mapped paths to be used when the source tree needs to find if a file has been mapped.
      This set will only be filled when the first search is made.
@@ -60,7 +57,6 @@ public class Rule extends Observable implements Observer, Comparable {
         this.metadataPath = metadataPath;
         this.metaType = metaType;
         filters = new HashSet<>();
-        removed = new HashSet<>();
         id = ruleCount;
 
         createIcon();
@@ -97,9 +93,6 @@ public class Rule extends Observable implements Observer, Comparable {
     public Set<SourceTreeItem> getSource() {
         return source;
     }
-    public String getSourceString() {
-        return source.toString();
-    }
 
     public int getId() {
         return id;
@@ -113,9 +106,6 @@ public class Rule extends Observable implements Observer, Comparable {
         this.source = source;
     }
 
-    public TreeVisitor getVisitor(){
-        return visitor;
-    }
     public int getSipCount() {
         return sips.size();
     }
@@ -193,20 +183,13 @@ public class Rule extends Observable implements Observer, Comparable {
             if(sip.isRemoved()){
                 sipNodes.remove(sip.getId());
                 sips.remove(sip.getId());
-                removed = new HashSet<>();
                 for(TreeNode tn: sip.getFiles()){
-                    Set<String> paths = tn.getFullTreePaths();
-                    removed.addAll(paths);
-                    PathCollection.addPaths(paths, SourceTreeItemState.NORMAL);
+                    PathCollection.addPaths(tn.getFullTreePaths(), SourceTreeItemState.NORMAL);
                 }
                 setChanged();
                 notifyObservers("Removed SIP");
             }
         }
-    }
-
-    public Set<String> getRemoved(){
-        return removed;
     }
 
     public boolean isMapped(String path){
@@ -229,12 +212,9 @@ public class Rule extends Observable implements Observer, Comparable {
         }
 
         sipNodes.clear();
-        removed = new HashSet<>();
         for(SipPreview sip: sips.values()) {
             for (TreeNode tn : sip.getFiles()) {
-                Set<String> paths = tn.getFullTreePaths();
-                removed.addAll(paths);
-                PathCollection.addPaths(paths, SourceTreeItemState.NORMAL);
+                PathCollection.addPaths(tn.getFullTreePaths(), SourceTreeItemState.NORMAL);
             }
         }
         sips.clear();

@@ -6,7 +6,7 @@ package org.roda.rodain.source.ui.items;
  */
 public class SourceTreeLoading extends SourceTreeItem{
     public SourceTreeLoading(){
-        super("Loading...");
+        super("Loading...", null);
     }
 
     @Override

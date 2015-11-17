@@ -21,6 +21,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import org.roda.rodain.core.Footer;
+import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.source.representation.SourceDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
@@ -124,6 +125,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
         }
 
         SourceTreeDirectory rootNode = new SourceTreeDirectory(rootPath, new SourceDirectory(rootPath, isShowFiles()), null);
+        PathCollection.addItem(rootNode);
         rootNode.setExpanded(true);
         treeView.setRoot(rootNode);
         updateMetadata(rootPath);
@@ -246,7 +248,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
         for(SourceTreeItem item: items){
             item.addMapping(r);
 
-            SourceTreeDirectory dirParent = (SourceTreeDirectory)item.getParent();
+            SourceTreeDirectory dirParent = item.getParentDir();
             if(!isShowMapped()) {
                 dirParent.hideMapped();
                 treeView.getSelectionModel().clearSelection();
@@ -268,7 +270,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
             if(item.getState() == SourceTreeItemState.NORMAL)
                 item.addIgnore();
 
-            SourceTreeDirectory parent = (SourceTreeDirectory) item.getParent();
+            SourceTreeDirectory parent = item.getParentDir();
             if(!isShowIgnored()) {
                 parent.hideIgnored();
                 treeView.getSelectionModel().clearSelection();

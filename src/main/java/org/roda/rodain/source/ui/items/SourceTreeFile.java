@@ -17,18 +17,18 @@ public class SourceTreeFile extends SourceTreeItem{
     public static final Image fileImage = new Image(ClassLoader.getSystemResourceAsStream("icons/file.png"));
     //this stores the full path to the file
     private String fullPath;
-    private SourceTreeDirectory parent;
 
     private Rule rule;
 
     public SourceTreeFile(Path file, SourceTreeItemState st, SourceTreeDirectory parent){
-        this(file);
+        this(file, parent);
         state = st;
         this.parent = parent;
+        PathCollection.addPath(fullPath, state);
     }
 
-    public SourceTreeFile(Path file) {
-        super(file.toString());
+    public SourceTreeFile(Path file, SourceTreeDirectory parent) {
+        super(file.toString(), parent);
         this.fullPath = file.toString();
         this.setGraphic(new ImageView(fileImage));
 
@@ -51,6 +51,12 @@ public class SourceTreeFile extends SourceTreeItem{
     @Override
     public String getPath() {
         return this.fullPath;
+    }
+
+    @Override
+    public void setState(SourceTreeItemState st){
+        state = st;
+        parent.verifyState();
     }
 
     @Override
