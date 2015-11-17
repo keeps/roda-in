@@ -95,8 +95,9 @@ public class SipSingle extends Observable implements TreeVisitor, SipCreator {
 
     @Override
     public void visitFile(Path path, BasicFileAttributes attrs) {
-        if(filter(path))
+        if(filter(path)) {
             return;
+        }
         if(nodes.isEmpty())
             files.add(new TreeNode(path));
         else nodes.peekLast().add(path);

@@ -26,34 +26,39 @@ public class WalkFileTree extends Thread{
         for(String startPath: paths) {
             handler.setStartPath(startPath);
             final Path path = Paths.get(startPath);
-            try {
-                Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
-                    @Override
-                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                        handler.visitFile(file, attrs);
-                        return isTerminated();
-                    }
+            // walkFileTree doesn't work if the start path is a file, so we call the method directly
+            if(! Files.isDirectory(path)){
+                handler.visitFile(path, null);
+            }else {
+                try {
+                    Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+                        @Override
+                        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                            handler.visitFile(file, attrs);
+                            return isTerminated();
+                        }
 
-                    @Override
-                    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                        handler.preVisitDirectory(dir, attrs);
-                        return isTerminated();
-                    }
+                        @Override
+                        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                            handler.preVisitDirectory(dir, attrs);
+                            return isTerminated();
+                        }
 
-                    @Override
-                    public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
-                        handler.postVisitDirectory(dir);
-                        return isTerminated();
-                    }
+                        @Override
+                        public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
+                            handler.postVisitDirectory(dir);
+                            return isTerminated();
+                        }
 
-                    @Override
-                    public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-                        handler.visitFileFailed(file);
-                        return isTerminated();
-                    }
-                });
-            } catch (IOException e) {
-                log.error("Error walking the file tree", e);
+                        @Override
+                        public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                            handler.visitFileFailed(file);
+                            return isTerminated();
+                        }
+                    });
+                } catch (IOException e) {
+                    log.error("Error walking the file tree", e);
+                }
             }
         }
         handler.end();
