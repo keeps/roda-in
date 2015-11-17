@@ -1,5 +1,6 @@
 package org.roda.rodain.schema.ui;
 
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
@@ -25,6 +26,7 @@ public class SchemaTreeCell extends TreeCell<String> {
             setGraphic(null);
         } else {
             HBox hbox = new HBox();
+            hbox.setAlignment(Pos.BOTTOM_LEFT);
             Label lab = new Label(item);
             lab.getStyleClass().add("cellText");
             Image icon = null;

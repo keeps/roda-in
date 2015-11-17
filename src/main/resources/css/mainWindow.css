@@ -2,6 +2,7 @@
     -fx-font-size: x-large;
 }
 
+/* Inspection */
 .inspectionPart {
     -fx-border-width: 1;
     -fx-border-color: #089de3;
@@ -16,33 +17,6 @@
     -fx-text-fill: white;
 }
 
-.tree-view {
-    -fx-background-color: white;
-    -fx-focus-color: transparent;
-    -fx-faint-focus-color: transparent;
-    -fx-border-color: transparent;
-}
-
-#ignored .text{
-    -fx-strikethrough: true;
-}
-
-.tree-cell:selected {
-    -fx-background-color: #089de3;
-    -fx-text-fill: white;
-}
-
-.tree-cell:focused {
-    -fx-background-color: #089de3;
-    -fx-text-fill: white;
-}
-
-.text-area {
-     -fx-background-color: white;
-     -fx-focus-color: transparent;
-     -fx-faint-focus-color: transparent;
- }
-
 .sipId {
     -fx-font-size: small;
 }
@@ -55,6 +29,56 @@
     -fx-text-fill: gray;
 }
 
+.text-area {
+    -fx-background-color: white;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+/* Tree-view and Tree-cell*/
+.tree-view {
+    -fx-background-color: white;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.tree-cell:filled:hover {
+    -fx-background-color: powderblue;
+}
+
+.tree-cell:focused:selected {
+    -fx-background-color: #089de3;
+    -fx-text-fill: white;
+}
+
+.tree-cell:focused:selected .cellText {
+    -fx-text-fill: white;
+}
+
+#ignored .text{
+    -fx-strikethrough: true;
+}
+
+/* Schema */
+.schemaNode {
+    -fx-text-fill: grey;
+}
+
+.schemaNode:filled:hover {
+    -fx-background-color: powderblue;
+}
+
+.schemaNode:focused:selected{
+    -fx-background-color: #089de3;
+    -fx-text-fill: white;
+}
+
+.schemaNodeHovered{
+    -fx-background-color: powderblue;
+}
+
+/* List-cell */
 .list-cell{
     -fx-padding: 5px;
 }
@@ -84,12 +108,13 @@
 }
 
 .ruleCell .top .button:hover {
-    -fx-background-color: darkgray;
-    -fx-border-color: black;
+    -fx-background-color: #c8c8c8;
+    -fx-border-color: #555555;
 }
 
 .ruleCell .top .button:pressed {
     -fx-background-color: white;
     -fx-border-color: black;
+    -fx-text-fill: black;
 }
 

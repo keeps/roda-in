@@ -158,10 +158,8 @@ public class SchemaPane extends BorderPane {
                 TreeItem<String> treeItem = cell.getTreeItem();
                 if (treeItem instanceof SchemaNode) {
                     SchemaNode item = (SchemaNode) cell.getTreeItem();
-                    if ((item != null /* && !item.isLeaf()*/) &&
-                            event.getGestureSource() != cell &&
-                            event.getDragboard().hasString()) {
-                        cell.setStyle(style.getProperty("schema.cell.selected"));
+                    if (item != null && event.getGestureSource() != cell && event.getDragboard().hasString()) {
+                        cell.getStyleClass().add("schemaNodeHovered");
                     }
                 }
                 event.consume();
@@ -174,7 +172,7 @@ public class SchemaPane extends BorderPane {
         cell.setOnDragExited(new EventHandler<DragEvent>() {
                                  @Override
                                  public void handle(DragEvent event) {
-                                     cell.setStyle(style.getProperty("schema.cell.exited"));
+                                     cell.getStyleClass().remove("schemaNodeHovered");
                                      cell.updateItem(cell.getItem(), false);
                                      event.consume();
                                  }
