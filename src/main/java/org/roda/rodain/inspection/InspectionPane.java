@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -191,8 +192,14 @@ public class InspectionPane extends BorderPane {
         ignore.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
-                Object selected = sipFiles.getSelectionModel().getSelectedItem();
-
+                InspectionTreeItem selected = (InspectionTreeItem) sipFiles.getSelectionModel().getSelectedItem();
+                Set<Path> paths = new HashSet<>();
+                paths.add(selected.getPath());
+                if(currentSIP != null){
+                    currentSIP.ignoreContent(paths);
+                    TreeItem parent = selected.getParentDir();
+                    parent.getChildren().remove(selected);
+                }
             }
         });
         Button flatten = new Button("Flatten directory");
@@ -216,7 +223,7 @@ public class InspectionPane extends BorderPane {
                     dir.skip();
                     // clear the parent and recreate the children based on the updated tree nodes
                     SipContentDirectory parent = (SipContentDirectory)dir.getParent();
-                    TreeItem newParent = recCreateSipContent(parent.getTreeNode());
+                    TreeItem newParent = recCreateSipContent(parent.getTreeNode(), parent.getParent());
                     parent.getChildren().clear();
                     parent.getChildren().addAll(newParent.getChildren());
                     parent.sortChildren();
@@ -236,21 +243,21 @@ public class InspectionPane extends BorderPane {
         sipRoot.getChildren().clear();
         Set<TreeNode> files = node.getSip().getFiles();
         for(TreeNode treeNode: files) {
-            TreeItem<Object> startingItem = recCreateSipContent(treeNode);
+            TreeItem<Object> startingItem = recCreateSipContent(treeNode, sipRoot);
             startingItem.setExpanded(true);
             sipRoot.getChildren().add(startingItem);
         }
     }
 
-    private TreeItem<Object> recCreateSipContent(TreeNode node){
+    private TreeItem<Object> recCreateSipContent(TreeNode node, TreeItem parent){
         SipContentDirectory result;
         Path path = node.getPath();
         if(Files.isDirectory(path))
-            result = new SipContentDirectory(node);
-        else return new SipContentFile(path);
+            result = new SipContentDirectory(node, parent);
+        else return new SipContentFile(path, parent);
 
         for(String key: node.getKeys()){
-            TreeItem<Object> temp = recCreateSipContent(node.get(key));
+            TreeItem<Object> temp = recCreateSipContent(node.get(key), result);
             result.getChildren().add(temp);
         }
         result.sortChildren();

@@ -1,21 +1,21 @@
 {
   "dos": [
     {
-      "title": "Teste 1",
+      "title": "Fonds A",
       "id": "1",
       "parentId": "0",
       "descriptionlevel": "fonds",
       "level":"1",
       "children": [
         {
-          "title": "Teste 1.1",
+          "title": "Class A.1",
           "id": "11",
           "parentId": "1",
           "descriptionlevel": "class",
           "level":"2",
           "children": [
             {
-              "title": "Teste 1.1.1",
+              "title": "Sub-class A.1.1",
               "id": "111",
               "parentId": "11",
               "descriptionlevel": "subclass",
@@ -25,20 +25,40 @@
               ]
             },
             {
-              "title": "Teste 1.1.2",
+              "title": "Sub-class A.1.2",
               "id": "112",
               "parentId": "11",
               "descriptionlevel": "subclass",
               "level":"3",
               "children": [
                 {
-                  "title": "Teste 1.1.2.1",
+                  "title": "Series A.1.2.1",
                   "id": "1121",
                   "parentId": "112",
                   "descriptionlevel": "series",
                   "level":"4",
                   "children": [
                     
+                  ]
+                },
+                {
+                  "title": "Series A.1.2.2",
+                  "id": "1122",
+                  "parentId": "112",
+                  "descriptionlevel": "series",
+                  "level":"4",
+                  "children": [
+
+                  ]
+                },
+                {
+                  "title": "Series A.1.2.3",
+                  "id": "1123",
+                  "parentId": "112",
+                  "descriptionlevel": "series",
+                  "level":"4",
+                  "children": [
+
                   ]
                 }
               ]
@@ -48,31 +68,70 @@
       ]
     },
     {
-      "title": "Teste 2",
+      "title": "Fonds B",
       "id": "2",
       "parentId": "0",
       "descriptionlevel": "fonds",
       "level":"1",
       "children": [
         {
-          "title": "Teste 2.1",
+          "title": "Class B.1",
           "id": "21",
           "parentId": "2",
           "descriptionlevel": "class",
           "level":"2",
           "children": [
-            
+            {
+              "title": "Series B.1.1",
+              "id": "211",
+              "parentId": "21",
+              "descriptionlevel": "series",
+              "level":"3",
+              "children": [
+
+              ]
+            },
+            {
+              "title": "Series B.1.2",
+              "id": "212",
+              "parentId": "21",
+              "descriptionlevel": "series",
+              "level":"3",
+              "children": [
+
+              ]
+            },
+            {
+              "title": "Series B.1.3",
+              "id": "213",
+              "parentId": "21",
+              "descriptionlevel": "series",
+              "level":"3",
+              "children": [
+
+              ]
+            },
+            {
+              "title": "Series B.1.4",
+              "id": "214",
+              "parentId": "21",
+              "descriptionlevel": "series",
+              "level":"3",
+              "children": [
+
+              ]
+            }
           ]
         },
         {
-          "title": "Teste 2.2",
+          "title": "Class B.2",
           "id": "22",
           "parentId": "2",
           "descriptionlevel": "class",
           "level":"2",
           "children": [
             {
-              "title": "Teste 2.2.1",
+              "title": "Sub-class B.2.1",
               "id": "221",
               "parentId": "22",
               "descriptionlevel": "subclass",
@@ -84,7 +143,7 @@
           ]
         },
         {
-          "title": "Teste 2.3",
+          "title": "Sub-fonds B.3",
           "id": "23",
           "parentId": "2",
           "descriptionlevel": "subfonds",
@@ -96,17 +155,26 @@
       ]
     },
     {
-      "title": "Teste 3",
+      "title": "Fonds C",
       "id": "3",
       "parentId": "0",
       "descriptionlevel": "fonds",
       "level":"1",
       "children": [
-        
+        {
+          "title": "Sub-fonds C.1",
+          "id": "31",
+          "parentId": "3",
+          "descriptionlevel": "subfonds",
+          "level":"2",
+          "children": [
+
+          ]
+        }
       ]
     },
     {
-      "title": "Teste 4",
+      "title": "Fonds D",
       "id": "4",
       "parentId": "0",
       "descriptionlevel": "fonds",

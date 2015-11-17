@@ -24,11 +24,13 @@ public class SipContentDirectory extends TreeItem<Object> implements InspectionT
     //this stores the full path to the file or directory
     private Path fullPath;
     private TreeNode treeNode;
+    private TreeItem parent;
 
-    public SipContentDirectory(TreeNode treeNode) {
+    public SipContentDirectory(TreeNode treeNode, TreeItem parent) {
         super(treeNode.getPath());
         this.treeNode = treeNode;
         this.fullPath = treeNode.getPath();
+        this.parent = parent;
         this.setGraphic(new ImageView(folderCollapseImage));
 
         Path name = fullPath.getFileName();
@@ -65,6 +67,11 @@ public class SipContentDirectory extends TreeItem<Object> implements InspectionT
         return treeNode;
     }
 
+    @Override
+    public TreeItem getParentDir() {
+        return parent;
+    }
+
     public void skip(){
         SipContentDirectory parent = (SipContentDirectory)getParent();
         TreeNode parentTreeNode = parent.getTreeNode();
@@ -76,7 +83,7 @@ public class SipContentDirectory extends TreeItem<Object> implements InspectionT
         treeNode.flatten();
         getChildren().clear();
         for(String path: treeNode.getKeys()){
-            SipContentFile file = new SipContentFile(Paths.get(path));
+            SipContentFile file = new SipContentFile(Paths.get(path), this);
             getChildren().add(file);
         }
         sortChildren();

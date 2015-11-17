@@ -12,13 +12,14 @@ import javafx.scene.image.ImageView;
  */
 public class SipContentFile extends TreeItem<Object> implements InspectionTreeItem {
     public static final Image fileImage = new Image(ClassLoader.getSystemResourceAsStream("icons/file.png"));
-
-    //this stores the full path to the file
     private Path fullPath;
+    private TreeItem parent;
 
-    public SipContentFile(Path file) {
+
+    public SipContentFile(Path file, TreeItem parent) {
         super(file.toString());
         this.fullPath = file;
+        this.parent = parent;
         this.setGraphic(new ImageView(fileImage));
 
         Path name = fullPath.getFileName();
@@ -27,6 +28,11 @@ public class SipContentFile extends TreeItem<Object> implements InspectionTreeIt
         } else {
             this.setValue(fullPath.toString());
         }
+    }
+
+    @Override
+    public TreeItem getParentDir() {
+        return parent;
     }
 
     @Override

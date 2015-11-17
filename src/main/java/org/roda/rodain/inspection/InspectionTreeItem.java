@@ -1,5 +1,7 @@
 package org.roda.rodain.inspection;
 
+import javafx.scene.control.TreeItem;
+
 import java.nio.file.Path;
 
 /**
@@ -8,4 +10,5 @@ import java.nio.file.Path;
  */
 public interface InspectionTreeItem {
     Path getPath();
+    TreeItem getParentDir();
 }

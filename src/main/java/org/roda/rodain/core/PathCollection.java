@@ -69,12 +69,14 @@ public class PathCollection{
             } else {
                 String sub = path.substring(0, index);
                 end = index - 1; // move the starting index for the next iteration so it's before the slash
-                if(items.containsKey(sub) && items.get(sub) instanceof SourceTreeDirectory){
+                if(items.containsKey(sub) && items.get(sub) instanceof SourceTreeDirectory) {
                     SourceTreeDirectory dir = (SourceTreeDirectory) items.get(sub);
                     dir.verifyState();
-                    if(states.get(path) == SourceTreeItemState.NORMAL && dir.getState() == SourceTreeItemState.MAPPED){
+                    if (states.get(path) == SourceTreeItemState.NORMAL && dir.getState() == SourceTreeItemState.MAPPED) {
                         addPath(sub, SourceTreeItemState.NORMAL);
                     }
+                }else {
+                    states.put(sub, SourceTreeItemState.NORMAL);
                 }
             }
         }

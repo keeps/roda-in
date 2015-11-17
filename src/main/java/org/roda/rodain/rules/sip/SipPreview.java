@@ -9,10 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -83,6 +80,18 @@ public class SipPreview extends Observable implements Observer {
         metadataContent = meta;
         setChanged();
         notifyObservers();
+    }
+
+    public void ignoreContent(Set<Path> paths){
+        Set<String> ignored = new HashSet<>();
+        Set<TreeNode> toRemove = new HashSet<>();
+        for(TreeNode tn: files){
+            ignored.addAll(tn.ignoreContent(paths));
+            if(paths.contains(tn.getPath()))
+                toRemove.add(tn);
+        }
+        files.removeAll(toRemove);
+        PathCollection.addPaths(ignored, SourceTreeItemState.NORMAL);
     }
 
     public boolean isMetadataModified() {

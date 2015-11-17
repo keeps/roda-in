@@ -54,6 +54,34 @@ public class TreeNode extends Observable{
         return result;
     }
 
+    /**
+     *
+     * If an item's path is in the selected paths to be ignored, this method returns a set of the item's full tree.
+     * Else, calls this method in all its children, returning all the paths removed in the children.
+     *
+     * @param paths is a Set of the selected paths to be ignored
+     * @return a Set of all the paths removed
+     */
+    public Set<String> ignoreContent(Set<Path> paths) {
+        Set<String> result = new HashSet<>();
+        if(paths.contains(path)){
+            //this item and all its children
+            result.addAll(getFullTreePaths());
+        }else{
+            Set<Path> toRemove = new HashSet<>();
+            for(TreeNode tn: files.values()) {
+                result.addAll(tn.ignoreContent(paths));
+                if(paths.contains(tn.path))
+                    toRemove.add(tn.path);
+            }
+            if(! toRemove.isEmpty()){
+                for(Path p: toRemove)
+                    remove(p);
+            }
+        }
+        return result;
+    }
+
     public void addAll(Map<String, TreeNode> map){
         files.putAll(map);
         changed();
