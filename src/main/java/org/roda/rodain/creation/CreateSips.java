@@ -51,4 +51,8 @@ public class CreateSips {
         return creator.currentAction;
     }
 
+    public void cancel(){
+        creator.cancel();
+    }
+
 }

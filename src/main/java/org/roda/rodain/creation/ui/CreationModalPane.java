@@ -1,6 +1,8 @@
 package org.roda.rodain.creation.ui;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -20,6 +22,7 @@ import java.util.TimerTask;
  */
 public class CreationModalPane extends BorderPane {
     private CreateSips creator;
+    private CreationModalStage stage;
 
     // top
     private Label subtitle;
@@ -30,8 +33,11 @@ public class CreationModalPane extends BorderPane {
     private TimerTask updater;
     private Timer timer;
 
-    public CreationModalPane(CreateSips creator){
+    private HBox finishedBox;
+
+    public CreationModalPane(CreateSips creator, CreationModalStage stage){
         this.creator = creator;
+        this.stage = stage;
 
         getStyleClass().add("sipcreator");
 
@@ -89,10 +95,31 @@ public class CreationModalPane extends BorderPane {
         bottom.setPadding(new Insets(0, 10, 10, 10));
         bottom.setAlignment(Pos.CENTER_RIGHT);
         Button cancel = new Button("Cancel");
-        // cancel timed task too
+        cancel.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                timer.cancel();
+                creator.cancel();
+                stage.close();
+            }
+        });
 
         bottom.getChildren().add(cancel);
         setBottom(bottom);
+
+        finishedBox = new HBox();
+        finishedBox.setPadding(new Insets(0, 10, 10, 10));
+        finishedBox.setAlignment(Pos.CENTER_RIGHT);
+        Button finish = new Button("Finish");
+
+        finish.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                stage.close();
+            }
+        });
+
+        finishedBox.getChildren().add(finish);
     }
 
     private void createUpdateTask(){
@@ -113,7 +140,7 @@ public class CreationModalPane extends BorderPane {
 
                         // stop the timer when all the SIPs have been created
                         if(created == size){
-                            timer.cancel();
+                            finished();
                         }
                     }
                 });
@@ -122,5 +149,10 @@ public class CreationModalPane extends BorderPane {
 
         timer = new Timer();
         timer.schedule(updater, 0, 300);
+    }
+
+    private void finished(){
+        timer.cancel();
+        setBottom(finishedBox);
     }
 }

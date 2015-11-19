@@ -59,12 +59,11 @@ public class Footer extends HBox {
                 if (selectedDirectory == null)
                     return;
                 Path path = selectedDirectory.toPath();
-                Footer.setStatus("Creating BagIts...");
-                btn.setDisable(true);
+
                 CreateSips creator = new CreateSips(path, SipTypes.BAGIT);
                 creator.start();
                 CreationModalStage creationStage = new CreationModalStage(stage);
-                CreationModalPane pane = new CreationModalPane(creator);
+                CreationModalPane pane = new CreationModalPane(creator, creationStage);
                 creationStage.setRoot(pane);
 
             }

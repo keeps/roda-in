@@ -37,6 +37,9 @@ public class BagitSipCreator extends SimpleSipCreator {
 
     public void run(){
         for(SipPreview preview: previews.keySet()) {
+            if(canceled) {
+                break;
+            }
             createBagit(previews.get(preview), preview);
         }
     }

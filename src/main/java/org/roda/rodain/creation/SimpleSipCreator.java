@@ -30,6 +30,8 @@ public class SimpleSipCreator extends Thread{
     protected String currentSipName;
     protected String currentAction;
 
+    protected boolean canceled = false;
+
     protected Set<SipPreview> unsuccessful;
 
     public SimpleSipCreator(Path outputPath, Map<SipPreview, String> previews){
@@ -66,5 +68,7 @@ public class SimpleSipCreator extends Thread{
         }
     }
 
-
+    public void cancel(){
+        canceled = true;
+    }
 }
