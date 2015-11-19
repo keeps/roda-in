@@ -1,8 +1,5 @@
 package org.roda.rodain.core;
 
-import java.io.File;
-import java.nio.file.Path;
-
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -17,7 +14,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+import org.roda.rodain.creation.CreateSips;
+import org.roda.rodain.creation.SipTypes;
+import org.roda.rodain.creation.ui.CreationModalPane;
+import org.roda.rodain.creation.ui.CreationModalStage;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
+
+import java.io.File;
+import java.nio.file.Path;
 
 
 /**
@@ -59,6 +63,10 @@ public class Footer extends HBox {
                 btn.setDisable(true);
                 CreateSips creator = new CreateSips(path, SipTypes.BAGIT);
                 creator.start();
+                CreationModalStage creationStage = new CreationModalStage(stage);
+                CreationModalPane pane = new CreationModalPane(creator);
+                creationStage.setRoot(pane);
+
             }
         });
     }

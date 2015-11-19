@@ -1,4 +1,4 @@
-package org.roda.rodain.core;
+package org.roda.rodain.creation;
 
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;

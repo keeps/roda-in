@@ -5,11 +5,10 @@
     -fx-text-fill: black;
 }
 
-.modal .hbox {
+.hbox {
     -fx-background-color: #089de3;
 }
-
-.modal #title {
+#title {
     -fx-font-size: x-large;
     -fx-text-fill: white;
     -fx-font-weight: 600;
@@ -17,7 +16,6 @@
 
 .modal #sub-title {
     -fx-font-size: large;
-    -fx-font-family: "Ubuntu Light";
     -fx-font-weight: bold;
 }
 
@@ -34,6 +32,24 @@
 
 .modal .cell .description {
     -fx-text-fill: dimgray;
+}
+
+/* SIP creator modal*/
+.sipcreator{
+    -fx-border-color: #089de3;
+    -fx-border-width: 2px;
+    -fx-background-color: white;
+    -fx-text-fill: black;
+}
+
+.sipcreator #subtitle {
+    -fx-font-size: medium;
+    -fx-text-fill: grey;
+}
+
+.sipcreator .progress-bar > .bar {
+    -fx-background-color: #089de3;
+    -fx-border-width: 2px;
 }
 
 /* List-view */

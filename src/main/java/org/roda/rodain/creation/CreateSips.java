@@ -1,5 +1,6 @@
-package org.roda.rodain.core;
+package org.roda.rodain.creation;
 
+import org.roda.rodain.core.Main;
 import org.roda.rodain.rules.sip.SipPreview;
 
 import java.nio.file.Path;
@@ -30,12 +31,24 @@ public class CreateSips {
         }
     }
 
+    public int getSipsCount(){
+        return sipsCount;
+    }
+
     public int getCreatedSipsCount(){
         return creator.getCreatedSipsCount();
     }
 
     public double getProgress(){
-        return creator.getCreatedSipsCount() / sipsCount * 1.0;
+        return creator.getCreatedSipsCount() / (sipsCount * 1.0);
+    }
+
+    public String getSipName(){
+        return creator.currentSipName;
+    }
+
+    public String getAction(){
+        return creator.currentAction;
     }
 
 }

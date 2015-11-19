@@ -1,4 +1,4 @@
-package org.roda.rodain.core;
+package org.roda.rodain.creation;
 
 import gov.loc.repository.bagit.Bag;
 import gov.loc.repository.bagit.BagFactory;

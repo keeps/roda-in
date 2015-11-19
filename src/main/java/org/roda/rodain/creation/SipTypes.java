@@ -1,4 +1,4 @@
-package org.roda.rodain.core;
+package org.roda.rodain.creation;
 
 /**
  * @author Andre Pereira apereira@keep.pt
