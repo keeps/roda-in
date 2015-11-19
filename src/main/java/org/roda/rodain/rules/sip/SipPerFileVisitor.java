@@ -5,7 +5,6 @@ import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.io.FilenameUtils;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.TreeNode;
@@ -16,7 +15,7 @@ import org.roda.rodain.utils.TreeVisitor;
  * @author Andre Pereira apereira@keep.pt
  * @since 05-10-2015.
  */
-public class SipPerFileVisitor extends Observable implements TreeVisitor, SipCreator {
+public class SipPerFileVisitor extends Observable implements TreeVisitor, SipPreviewCreator {
     private static final int UPDATEFREQUENCY = 500; //in milliseconds
     private static final String METADATA_EXT = ".xml";
     // This map is returned, in full, to the SipPreviewNode when there's an update

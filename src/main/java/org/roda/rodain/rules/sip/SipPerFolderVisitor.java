@@ -14,7 +14,7 @@ import org.roda.rodain.rules.MetadataTypes;
  * @author Andre Pereira apereira@keep.pt
  * @since 05-10-2015.
  */
-public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipCreator {
+public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipPreviewCreator {
     private static final int UPDATEFREQUENCY = 500; //in milliseconds
     private long lastUIUpdate = 0;
     private String startPath;

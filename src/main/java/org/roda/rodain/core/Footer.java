@@ -57,7 +57,7 @@ public class Footer extends HBox {
                 Path path = selectedDirectory.toPath();
                 Footer.setStatus("Creating BagIts...");
                 btn.setDisable(true);
-                CreateBagits creator = new CreateBagits(path.toString());
+                CreateSips creator = new CreateSips(path, SipTypes.BAGIT);
                 creator.start();
             }
         });

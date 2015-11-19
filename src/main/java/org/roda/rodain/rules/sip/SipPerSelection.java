@@ -13,7 +13,7 @@ import java.util.*;
  * @author Andre Pereira apereira@keep.pt
  * @since 10-11-2015.
  */
-public class SipPerSelection extends Observable implements TreeVisitor, SipCreator {
+public class SipPerSelection extends Observable implements TreeVisitor, SipPreviewCreator {
     private static final int UPDATEFREQUENCY = 500; //in milliseconds
     private long lastUIUpdate = 0;
     private String startPath;
@@ -127,7 +127,9 @@ public class SipPerSelection extends Observable implements TreeVisitor, SipCreat
             return;
         if(selectedPaths.contains(path.toString())){
             createSip(path, new TreeNode(path));
-        }else nodes.peekLast().add(path);
+        }else{
+            nodes.peekLast().add(path);
+        }
     }
 
     @Override

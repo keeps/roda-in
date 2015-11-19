@@ -14,7 +14,7 @@ import org.roda.rodain.utils.TreeVisitor;
  * @author Andre Pereira apereira@keep.pt
  * @since 05-10-2015.
  */
-public class SipSingle extends Observable implements TreeVisitor, SipCreator {
+public class SipSingle extends Observable implements TreeVisitor, SipPreviewCreator {
     private String startPath;
     // This map is returned, in full, to the SipPreviewNode when there's an update
     private Map<String, SipPreview> sipsMap;

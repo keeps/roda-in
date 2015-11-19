@@ -165,8 +165,8 @@ public class Rule extends Observable implements Observer, Comparable {
 
     @Override
     public void update(Observable o, Object arg) {
-        if(o instanceof SipCreator){
-            SipCreator visit = (SipCreator) o;
+        if(o instanceof SipPreviewCreator){
+            SipPreviewCreator visit = (SipPreviewCreator) o;
             sips = visit.getSips();
             while(visit.hasNext() && added < 100){
                 added++;

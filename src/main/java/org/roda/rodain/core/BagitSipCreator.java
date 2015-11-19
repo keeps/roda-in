@@ -1,16 +1,13 @@
 package org.roda.rodain.core;
 
-import static java.nio.file.StandardCopyOption.COPY_ATTRIBUTES;
-
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import gov.loc.repository.bagit.Bag;
+import gov.loc.repository.bagit.BagFactory;
+import gov.loc.repository.bagit.PreBag;
+import gov.loc.repository.bagit.writer.impl.FileSystemWriter;
+import org.roda.rodain.rules.TreeNode;
+import org.roda.rodain.rules.sip.SipPreview;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -18,58 +15,30 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-
-import org.roda.rodain.rules.TreeNode;
-import org.roda.rodain.rules.sip.SipPreview;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import gov.loc.repository.bagit.Bag;
-import gov.loc.repository.bagit.BagFactory;
-import gov.loc.repository.bagit.PreBag;
-import gov.loc.repository.bagit.writer.impl.FileSystemWriter;
+import java.io.*;
+import java.nio.file.Path;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
- * @since 06-10-2015.
+ * @since 19/11/2015.
  */
-public class CreateBagits extends Thread {
-    private static final Logger log = LoggerFactory.getLogger(CreateBagits.class.getName());
+public class BagitSipCreator extends SimpleSipCreator {
+    private static final Logger log = LoggerFactory.getLogger(BagitSipCreator.class.getName());
     private static final String DATAFOLDER = "data";
-    private int successful = 0, error = 0;
-    private Path startPath;
-    private long time;
 
-    public CreateBagits(String path){
-        startPath = Paths.get(path);
+    public BagitSipCreator(Path outputPath, Map<SipPreview, String> previews){
+        super(outputPath, previews);
     }
 
-    @Override
     public void run(){
-        //Create output folder
-        File ruleDir = new File(startPath.toString());
-        ruleDir.mkdir();
-
-        long start = System.currentTimeMillis();
-        long lastUpdate = 0;
-        Map<SipPreview, String> previews = Main.getSipPreviews();
-        for(SipPreview preview: previews.keySet()){
+        for(SipPreview preview: previews.keySet()) {
             createBagit(previews.get(preview), preview);
-
-            if(System.currentTimeMillis() - lastUpdate > 1000){
-                Footer.setStatus("Processing... " + successful + " created");
-                lastUpdate = System.currentTimeMillis();
-            }
         }
-        long end = System.currentTimeMillis();
-        time = end - start;
-        updateFooter();
-    }
-
-    private void updateFooter(){
-        Footer.activeButton();
-        long second = (time / 1000) % 60;
-        Footer.setStatus("Created " + successful + " Bagits. Errors creating " + error + " Bagits. Time: " + second + " seconds");
     }
 
     private void createBagit(String schemaId, SipPreview sip){
@@ -77,13 +46,16 @@ public class CreateBagits extends Thread {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd kk'h'mm'm'ss's'SSS");
         String dateToString = format.format(new Date());
         String timestampedName = String.format("%s %s", dateToString, sip.getName());
+        currentSipName = timestampedName;
+        currentAction = actionCreatingFolders;
         //make the directories
-        Path name = startPath.resolve(timestampedName);
+        Path name = outputPath.resolve(timestampedName);
         Path data = name.resolve(DATAFOLDER);
         new File(data.toString()).mkdirs();
 
         try {
             Set<TreeNode> files = sip.getFiles();
+            currentAction = actionCopyingData;
             for(TreeNode tn: files)
                 createFiles(tn, data);
 
@@ -95,6 +67,7 @@ public class CreateBagits extends Thread {
             b.getBagInfoTxt().put("id", sip.getName());
             b.getBagInfoTxt().put("parent", schemaId);
 
+            currentAction = actionCopyingMetadata;
             Map<String, String> metadata = createMetadata(sip);
             for(String key: metadata.keySet())
                 b.getBagInfoTxt().put(key, metadata.get(key));
@@ -102,19 +75,20 @@ public class CreateBagits extends Thread {
             b.makeComplete();
             b.close();
 
+            currentAction = actionFinalizingSip;
             FileSystemWriter fsw = new FileSystemWriter(bf);
             fsw.write(b, new File(name.toString()));
-            successful ++;
+            createdSipsCount ++;
         }
         catch (Exception e) {
             log.error("Error creating SIP", e);
-            error++;
+            unsuccessful.add(sip);
         }
     }
 
     private Map<String, String> createMetadata(SipPreview preview){
         Map<String, String> result = new HashMap<>();
-        String rawMetadata = null;
+        String rawMetadata;
         rawMetadata = preview.getMetadataContent();
 
         if(rawMetadata != null){
@@ -151,19 +125,4 @@ public class CreateBagits extends Thread {
         }
         return null;
     }
-
-    private void createFiles(TreeNode node, Path dest) throws IOException{
-        Path nodePath = node.getPath();
-        if(Files.isDirectory(nodePath)){
-            Path directory = dest.resolve(nodePath.getFileName().toString());
-            new File(directory.toString()).mkdir();
-            for(TreeNode tn: node.getAllFiles().values()){
-                createFiles(tn, directory);
-            }
-        }else{
-            Path destination = dest.resolve(nodePath.getFileName().toString());
-            Files.copy(nodePath, destination, COPY_ATTRIBUTES);
-        }
-    }
-
 }
