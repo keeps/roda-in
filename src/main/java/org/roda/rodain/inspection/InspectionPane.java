@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -44,7 +45,7 @@ public class InspectionPane extends BorderPane {
 
     private BorderPane content;
     private TreeView sipFiles;
-    private TreeItem sipRoot;
+    private SipContentDirectory sipRoot;
 
     private BorderPane rules;
     private ListView<RuleCell> ruleList;
@@ -174,7 +175,7 @@ public class InspectionPane extends BorderPane {
                }
         );
 
-        sipRoot = new TreeItem<>();
+        sipRoot = new SipContentDirectory(new TreeNode(Paths.get("")), null);
         sipRoot.setExpanded(true);
         sipFiles.setRoot(sipRoot);
         sipFiles.setShowRoot(false);
@@ -247,6 +248,7 @@ public class InspectionPane extends BorderPane {
             startingItem.setExpanded(true);
             sipRoot.getChildren().add(startingItem);
         }
+        sipRoot.sortChildren();
     }
 
     private TreeItem<Object> recCreateSipContent(TreeNode node, TreeItem parent){
