@@ -90,13 +90,14 @@
     -fx-padding: 5px;
 }
 
-.list-cell:focused:selected{
-    -fx-background-color: lightgray;
+.list-cell:focused:selected {
+    -fx-background-color: white;
 }
 
 .ruleCell{
     -fx-border-color: lightgray;
     -fx-border-width: 2;
+    -fx-background-color: white;
 }
 
 .ruleCell .label{
@@ -112,6 +113,22 @@
     -fx-background-color: lightgray;
 }
 
+.list-cell:focused:selected .ruleCell {
+    -fx-border-color: #089de3;
+}
+
+.list-cell:focused:selected .ruleCell .top{
+    -fx-background-color: #089de3;
+}
+
+.list-cell:focused:selected .ruleCell .top * {
+    -fx-text-fill: white;
+}
+
+.list-cell:focused:selected .ruleCell .title {
+    -fx-text-fill: white;
+}
+
 .ruleCell .top .button{
     -fx-border-color: transparent;
     -fx-background-color: transparent;
@@ -124,9 +141,15 @@
     -fx-border-color: #555555;
 }
 
-.ruleCell .top .button:pressed {
-    -fx-background-color: white;
-    -fx-border-color: black;
-    -fx-text-fill: black;
+.list-cell:focused:selected .top .button:hover {
+    -fx-background-color: #3998d0;
+    -fx-border-color: transparent;
+    -fx-text-fill: white;
+}
+
+.list-cell:focused:selected .top .button:pressed {
+    -fx-background-color: #5bbeff;
+    -fx-border-color: transparent;
+    -fx-text-fill: white;
 }
 

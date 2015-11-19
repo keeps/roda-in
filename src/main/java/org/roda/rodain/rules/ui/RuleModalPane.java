@@ -121,9 +121,10 @@ public class RuleModalPane extends BorderPane {
     private void createCenterAssociation(){
         boxAssociation = new VBox();
         boxAssociation.setPadding(new Insets(0, 10, 0, 10));
-        boxAssociation.setAlignment(Pos.TOP_CENTER);
+        boxAssociation.setAlignment(Pos.TOP_LEFT);
 
         Label subtitle = new Label("Choose the association method");
+        subtitle.setPadding(new Insets(0,0,10,0));
         subtitle.setId("sub-title");
 
         assocList = new ListView<>();

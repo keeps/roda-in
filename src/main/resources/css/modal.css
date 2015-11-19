@@ -11,11 +11,11 @@
 #title {
     -fx-font-size: x-large;
     -fx-text-fill: white;
-    -fx-font-weight: 600;
+    -fx-font-weight: bold;
 }
 
 .modal #sub-title {
-    -fx-font-size: large;
+    -fx-font-size: x-large;
     -fx-font-weight: bold;
 }
 
