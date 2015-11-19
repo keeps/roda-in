@@ -65,7 +65,7 @@ public class RuleCell extends HBox {
 
         Button remove = new Button("Remove");
         remove.setAlignment(Pos.CENTER);
-        remove.setGraphic(new ImageView(FontAwesomeImageCreator.im_times));
+        remove.setGraphic(new ImageView(FontAwesomeImageCreator.im_b_times));
         remove.setContentDisplay(ContentDisplay.RIGHT);
         remove.setGraphicTextGap(10);
 
@@ -77,7 +77,12 @@ public class RuleCell extends HBox {
             }
         });
 
-        String created = String.format("Created %d items", rule.getSipCount());
+        int sipCount = rule.getSipCount();
+        String format = "Created %d item";
+        if(sipCount != 1){
+            format += "s";
+        }
+        String created = String.format(format, rule.getSipCount());
         Label lCreated = new Label(created);
 
         top.getChildren().addAll(id, spaceLeft, lCreated, spaceRight, remove);

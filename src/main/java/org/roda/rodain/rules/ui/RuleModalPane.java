@@ -337,7 +337,7 @@ public class RuleModalPane extends BorderPane {
         btContinue = new Button("Continue");
         btContinue.setMaxWidth(100);
         btContinue.setMinWidth(100);
-        btContinue.setGraphic(new ImageView(FontAwesomeImageCreator.im_chevron_right));
+        btContinue.setGraphic(new ImageView(FontAwesomeImageCreator.im_w_chevron_right));
         btContinue.setGraphicTextGap(10);
         btContinue.setContentDisplay(ContentDisplay.RIGHT);
 
@@ -365,7 +365,7 @@ public class RuleModalPane extends BorderPane {
         btCancel = new Button("Cancel");
         btCancel.setMaxWidth(100);
         btCancel.setMinWidth(100);
-        btCancel.setGraphic(new ImageView(FontAwesomeImageCreator.im_times));
+        btCancel.setGraphic(new ImageView(FontAwesomeImageCreator.im_w_times));
         btCancel.setGraphicTextGap(20);
         btCancel.setContentDisplay(ContentDisplay.RIGHT);
 
@@ -381,7 +381,7 @@ public class RuleModalPane extends BorderPane {
         btBack = new Button("Back");
         btBack.setMaxWidth(100);
         btBack.setMinWidth(100);
-        btBack.setGraphic(new ImageView(FontAwesomeImageCreator.im_chevron_left));
+        btBack.setGraphic(new ImageView(FontAwesomeImageCreator.im_w_chevron_left));
         btBack.setGraphicTextGap(30);
 
         btBack.setOnAction(new EventHandler<ActionEvent>() {

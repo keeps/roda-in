@@ -14,6 +14,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.stage.DirectoryChooser;
@@ -23,10 +24,12 @@ import javafx.util.Callback;
 import org.roda.rodain.core.Footer;
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.Rule;
+import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.source.representation.SourceDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
+import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.Utils;
 import org.roda.rodain.utils.WalkFileTree;
 import org.slf4j.LoggerFactory;
@@ -40,7 +43,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     private HBox top;
     private StackPane fileExplorer;
     private TreeView<String> treeView;
-    private Stage stage;
+    private HBox bottom;
 
     private ComputeDirectorySize computeSize;
 
@@ -58,15 +61,15 @@ public class FileExplorerPane extends BorderPane implements Observer {
     public FileExplorerPane(Stage stage){
         super();
 
-        this.stage = stage;
-
         createTop();
         createFileExplorer();
+        createBottom();
 
         setFileExplorerRoot(Paths.get(System.getProperty("user.home")));
 
         this.setTop(top);
         this.setCenter(fileExplorer);
+        this.setBottom(bottom);
         this.prefWidthProperty().bind(stage.widthProperty().multiply(0.32));
         this.minWidthProperty().bind(stage.widthProperty().multiply(0.2));
     }
@@ -88,9 +91,26 @@ public class FileExplorerPane extends BorderPane implements Observer {
         title.getStyleClass().add("title");
 
         top = new HBox();
-        top.setPadding(new Insets(10, 10, 10, 10));
         top.setAlignment(Pos.CENTER_LEFT);
+        top.setPadding(new Insets(10, 10, 10, 10));
         top.getChildren().add(title);
+    }
+
+    private void createBottom(){
+        bottom = new HBox(10);
+        bottom.setPadding(new Insets(10,10,10,10));
+
+        Button ignore = new Button("Ignore");
+        ignore.setContentDisplay(ContentDisplay.RIGHT);
+        ignore.setGraphic(new ImageView(FontAwesomeImageCreator.im_w_times));
+        ignore.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                ignore();
+            }
+        });
+
+        bottom.getChildren().add(ignore);
     }
 
     private void createFileExplorer(){

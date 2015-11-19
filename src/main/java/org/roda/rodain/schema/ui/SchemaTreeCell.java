@@ -42,7 +42,12 @@ public class SchemaTreeCell extends TreeCell<String> {
                     String title = item.substring(0, begin -1);
                     String numItems = item.substring(begin + 1, end);
                     lab = new Label(title);
-                    setText(numItems + "items");
+                    int countItems = Integer.parseInt(numItems.trim());
+                    String items = "item";
+                    if(countItems != 1){
+                        items += "s";
+                    }
+                    setText(numItems + items);
                 }
             }else{
                 if(treeItem instanceof SipPreviewNode){
