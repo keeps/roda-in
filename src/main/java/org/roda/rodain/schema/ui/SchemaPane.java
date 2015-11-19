@@ -113,10 +113,11 @@ public class SchemaPane extends BorderPane {
     }
 
     public void createBottom(){
-        bottom = new HBox();
+        bottom = new HBox(10);
         bottom.setPadding(new Insets(10,10,10,10));
 
         Button associate = new Button("Associate");
+        associate.setMinWidth(100);
         associate.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
@@ -127,7 +128,21 @@ public class SchemaPane extends BorderPane {
             }
         });
 
-        bottom.getChildren().add(associate);
+        Button addLevel = new Button("Add level");
+        Button removeLevel = new Button("Remove level");
+        Button editLevel = new Button("Edit level");
+
+        addLevel.setDisable(true);
+        addLevel.setMinWidth(100);
+        removeLevel.setDisable(true);
+        removeLevel.setMinWidth(100);
+        editLevel.setDisable(true);
+        editLevel.setMinWidth(100);
+
+        HBox space = new HBox();
+        HBox.setHgrow(space, Priority.ALWAYS);
+
+        bottom.getChildren().addAll(associate, space, removeLevel,editLevel, addLevel);
     }
 
     private void startAssociation(SchemaNode descObj){

@@ -79,8 +79,19 @@
 }
 
 /* List-cell */
+
+.list-view {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-border-color: transparent;
+}
+
 .list-cell{
     -fx-padding: 5px;
+}
+
+.list-cell:focused:selected{
+    -fx-background-color: lightgray;
 }
 
 .ruleCell{
@@ -104,6 +115,7 @@
 .ruleCell .top .button{
     -fx-border-color: transparent;
     -fx-background-color: transparent;
+    -fx-text-fill: black;
     -fx-padding: 2px 2px 2px 5px;
 }
 
