@@ -33,7 +33,7 @@ public class Footer extends HBox {
         super();
         this.stage = st;
         btn = new Button("Create SIPs");
-        Image icon = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.chevron_right);
+        Image icon = FontAwesomeImageCreator.im_chevron_right;
         btn.setGraphic(new ImageView(icon));
         btn.setGraphicTextGap(10);
         btn.setContentDisplay(ContentDisplay.RIGHT);

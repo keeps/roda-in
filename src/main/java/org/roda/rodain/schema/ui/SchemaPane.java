@@ -101,10 +101,15 @@ public class SchemaPane extends BorderPane {
     }
 
     public SchemaNode getSelectedItem(){
+        SchemaNode result = null;
         int selIndex = treeView.getSelectionModel().getSelectedIndex();
-        if(selIndex == -1)
-            return null;
-        return (SchemaNode)treeView.getTreeItem(selIndex);
+        if(selIndex != -1) {
+            TreeItem selected = treeView.getTreeItem(selIndex);
+            if (selected instanceof SchemaNode) {
+                result = (SchemaNode) selected;
+            }
+        }
+        return result;
     }
 
     public void createBottom(){
@@ -115,11 +120,41 @@ public class SchemaPane extends BorderPane {
         associate.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-
+                SchemaNode selected = getSelectedItem();
+                if(selected != null){
+                    startAssociation(selected);
+                }
             }
         });
 
         bottom.getChildren().add(associate);
+    }
+
+    private void startAssociation(SchemaNode descObj){
+        Set<SourceTreeItem> sourceSet = Main.getSourceSelectedItems();
+        boolean valid = true;
+
+        if (sourceSet != null && !sourceSet.isEmpty() && descObj != null) { //both trees need to have 1 element selected
+            Set<SourceTreeItem> toRemove = new HashSet<>();
+            for(SourceTreeItem source: sourceSet) {
+                if(source.getState() != SourceTreeItemState.NORMAL) {
+                    toRemove.add(source);
+                    continue;
+                }
+                if (!(source instanceof SourceTreeDirectory || source instanceof SourceTreeFile)) {
+                    valid = false;
+                    break;
+                }
+            }
+            sourceSet.removeAll(toRemove);
+        }else valid = false;
+
+        //we need to check the size again because we may have deleted some items in the "for" loop
+        if(sourceSet.isEmpty())
+            valid = false;
+
+        if(valid)
+            RuleModalController.newAssociation(primaryStage, sourceSet, descObj);
     }
 
 
@@ -190,31 +225,8 @@ public class SchemaPane extends BorderPane {
                         boolean success = false;
                         if (db.hasString()) {
                             success = true;
-                            Set<SourceTreeItem> sourceSet = Main.getSourceSelectedItems();
                             SchemaNode descObj = (SchemaNode)cell.getTreeItem();
-                            boolean valid = true;
-
-                            if (sourceSet != null && !sourceSet.isEmpty() && descObj != null) { //both trees need to have 1 element selected
-                                Set<SourceTreeItem> toRemove = new HashSet<>();
-                                for(SourceTreeItem source: sourceSet) {
-                                    if(source.getState() != SourceTreeItemState.NORMAL) {
-                                        toRemove.add(source);
-                                        continue;
-                                    }
-                                    if (!(source instanceof SourceTreeDirectory || source instanceof SourceTreeFile)) {
-                                        valid = false;
-                                        break;
-                                    }
-                                }
-                                sourceSet.removeAll(toRemove);
-                            }else valid = false;
-
-                            //we need to check the size again because we may have deleted some items in the "for" loop
-                            if(sourceSet.isEmpty())
-                                valid = false;
-
-                            if(valid)
-                                RuleModalController.newAssociation(primaryStage, sourceSet, descObj);
+                            startAssociation(descObj);
                         }
                         event.setDropCompleted(success);
                         event.consume();

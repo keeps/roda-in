@@ -8,6 +8,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 
@@ -22,9 +23,9 @@ public class FontAwesomeImageCreator {
     public static final String times = "\uf00d";
 
     // pre-generate these images because we can't snapshot when in a modal window
-    public static final Image im_chevron_right = generate(chevron_right);
-    public static final Image im_chevron_left = generate(chevron_left);
-    public static final Image im_times = generate(times);
+    public static final Image im_chevron_right = generate(chevron_right, Color.WHITE);
+    public static final Image im_chevron_left = generate(chevron_left, Color.WHITE);
+    public static final Image im_times = generate(times, Color.WHITE);
 
     public static Font font = null;
 
@@ -32,10 +33,13 @@ public class FontAwesomeImageCreator {
 
     }
 
+    public static Image generate(String unicode) {
+        return generate(unicode, Color.BLACK);
+    }
     /*
     * http://news.kynosarges.org/2014/01/07/javafx-text-icons-as-images-files/
     */
-    public static Image generate(String unicode){
+    public static Image generate(String unicode, Paint color){
         // load the font if it hasn't been loaded yet
         if(font == null) {
             InputStream fontIS = FontAwesomeImageCreator.class.getResourceAsStream("/fonts/fontawesome-webfont.ttf");
@@ -44,6 +48,7 @@ public class FontAwesomeImageCreator {
 
         final Canvas canvas = new Canvas(SIZE, SIZE);
         final GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.setFill(color);
         gc.setFont(font);
         gc.setTextAlign(TextAlignment.CENTER);
         gc.setTextBaseline(VPos.CENTER);

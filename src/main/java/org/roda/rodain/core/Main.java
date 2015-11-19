@@ -89,6 +89,7 @@ public class Main extends Application {
         // load the custom fonts
         Font.loadFont( ClassLoader.getSystemResource("fonts/Ubuntu-Regular.ttf").toExternalForm(),  10 );
         Font.loadFont( ClassLoader.getSystemResource("fonts/Ubuntu-Medium.ttf").toExternalForm(),  10 );
+        Font.loadFont( ClassLoader.getSystemResource("fonts/Ubuntu-Light.ttf").toExternalForm(),  10 );
 
         loadProperties();
 
@@ -96,7 +97,7 @@ public class Main extends Application {
         createMenu();
 
         // setup and show the window
-        stage.setTitle("RODA-In 1.0.0-alpha.3");
+        stage.setTitle("RODA-In");
         Scene scene = new Scene(mainPane, initialWidth, initialHeight);
         if(javaVersion < 1.8) {
             scene.getStylesheets().add(ClassLoader.getSystemResource("css/Modena.css").toExternalForm());
