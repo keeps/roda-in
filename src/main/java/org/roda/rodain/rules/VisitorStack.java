@@ -11,6 +11,7 @@ import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 
+import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.slf4j.LoggerFactory;
 
 import org.roda.rodain.utils.TreeVisitor;
@@ -31,7 +32,7 @@ public class VisitorStack extends Observable{
         futures = new HashMap<>();
     }
 
-    public void add(Set<String> paths, TreeVisitor vis){
+    public void add(final Set<SourceTreeItem> items, Set<String> paths, TreeVisitor vis){
         final WalkFileTree walker = new WalkFileTree(paths, vis);
         final String id = vis.getId();
         Task toRun = new Task<Void>() {
@@ -59,6 +60,9 @@ public class VisitorStack extends Observable{
             @Override
             public void handle(WorkerStateEvent workerStateEvent) {
                 runningTask = null;
+                for(SourceTreeItem it: items){
+                    it.parentVerify();
+                }
                 update();
             }
         });

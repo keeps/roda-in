@@ -104,7 +104,8 @@ public class RuleModalController {
                 sourcePaths.add(sti.getPath());
                 rule.addObserver(sti);
             }
-            visitors.add(sourcePaths, visitor);
+
+            visitors.add(sourceSet, sourcePaths, visitor);
 
             schema.addRule(rule);
             Main.mapSelected(rule);

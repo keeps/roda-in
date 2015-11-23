@@ -31,7 +31,9 @@ public class SourceTreeItem extends TreeItem<String> implements Observer {
     }
 
     public void setState(SourceTreeItemState st){
-        state = st;
+        if(st != state){
+            state = st;
+        }
     }
 
     public SourceTreeDirectory getParentDir(){
@@ -49,6 +51,12 @@ public class SourceTreeItem extends TreeItem<String> implements Observer {
     }
     public void removeMapping(Rule r){
 
+    }
+
+    public void parentVerify(){
+        if(parent != null) {
+            parent.verifyState();
+        }
     }
 
     public void forceUpdate() {

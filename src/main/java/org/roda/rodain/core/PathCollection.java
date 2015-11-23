@@ -17,21 +17,18 @@ public class PathCollection{
     private static Map<String, SourceTreeItemState> states = new HashMap<>();
     private static Map<String, SourceTreeItem> items = new HashMap<>();
 
-
     private PathCollection(){
     }
 
     public static void addPath(String path, SourceTreeItemState st){
         states.put(path, st);
-        checkStateParents(path);
+
         //if there's an item with this path and it's states don't match
         if(items.containsKey(path)){
             SourceTreeItem item = items.get(path);
-            if(item.getState() != states.get(path)){
-                item.setState(states.get(path));
-                checkStateParents(path);
-            }
+            item.setState(states.get(path));
         }
+        checkStateParents(path);
     }
 
     public static void addPaths(Set<String> paths, SourceTreeItemState st){

@@ -403,8 +403,10 @@ public class SourceTreeDirectory extends SourceTreeItem{
 
     @Override
     public void setState(SourceTreeItemState st){
-        state = st;
-        verifyState();
+        if(state != st) {
+            state = st;
+            verifyState();
+        }
     }
 
     @Override
@@ -430,7 +432,7 @@ public class SourceTreeDirectory extends SourceTreeItem{
         rules.add(r);
         if(state == SourceTreeItemState.NORMAL) {
             state = SourceTreeItemState.MAPPED;
-            PathCollection.addPath(fullPath, state);
+            //PathCollection.addPath(fullPath, state);
         }
         /*for(TreeItem it: getChildren()){
             SourceTreeItem item = (SourceTreeItem)it;
@@ -603,12 +605,6 @@ public class SourceTreeDirectory extends SourceTreeItem{
         if(stateChanged){
             PathCollection.addPath(fullPath, state);
             parentVerify();
-        }
-    }
-
-    private void parentVerify(){
-        if(parent != null){
-            parent.verifyState();
         }
     }
 

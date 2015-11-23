@@ -55,8 +55,10 @@ public class SourceTreeFile extends SourceTreeItem{
 
     @Override
     public void setState(SourceTreeItemState st){
-        state = st;
-        parent.verifyState();
+        if(state != st) {
+            state = st;
+            parent.verifyState();
+        }
     }
 
     @Override
@@ -78,7 +80,6 @@ public class SourceTreeFile extends SourceTreeItem{
         rule = r;
         if(state == SourceTreeItemState.NORMAL) {
             state = SourceTreeItemState.MAPPED;
-            PathCollection.addPath(fullPath, state);
             if(parent != null)
                 parent.verifyState();
         }
