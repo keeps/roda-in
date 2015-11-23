@@ -67,7 +67,7 @@ public class BagitSipCreator extends SimpleSipCreator {
             Bag b = pb.makeBagInPlace(BagFactory.Version.V0_97, false);
 
             //id and parent
-            b.getBagInfoTxt().put("id", sip.getName());
+            b.getBagInfoTxt().put("id", sip.getId());
             b.getBagInfoTxt().put("parent", schemaId);
 
             currentAction = actionCopyingMetadata;
@@ -95,37 +95,16 @@ public class BagitSipCreator extends SimpleSipCreator {
         rawMetadata = preview.getMetadataContent();
 
         if(rawMetadata != null){
-            String transformed = transformXML(rawMetadata);
-
+            // TODO transform metadata
+            /*String transformed = "";
             String[] lines = transformed.split(System.lineSeparator());
-            for(String s: lines) {
+            for(String s: lines) dd{
                 int colon = s.indexOf(":");
                 String key = s.substring(0, colon);
                 String value = s.substring(colon + 1);
                 result.put(key, value);
-            }
+            }*/
         }
         return result;
-    }
-
-    private String transformXML(String input){
-        try {
-            Source xmlSource = new StreamSource(new ByteArrayInputStream( input.getBytes() ));
-            StreamSource xsltSource = new StreamSource(ClassLoader.getSystemResource("metadata.xsl").openStream());
-
-            TransformerFactory transFact = TransformerFactory.newInstance();
-            Transformer trans = transFact.newTransformer(xsltSource);
-
-            Writer writer = new StringWriter();
-            StreamResult streamResult = new StreamResult(writer);
-            trans.transform(xmlSource, streamResult);
-
-            return writer.toString();
-        } catch (TransformerException e) {
-            log.error("Error transforming XML", e);
-        } catch (IOException e) {
-            log.error("Error reading XSLT file", e);
-        }
-        return null;
     }
 }

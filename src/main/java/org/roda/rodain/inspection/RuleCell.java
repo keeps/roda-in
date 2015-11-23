@@ -125,18 +125,18 @@ public class RuleCell extends HBox {
         VBox sourceBox = new VBox(5);
         if(dirs.size() > 0) {
             Label directories = new Label();
+            directories.maxWidthProperty().bind(widthProperty().subtract(20));
             directories.setGraphic(new ImageView(SourceTreeDirectory.folderCollapseImage));
             directories.setWrapText(true);
-            directories.setMaxWidth(600);
             String directoriesString = StringUtils.join(dirs, ", ");
             directories.setText(directoriesString);
             sourceBox.getChildren().add(directories);
         }
         if(fil.size() > 0) {
             Label files = new Label();
+            files.maxWidthProperty().bind(widthProperty().subtract(20));
             files.setGraphic(new ImageView(SourceTreeFile.fileImage));
             files.setWrapText(true);
-            files.setMaxWidth(600);
             String filesString = StringUtils.join(fil, ", ");
             files.setText(filesString);
             sourceBox.getChildren().add(files);

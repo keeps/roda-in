@@ -43,6 +43,10 @@
     -fx-border-color: transparent;
 }
 
+.tree-cell {
+    -fx-indent: 18;
+}
+
 .tree-cell:filled:hover {
     -fx-background-color: powderblue;
 }

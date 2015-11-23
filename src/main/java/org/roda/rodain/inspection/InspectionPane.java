@@ -36,7 +36,6 @@ import java.util.Set;
  * @since 26-10-2015.
  */
 public class InspectionPane extends BorderPane {
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(InspectionPane.class.getName());
     private VBox topBox;
     private VBox center;
 
@@ -50,7 +49,7 @@ public class InspectionPane extends BorderPane {
     private BorderPane rules;
     private ListView<RuleCell> ruleList;
 
-    private Button remove;
+    private Button remove, flatten, skip;
     private HBox bottom;
 
     private SipPreview currentSIP;
@@ -156,24 +155,7 @@ public class InspectionPane extends BorderPane {
             }
         });
 
-        sipFiles.setOnMouseClicked(
-                new EventHandler<MouseEvent>() {
-                   @Override
-                   public void handle(MouseEvent mouseEvent) {
-                       if (mouseEvent.getClickCount() == 2) {
-                           Object source = sipFiles.getSelectionModel().getSelectedItem();
-                           if(source instanceof SipContentFile) {
-                               SipContentFile sipFile = (SipContentFile) source;
-                               try {
-                                   Desktop.getDesktop().open(new File(sipFile.getPath().toString()));
-                               } catch (IOException e) {
-                                   log.info("Error opening file from SIP content", e);
-                               }
-                           }
-                       }
-                   }
-               }
-        );
+        sipFiles.setOnMouseClicked(new ContentClickedEventHandler(sipFiles, this));
 
         sipRoot = new SipContentDirectory(new TreeNode(Paths.get("")), null);
         sipRoot.setExpanded(true);
@@ -203,7 +185,7 @@ public class InspectionPane extends BorderPane {
                 }
             }
         });
-        Button flatten = new Button("Flatten directory");
+        flatten = new Button("Flatten directory");
         flatten.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
@@ -214,7 +196,7 @@ public class InspectionPane extends BorderPane {
                 }
             }
         });
-        Button skip = new Button("Skip Directory");
+        skip = new Button("Skip Directory");
         skip.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
@@ -235,6 +217,8 @@ public class InspectionPane extends BorderPane {
         ignore.minWidthProperty().bind(content.widthProperty().multiply(0.3));
         flatten.minWidthProperty().bind(content.widthProperty().multiply(0.3));
         skip.minWidthProperty().bind(content.widthProperty().multiply(0.3));
+
+        setStateContentButtons(true);
 
         box.getChildren().addAll(ignore, flatten, skip);
         content.setBottom(box);
@@ -402,5 +386,10 @@ public class InspectionPane extends BorderPane {
         if(ruleList != null && currentSchema != null && ruleList.getItems().size() != currentSchema.getRules().size()){
             updateRuleList();
         }
+    }
+
+    public void setStateContentButtons(boolean state){
+        flatten.setDisable(state);
+        skip.setDisable(state);
     }
 }
