@@ -30,15 +30,15 @@ public class SipPerSelection extends Observable implements TreeVisitor, SipPrevi
     private Set<ContentFilter> filters;
     private MetadataTypes metaType;
     private Path metadataPath;
-    private String metadataContent;
+    private String metadataResource;
 
     public SipPerSelection(String id, Set<String> selectedPaths, Set<ContentFilter> filters, MetadataTypes metaType,
-                           Path metadataPath, String metadataContent){
+                           Path metadataPath, String metadataResource){
         this.selectedPaths = selectedPaths;
         this.filters = filters;
         this.metaType = metaType;
         this.metadataPath = metadataPath;
-        this.metadataContent = metadataContent;
+        this.metadataResource = metadataResource;
         sips = new ArrayList<>();
         sipsMap = new HashMap<>();
         nodes = new ArrayDeque<>();
@@ -113,7 +113,7 @@ public class SipPerSelection extends Observable implements TreeVisitor, SipPrevi
         Set<TreeNode> files = new HashSet<>();
         files.add(node);
 
-        SipPreview sipPreview = new SipPreview(path.getFileName().toString(), files, metaPath, metadataContent);
+        SipPreview sipPreview = new SipPreview(path.getFileName().toString(), files, metaType, metaPath, metadataResource);
         node.addObserver(sipPreview);
 
         sips.add(sipPreview);

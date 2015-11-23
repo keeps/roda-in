@@ -1,6 +1,7 @@
 package org.roda.rodain.rules.sip;
 
 import org.roda.rodain.core.PathCollection;
+import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.Utils;
@@ -19,18 +20,16 @@ public class SipPreview extends Observable implements Observer {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(SipPreview.class.getName());
     private String id;
     private String name;
-    private String metadataContent;
-    private Path metadataPath;
+    private SipMetadata metadata;
     private Set<TreeNode> files;
-    private boolean metadataLoaded = false, metadataModified = false;
     private boolean contentModified = false;
     private boolean removed = false;
 
-    public SipPreview(String name, Set<TreeNode> files, Path metadataPath, String metadataContent){
+    public SipPreview(String name, Set<TreeNode> files, MetadataTypes metaType, Path metadataPath,
+                      String metadataResource){
         this.name = name;
         this.files = files;
-        this.metadataPath = metadataPath;
-        this.metadataContent = metadataContent;
+        metadata = new SipMetadata(metaType, metadataPath, metadataResource);
         id = UUID.randomUUID().toString();
 
         setPathsAsMapped();
@@ -45,17 +44,6 @@ public class SipPreview extends Observable implements Observer {
         }
     }
 
-    private void loadMetadata(){
-        if(metadataPath != null){
-            try {
-                metadataContent = Utils.readFile(metadataPath.toString(), Charset.defaultCharset());
-                metadataLoaded = true;
-            } catch (IOException e) {
-                log.error("Error reading metadata file", e);
-            }
-        }
-    }
-
     public String getName() {
         return name;
     }
@@ -65,19 +53,11 @@ public class SipPreview extends Observable implements Observer {
     }
 
     public String getMetadataContent(){
-        if(! metadataLoaded){
-            loadMetadata();
-        }
-        return metadataContent;
-    }
-
-    public Path getMetadataPath(){
-        return metadataPath;
+        return metadata.getMetadataContent();
     }
 
     public void updateMetadata(String meta){
-        metadataModified = true;
-        metadataContent = meta;
+        metadata.update(meta);
         setChanged();
         notifyObservers();
     }
@@ -95,7 +75,7 @@ public class SipPreview extends Observable implements Observer {
     }
 
     public boolean isMetadataModified() {
-        return metadataModified;
+        return metadata.isModified();
     }
 
     public boolean isContentModified() {

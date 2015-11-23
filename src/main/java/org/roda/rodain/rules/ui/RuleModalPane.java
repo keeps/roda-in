@@ -56,6 +56,7 @@ public class RuleModalPane extends BorderPane {
     private ListView<HBoxCell> metaList;
     private HBoxCell cellSingleFile, cellSameFolder, cellDiffFolder, cellTemplate;
     private Button chooseDir, chooseFile;
+    private ComboBox<String> templateTypes;
 
     private Button btContinue, btCancel, btBack;
     private HBox space, buttons;
@@ -259,7 +260,7 @@ public class RuleModalPane extends BorderPane {
         icon = properties.getProperty("metadata.template.icon");
         title = properties.getProperty("metadata.template.title");
         description = properties.getProperty("metadata.template.description");
-        cellTemplate = new HBoxCell(icon, title, description, new HBox());
+        cellTemplate = new HBoxCell(icon, title, description, optionsTemplate());
         cellTemplate.setUserData(MetadataTypes.NEWTEXT);
 
         ObservableList<HBoxCell> hboxList = FXCollections.observableArrayList();
@@ -334,6 +335,19 @@ public class RuleModalPane extends BorderPane {
         });
 
         box.getChildren().addAll(chooseDir);
+        return box;
+    }
+
+    private HBox optionsTemplate(){
+        HBox box = new HBox();
+        box.setAlignment(Pos.CENTER_LEFT);
+
+        templateTypes = new ComboBox<>();
+        templateTypes.getItems().addAll("DCMES - Dublin Core", "EAD-C");
+        templateTypes.getSelectionModel().selectFirst();
+
+        box.getChildren().add(templateTypes);
+
         return box;
     }
 
@@ -481,5 +495,9 @@ public class RuleModalPane extends BorderPane {
 
     public Path getSameDir() {
         return Paths.get(sameDir);
+    }
+
+    public String getTemplate(){
+        return templateTypes.getSelectionModel().getSelectedItem();
     }
 }

@@ -80,7 +80,7 @@ public class RuleModalController {
                 level = pane.getLevel();
             MetadataTypes metaType = pane.getMetadataType();
             Path metadataPath = null;
-            String metadataContent = null;
+            String metadataResource = null;
             switch (metaType){
                 case SAMEDIRECTORY:
                     metadataPath = pane.getSameDir();
@@ -91,9 +91,11 @@ public class RuleModalController {
                 case SINGLEFILE:
                     metadataPath = pane.getFromFile();
                     break;
+                case NEWTEXT:
+                    metadataResource = pane.getTemplate();
                 default: break;
             }
-            Rule rule = new Rule(sourceSet, assocType, level, metadataPath, metadataContent, metaType);
+            Rule rule = new Rule(sourceSet, assocType, level, metadataPath, metadataResource, metaType);
             rule.addObserver(schema);
 
             TreeVisitor visitor = rule.apply();
