@@ -272,7 +272,9 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
                 SourceTreeDirectory dirParent = item.getParentDir();
                 if (!isShowMapped()) {
-                    dirParent.hideMapped();
+                    if(dirParent != null) {
+                        dirParent.hideMapped();
+                    }
                     treeView.getSelectionModel().clearSelection();
                 } else {//force update
                     String value = item.getValue();
