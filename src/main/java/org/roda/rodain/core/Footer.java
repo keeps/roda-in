@@ -30,44 +30,17 @@ import java.nio.file.Path;
  */
 public class Footer extends HBox {
     public static final Label status = new Label();
-    private Stage stage;
-    static Button btn;
 
-    public Footer(Stage st){
+    public Footer(){
         super();
-        this.stage = st;
-        btn = new Button("Create SIPs");
-        Image icon = FontAwesomeImageCreator.im_w_chevron_right;
-        btn.setGraphic(new ImageView(icon));
-        btn.setGraphicTextGap(10);
-        btn.setContentDisplay(ContentDisplay.RIGHT);
 
         HBox space = new HBox();
         HBox.setHgrow(space, Priority.ALWAYS);
 
         this.setPadding(new Insets(5, 5, 5, 5));
         this.setSpacing(10);
-        this.setAlignment(Pos.CENTER);
-        this.getChildren().addAll(status, space, btn);
-
-        btn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                DirectoryChooser chooser = new DirectoryChooser();
-                chooser.setTitle("Please choose a folder");
-                File selectedDirectory = chooser.showDialog(stage);
-                if (selectedDirectory == null)
-                    return;
-                Path path = selectedDirectory.toPath();
-
-                CreateSips creator = new CreateSips(path, SipTypes.BAGIT);
-                creator.start();
-                CreationModalStage creationStage = new CreationModalStage(stage);
-                CreationModalPane pane = new CreationModalPane(creator, creationStage);
-                creationStage.setRoot(pane);
-
-            }
-        });
+        this.setAlignment(Pos.CENTER_LEFT);
+        this.getChildren().add(status);
     }
 
     public static void setStatus(final String st){
@@ -78,14 +51,4 @@ public class Footer extends HBox {
             }
         });
     }
-
-    public static void activeButton(){
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                btn.setDisable(false);
-            }
-        });
-    }
-
 }

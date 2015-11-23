@@ -65,9 +65,6 @@ public class RuleCell extends HBox {
 
         Button remove = new Button("Remove");
         remove.setAlignment(Pos.CENTER);
-        remove.setGraphic(new ImageView(FontAwesomeImageCreator.im_b_times));
-        remove.setContentDisplay(ContentDisplay.RIGHT);
-        remove.setGraphicTextGap(10);
 
         remove.setOnAction(new EventHandler<ActionEvent>() {
             @Override

@@ -24,6 +24,10 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.roda.rodain.creation.CreateSips;
+import org.roda.rodain.creation.SipTypes;
+import org.roda.rodain.creation.ui.CreationModalPane;
+import org.roda.rodain.creation.ui.CreationModalStage;
 import org.roda.rodain.inspection.InspectionPane;
 import org.roda.rodain.inspection.RuleCell;
 import org.roda.rodain.rules.Rule;
@@ -134,7 +138,7 @@ public class Main extends Application {
         split.getItems().addAll(previewExplorer, schemaPane, inspectionPane);
 
         //Create Footer
-        HBox footer = new Footer(stage);
+        HBox footer = new Footer();
 
         mainPane = new BorderPane();
         mainPane.setCenter(split);
@@ -169,7 +173,26 @@ public class Main extends Application {
 
             }
         });
-        menuFile.getItems().addAll(openFolder, updateCS);
+
+        final MenuItem createSIPs = new MenuItem("Create SIPs");
+        createSIPs.setAccelerator(KeyCombination.keyCombination("Ctrl+S"));
+        createSIPs.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t) {
+                DirectoryChooser chooser = new DirectoryChooser();
+                chooser.setTitle("Please choose a folder");
+                File selectedDirectory = chooser.showDialog(stage);
+                if (selectedDirectory == null)
+                    return;
+                Path path = selectedDirectory.toPath();
+
+                CreateSips creator = new CreateSips(path, SipTypes.BAGIT);
+                creator.start();
+                CreationModalStage creationStage = new CreationModalStage(stage);
+                CreationModalPane pane = new CreationModalPane(creator, creationStage);
+                creationStage.setRoot(pane);
+            }
+        });
+        menuFile.getItems().addAll(openFolder, updateCS, createSIPs);
 
         // Edit
         final MenuItem ignoreItems = new MenuItem("Ignore item(s)");
