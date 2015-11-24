@@ -5,10 +5,10 @@ import org.roda.rodain.utils.Utils;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
+import java.util.Properties;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -16,6 +16,7 @@ import java.nio.file.Path;
  */
 public class SipMetadata {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(SipMetadata.class.getName());
+    private static Properties properties;
     private MetadataTypes type;
     private boolean loaded = false, modified = false;
     private String content;
@@ -36,8 +37,14 @@ public class SipMetadata {
         try {
             if(type == MetadataTypes.NEWTEXT){
                 if(resource != null){
-                    URI resourceURI = ClassLoader.getSystemResource(resource).toURI();
-                    content = Utils.readFile(resourceURI.toString(), Charset.defaultCharset());
+                    String fileName;
+                    if(resource.equals("EAD-C")){
+                        fileName = properties.getProperty("metadata.template.ead");
+                    }else fileName = properties.getProperty("metadata.template.dcmes");
+
+                    InputStream contentStream = ClassLoader.getSystemResource(fileName).openStream();
+                    content = Utils.convertStreamToString(contentStream);
+                    contentStream.close();
                 }
             } else {
                 if (path != null) {
@@ -45,8 +52,6 @@ public class SipMetadata {
                     loaded = true;
                 }
             }
-        } catch (URISyntaxException e){
-            log.error("Error accessing resource", e);
         } catch (IOException e) {
             log.error("Error reading metadata file", e);
         }
@@ -64,4 +69,7 @@ public class SipMetadata {
         content = meta;
     }
 
+    public static void setProperties(Properties prop){
+        properties = prop;
+    }
 }

@@ -32,11 +32,10 @@ import org.roda.rodain.inspection.InspectionPane;
 import org.roda.rodain.inspection.RuleCell;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.VisitorStack;
+import org.roda.rodain.rules.sip.SipMetadata;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.rules.ui.RuleModalPane;
-import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SchemaPane;
-import org.roda.rodain.schema.ui.SchemaTreeCell;
 import org.roda.rodain.source.ui.FileExplorerPane;
 import org.roda.rodain.source.ui.SourceTreeCell;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
@@ -253,6 +252,7 @@ public class Main extends Application {
             config.load(ClassLoader.getSystemResource("properties/config.properties").openStream());
             RuleModalPane.setProperties(config);
             RuleCell.setProperties(config);
+            SipMetadata.setProperties(config);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -260,10 +260,6 @@ public class Main extends Application {
 
     public static double getJavaVersion(){
         return javaVersion;
-    }
-
-    public static SchemaNode getSchemaSelectedItem(){
-        return schemaPane.getSelectedItem();
     }
     public static Set<SourceTreeItem> getSourceSelectedItems(){
         return previewExplorer.getSelectedItems();
