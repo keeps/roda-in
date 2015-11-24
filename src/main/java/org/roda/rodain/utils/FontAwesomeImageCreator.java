@@ -22,6 +22,7 @@ public class FontAwesomeImageCreator {
     public static final String chevron_left = "\uf053";
     public static final String times = "\uf00d";
 
+    public static final Font font = loadFont();
     // pre-generate these images because we can't snapshot when in a modal window
     // white
     public static final Image im_w_chevron_right = generate(chevron_right, Color.WHITE);
@@ -32,24 +33,40 @@ public class FontAwesomeImageCreator {
     public static final Image im_b_chevron_left = generate(chevron_left, Color.BLACK);
     public static final Image im_b_times = generate(times, Color.BLACK);
 
-    public static final Font font = loadFont();
-
     private FontAwesomeImageCreator(){
 
     }
 
     private static Font loadFont(){
         InputStream fontIS = FontAwesomeImageCreator.class.getResourceAsStream("/fonts/fontawesome-webfont.ttf");
-        Font fontLoaded = Font.loadFont(fontIS, 16);
-        return fontLoaded;
+        return Font.loadFont(fontIS, 16);
     }
 
+    /**
+     * Converts an unicode char to an Image using the FontAwesome font with the color Black.
+     *
+     * @param unicode The String with the unicode which will be turned into an image.
+     * @return An Image with the unicode char converted to an image.
+     * @see #generate(String, Paint)
+     */
     public static Image generate(String unicode) {
         return generate(unicode, Color.BLACK);
     }
-    /*
-    * http://news.kynosarges.org/2014/01/07/javafx-text-icons-as-images-files/
-    */
+
+    /**
+     * Converts an unicode char to an Image using the FontAwesome font.
+     *
+     * <p>
+     *     Based on the code presented here:
+     *     <a href="http://news.kynosarges.org/2014/01/07/javafx-text-icons-as-images-files/">
+     *         javafx-text-icons-as-images-files
+     *         </a>
+     * </p>
+     *
+     * @param unicode The String with the unicode which will be turned into an image.
+     * @param color The color of the font.
+     * @return An Image with the unicode char converted to an image.
+     */
     public static Image generate(String unicode, Paint color){
         final Canvas canvas = new Canvas(SIZE, SIZE);
         final GraphicsContext gc = canvas.getGraphicsContext2D();

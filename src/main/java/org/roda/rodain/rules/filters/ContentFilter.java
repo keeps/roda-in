@@ -20,22 +20,49 @@ public class ContentFilter {
         mapped = new HashSet<>();
     }
 
+    /**
+     * Adds the path to the ignored paths list.
+     * @param st The path to be added to the ignored paths list.
+     */
     public void addIgnored(String st){
         ignored.add(st);
     }
 
+    /**
+     * Adds the all the paths in the collection to the ignored paths list.
+     * @param col The collection of paths to be added to the ignored paths list.
+     */
     public void addAllIgnored(Collection col){
         ignored.addAll(col);
     }
 
+    /**
+     * Adds the path to the mapped paths list.
+     * @param st The path to be added to the mapped paths list.
+     */
     public void addMapped(String st){
         mapped.add(st);
     }
 
+    /**
+     * Adds the all the paths in the collection to the mapped paths list.
+     * @param col The collection of paths to be added to the mapped paths list.
+     */
     public void addAllMapped(Collection col){
         mapped.addAll(col);
     }
 
+    /**
+     * Checks the ignored and mapped path lists and the PathCollection to determine if the path should be filtered.
+     *
+     * <p>
+     *     Additionally, checks if any ancestor of the path is in one of the lists.
+     * </p>
+     *
+     * @param st The path to be filtered
+     * @return True if the path or any of its ancestors is in any of the lists, or if the state of the path in the
+     * PathCollection isn't NORMAL, false otherwise.
+     */
     public boolean filter(String st){
         boolean result = false;
         if(ignored.contains(st) || mapped.contains(st) || PathCollection.getState(st) != SourceTreeItemState.NORMAL) {

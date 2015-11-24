@@ -57,7 +57,7 @@ public class SchemaPane extends BorderPane {
         this.minWidthProperty().bind(stage.widthProperty().multiply(0.2));
     }
 
-    public void createTop(){
+    private void createTop(){
         Label title = new Label("Classification Schema");
         title.getStyleClass().add("title");
 
@@ -67,7 +67,7 @@ public class SchemaPane extends BorderPane {
         refresh.getChildren().add(title);
     }
 
-    public void createTreeView(){
+    private void createTreeView(){
         //create tree pane
         VBox treeBox=new VBox();
         treeBox.setPadding(new Insets(10, 10, 10, 10));
@@ -100,7 +100,7 @@ public class SchemaPane extends BorderPane {
         treeView.setOnMouseClicked(new SchemaClickedEventHandler(this));
     }
 
-    public SchemaNode getSelectedItem(){
+    private SchemaNode getSelectedItem(){
         SchemaNode result = null;
         int selIndex = treeView.getSelectionModel().getSelectedIndex();
         if(selIndex != -1) {
@@ -112,7 +112,7 @@ public class SchemaPane extends BorderPane {
         return result;
     }
 
-    public void createBottom(){
+    private void createBottom(){
         bottom = new HBox(10);
         bottom.setPadding(new Insets(10,10,10,10));
 

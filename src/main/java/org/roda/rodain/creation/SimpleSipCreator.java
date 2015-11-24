@@ -42,18 +42,30 @@ public class SimpleSipCreator extends Thread{
         unsuccessful = new HashSet<>();
     }
 
+    /**
+     * @return The number of SIPs that have already been created.
+     */
     public int getCreatedSipsCount(){
         return createdSipsCount;
     }
 
+    /**
+     * @return The number of SIPs that haven't been created due to an error.
+     */
     public int getErrorCount(){
         return unsuccessful.size();
     }
 
+    /**
+     * @return The action currently being done on the SIP.
+     */
     public String getCurrentAction() {
         return currentAction;
     }
 
+    /**
+     * @return The name of the SIP currently being processed.
+     */
     public String getCurrentSipName() {
         return currentSipName;
     }
@@ -72,12 +84,15 @@ public class SimpleSipCreator extends Thread{
         }
     }
 
+    /**
+     * Halts the execution of this SIP creator.
+     */
     public void cancel(){
         canceled = true;
     }
 
     @Override
     public void run() {
-        super.run();
+
     }
 }

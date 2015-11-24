@@ -31,26 +31,44 @@ public class CreateSips {
         }
     }
 
+    /**
+     * @return The total number of SIPs that will be created.
+     */
     public int getSipsCount(){
         return sipsCount;
     }
 
+    /**
+     * @return The number of SIPs that have already been created.
+     */
     public int getCreatedSipsCount(){
         return creator.getCreatedSipsCount();
     }
 
+    /**
+     * @return A double resulting of the division of the number of SIPs already created by the total number of SIPs.
+     */
     public double getProgress(){
         return creator.getCreatedSipsCount() / (sipsCount * 1.0);
     }
 
+    /**
+     * @return The name of the SIP currently being processed.
+     */
     public String getSipName(){
-        return creator.currentSipName;
+        return creator.getCurrentSipName();
     }
 
+    /**
+     * @return The action currently being done on the SIP.
+     */
     public String getAction(){
-        return creator.currentAction;
+        return creator.getCurrentAction();
     }
 
+    /**
+     * Halts the execution of the SIP creator.
+     */
     public void cancel(){
         creator.cancel();
     }

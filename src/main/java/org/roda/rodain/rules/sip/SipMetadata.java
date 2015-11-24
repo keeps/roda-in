@@ -57,6 +57,11 @@ public class SipMetadata {
         }
     }
 
+    /**
+     * Gets the metadata content of a SIP, loading it from the disk if that action hasn't been previously done.
+     *
+     * @return The metadata content of the SIP.
+     */
     public String getMetadataContent(){
         if(! loaded){
             loadMetadata();
@@ -64,6 +69,10 @@ public class SipMetadata {
         return content;
     }
 
+    /**
+     * Updates the metadata content of the SIP.
+     * @param meta The new metadata content.
+     */
     public void update(String meta){
         modified = true;
         content = meta;

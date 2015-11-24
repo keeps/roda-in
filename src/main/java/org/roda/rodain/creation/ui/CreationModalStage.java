@@ -34,12 +34,19 @@ public class CreationModalStage extends Stage {
         setScene(scene);
     }
 
+    /**
+     * Used to remove the color adjustment effect on the background and remove this Stage.
+     */
     @Override
     public void close(){
         getOwner().getScene().getRoot().setEffect(null);
         super.close();
     }
 
+    /**
+     * Sets the root Scene of this Stage, applies a color adjustment effect and enables dragging of the window.
+     * @param root
+     */
     public void setRoot(Parent root){
         this.getScene().setRoot(root);
 

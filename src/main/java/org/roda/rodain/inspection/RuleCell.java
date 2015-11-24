@@ -145,6 +145,10 @@ public class RuleCell extends HBox {
         return content;
     }
 
+    /**
+     * Sets the Properties object of RuleCell.
+     * @param prop The new Properties object.
+     */
     public static void setProperties(Properties prop){
         properties = prop;
     }

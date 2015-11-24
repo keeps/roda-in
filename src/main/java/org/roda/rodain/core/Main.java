@@ -73,6 +73,17 @@ public class Main extends Application {
         launch(args);
     }
 
+    /**
+     * Creates the interface structure and loads resources.
+     *
+     * <p>
+     *     This method sets the application logo, loads fonts, styles and property files.
+     *     Furthermore, creates the frame structure and the menu.
+     *     The frame structure is a SplitPane, split in three sections - file explorer, classification schema, inspection -
+     *     and a footer.
+     * </p>
+     * @param primaryStage
+     */
     @Override
     public void start(Stage primaryStage) {
         stage = primaryStage;
@@ -271,9 +282,6 @@ public class Main extends Application {
     }
     public static void mapSelected(Rule r){
         previewExplorer.map(r);
-    }
-    public static void ignore(Set<SourceTreeItem> items){
-        previewExplorer.ignore(items);
     }
     public static InspectionPane getInspectionPane(){
         return inspectionPane;

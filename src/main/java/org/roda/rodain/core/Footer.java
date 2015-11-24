@@ -27,6 +27,10 @@ public class Footer extends HBox {
         this.getChildren().add(status);
     }
 
+    /**
+     * Sets the status label with the String received as parameter.
+     * @param st The String to be set as the status.
+     */
     public static void setStatus(final String st){
         Platform.runLater(new Runnable() {
             @Override

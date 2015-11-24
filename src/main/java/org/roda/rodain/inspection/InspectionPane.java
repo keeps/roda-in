@@ -258,7 +258,7 @@ public class InspectionPane extends BorderPane {
         rules.setCenter(ruleList);
     }
 
-    public void createBottom(){
+    private void createBottom(){
         bottom = new HBox();
         bottom.setPadding(new Insets(10,10,10,10));
         bottom.setAlignment(Pos.CENTER_LEFT);
@@ -297,6 +297,19 @@ public class InspectionPane extends BorderPane {
         return label;
     }
 
+    /**
+     * Updates the UI using a SipPreviewNode.
+     *
+     * <p>
+     *     This method gets the id, metadata and content of a SipPreviewNode and uses them to update the UI.
+     *     The content is used to create a tree of SipContentDirectory and SipContentFile, which are used to populate a TreeView.
+     * </p>
+     *
+     * @see SipPreviewNode
+     * @see SipContentDirectory
+     * @see SipContentFile
+     * @param sip The SipPreviewNode used to update the UI.
+     */
     public void update(SipPreviewNode sip){
         setBottom(bottom);
         currentSIP = sip.getSip();
@@ -335,6 +348,18 @@ public class InspectionPane extends BorderPane {
         remove.setDisable(false);
     }
 
+    /**
+     * Updates the UI using a SchemaNode.
+     *
+     * <p>
+     *     Uses the metadata and rule list to update the UI.
+     *     The rule list is used to create a ListView of RuleCell.
+     * </p>
+     *
+     * @see RuleCell
+     * @see SchemaNode
+     * @param node The SchemaNode used to update the UI.
+     */
     public void update(SchemaNode node){
         setBottom(bottom);
         currentSIP = null;
@@ -371,7 +396,7 @@ public class InspectionPane extends BorderPane {
 
     /**
      * Notifies this pane that something changed.
-     * Currently, checks if the selected schema node's rules changed and updates the rule list.
+     * Checks if the selected schema node's rules changed and updates the rule list.
      */
     public void notifyChange(){
         if(ruleList != null && currentSchema != null && ruleList.getItems().size() != currentSchema.getRules().size()){
@@ -379,6 +404,15 @@ public class InspectionPane extends BorderPane {
         }
     }
 
+    /**
+     * Sets the state of the SIP content buttons: "Flatten directory" and "Skip directory".
+     *
+     * <p>
+     *     Used by ContentClickedEventHandler to set the state of the SIP content buttons, since they are only enabled
+     *     when a directory is selected.
+     * </p>
+     * @param state The new state of the buttons.
+     */
     public void setStateContentButtons(boolean state){
         flatten.setDisable(state);
         skip.setDisable(state);

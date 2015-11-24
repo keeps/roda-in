@@ -63,15 +63,28 @@ public class SipContentDirectory extends TreeItem<Object> implements InspectionT
         });
     }
 
+    /**
+     * @return The TreeNode of this item..
+     */
     public TreeNode getTreeNode(){
         return treeNode;
     }
 
+    /**
+     * @return The parent item of this item.
+     */
     @Override
     public TreeItem getParentDir() {
         return parent;
     }
 
+    /**
+     * Skips the directory.
+     *
+     * <p>
+     *     This method removes this node from its parent and adds all its children to the parent, effectively skipping the directory.
+     * </p>
+     */
     public void skip(){
         SipContentDirectory par = (SipContentDirectory) this.parent;
         TreeNode parentTreeNode = par.getTreeNode();
@@ -80,6 +93,13 @@ public class SipContentDirectory extends TreeItem<Object> implements InspectionT
         par.sortChildren();
     }
 
+    /**
+     * Flattens the directory.
+     *
+     * <p>
+     *     This method flattens the item's file tree, i.e., moves all it's child nodes to one level.
+     * </p>
+     */
     public void flatten(){
         treeNode.flatten();
         getChildren().clear();
@@ -90,6 +110,14 @@ public class SipContentDirectory extends TreeItem<Object> implements InspectionT
         sortChildren();
     }
 
+    /**
+     * Sorts the item's children.
+     *
+     * <p>
+     *     The comparator used by this method forces the directories to appear before the files.
+     *     Between items of the same class the sorting is done comparing the items' values.
+     * </p>
+     */
     public void sortChildren(){
         ArrayList<TreeItem<Object>> aux = new ArrayList<>(getChildren());
         Collections.sort(aux, comparator);
@@ -118,6 +146,9 @@ public class SipContentDirectory extends TreeItem<Object> implements InspectionT
         };
     }
 
+    /**
+     * @return The path of this item.
+     */
     @Override
     public Path getPath() {
         return this.fullPath;

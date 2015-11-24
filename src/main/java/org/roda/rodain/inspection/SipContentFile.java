@@ -30,11 +30,17 @@ public class SipContentFile extends TreeItem<Object> implements InspectionTreeIt
         }
     }
 
+    /**
+     * @return This item's parent.
+     */
     @Override
     public TreeItem getParentDir() {
         return parent;
     }
 
+    /**
+     * @return The path of this item.
+     */
     @Override
     public Path getPath() {
         return this.fullPath;
