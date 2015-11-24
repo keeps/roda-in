@@ -91,7 +91,7 @@ public class BagitSipCreator extends SimpleSipCreator {
         rawMetadata = preview.getMetadataContent();
 
         if(rawMetadata != null){
-            // TODO transform metadata
+            // TODO transform metadata. How?
         }
         return result;
     }

@@ -57,22 +57,13 @@ public class SourceTreeCell extends TreeCell<String> {
                 empty();
                 return;
             }
-            //if the item is ignored and we're not showing ignored items, clear the cell and return
             if(sti.getState() == SourceTreeItemState.IGNORED ) {
                 //the context menu only makes sense if the item is ignored
                 setContextMenu(menu);
-                if (!FileExplorerPane.isShowIgnored()) {
-                    empty();
-                    return;
-                } else lab.setId("ignored");
+                lab.setId("ignored");
             }
-
-            //if the item is mapped and we're not showing mapped items, clear the cell and return
             if(sti.getState() == SourceTreeItemState.MAPPED) {
-                if (!FileExplorerPane.isShowMapped()) {
-                    empty();
-                    return;
-                } else lab.setStyle(style.getProperty("source.cell.mapped"));
+                lab.setStyle(style.getProperty("source.cell.mapped"));
             }
 
 
