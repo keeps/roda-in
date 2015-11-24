@@ -1,27 +1,22 @@
 package org.roda.rodain.creation;
 
-import gov.loc.repository.bagit.Bag;
-import gov.loc.repository.bagit.BagFactory;
-import gov.loc.repository.bagit.PreBag;
-import gov.loc.repository.bagit.writer.impl.FileSystemWriter;
-import org.roda.rodain.rules.TreeNode;
-import org.roda.rodain.rules.sip.SipPreview;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-import java.io.*;
+import java.io.File;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import org.roda.rodain.rules.TreeNode;
+import org.roda.rodain.rules.sip.SipPreview;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import gov.loc.repository.bagit.Bag;
+import gov.loc.repository.bagit.BagFactory;
+import gov.loc.repository.bagit.PreBag;
+import gov.loc.repository.bagit.writer.impl.FileSystemWriter;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -35,6 +30,7 @@ public class BagitSipCreator extends SimpleSipCreator {
         super(outputPath, previews);
     }
 
+    @Override
     public void run(){
         for(SipPreview preview: previews.keySet()) {
             if(canceled) {
@@ -96,14 +92,6 @@ public class BagitSipCreator extends SimpleSipCreator {
 
         if(rawMetadata != null){
             // TODO transform metadata
-            /*String transformed = "";
-            String[] lines = transformed.split(System.lineSeparator());
-            for(String s: lines) dd{
-                int colon = s.indexOf(":");
-                String key = s.substring(0, colon);
-                String value = s.substring(colon + 1);
-                result.put(key, value);
-            }*/
         }
         return result;
     }

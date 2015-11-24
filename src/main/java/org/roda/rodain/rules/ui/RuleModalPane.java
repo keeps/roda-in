@@ -63,7 +63,7 @@ public class RuleModalPane extends BorderPane {
     private States currentState;
     private String fromFile, diffDir, sameDir;
 
-    private int folderCount, fileCount;
+    private int folderCount;
 
 
     public RuleModalPane(Stage stage, Set<SourceTreeItem> sourceSet, SchemaNode schemaNode){
@@ -105,7 +105,6 @@ public class RuleModalPane extends BorderPane {
             else fil.add(it.getValue());
         }
         folderCount = dirs.size();
-        fileCount = fil.size();
 
         box.getChildren().add(title);
 
@@ -132,19 +131,20 @@ public class RuleModalPane extends BorderPane {
         assocList.setMinHeight(420);
         assocList.setMaxHeight(420);
         assocList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<HBoxCell>() {
-                    public void changed(ObservableValue<? extends HBoxCell> observable, final HBoxCell oldValue, HBoxCell newValue) {
-                        if(newValue != null && newValue.isDisabled()){
-                            Platform.runLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if(oldValue != null)
-                                        assocList.getSelectionModel().select(oldValue);
-                                    else assocList.getSelectionModel().clearSelection();
-                                }
-                            });
+            @Override
+            public void changed(ObservableValue<? extends HBoxCell> observable, final HBoxCell oldValue, HBoxCell newValue) {
+                if(newValue != null && newValue.isDisabled()){
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(oldValue != null)
+                                assocList.getSelectionModel().select(oldValue);
+                            else assocList.getSelectionModel().clearSelection();
                         }
-                    }
-                });
+                    });
+                }
+            }
+        });
 
         String icon = properties.getProperty("association.singleSip.icon");
         String title = properties.getProperty("association.singleSip.title");
@@ -175,7 +175,7 @@ public class RuleModalPane extends BorderPane {
         hboxList.addAll(cellSingleSip, cellSelected, cellSipPerFile, cellSipPerFolder);
         assocList.setItems(hboxList);
 
-        if(folderCount == 0 || level.getItems().size() == 0){
+        if(folderCount == 0 || level.getItems().isEmpty()){
             cellSipPerFolder.setDisable(true);
         }
 
@@ -224,6 +224,7 @@ public class RuleModalPane extends BorderPane {
         metaList.setMinHeight(420);
         metaList.setMaxHeight(420);
         metaList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<HBoxCell>() {
+            @Override
             public void changed(ObservableValue<? extends HBoxCell> observable, final HBoxCell oldValue, HBoxCell newValue) {
                 if(newValue != null && newValue.isDisabled()){
                     Platform.runLater(new Runnable() {

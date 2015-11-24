@@ -1,27 +1,11 @@
 package org.roda.rodain.core;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.Stage;
-import org.roda.rodain.creation.CreateSips;
-import org.roda.rodain.creation.SipTypes;
-import org.roda.rodain.creation.ui.CreationModalPane;
-import org.roda.rodain.creation.ui.CreationModalStage;
-import org.roda.rodain.utils.FontAwesomeImageCreator;
-
-import java.io.File;
-import java.nio.file.Path;
 
 
 /**

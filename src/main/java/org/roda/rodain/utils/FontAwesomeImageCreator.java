@@ -32,10 +32,16 @@ public class FontAwesomeImageCreator {
     public static final Image im_b_chevron_left = generate(chevron_left, Color.BLACK);
     public static final Image im_b_times = generate(times, Color.BLACK);
 
-    public static Font font = null;
+    public static final Font font = loadFont();
 
     private FontAwesomeImageCreator(){
 
+    }
+
+    private static Font loadFont(){
+        InputStream fontIS = FontAwesomeImageCreator.class.getResourceAsStream("/fonts/fontawesome-webfont.ttf");
+        Font fontLoaded = Font.loadFont(fontIS, 16);
+        return fontLoaded;
     }
 
     public static Image generate(String unicode) {
@@ -45,12 +51,6 @@ public class FontAwesomeImageCreator {
     * http://news.kynosarges.org/2014/01/07/javafx-text-icons-as-images-files/
     */
     public static Image generate(String unicode, Paint color){
-        // load the font if it hasn't been loaded yet
-        if(font == null) {
-            InputStream fontIS = FontAwesomeImageCreator.class.getResourceAsStream("/fonts/fontawesome-webfont.ttf");
-            font = Font.loadFont(fontIS, 16);
-        }
-
         final Canvas canvas = new Canvas(SIZE, SIZE);
         final GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.setFill(color);
@@ -61,7 +61,6 @@ public class FontAwesomeImageCreator {
 
         final SnapshotParameters params = new SnapshotParameters();
         params.setFill(Color.TRANSPARENT);
-        Image res = canvas.snapshot(params, null);
-        return res;
+        return canvas.snapshot(params, null);
     }
 }

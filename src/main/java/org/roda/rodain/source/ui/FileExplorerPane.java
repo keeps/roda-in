@@ -1,6 +1,5 @@
 package org.roda.rodain.source.ui;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,22 +13,21 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.*;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import org.roda.rodain.core.Footer;
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.Rule;
-import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.source.representation.SourceDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
-import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.Utils;
 import org.roda.rodain.utils.WalkFileTree;
 import org.slf4j.LoggerFactory;

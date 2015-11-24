@@ -57,7 +57,7 @@ public class WalkFileTree extends Thread{
                         }
                     });
                 } catch (AccessDeniedException e){
-                    // These happen frequently and don't have a negative impact on the application, so we don't show them
+                    log.info("Access denied to file", e);
                 } catch (IOException e) {
                     log.error("Error walking the file tree", e);
                 }

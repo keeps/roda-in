@@ -1,7 +1,6 @@
 package org.roda.rodain.creation;
 
-import org.roda.rodain.rules.TreeNode;
-import org.roda.rodain.rules.sip.SipPreview;
+import static java.nio.file.StandardCopyOption.COPY_ATTRIBUTES;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +10,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static java.nio.file.StandardCopyOption.COPY_ATTRIBUTES;
+import org.roda.rodain.rules.TreeNode;
+import org.roda.rodain.rules.sip.SipPreview;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -21,10 +21,10 @@ public class SimpleSipCreator extends Thread{
     protected final Path outputPath;
     protected final Map<SipPreview, String> previews;
     protected final int sipPreviewCount;
-    protected final String actionCreatingFolders = "Creating the SIP's directory structure";
-    protected final String actionCopyingData = "Copying the SIP's data";
-    protected final String actionCopyingMetadata = "Copying the SIP's metadata";
-    protected final String actionFinalizingSip = "Finalizing the SIP";
+    protected final static String actionCreatingFolders = "Creating the SIP's directory structure";
+    protected final static String actionCopyingData = "Copying the SIP's data";
+    protected final static String actionCopyingMetadata = "Copying the SIP's metadata";
+    protected final static String actionFinalizingSip = "Finalizing the SIP";
 
     protected int createdSipsCount = 0;
     protected String currentSipName;
@@ -44,6 +44,10 @@ public class SimpleSipCreator extends Thread{
 
     public int getCreatedSipsCount(){
         return createdSipsCount;
+    }
+
+    public int getErrorCount(){
+        return unsuccessful.size();
     }
 
     public String getCurrentAction() {
@@ -70,5 +74,10 @@ public class SimpleSipCreator extends Thread{
 
     public void cancel(){
         canceled = true;
+    }
+
+    @Override
+    public void run() {
+        super.run();
     }
 }

@@ -1,23 +1,19 @@
 package org.roda.rodain.rules.sip;
 
+import java.nio.file.Path;
+import java.util.*;
+
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
-import org.roda.rodain.utils.Utils;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Path;
-import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 01-10-2015.
  */
 public class SipPreview extends Observable implements Observer {
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(SipPreview.class.getName());
     private String id;
     private String name;
     private SipMetadata metadata;

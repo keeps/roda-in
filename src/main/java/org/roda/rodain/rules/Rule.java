@@ -1,18 +1,19 @@
 package org.roda.rodain.rules;
 
+import java.nio.file.Path;
+import java.util.*;
+
 import javafx.scene.image.Image;
+
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.filters.ContentFilter;
 import org.roda.rodain.rules.sip.*;
-import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.schema.ui.SipPreviewNode;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
+import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.TreeVisitor;
-
-import java.nio.file.Path;
-import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -37,7 +38,7 @@ public class Rule extends Observable implements Observer, Comparable {
     private Image icon;
     private int added = 0;
     private int level;
-    private int id;
+    private Integer id;
 
     /*
      Keep a set of mapped paths to be used when the source tree needs to find if a file has been mapped.
@@ -131,7 +132,7 @@ public class Rule extends Observable implements Observer, Comparable {
         switch (type){
             case SIPPERFOLDER:
                 SipPerFolderVisitor visitorFolder = new SipPerFolderVisitor(
-                        ""+id, level, filters, metaType, metadataPath, metadataContent);
+                        id.toString(), level, filters, metaType, metadataPath, metadataContent);
                 visitorFolder.addObserver(this);
                 visitor = visitorFolder;
                 break;
@@ -142,13 +143,13 @@ public class Rule extends Observable implements Observer, Comparable {
                     selection.add(sti.getPath());
                 }
                 SipPerSelection visitorSelection = new SipPerSelection(
-                        ""+id, selection, filters, metaType, metadataPath, metadataContent);
+                        id.toString(), selection, filters, metaType, metadataPath, metadataContent);
                 visitorSelection.addObserver(this);
                 visitor = visitorSelection;
                 break;
             case SIPPERFILE:
                 SipPerFileVisitor visitorFile = new SipPerFileVisitor(
-                        ""+id, filters, metaType, metadataPath, metadataContent);
+                        id.toString(), filters, metaType, metadataPath, metadataContent);
                 visitorFile.addObserver(this);
                 visitor = visitorFile;
                 break;
@@ -224,11 +225,27 @@ public class Rule extends Observable implements Observer, Comparable {
 
     @Override
     public int compareTo(Object o) {
+        int result = 0;
         if(o instanceof Rule){
             Rule rule = (Rule) o;
-            Integer idInt = new Integer(id);
-            return idInt.compareTo(rule.getId());
+            Integer idInt = id;
+            result = idInt.compareTo(rule.getId());
         }
-        return 0;
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        boolean result = false;
+        if(o instanceof Rule) {
+            Rule rule = (Rule) o;
+            result = rule.getId() == id;
+        }
+        return result;
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
     }
 }

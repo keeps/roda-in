@@ -73,11 +73,11 @@ public class SipContentDirectory extends TreeItem<Object> implements InspectionT
     }
 
     public void skip(){
-        SipContentDirectory parent = (SipContentDirectory) this.parent;
-        TreeNode parentTreeNode = parent.getTreeNode();
+        SipContentDirectory par = (SipContentDirectory) this.parent;
+        TreeNode parentTreeNode = par.getTreeNode();
         parentTreeNode.remove(treeNode.getPath()); //remove this treeNode from the parent
         parentTreeNode.addAll(treeNode.getAllFiles()); // add this treeNode's children to this node's parent
-        parent.sortChildren();
+        par.sortChildren();
     }
 
     public void flatten(){

@@ -1,35 +1,27 @@
 package org.roda.rodain.inspection;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.Set;
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
 import javafx.scene.control.*;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SipPreviewNode;
-import org.slf4j.LoggerFactory;
-
-import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -104,21 +96,19 @@ public class InspectionPane extends BorderPane {
         metaText.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observableValue, Boolean aBoolean, Boolean t1) {
-                if(!t1) { //lost focus, so update
-                    if(currentSIP != null) {
-                        String oldMetadata = currentSIP.getMetadataContent();
-                        String newMetadata = metaText.getText();
-                        //only update if there's been modifications or there's no old metadata and the new isn't empty
-                        boolean update = false;
-                        if(newMetadata != null){
-                            if(oldMetadata == null)
-                                update = true;
-                            else if (!oldMetadata.equals(newMetadata))
-                                update = true;
-                        }
-                        if(update)
-                            currentSIP.updateMetadata(metaText.getText());
+                if(!t1 && currentSIP != null) { //lost focus, so update
+                    String oldMetadata = currentSIP.getMetadataContent();
+                    String newMetadata = metaText.getText();
+                    //only update if there's been modifications or there's no old metadata and the new isn't empty
+                    boolean update = false;
+                    if(newMetadata != null){
+                        if(oldMetadata == null)
+                            update = true;
+                        else if (!oldMetadata.equals(newMetadata))
+                            update = true;
                     }
+                    if(update)
+                        currentSIP.updateMetadata(metaText.getText());
                 }
             }
         });
@@ -181,7 +171,8 @@ public class InspectionPane extends BorderPane {
                 if(currentSIP != null){
                     currentSIP.ignoreContent(paths);
                     TreeItem parent = selected.getParentDir();
-                    parent.getChildren().remove(selected);
+                    TreeItem child = (TreeItem) selected;
+                    parent.getChildren().remove(child);
                 }
             }
         });
@@ -327,7 +318,7 @@ public class InspectionPane extends BorderPane {
         Label idKey = new Label("ID:");
         idKey.getStyleClass().add("sipId");
 
-        Label id = new Label((sip.getSip().getId()));
+        Label id = new Label(sip.getSip().getId());
         id.setWrapText(true);
         id.getStyleClass().add("sipId");
         id = makeSelectable(id);

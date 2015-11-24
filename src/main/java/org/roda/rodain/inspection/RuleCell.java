@@ -1,16 +1,20 @@
 package org.roda.rodain.inspection;
 
+import java.util.ArrayList;
+import java.util.Properties;
+import java.util.Set;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+
 import org.apache.commons.lang.StringUtils;
 import org.roda.rodain.core.Main;
 import org.roda.rodain.rules.Rule;
@@ -19,11 +23,6 @@ import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
-import org.roda.rodain.utils.FontAwesomeImageCreator;
-
-import java.util.ArrayList;
-import java.util.Properties;
-import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -123,7 +122,7 @@ public class RuleCell extends HBox {
         }
 
         VBox sourceBox = new VBox(5);
-        if(dirs.size() > 0) {
+        if(! dirs.isEmpty()) {
             Label directories = new Label();
             directories.maxWidthProperty().bind(widthProperty().subtract(20));
             directories.setGraphic(new ImageView(SourceTreeDirectory.folderCollapseImage));
@@ -132,7 +131,7 @@ public class RuleCell extends HBox {
             directories.setText(directoriesString);
             sourceBox.getChildren().add(directories);
         }
-        if(fil.size() > 0) {
+        if(! fil.isEmpty()) {
             Label files = new Label();
             files.maxWidthProperty().bind(widthProperty().subtract(20));
             files.setGraphic(new ImageView(SourceTreeFile.fileImage));

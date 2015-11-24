@@ -62,6 +62,14 @@ public class Main extends Application {
     private static SchemaPane schemaPane;
 
     public static void main(String[] args) {
+        //get the java version
+        String javaString =  Runtime.class.getPackage().getSpecificationVersion();
+        javaVersion = Double.parseDouble(javaString);
+        if(javaVersion < 1.8){
+            log.error("Java version is " + javaString + ". Please use at least \"Java 1.8\".");
+            return;
+        }
+
         launch(args);
     }
 
@@ -78,10 +86,6 @@ public class Main extends Application {
                 Platform.exit();
             }
         });
-
-        //get the java version
-        String javaString =  Runtime.class.getPackage().getSpecificationVersion();
-        javaVersion = Double.parseDouble(javaString);
 
         try {
             stage.getIcons().add(new Image(ClassLoader.getSystemResource("roda2-logo.png").openStream()));
@@ -102,12 +106,9 @@ public class Main extends Application {
         // setup and show the window
         stage.setTitle("RODA-In");
         Scene scene = new Scene(mainPane, initialWidth, initialHeight);
-        if(javaVersion < 1.8) {
-            scene.getStylesheets().add(ClassLoader.getSystemResource("css/Modena.css").toExternalForm());
-        }else //the setMaximized method was added in JavaFX 8
-            stage.setMaximized(true);
+        stage.setMaximized(true);
 
-        scene.getStylesheets().add(ClassLoader.getSystemResource("css/mainwindow.css").toExternalForm());
+        scene.getStylesheets().add(ClassLoader.getSystemResource("css/mainWindow.css").toExternalForm());
         scene.getStylesheets().add(ClassLoader.getSystemResource("css/shared.css").toExternalForm());
         stage.setScene(scene);
 
@@ -154,6 +155,7 @@ public class Main extends Application {
         final MenuItem openFolder = new MenuItem("Open folder");
         openFolder.setAccelerator(KeyCombination.keyCombination("Ctrl+O"));
         openFolder.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
             public void handle(ActionEvent t) {
                 DirectoryChooser chooser = new DirectoryChooser();
                 chooser.setTitle("Please choose a folder");
@@ -168,14 +170,16 @@ public class Main extends Application {
         final MenuItem updateCS = new MenuItem("Update classification schema");
         updateCS.setAccelerator(KeyCombination.keyCombination("Ctrl+U"));
         updateCS.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
             public void handle(ActionEvent t) {
-
+                // TODO
             }
         });
 
         final MenuItem createSIPs = new MenuItem("Create SIPs");
         createSIPs.setAccelerator(KeyCombination.keyCombination("Ctrl+S"));
         createSIPs.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
             public void handle(ActionEvent t) {
                 DirectoryChooser chooser = new DirectoryChooser();
                 chooser.setTitle("Please choose a folder");
@@ -197,6 +201,7 @@ public class Main extends Application {
         final MenuItem ignoreItems = new MenuItem("Ignore item(s)");
         ignoreItems.setAccelerator(KeyCombination.keyCombination("DELETE"));
         ignoreItems.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
             public void handle(ActionEvent t) {
                 previewExplorer.ignore();
             }
@@ -207,6 +212,7 @@ public class Main extends Application {
         final MenuItem showFiles = new MenuItem("Hide Files");
         showFiles.setAccelerator(KeyCombination.keyCombination("Ctrl+F"));
         showFiles.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
             public void handle(ActionEvent t) {
                 previewExplorer.toggleFilesShowing();
                 if(FileExplorerPane.isShowFiles())
@@ -217,6 +223,7 @@ public class Main extends Application {
         final MenuItem showIgnored = new MenuItem("Show Ignored");
         showIgnored.setAccelerator(KeyCombination.keyCombination("Ctrl+I"));
         showIgnored.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
             public void handle(ActionEvent t) {
                 previewExplorer.toggleIgnoredShowing();
                 if(FileExplorerPane.isShowIgnored())
@@ -227,6 +234,7 @@ public class Main extends Application {
         final MenuItem showMapped = new MenuItem("Show Mapped");
         showMapped.setAccelerator(KeyCombination.keyCombination("Ctrl+M"));
         showMapped.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
             public void handle(ActionEvent t) {
                 previewExplorer.toggleMappedShowing();
                 if(FileExplorerPane.isShowMapped())
@@ -254,13 +262,10 @@ public class Main extends Application {
             RuleCell.setProperties(config);
             SipMetadata.setProperties(config);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Error while loading properties", e);
         }
     }
 
-    public static double getJavaVersion(){
-        return javaVersion;
-    }
     public static Set<SourceTreeItem> getSourceSelectedItems(){
         return previewExplorer.getSelectedItems();
     }

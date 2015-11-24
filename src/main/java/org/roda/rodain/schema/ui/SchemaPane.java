@@ -1,5 +1,7 @@
 package org.roda.rodain.schema.ui;
 
+import java.util.*;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -14,7 +16,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import org.roda.rodain.core.Footer;
+
 import org.roda.rodain.core.Main;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.rules.ui.RuleModalController;
@@ -24,8 +26,6 @@ import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
-
-import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt

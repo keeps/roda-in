@@ -38,7 +38,7 @@ public class SipMetadata {
             if(type == MetadataTypes.NEWTEXT){
                 if(resource != null){
                     String fileName;
-                    if(resource.equals("EAD-C")){
+                    if("EAD-C".equals(resource)){
                         fileName = properties.getProperty("metadata.template.ead");
                     }else fileName = properties.getProperty("metadata.template.dcmes");
 

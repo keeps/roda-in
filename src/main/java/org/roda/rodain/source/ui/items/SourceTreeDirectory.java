@@ -554,7 +554,7 @@ public class SourceTreeDirectory extends SourceTreeItem{
      * Example: A directory with state MAPPED must have all children mapped
      */
     public void verifyState(){
-        int normalItems = 0, ignoredItems = 0, mappedItems = 0;
+        int normalItems = 0, mappedItems = 0;
         boolean stateChanged = false;
 
         moveChildrenWrongState();
@@ -565,9 +565,6 @@ public class SourceTreeDirectory extends SourceTreeItem{
                 switch (item.getState()){
                     case MAPPED:
                         mappedItems++;
-                        break;
-                    case IGNORED:
-                        ignoredItems++;
                         break;
                     default:
                         normalItems++;
@@ -618,7 +615,7 @@ public class SourceTreeDirectory extends SourceTreeItem{
             }
         }
         mapped.removeAll(toRemove);
-        if(toRemove.size() != 0)
+        if(! toRemove.isEmpty())
             modified = true;
 
         if(!FileExplorerPane.isShowMapped()) {
@@ -643,7 +640,7 @@ public class SourceTreeDirectory extends SourceTreeItem{
             }
             getChildren().removeAll(toRemove);
         }
-        if(toRemove.size() != 0 || modified)
+        if(! toRemove.isEmpty() || modified)
             sortChildren();
     }
 }

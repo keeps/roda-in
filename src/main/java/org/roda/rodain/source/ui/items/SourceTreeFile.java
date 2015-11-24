@@ -108,8 +108,8 @@ public class SourceTreeFile extends SourceTreeItem{
     @Override
     public void update(Observable o, Object arg) {
         if(o instanceof Rule){
-            Rule rule = (Rule) o;
-            removeMapping(rule);
+            Rule rul = (Rule) o;
+            removeMapping(rul);
         }
     }
 }

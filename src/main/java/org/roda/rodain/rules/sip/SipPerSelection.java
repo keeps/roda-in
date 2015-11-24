@@ -16,7 +16,6 @@ import java.util.*;
 public class SipPerSelection extends Observable implements TreeVisitor, SipPreviewCreator {
     private static final int UPDATEFREQUENCY = 500; //in milliseconds
     private long lastUIUpdate = 0;
-    private String startPath;
     // This map is returned, in full, to the SipPreviewNode when there's an update
     private Map<String, SipPreview> sipsMap;
     // This ArrayList is used to keep the SIPs ordered.
@@ -73,7 +72,7 @@ public class SipPerSelection extends Observable implements TreeVisitor, SipPrevi
 
     @Override
     public void setStartPath(String st){
-        startPath = st;
+
     }
 
     @Override

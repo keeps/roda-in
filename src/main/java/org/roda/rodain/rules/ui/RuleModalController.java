@@ -93,6 +93,7 @@ public class RuleModalController {
                     break;
                 case NEWTEXT:
                     metadataResource = pane.getTemplate();
+                    break;
                 default: break;
             }
             Rule rule = new Rule(sourceSet, assocType, level, metadataPath, metadataResource, metaType);
