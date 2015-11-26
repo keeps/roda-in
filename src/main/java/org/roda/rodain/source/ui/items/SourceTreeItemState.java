@@ -5,7 +5,5 @@ package org.roda.rodain.source.ui.items;
  * @since 19-10-2015.
  */
 public enum SourceTreeItemState {
-    NORMAL,
-    IGNORED,
-    MAPPED
+  NORMAL, IGNORED, MAPPED
 }

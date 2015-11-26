@@ -1,0 +1,112 @@
+.modal {
+    -fx-border-color: #089de3;
+    -fx-border-width: 2px;
+    -fx-background-color: white;
+    -fx-text-fill: black;
+}
+
+.hbox {
+    -fx-background-color: #089de3;
+}
+#title {
+    -fx-font-size: x-large;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.modal #sub-title {
+    -fx-font-size: x-large;
+    -fx-font-weight: bold;
+}
+
+.modal .label {
+    -fx-font-size: medium;
+    -fx-text-fill: gray;
+}
+
+.modal .cell .title {
+    -fx-font-size: large;
+    -fx-text-fill: black;
+    -fx-font-weight: 600;
+}
+
+.modal .cell .description {
+    -fx-text-fill: dimgray;
+}
+
+/* SIP creator modal*/
+.sipcreator{
+    -fx-border-color: #089de3;
+    -fx-border-width: 2px;
+    -fx-background-color: white;
+    -fx-text-fill: black;
+}
+
+.sipcreator #subtitle {
+    -fx-font-size: medium;
+    -fx-text-fill: grey;
+}
+
+.sipcreator .progress-bar > .bar {
+    -fx-background-color: #089de3;
+    -fx-border-width: 2px;
+}
+
+/* List-view */
+.list-view{
+    -fx-background-color: white;
+}
+
+.list-cell{
+    -fx-padding: 5px;
+}
+
+.list-cell:focused {
+    -fx-background-color: lightgray;
+}
+
+/* Combo-box */
+.list-cell:focused .combo-box{
+    -fx-background-color: lightgray;
+}
+
+.list-cell:focused .combo-box-base .list-cell{
+    -fx-background-color: lightgray;
+}
+
+.list-cell:focused .combo-box .list-view .list-cell{
+    -fx-background-color: white;
+}
+
+.list-cell:focused .combo-box .list-view .list-cell:selected{
+    -fx-background-color: darkgray;
+}
+
+.list-cell:focused .combo-box .list-view .list-cell:hover{
+    -fx-background-color: lightgray;
+}
+
+.combo-box-base .list-view .list-cell{
+    -fx-background-color: white;
+    -fx-text-fill: black;
+}
+
+.combo-box .list-view .list-cell:selected{
+    -fx-background-color: darkgray;
+    -fx-text-fill: black;
+}
+
+.combo-box {
+    -fx-background-color: white;
+    -fx-border-color: gray;
+    -fx-border-width: 1px;
+}
+
+.combo-box-base .list-cell {
+    -fx-background-color: white;
+    -fx-text-fill: black;
+}
+
+.combo-box .list-view .list-cell:hover {
+    -fx-background-color: lightgray;
+}

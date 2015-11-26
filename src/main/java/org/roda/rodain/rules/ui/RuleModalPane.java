@@ -5,8 +5,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -16,404 +20,537 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import org.roda.rodain.schema.ui.SchemaNode;
-import org.roda.rodain.utils.Utils;
-import org.slf4j.LoggerFactory;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.RuleTypes;
+import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
-import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
+import org.roda.rodain.utils.FontAwesomeImageCreator;
+import org.roda.rodain.utils.Utils;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 28-09-2015.
  */
 public class RuleModalPane extends BorderPane {
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(RuleModalPane.class.getName());
-    private enum States {
-        ASSOCIATION,
-        METADATA
+  private static final org.slf4j.Logger log = LoggerFactory.getLogger(RuleModalPane.class.getName());
+  private final int LIST_HEIGHT = 440;
+
+  private enum States {
+    ASSOCIATION, METADATA
+  }
+
+  private static Properties properties;
+
+  private Stage stage;
+  private SchemaNode schema;
+  private Set<SourceTreeItem> sourceSet;
+  // Association
+  private VBox boxAssociation;
+  private ListView<HBoxCell> assocList;
+  private ComboBox<Integer> level;
+  // Metadata
+  private VBox boxMetadata;
+  private ListView<HBoxCell> metaList;
+  private HBoxCell cellSingleFile, cellSameFolder, cellDiffFolder, cellTemplate;
+  private Button chooseDir, chooseFile;
+  private ComboBox<String> templateTypes;
+
+  private Button btContinue, btCancel, btBack;
+  private HBox space, buttons;
+  private States currentState;
+  private String fromFile, diffDir, sameDir;
+
+  private int folderCount;
+
+  public RuleModalPane(Stage stage, Set<SourceTreeItem> sourceSet, SchemaNode schemaNode) {
+    super();
+    schema = schemaNode;
+    this.sourceSet = sourceSet;
+    this.stage = stage;
+    getStyleClass().add("modal");
+
+    createTop();
+    createCenter();
+    createBottom();
+
+    currentState = States.ASSOCIATION;
+  }
+
+  /**
+   * Sets the properties object for this class.
+   * 
+   * @param prop
+   *          The properties object.
+   */
+  public static void setProperties(Properties prop) {
+    properties = prop;
+  }
+
+  private void createTop() {
+    StackPane pane = new StackPane();
+    pane.setPadding(new Insets(0, 0, 10, 0));
+
+    VBox box = new VBox(5);
+    box.setAlignment(Pos.CENTER);
+    box.getStyleClass().add("hbox");
+    box.setPadding(new Insets(5, 5, 5, 5));
+    pane.getChildren().add(box);
+
+    Label title = new Label("Create association to \"" + schema.getDob().getTitle() + "\"");
+    title.setId("title");
+
+    ArrayList<String> dirs = new ArrayList<>();
+    ArrayList<String> fil = new ArrayList<>();
+    for (SourceTreeItem it : sourceSet) {
+      if (it instanceof SourceTreeDirectory)
+        dirs.add(it.getValue());
+      else
+        fil.add(it.getValue());
     }
-    private Stage stage;
-    private SchemaNode schema;
-    private Set<SourceTreeItem> sourceSet;
-    //Association
-    private GridPane gridAssociation;
-    private ToggleGroup groupAssoc;
-    private ComboBox<Integer> level;
-    //Metadata
-    private VBox gridMetadata;
-    private ToggleGroup groupMetadata;
-    private RadioButton diffFolder, sameFolder;
-    private Button chooseDir, chooseFile;
+    folderCount = dirs.size();
 
-    private Button btContinue, btCancel, btBack;
-    private HBox space, buttons;
-    private States currentState;
-    private String fromFile, diffDir, sameDir;
+    box.getChildren().add(title);
 
+    setTop(pane);
+  }
 
-    public RuleModalPane(Stage stage, Set<SourceTreeItem> sourceSet, SchemaNode schemaNode){
-        super();
-        schema = schemaNode;
-        this.sourceSet = sourceSet;
-        this.stage = stage;
-        setStyle("-fx-border-color: lightgray; -fx-border-width: 2px; -fx-background-color: white;");
+  private void createCenter() {
+    createCenterAssociation();
+    createCenterMetadata();
 
-        createTop();
-        createCenter();
-        createBottom();
+    setCenter(boxAssociation);
+  }
 
-        currentState = States.ASSOCIATION;
-    }
+  private void createCenterAssociation() {
+    boxAssociation = new VBox();
+    boxAssociation.setPadding(new Insets(0, 10, 0, 10));
+    boxAssociation.setAlignment(Pos.TOP_LEFT);
 
-    private void createTop(){
-        StackPane pane = new StackPane();
-        pane.setPadding(new Insets(0, 0, 10, 0));
+    Label subtitle = new Label("Choose the association method");
+    subtitle.setPadding(new Insets(0, 0, 10, 0));
+    subtitle.setId("sub-title");
 
-        HBox hbox = new HBox();
-        HBox.setHgrow(hbox, Priority.ALWAYS);
-        hbox.setStyle("-fx-background-color: lightgray;");
-        hbox.setPadding(new Insets(5, 5, 5, 5));
-        pane.getChildren().add(hbox);
-
-        Label source = new Label();
-        StringBuilder sb = new StringBuilder();
-        boolean first = true;
-        for(SourceTreeItem it: sourceSet) {
-            if(first){
-                first = false;
-            }else sb.append(",");
-
-            if(it instanceof SourceTreeDirectory)
-                sb.append(((SourceTreeDirectory) it).getValue());
-            else if(it instanceof SourceTreeFile)
-                sb.append(((SourceTreeFile)it).getValue());
+    assocList = new ListView<>();
+    assocList.setMinHeight(LIST_HEIGHT);
+    assocList.setMaxHeight(LIST_HEIGHT);
+    assocList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<HBoxCell>() {
+      @Override
+      public void changed(ObservableValue<? extends HBoxCell> observable, final HBoxCell oldValue, HBoxCell newValue) {
+        if (newValue != null && newValue.isDisabled()) {
+          Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+              if (oldValue != null)
+                assocList.getSelectionModel().select(oldValue);
+              else
+                assocList.getSelectionModel().clearSelection();
+            }
+          });
         }
+      }
+    });
 
-        source.setText(sb.toString());
+    String icon = properties.getProperty("association.singleSip.icon");
+    String title = properties.getProperty("association.singleSip.title");
+    String description = properties.getProperty("association.singleSip.description");
+    HBoxCell cellSingleSip = new HBoxCell(icon, title, description, new HBox());
+    cellSingleSip.setUserData(RuleTypes.SINGLE_SIP);
 
-        source.setMinHeight(24);
-        source.setId("title");
-        source.setGraphic(new ImageView(SourceTreeDirectory.folderCollapseImage));
-        source.setStyle(" -fx-text-fill: black");
-        source.setWrapText(true);
+    icon = properties.getProperty("association.sipSelection.icon");
+    title = properties.getProperty("association.sipSelection.title");
+    description = properties.getProperty("association.sipSelection.description");
+    HBoxCell cellSelected = new HBoxCell(icon, title, description, new HBox());
+    cellSelected.setUserData(RuleTypes.SIP_PER_SELECTION);
 
-        Label descObj = new Label(schema.getDob().getTitle());
-        descObj.setMinHeight(24);
-        descObj.setId("title");
-        descObj.setGraphic(new ImageView(schema.getImage()));
-        descObj.setTextAlignment(TextAlignment.LEFT);
-        descObj.setStyle(" -fx-text-fill: black");
+    icon = properties.getProperty("association.sipPerFile.icon");
+    title = properties.getProperty("association.sipPerFile.title");
+    description = properties.getProperty("association.sipPerFile.description");
+    HBoxCell cellSipPerFile = new HBoxCell(icon, title, description, new HBox());
+    cellSipPerFile.setUserData(RuleTypes.SIP_PER_FILE);
 
-        HBox spaceTop = new HBox();
-        HBox.setHgrow(spaceTop, Priority.ALWAYS);
-        spaceTop.setMinWidth(50);
+    icon = properties.getProperty("association.sipPerFolder.icon");
+    title = properties.getProperty("association.sipPerFolder.title");
+    description = properties.getProperty("association.sipPerFolder.description");
+    HBox options = createPerFolderOptions();
+    HBoxCell cellSipPerFolder = new HBoxCell(icon, title, description, options);
+    cellSipPerFolder.setUserData(RuleTypes.SIP_PER_FOLDER);
 
-        hbox.getChildren().addAll(source, spaceTop, descObj);
+    ObservableList<HBoxCell> hboxList = FXCollections.observableArrayList();
+    hboxList.addAll(cellSingleSip, cellSelected, cellSipPerFile, cellSipPerFolder);
+    assocList.setItems(hboxList);
 
-        setTop(pane);
+    if (folderCount == 0 || level.getItems().isEmpty()) {
+      cellSipPerFolder.setDisable(true);
     }
 
-    private void createCenter(){
-        gridAssociation = createCenterAssociation();
-        gridMetadata = createCenterMetadata();
+    boxAssociation.getChildren().addAll(subtitle, assocList);
+  }
 
-        setCenter(gridAssociation);
+  private HBox createPerFolderOptions() {
+    HBox resultBox = new HBox(10);
+    resultBox.setAlignment(Pos.CENTER_LEFT);
+
+    int depth = 0;
+    if (folderCount == sourceSet.size()) { // check if the selected items are
+                                           // all directories
+      // we only need to compute the depth if we'll be going to activate the
+      // radio button
+      for (SourceTreeItem std : sourceSet) {
+        Path startPath = Paths.get(std.getPath());
+        int depthAux = Utils.getRelativeMaxDepth(startPath);
+        if (depthAux > depth)
+          depth = depthAux;
+      }
     }
 
-    private GridPane createCenterAssociation(){
-        GridPane gridCenter = new GridPane();
-        gridCenter.setPadding(new Insets(0, 10, 0, 10));
-        gridCenter.setVgap(5);
-        gridCenter.setHgap(10);
+    ArrayList<Integer> levels = new ArrayList<>();
+    for (int i = 1; i <= depth; i++)
+      levels.add(i);
 
-        groupAssoc = new ToggleGroup();
+    ObservableList<Integer> options = FXCollections.observableArrayList(levels);
+    level = new ComboBox<>(options);
+    level.setValue((int) Math.ceil(depth / 2.0));
 
-        RadioButton singleSip = new RadioButton("Create a single SIP");
-        singleSip.setToggleGroup(groupAssoc);
-        singleSip.setUserData(RuleTypes.SINGLESIP);
-        singleSip.setSelected(true);
-        singleSip.setStyle(" -fx-text-fill: black");
+    Label lLevel = new Label("Max depth");
+    resultBox.getChildren().addAll(lLevel, level);
 
-        RadioButton perFile = new RadioButton("Create one SIP per file");
-        perFile.setToggleGroup(groupAssoc);
-        perFile.setUserData(RuleTypes.SIPPERFILE);
-        perFile.setStyle(" -fx-text-fill: black");
+    return resultBox;
+  }
 
-        //count number of folders selected in the source
-        int dirCount = 0;
-        for(SourceTreeItem sti: sourceSet)
-            if(sti instanceof SourceTreeDirectory)
-                dirCount++;
+  private void createCenterMetadata() {
+    boxMetadata = new VBox();
+    boxMetadata.setAlignment(Pos.TOP_LEFT);
+    boxMetadata.setPadding(new Insets(0, 10, 0, 10));
 
-        RadioButton byFolder = new RadioButton("Create one SIP per folder until level");
-        byFolder.setUserData(RuleTypes.SIPPERFOLDER);
-        byFolder.setToggleGroup(groupAssoc);
-        byFolder.setStyle(" -fx-text-fill: black");
+    Label subtitle = new Label("Choose the metadata method");
+    subtitle.setId("sub-title");
+    subtitle.setPadding(new Insets(0, 0, 10, 0));
 
-        int depth = 0;
-        if(dirCount == sourceSet.size()) { //check if the selected items are all directories
-            //we only need to compute the depth if we'll be going to activate the radio button
-            for (SourceTreeItem std : sourceSet) {
-                Path startPath = Paths.get(std.getPath());
-                int depthAux = Utils.getRelativeMaxDepth(startPath);
-                if (depthAux > depth)
-                    depth = depthAux;
-            }
-        }else byFolder.setDisable(true); //disable this option because it doesn't make sense if all the top level items aren't directories
-
-        ArrayList<Integer> levels = new ArrayList<>();
-        for (int i = 1; i <= depth; i++)
-            levels.add(i);
-
-        ObservableList<Integer> options = FXCollections.observableArrayList(levels);
-        level = new ComboBox<>(options);
-        level.setValue((int)Math.ceil(depth/2.0));
-
-        if(dirCount != sourceSet.size()) //disable the level comboBox too if this option doesn't make sense
-            level.setDisable(true);
-
-        gridCenter.add(singleSip, 0, 1);
-        gridCenter.add(perFile, 0, 2);
-        gridCenter.add(byFolder, 0, 3);
-        gridCenter.add(level, 1, 3);
-
-        return gridCenter;
-    }
-
-    private VBox createCenterMetadata(){
-        VBox gridCenter = new VBox(10);
-        gridCenter.setPadding(new Insets(0, 10, 0, 10));
-
-        Label metaTitle = new Label("Apply metadata from:");
-        metaTitle.setId("title");
-
-        VBox center = new VBox(5);
-        groupMetadata = new ToggleGroup();
-
-        RadioButton newFile = new RadioButton("An empty text area");
-        newFile.setUserData(MetadataTypes.NEWTEXT);
-        newFile.setToggleGroup(groupMetadata);
-        newFile.setStyle(" -fx-text-fill: black");
-
-        rbSameFolder();
-        HBox singleFileBox = rbSingleFile();
-        HBox diffFolderBox = rbDiffFolder();
-        center.getChildren().addAll(singleFileBox, sameFolder, diffFolderBox, newFile);
-
-        gridCenter.getChildren().addAll(metaTitle, center);
-
-        return gridCenter;
-    }
-
-    private HBox rbSingleFile(){
-        HBox box = new HBox();
-        box.setAlignment(Pos.CENTER_LEFT);
-
-        final RadioButton singleFile = new RadioButton("A single file");
-        singleFile.setToggleGroup(groupMetadata);
-        singleFile.setUserData(MetadataTypes.SINGLEFILE);
-        singleFile.setSelected(true);
-        singleFile.setStyle(" -fx-text-fill: black");
-
-        chooseFile = new Button("Choose File...");
-        chooseFile.setOnAction(new EventHandler<ActionEvent>() {
+    metaList = new ListView<>();
+    metaList.setMinHeight(LIST_HEIGHT);
+    metaList.setMaxHeight(LIST_HEIGHT);
+    metaList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<HBoxCell>() {
+      @Override
+      public void changed(ObservableValue<? extends HBoxCell> observable, final HBoxCell oldValue, HBoxCell newValue) {
+        if (newValue != null && newValue.isDisabled()) {
+          Platform.runLater(new Runnable() {
             @Override
-            public void handle(ActionEvent e) {
-                singleFile.setSelected(true);
-                FileChooser chooser = new FileChooser();
-                chooser.setTitle("Please choose a file");
-                chooser.setInitialDirectory(new File(sameDir));
-                File selectedFile = chooser.showOpenDialog(stage);
-                if (selectedFile == null)
-                    return;
-                fromFile = selectedFile.toPath().toString();
-                chooseFile.setText(selectedFile.toPath().getFileName().toString());
-                chooseFile.setUserData(fromFile);
+            public void run() {
+              if (oldValue != null)
+                metaList.getSelectionModel().select(oldValue);
+              else
+                metaList.getSelectionModel().clearSelection();
             }
-        });
-
-        HBox spaceSingleFile = new HBox();
-        HBox.setHgrow(spaceSingleFile, Priority.ALWAYS);
-
-        box.getChildren().addAll(singleFile, spaceSingleFile, chooseFile);
-        return box;
-    }
-
-    private void rbSameFolder(){
-        //fill list with the directories in the source set
-        List<String> directories = new ArrayList<>();
-        for(SourceTreeItem sti: sourceSet){
-            if(sti instanceof SourceTreeDirectory)
-                directories.add(sti.getPath());
-            else{ //if the item isn't a directory, get its parent
-                Path path = Paths.get(sti.getPath());
-                directories.add(path.getParent().toString());
-            }
+          });
         }
-        //get the common prefix of the directories
-        sameDir = Utils.longestCommonPrefix(directories);
+      }
+    });
 
-        sameFolder = new RadioButton("The directory \"" + sameDir + "\"");
-        sameFolder.setToggleGroup(groupMetadata);
-        sameFolder.setUserData(MetadataTypes.SAMEDIRECTORY);
-        sameFolder.setStyle(" -fx-text-fill: black");
+    String icon = properties.getProperty("metadata.singleFile.icon");
+    String title = properties.getProperty("metadata.singleFile.title");
+    String description = properties.getProperty("metadata.singleFile.description");
+    cellSingleFile = new HBoxCell(icon, title, description, optionsSingleFile());
+    cellSingleFile.setUserData(MetadataTypes.SINGLE_FILE);
+
+    icon = properties.getProperty("metadata.sameFolder.icon");
+    String tempTitle = properties.getProperty("metadata.sameFolder.title");
+    title = String.format("%s \"%s\"", tempTitle, pathSameFolder());
+    description = properties.getProperty("metadata.sameFolder.description");
+    cellSameFolder = new HBoxCell(icon, title, description, new HBox());
+    cellSameFolder.setUserData(MetadataTypes.SAME_DIRECTORY);
+
+    icon = properties.getProperty("metadata.diffFolder.icon");
+    title = properties.getProperty("metadata.diffFolder.title");
+    description = properties.getProperty("metadata.diffFolder.description");
+    cellDiffFolder = new HBoxCell(icon, title, description, optionsDiffFolder());
+    cellDiffFolder.setUserData(MetadataTypes.DIFF_DIRECTORY);
+
+    icon = properties.getProperty("metadata.template.icon");
+    title = properties.getProperty("metadata.template.title");
+    description = properties.getProperty("metadata.template.description");
+    cellTemplate = new HBoxCell(icon, title, description, optionsTemplate());
+    cellTemplate.setUserData(MetadataTypes.TEMPLATE);
+
+    ObservableList<HBoxCell> hboxList = FXCollections.observableArrayList();
+    hboxList.addAll(cellSingleFile, cellSameFolder, cellDiffFolder, cellTemplate);
+    metaList.setItems(hboxList);
+
+    boxMetadata.getChildren().addAll(subtitle, metaList);
+  }
+
+  private HBox optionsSingleFile() {
+    HBox box = new HBox();
+    box.setAlignment(Pos.CENTER_LEFT);
+
+    chooseFile = new Button("Choose File...");
+    chooseFile.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent e) {
+        metaList.getSelectionModel().clearSelection();
+        metaList.getSelectionModel().select(cellSingleFile);
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Please choose a file");
+        chooser.setInitialDirectory(new File(sameDir));
+        File selectedFile = chooser.showOpenDialog(stage);
+        if (selectedFile == null)
+          return;
+        fromFile = selectedFile.toPath().toString();
+        chooseFile.setText(selectedFile.toPath().getFileName().toString());
+        chooseFile.setUserData(fromFile);
+      }
+    });
+
+    box.getChildren().add(chooseFile);
+    return box;
+  }
+
+  private String pathSameFolder() {
+    // fill list with the directories in the source set
+    List<String> directories = new ArrayList<>();
+    for (SourceTreeItem sti : sourceSet) {
+      if (sti instanceof SourceTreeDirectory)
+        directories.add(sti.getPath());
+      else { // if the item isn't a directory, get its parent
+        Path path = Paths.get(sti.getPath());
+        directories.add(path.getParent().toString());
+      }
     }
+    // get the common prefix of the directories
+    sameDir = Utils.longestCommonPrefix(directories);
+    return sameDir;
+  }
 
-    private HBox rbDiffFolder(){
-        HBox box = new HBox();
-        box.setAlignment(Pos.CENTER_LEFT);
+  private HBox optionsDiffFolder() {
+    HBox box = new HBox();
+    box.setAlignment(Pos.CENTER_LEFT);
 
-        diffFolder = new RadioButton("Another directory");
-        diffFolder.setUserData(MetadataTypes.DIFFDIRECTORY);
-        diffFolder.setToggleGroup(groupMetadata);
-        diffFolder.setStyle(" -fx-text-fill: black");
+    chooseDir = new Button("Choose Directory...");
+    chooseDir.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent e) {
+        metaList.getSelectionModel().clearSelection();
+        metaList.getSelectionModel().select(cellDiffFolder);
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle("Please choose a folder");
+        chooser.setInitialDirectory(new File(sameDir));
+        File selectedDirectory = chooser.showDialog(stage);
+        if (selectedDirectory == null)
+          return;
+        diffDir = selectedDirectory.toPath().toString();
+        chooseDir.setText(selectedDirectory.toPath().getFileName().toString());
+        chooseDir.setUserData(diffDir);
+      }
+    });
 
-        chooseDir = new Button("Choose Directory...");
-        chooseDir.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                diffFolder.setSelected(true);
-                DirectoryChooser chooser = new DirectoryChooser();
-                chooser.setTitle("Please choose a folder");
-                chooser.setInitialDirectory(new File(sameDir));
-                File selectedDirectory = chooser.showDialog(stage);
-                if (selectedDirectory == null)
-                    return;
-                diffDir = selectedDirectory.toPath().toString();
-                chooseDir.setText(selectedDirectory.toPath().getFileName().toString());
-                chooseDir.setUserData(diffDir);
-            }
-        });
+    box.getChildren().addAll(chooseDir);
+    return box;
+  }
 
-        HBox spaceDiffFolder = new HBox();
-        HBox.setHgrow(spaceDiffFolder, Priority.ALWAYS);
+  private HBox optionsTemplate() {
+    HBox box = new HBox();
+    box.setAlignment(Pos.CENTER_LEFT);
 
-        box.getChildren().addAll(diffFolder, spaceDiffFolder, chooseDir);
-        return box;
-    }
+    templateTypes = new ComboBox<>();
+    templateTypes.getItems().addAll("DCMES - Dublin Core", "EAD-C");
+    templateTypes.getSelectionModel().selectFirst();
 
-    private void createBottom(){
-        btCancel = new Button("Cancel");
-        btContinue = new Button("Continue");
-        btBack = new Button("Back");
+    box.getChildren().add(templateTypes);
 
-        space = new HBox();
-        HBox.setHgrow(space, Priority.ALWAYS);
+    return box;
+  }
 
-        buttons = new HBox(5);
-        buttons.setPadding(new Insets(10, 10, 10, 10));
-        buttons.setSpacing(10);
-        buttons.setAlignment(Pos.CENTER);
-        buttons.getChildren().addAll(btCancel, space, btContinue);
+  private void createBottom() {
+    createContinueButton();
+    createBackButton();
+    createCancelButton();
 
-        btBack.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                if(currentState == States.ASSOCIATION) {
-                    setCenter(gridMetadata);
-                    currentState = States.METADATA;
-                    enableMetaRadioButtons();
-                }else if(currentState == States.METADATA) {
-                    setCenter(gridAssociation);
-                    currentState = States.ASSOCIATION;
-                    buttons.getChildren().clear();
-                    buttons.getChildren().addAll(btCancel, space, btContinue);
-                    btContinue.setText("Continue");
-                }
-            }
-        });
+    space = new HBox();
+    HBox.setHgrow(space, Priority.ALWAYS);
 
-        btContinue.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                if(currentState == States.ASSOCIATION) {
-                    setCenter(gridMetadata);
-                    currentState = States.METADATA;
-                    enableMetaRadioButtons();
-                    buttons.getChildren().clear();
-                    buttons.getChildren().addAll(btCancel, btBack, space, btContinue);
-                    btContinue.setText("Confirm");
-                }else
-                    if(currentState == States.METADATA && metadataCheckContinue())
-                        RuleModalController.confirm();
-            }
-        });
+    buttons = new HBox(10);
+    buttons.setPadding(new Insets(10, 10, 10, 10));
+    buttons.setAlignment(Pos.CENTER);
+    buttons.getChildren().addAll(btCancel, space, btContinue);
 
-        btCancel.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                RuleModalController.cancel();
-            }
-        });
+    setBottom(buttons);
+  }
 
-        setBottom(buttons);
-    }
+  private void createContinueButton() {
+    btContinue = new Button("Continue");
+    btContinue.setMaxWidth(100);
+    btContinue.setMinWidth(100);
+    btContinue.setGraphic(new ImageView(FontAwesomeImageCreator.im_w_chevron_right));
+    btContinue.setGraphicTextGap(10);
+    btContinue.setContentDisplay(ContentDisplay.RIGHT);
 
-    private boolean metadataCheckContinue(){
-        try {
-            MetadataTypes metaType = getMetadataType();
-            if(metaType == MetadataTypes.SINGLEFILE)
-                return chooseFile.getUserData() != null;
-            if(metaType == MetadataTypes.DIFFDIRECTORY)
-                return chooseDir.getUserData() != null;
-        } catch (Exception e) {
-            log.error("Error getting metadata type", e);
+    btContinue.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent e) {
+        if (currentState == States.ASSOCIATION) {
+          if (assocList.getSelectionModel().getSelectedIndex() != -1) {
+            setCenter(boxMetadata);
+            currentState = States.METADATA;
+            enableMetaRadioButtons();
+            buttons.getChildren().clear();
+            buttons.getChildren().addAll(btCancel, space, btBack, btContinue);
+            btContinue.setText("Confirm");
+            btContinue.setGraphicTextGap(16);
+          }
+        } else if (currentState == States.METADATA && metadataCheckContinue())
+          RuleModalController.confirm();
+      }
+    });
+  }
+
+  private void createCancelButton() {
+    btCancel = new Button("Cancel");
+    btCancel.setMaxWidth(100);
+    btCancel.setMinWidth(100);
+    btCancel.setGraphic(new ImageView(FontAwesomeImageCreator.im_w_times));
+    btCancel.setGraphicTextGap(20);
+    btCancel.setContentDisplay(ContentDisplay.RIGHT);
+
+    btCancel.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent e) {
+        RuleModalController.cancel();
+      }
+    });
+  }
+
+  private void createBackButton() {
+    btBack = new Button("Back");
+    btBack.setMaxWidth(100);
+    btBack.setMinWidth(100);
+    btBack.setGraphic(new ImageView(FontAwesomeImageCreator.im_w_chevron_left));
+    btBack.setGraphicTextGap(30);
+
+    btBack.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent actionEvent) {
+        if (currentState == States.ASSOCIATION) {
+          setCenter(boxMetadata);
+          currentState = States.METADATA;
+          enableMetaRadioButtons();
+        } else if (currentState == States.METADATA) {
+          setCenter(boxAssociation);
+          currentState = States.ASSOCIATION;
+          buttons.getChildren().clear();
+          buttons.getChildren().addAll(btCancel, space, btContinue);
+          btContinue.setText("Continue");
+          btContinue.setGraphicTextGap(10);
         }
-        return true;
-    }
+      }
+    });
+  }
 
-    private void enableMetaRadioButtons(){
-        try {
-            RuleTypes assocType = getAssociationType();
-            if(assocType == RuleTypes.SIPPERFILE){
-                sameFolder.setDisable(false);
-                diffFolder.setDisable(false);
-                chooseDir.setDisable(false);
-            }else {
-                sameFolder.setDisable(true);
-                diffFolder.setDisable(true);
-                chooseDir.setDisable(true);
-            }
-        } catch (Exception e) {
-            log.error("Error getting association type", e);
-        }
+  private boolean metadataCheckContinue() {
+    try {
+      MetadataTypes metaType = getMetadataType();
+      if (metaType == null)
+        return false;
+      if (metaType == MetadataTypes.SINGLE_FILE)
+        return chooseFile.getUserData() != null;
+      if (metaType == MetadataTypes.DIFF_DIRECTORY)
+        return chooseDir.getUserData() != null;
+    } catch (Exception e) {
+      log.error("Error getting metadata type", e);
     }
+    return true;
+  }
 
-    public RuleTypes getAssociationType() throws UnexpectedDataTypeException{
-        Toggle selected = groupAssoc.getSelectedToggle();
-        if(selected.getUserData() instanceof RuleTypes)
-            return (RuleTypes)selected.getUserData();
-        else throw new UnexpectedDataTypeException();
+  private void enableMetaRadioButtons() {
+    try {
+      RuleTypes assocType = getAssociationType();
+      if (assocType == null)
+        return;
+      if (assocType == RuleTypes.SIP_PER_FILE) {
+        cellSameFolder.setDisable(false);
+        cellDiffFolder.setDisable(false);
+        chooseDir.setDisable(false);
+      } else {
+        cellSameFolder.setDisable(true);
+        cellDiffFolder.setDisable(true);
+        chooseDir.setDisable(true);
+      }
+    } catch (Exception e) {
+      log.error("Error getting association type", e);
     }
+  }
 
-    public int getLevel(){
-        return level.getValue();
-    }
+  /**
+   *
+   * @return The association type of the item the user selected or null if there
+   *         was no selection.
+   * @throws UnexpectedDataTypeException
+   */
+  public RuleTypes getAssociationType() throws UnexpectedDataTypeException {
+    HBoxCell cell = assocList.getSelectionModel().getSelectedItem();
+    if (cell == null)
+      return null;
+    if (cell.getUserData() instanceof RuleTypes)
+      return (RuleTypes) cell.getUserData();
+    else
+      throw new UnexpectedDataTypeException();
+  }
 
-    public MetadataTypes getMetadataType() throws UnexpectedDataTypeException{
-        Toggle selected = groupMetadata.getSelectedToggle();
-        if(selected.getUserData() instanceof MetadataTypes)
-            return (MetadataTypes)selected.getUserData();
-        else throw new UnexpectedDataTypeException();
-    }
+  /**
+   * @return The value of the combo box of the SipPerFolder association option.
+   */
+  public int getLevel() {
+    return level.getValue();
+  }
 
-    public Path getFromFile() {
-        return Paths.get(fromFile);
-    }
+  /**
+   *
+   * @return The metadata type of the item the user selected or null if there
+   *         was no selection.
+   * @throws UnexpectedDataTypeException
+   */
+  public MetadataTypes getMetadataType() throws UnexpectedDataTypeException {
+    HBoxCell selected = metaList.getSelectionModel().getSelectedItem();
+    if (selected == null)
+      return null;
+    if (selected.getUserData() instanceof MetadataTypes)
+      return (MetadataTypes) selected.getUserData();
+    else
+      throw new UnexpectedDataTypeException();
+  }
 
-    public Path getDiffDir() {
-        return Paths.get(diffDir);
-    }
+  /**
+   * @return The path of the file selected by the user in the metadata option
+   *         SINGLE_FILE
+   */
+  public Path getFromFile() {
+    return Paths.get(fromFile);
+  }
 
-    public Path getSameDir() {
-        return Paths.get(sameDir);
-    }
+  /**
+   * @return The path of the directory selected by the user in the metadata
+   *         option DIFF_DIRECTORY
+   */
+  public Path getDiffDir() {
+    return Paths.get(diffDir);
+  }
+
+  /**
+   * @return The path of the directory that is an ancestor to all the selected
+   *         files
+   */
+  public Path getSameDir() {
+    return Paths.get(sameDir);
+  }
+
+  /**
+   * @return The template from the metadata option TEMPLATE
+   */
+  public String getTemplate() {
+    return templateTypes.getSelectionModel().getSelectedItem();
+  }
 }

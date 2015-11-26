@@ -6,11 +6,22 @@
 
     <groupId>org.roda</groupId>
     <artifactId>rodain</artifactId>
-    <version>1.0.0-alpha.2</version>
+    <version>1.0.0-alpha.3</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <version.java>1.8</version.java>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>maven-central-repo</id>
+            <url>http://repo1.maven.org/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 
     <build>
         <plugins>
@@ -27,6 +38,8 @@
            <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
+                    <finalName>rodain-app-${project.version}</finalName>
+                    <attach>true</attach>
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
@@ -37,31 +50,22 @@
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
+                    <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
+               <executions>
+                   <execution>
+                       <id>make-assembly</id>
+                       <phase>package</phase>
+                       <goals>
+                           <goal>single</goal>
+                       </goals>
+                   </execution>
+               </executions>
             </plugin>
         </plugins>
     </build>
 
     <profiles>
-        <profile>
-            <id>JDK_1.7</id>
-            <activation>
-                <jdk>1.7</jdk>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <version.java>1.7</version.java>
-            </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>com.oracle</groupId>
-                    <artifactId>javafx</artifactId>
-                    <version>2.2</version>
-                    <systemPath>${java.home}/lib/jfxrt.jar</systemPath>
-                    <scope>system</scope>
-                </dependency>
-            </dependencies>
-        </profile>
         <profile>
             <id>JDK_1.8</id>
             <activation>
@@ -108,6 +112,18 @@
             <groupId>gov.loc</groupId>
             <artifactId>bagit</artifactId>
             <version>4.9.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.testfx</groupId>
+            <artifactId>testfx-core</artifactId>
+            <version>4.0.1-alpha</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testfx</groupId>
+            <artifactId>testfx-junit</artifactId>
+            <version>4.0.1-alpha</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

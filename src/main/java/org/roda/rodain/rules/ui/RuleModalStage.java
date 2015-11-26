@@ -14,58 +14,63 @@ import javafx.stage.StageStyle;
  * @author Andre Pereira apereira@keep.pt
  * @since 15-10-2015.
  */
-public class RuleModalStage extends Stage{
-    private ColorAdjust colorAdjust;
-    private Stage primaryStage;
-    public RuleModalStage(Stage primaryStage){
-        super(StageStyle.TRANSPARENT);
-        this.primaryStage = primaryStage;
-        initModality(Modality.WINDOW_MODAL);
-        initOwner(primaryStage);
+public class RuleModalStage extends Stage {
+  private ColorAdjust colorAdjust;
+  private Stage primaryStage;
 
-        colorAdjust = new ColorAdjust();
-        colorAdjust.setBrightness(-0.275);
+  public RuleModalStage(Stage primaryStage) {
+    super(StageStyle.TRANSPARENT);
+    this.primaryStage = primaryStage;
+    initModality(Modality.WINDOW_MODAL);
+    initOwner(primaryStage);
 
-        Scene scene = new Scene(new HBox(), 400, 250);
-        scene.getStylesheets().add(ClassLoader.getSystemResource("Modena.css").toExternalForm());
-        setScene(scene);
-    }
+    colorAdjust = new ColorAdjust();
+    colorAdjust.setBrightness(-0.275);
 
-    @Override
-    public void close(){
-        getOwner().getScene().getRoot().setEffect(null);
-        super.close();
-    }
+    setResizable(true);
 
-    public void setRoot(Parent root){
-        this.getScene().setRoot(root);
+    Scene scene = new Scene(new HBox(), 800, 600);
+    scene.getStylesheets().add(ClassLoader.getSystemResource("css/modal.css").toExternalForm());
+    scene.getStylesheets().add(ClassLoader.getSystemResource("css/shared.css").toExternalForm());
+    setScene(scene);
+  }
 
-        primaryStage.getScene().getRoot().setEffect(colorAdjust);
+  @Override
+  public void close() {
+    getOwner().getScene().getRoot().setEffect(null);
+    super.close();
+  }
 
-        // allow the dialog to be dragged around.
-        final Delta dragDelta = new Delta();
-        final RuleModalStage thisDialog = this; //reference to be used in the handlers
-        root.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                // record a delta distance for the drag and drop operation.
-                dragDelta.x = thisDialog.getX() - mouseEvent.getScreenX();
-                dragDelta.y = thisDialog.getY() - mouseEvent.getScreenY();
-            }
-        });
-        root.setOnMouseDragged(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                thisDialog.setX(mouseEvent.getScreenX() + dragDelta.x);
-                thisDialog.setY(mouseEvent.getScreenY() + dragDelta.y);
-            }
-        });
+  public void setRoot(Parent root) {
+    this.getScene().setRoot(root);
 
-        show();
-    }
+    primaryStage.getScene().getRoot().setEffect(colorAdjust);
 
-    // records relative x and y co-ordinates.
-    class Delta {
-        double x, y;
-    }
+    // allow the dialog to be dragged around.
+    final Delta dragDelta = new Delta();
+    final RuleModalStage thisDialog = this; // reference to be used in the
+                                            // handlers
+    root.setOnMousePressed(new EventHandler<MouseEvent>() {
+      @Override
+      public void handle(MouseEvent mouseEvent) {
+        // record a delta distance for the drag and drop operation.
+        dragDelta.x = thisDialog.getX() - mouseEvent.getScreenX();
+        dragDelta.y = thisDialog.getY() - mouseEvent.getScreenY();
+      }
+    });
+    root.setOnMouseDragged(new EventHandler<MouseEvent>() {
+      @Override
+      public void handle(MouseEvent mouseEvent) {
+        thisDialog.setX(mouseEvent.getScreenX() + dragDelta.x);
+        thisDialog.setY(mouseEvent.getScreenY() + dragDelta.y);
+      }
+    });
+
+    show();
+  }
+
+  // records relative x and y co-ordinates.
+  class Delta {
+    double x, y;
+  }
 }
