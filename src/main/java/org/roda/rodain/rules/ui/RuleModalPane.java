@@ -82,6 +82,12 @@ public class RuleModalPane extends BorderPane {
     currentState = States.ASSOCIATION;
   }
 
+  /**
+   * Sets the properties object for this class.
+   * 
+   * @param prop
+   *          The properties object.
+   */
   public static void setProperties(Properties prop) {
     properties = prop;
   }
@@ -250,26 +256,26 @@ public class RuleModalPane extends BorderPane {
     String title = properties.getProperty("metadata.singleFile.title");
     String description = properties.getProperty("metadata.singleFile.description");
     cellSingleFile = new HBoxCell(icon, title, description, optionsSingleFile());
-    cellSingleFile.setUserData(MetadataTypes.SINGLEFILE);
+    cellSingleFile.setUserData(MetadataTypes.SINGLE_FILE);
 
     icon = properties.getProperty("metadata.sameFolder.icon");
     String tempTitle = properties.getProperty("metadata.sameFolder.title");
     title = String.format("%s \"%s\"", tempTitle, pathSameFolder());
     description = properties.getProperty("metadata.sameFolder.description");
     cellSameFolder = new HBoxCell(icon, title, description, new HBox());
-    cellSameFolder.setUserData(MetadataTypes.SAMEDIRECTORY);
+    cellSameFolder.setUserData(MetadataTypes.SAME_DIRECTORY);
 
     icon = properties.getProperty("metadata.diffFolder.icon");
     title = properties.getProperty("metadata.diffFolder.title");
     description = properties.getProperty("metadata.diffFolder.description");
     cellDiffFolder = new HBoxCell(icon, title, description, optionsDiffFolder());
-    cellDiffFolder.setUserData(MetadataTypes.DIFFDIRECTORY);
+    cellDiffFolder.setUserData(MetadataTypes.DIFF_DIRECTORY);
 
     icon = properties.getProperty("metadata.template.icon");
     title = properties.getProperty("metadata.template.title");
     description = properties.getProperty("metadata.template.description");
     cellTemplate = new HBoxCell(icon, title, description, optionsTemplate());
-    cellTemplate.setUserData(MetadataTypes.NEWTEXT);
+    cellTemplate.setUserData(MetadataTypes.TEMPLATE);
 
     ObservableList<HBoxCell> hboxList = FXCollections.observableArrayList();
     hboxList.addAll(cellSingleFile, cellSameFolder, cellDiffFolder, cellTemplate);
@@ -447,9 +453,11 @@ public class RuleModalPane extends BorderPane {
   private boolean metadataCheckContinue() {
     try {
       MetadataTypes metaType = getMetadataType();
-      if (metaType == MetadataTypes.SINGLEFILE)
+      if (metaType == null)
+        return false;
+      if (metaType == MetadataTypes.SINGLE_FILE)
         return chooseFile.getUserData() != null;
-      if (metaType == MetadataTypes.DIFFDIRECTORY)
+      if (metaType == MetadataTypes.DIFF_DIRECTORY)
         return chooseDir.getUserData() != null;
     } catch (Exception e) {
       log.error("Error getting metadata type", e);
@@ -460,6 +468,8 @@ public class RuleModalPane extends BorderPane {
   private void enableMetaRadioButtons() {
     try {
       RuleTypes assocType = getAssociationType();
+      if (assocType == null)
+        return;
       if (assocType == RuleTypes.SIP_PER_FILE) {
         cellSameFolder.setDisable(false);
         cellDiffFolder.setDisable(false);
@@ -474,38 +484,72 @@ public class RuleModalPane extends BorderPane {
     }
   }
 
+  /**
+   *
+   * @return The association type of the item the user selected or null if there
+   *         was no selection.
+   * @throws UnexpectedDataTypeException
+   */
   public RuleTypes getAssociationType() throws UnexpectedDataTypeException {
     HBoxCell cell = assocList.getSelectionModel().getSelectedItem();
+    if (cell == null)
+      return null;
     if (cell.getUserData() instanceof RuleTypes)
       return (RuleTypes) cell.getUserData();
     else
       throw new UnexpectedDataTypeException();
   }
 
+  /**
+   * @return The value of the combo box of the SipPerFolder association option.
+   */
   public int getLevel() {
     return level.getValue();
   }
 
+  /**
+   *
+   * @return The metadata type of the item the user selected or null if there
+   *         was no selection.
+   * @throws UnexpectedDataTypeException
+   */
   public MetadataTypes getMetadataType() throws UnexpectedDataTypeException {
     HBoxCell selected = metaList.getSelectionModel().getSelectedItem();
+    if (selected == null)
+      return null;
     if (selected.getUserData() instanceof MetadataTypes)
       return (MetadataTypes) selected.getUserData();
     else
       throw new UnexpectedDataTypeException();
   }
 
+  /**
+   * @return The path of the file selected by the user in the metadata option
+   *         SINGLE_FILE
+   */
   public Path getFromFile() {
     return Paths.get(fromFile);
   }
 
+  /**
+   * @return The path of the directory selected by the user in the metadata
+   *         option DIFF_DIRECTORY
+   */
   public Path getDiffDir() {
     return Paths.get(diffDir);
   }
 
+  /**
+   * @return The path of the directory that is an ancestor to all the selected
+   *         files
+   */
   public Path getSameDir() {
     return Paths.get(sameDir);
   }
 
+  /**
+   * @return The template from the metadata option TEMPLATE
+   */
   public String getTemplate() {
     return templateTypes.getSelectionModel().getSelectedItem();
   }

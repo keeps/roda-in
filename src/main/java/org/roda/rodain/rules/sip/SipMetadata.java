@@ -29,13 +29,16 @@ public class SipMetadata {
     this.resource = resource;
   }
 
+  /**
+   * @return True if the metadata has been modified, false otherwise.
+   */
   public boolean isModified() {
     return modified;
   }
 
   private void loadMetadata() {
     try {
-      if (type == MetadataTypes.NEWTEXT) {
+      if (type == MetadataTypes.TEMPLATE) {
         if (resource != null) {
           String fileName;
           if ("EAD-C".equals(resource)) {

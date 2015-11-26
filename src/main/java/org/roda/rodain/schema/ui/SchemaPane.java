@@ -263,10 +263,16 @@ public class SchemaPane extends BorderPane {
     });
   }
 
+  /**
+   * @return The TreeView of the SchemaPane
+   */
   public TreeView<String> getTreeView() {
     return treeView;
   }
 
+  /**
+   * @return The Map with the SIPs of all the SchemaNodes in the TreeView
+   */
   public Map<SipPreview, String> getSipPreviews() {
     Map<SipPreview, String> result = new HashMap<>();
     for (SchemaNode sn : schemaNodes) {
@@ -275,6 +281,10 @@ public class SchemaPane extends BorderPane {
     return result;
   }
 
+  /**
+   * @param style
+   *          Sets the Properties object to this class
+   */
   public static void setStyleProperties(Properties style) {
     SchemaPane.style = style;
   }

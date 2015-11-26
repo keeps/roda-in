@@ -31,6 +31,24 @@ public class VisitorStack extends Observable {
     futures = new HashMap<>();
   }
 
+  /**
+   * Adds a new TreeVisitor to the stack.
+   *
+   * <p>
+   * Creates a new WalkFileTree with the set of paths and TreeVisitor received
+   * as parameter. Wraps it in a Task and adds the Task to an ExecutorService.
+   * </p>
+   * 
+   * @param items
+   *          The set of items associated in the Rule
+   * @param paths
+   *          The set of paths associated in the Rule
+   * @param vis
+   *          The TreeVisitor created by the Rule
+   *
+   * @see TreeVisitor
+   * @see ExecutorService
+   */
   public void add(final Set<SourceTreeItem> items, Set<String> paths, TreeVisitor vis) {
     final WalkFileTree walker = new WalkFileTree(paths, vis);
     final String id = vis.getId();
@@ -76,7 +94,13 @@ public class VisitorStack extends Observable {
     notifyObservers();
   }
 
-  public VisitorState isDone(String visitorId) {
+  /**
+   * @param visitorId
+   *          The id of the TreeVisitor we want to know the state of.
+   * @return The state of the TreeVisitor.
+   * @see TreeVisitor
+   */
+  public VisitorState getState(String visitorId) {
     Future fut = futures.get(visitorId);
     if (fut == null)
       return VisitorState.VISITOR_NOTSUBMITTED;
@@ -88,6 +112,14 @@ public class VisitorStack extends Observable {
       return VisitorState.VISITOR_QUEUED;
   }
 
+  /**
+   * Cancels the execution of the TreeVisitor received as parameter.
+   * 
+   * @param vis
+   *          The TreeVisitor to be canceled
+   * @return True if the TreeVisitor has been canceled, false otherwise.
+   * @see TreeVisitor
+   */
   public boolean cancel(TreeVisitor vis) {
     if (vis != null && futures.containsKey(vis.getId()))
       return futures.get(vis.getId()).cancel(true);
@@ -95,6 +127,11 @@ public class VisitorStack extends Observable {
       return false;
   }
 
+  /**
+   * Shuts down all TreeVisitors.
+   * 
+   * @see TreeVisitor
+   */
   public static void end() {
     if (visitors != null)
       visitors.shutdownNow();

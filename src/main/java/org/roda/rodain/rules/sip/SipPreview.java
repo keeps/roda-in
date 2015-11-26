@@ -39,24 +39,47 @@ public class SipPreview extends Observable implements Observer {
     }
   }
 
+  /**
+   * @return The name of the SIP.
+   */
   public String getName() {
     return name;
   }
 
+  /**
+   * @return The paths of the files of the SIP.
+   */
   public Set<TreeNode> getFiles() {
     return files;
   }
 
+  /**
+   * @return The metadata content of the SIP.
+   * @see SipMetadata#getMetadataContent()
+   */
   public String getMetadataContent() {
     return metadata.getMetadataContent();
   }
 
+  /**
+   * Updates the metadata content of the SIP.
+   * 
+   * @param meta
+   *          The new metadata content.
+   * @see SipMetadata#update(String)
+   */
   public void updateMetadata(String meta) {
     metadata.update(meta);
     setChanged();
     notifyObservers();
   }
 
+  /**
+   * Removes from the SIP's content the set of paths received as parameter.
+   * 
+   * @param paths
+   *          The set of paths to be removed
+   */
   public void ignoreContent(Set<Path> paths) {
     Set<String> ignored = new HashSet<>();
     Set<TreeNode> toRemove = new HashSet<>();
@@ -69,31 +92,60 @@ public class SipPreview extends Observable implements Observer {
     PathCollection.addPaths(ignored, SourceTreeItemState.NORMAL);
   }
 
+  /**
+   * @return True if the metadata has been modified, false otherwise.
+   * @see SipMetadata#isModified()
+   */
   public boolean isMetadataModified() {
     return metadata.isModified();
   }
 
+  /**
+   * @return True if the content has been modified (nodes removed, flattened or
+   *         skipped), false otherwise.
+   */
   public boolean isContentModified() {
     return contentModified;
   }
 
+  /**
+   * @return True if the SIP has been removed by the user, false otherwise.
+   */
   public boolean isRemoved() {
     return removed;
   }
 
+  /**
+   * @return The id of the SIP.
+   */
   public String getId() {
     return id;
   }
 
+  /**
+   * Sets the removed state of the SIP as true.
+   */
   public void setRemoved() {
     removed = true;
   }
 
+  /**
+   * Notifies the observers of the SIP that it has been modified.
+   */
   public void changedAndNotify() {
     setChanged();
     notifyObservers();
   }
 
+  /**
+   * Sets the content modified state as true if it receives a notification from
+   * any TreeNode in the files Set.
+   * 
+   * @param o
+   *          The observable object that is modified.
+   * @param arg
+   *          The arguments sent by the observable object.
+   */
   @Override
   public void update(Observable o, Object arg) {
     if (o instanceof TreeNode) {
@@ -101,10 +153,5 @@ public class SipPreview extends Observable implements Observer {
       setChanged();
       notifyObservers();
     }
-  }
-
-  @Override
-  public String toString() {
-    return "SipPreview{" + "name='" + name + '\'' + ", files=" + files + '}';
   }
 }

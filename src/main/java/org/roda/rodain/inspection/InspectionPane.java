@@ -170,6 +170,8 @@ public class InspectionPane extends BorderPane {
       @Override
       public void handle(ActionEvent e) {
         InspectionTreeItem selected = (InspectionTreeItem) sipFiles.getSelectionModel().getSelectedItem();
+        if (selected == null)
+          return;
         Set<Path> paths = new HashSet<>();
         paths.add(selected.getPath());
         if (currentSIP != null) {

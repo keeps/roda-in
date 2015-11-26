@@ -40,16 +40,23 @@ public class Rule extends Observable implements Observer, Comparable {
   private int level;
   private Integer id;
 
-  /*
-   * Keep a set of mapped paths to be used when the source tree needs to find if
-   * a file has been mapped. This set will only be filled when the first search
-   * is made. Due to the nature of the visitor, we need to save the sips map
-   * size to know if between each search there was no modification. If there was
-   * a modification then we rebuild the mapped set.
+  /**
+   *
+   * @param source
+   *          The set of items to be transformed into SIPs
+   * @param assocType
+   *          The association type of the rule.
+   * @param level
+   *          The maximum level of the directory. Used in the SIP_PER_FOLDER
+   *          type only.
+   * @param metadataPath
+   *          The path to the metadata file(s)
+   * @param metadataContent
+   *          Since the metadata won't always be in a file, we can also input
+   *          the content string.
+   * @param metaType
+   *          The type of metadata to be applied to the SIPs.
    */
-  private Set<String> mapped;
-  private int lastSipsSize = -1;
-
   public Rule(Set<SourceTreeItem> source, RuleTypes assocType, int level, Path metadataPath, String metadataContent,
     MetadataTypes metaType) {
     ruleCount++;
@@ -94,45 +101,76 @@ public class Rule extends Observable implements Observer, Comparable {
     filters.add(filter);
   }
 
+  /**
+   * @return The set of items used as source.
+   */
   public Set<SourceTreeItem> getSource() {
     return source;
   }
 
+  /**
+   * @return The id of the rule.
+   */
   public int getId() {
     return id;
   }
 
+  /**
+   * @return The SIP's created by the rule.
+   */
   public Collection<SipPreview> getSips() {
     return sips.values();
   }
 
-  public void setSource(Set<SourceTreeItem> source) {
-    this.source = source;
-  }
-
+  /**
+   * @return The count of the created SIPs
+   */
   public int getSipCount() {
     return sips.size();
   }
 
+  /**
+   * @return The set of SipPreviewNodes
+   */
   public Collection<SipPreviewNode> getSipNodes() {
     return sipNodes.values();
   }
 
+  /**
+   * @return The association type.
+   */
   public RuleTypes getAssocType() {
     return assocType;
   }
 
+  /**
+   * Creates a TreeVisitor with the options defined in the rule.
+   *
+   * <p>
+   * For each different type of association, creates a different TreeVisitor
+   * with the specific options. For example, when the type of the association is
+   * SIP_PER_FOLDER, the created TreeVisitor is a SipPerFolderVisitor, that
+   * receives the maximum level as a parameter.
+   * </p>
+   *
+   * <p>
+   * The method also adds the rule as an observer of the TreeVisitor, to be
+   * notified of any changes.
+   * </p>
+   * 
+   * @return The TreeVisitor created using the options defined in the rule.
+   * @see TreeVisitor
+   * @see SipPerFileVisitor
+   * @see SipPerFolderVisitor
+   * @see SipPerSelection
+   * @see SipSingle
+   */
   public TreeVisitor apply() {
-    return apply(assocType, level);
-  }
-
-  public TreeVisitor apply(RuleTypes type, int level) {
-    this.assocType = type;
     added = 0;
     sips = new HashMap<>();
     sipNodes = new HashMap<>();
 
-    switch (type) {
+    switch (assocType) {
       case SIP_PER_FOLDER:
         SipPerFolderVisitor visitorFolder = new SipPerFolderVisitor(id.toString(), level, filters, metaType,
           metadataPath, metadataContent);
@@ -166,6 +204,24 @@ public class Rule extends Observable implements Observer, Comparable {
     return visitor;
   }
 
+  /**
+   * Updates the rule when notified by a SipPreviewCreator or a SipPreview.
+   * <p>
+   * When the notification is from a SipPreviewCreator, the method creates new
+   * SipPreviewNodes until a maximum of 100 items. Finally, notifies the rule's
+   * observers of changes.
+   * </p>
+   *
+   * <p>
+   * When the notification is from a SipPreview, the method only does work if
+   * the item has been removed, in which case, it sets all the paths of the
+   * SIP's content with the NORMAL state and removes the SipPreview from the
+   * list of SIPs.
+   * </p>
+   * 
+   * @param o
+   * @param arg
+   */
   @Override
   public void update(Observable o, Object arg) {
     if (o instanceof SipPreviewCreator) {
@@ -195,20 +251,10 @@ public class Rule extends Observable implements Observer, Comparable {
     }
   }
 
-  public boolean isMapped(String path) {
-    if (lastSipsSize != sips.size()) {
-      // create the set of mapped paths
-      mapped = new HashSet<>();
-      lastSipsSize = sips.size();
-      for (SipPreview sp : sips.values()) {
-        for (TreeNode tn : sp.getFiles()) {
-          mapped.addAll(tn.getFullTreePaths());
-        }
-      }
-    }
-    return mapped.contains(path);
-  }
-
+  /**
+   * Sets all the SIPs from the rule as removed and removes all the
+   * SipPreviewNodes.
+   */
   public void remove() {
     for (SipPreview sip : sips.values()) {
       sip.setRemoved();
@@ -225,6 +271,17 @@ public class Rule extends Observable implements Observer, Comparable {
     notifyObservers("Removed SIP");
   }
 
+  /**
+   * Compares two rules, by their id.
+   * 
+   * @param o
+   *          The rule to be compared
+   * @return the value 0 if this Rule's id is equal to the argument Rule's id; a
+   *         value less than 0 if this Rule's id is numerically less than the
+   *         argument Rule's id; and a value greater than 0 if this Rule's id is
+   *         numerically greater than the argument Rule's id (signed
+   *         comparison).
+   */
   @Override
   public int compareTo(Object o) {
     int result = 0;
@@ -236,6 +293,11 @@ public class Rule extends Observable implements Observer, Comparable {
     return result;
   }
 
+  /**
+   * @param o
+   *          The rule to be compared
+   * @return True if the ids of the rules match, false otherwise
+   */
   @Override
   public boolean equals(Object o) {
     boolean result = false;
@@ -246,6 +308,9 @@ public class Rule extends Observable implements Observer, Comparable {
     return result;
   }
 
+  /**
+   * @return The rule's id hashcode
+   */
   @Override
   public int hashCode() {
     return id.hashCode();

@@ -13,6 +13,9 @@ import javafx.scene.layout.HBox;
  * @since 12-10-2015.
  */
 public class SchemaTreeCell extends TreeCell<String> {
+  /**
+   * Creates a new SchemaTreeCell
+   */
   public SchemaTreeCell() {
     getStyleClass().add("schemaNode");
   }

@@ -166,6 +166,14 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipP
     }
   }
 
+  /**
+   * Adds the visited file to its parent
+   *
+   * @param path
+   *          The path of the visited file
+   * @param attrs
+   *          The attributes of the visited file
+   */
   @Override
   public void visitFile(Path path, BasicFileAttributes attrs) {
     if (filter(path))
@@ -173,23 +181,36 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipP
     nodes.peekLast().add(path);
   }
 
+  /**
+   * This method is empty in this class, but it's defined because of the
+   * TreeVisitor interface.
+   *
+   * @param path
+   *          The path of the file.
+   */
   @Override
   public void visitFileFailed(Path path) {
   }
 
   private Path getMetadataPath() {
     Path result = null;
-    if (metaType == MetadataTypes.SINGLEFILE)
+    if (metaType == MetadataTypes.SINGLE_FILE)
       result = metadataPath;
     return result;
   }
 
+  /**
+   * Ends the tree visit, notifying the observers of modifications.
+   */
   @Override
   public void end() {
     setChanged();
     notifyObservers();
   }
 
+  /**
+   * @return The id of the visitor.
+   */
   @Override
   public String getId() {
     return id;

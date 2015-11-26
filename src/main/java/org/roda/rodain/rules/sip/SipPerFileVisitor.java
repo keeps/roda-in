@@ -125,6 +125,14 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipPre
     return false;
   }
 
+  /**
+   * Creates a new SIP with the file being visited.
+   *
+   * @param path
+   *          The path of the file being visited.
+   * @param attrs
+   *          The attributes of the file being visited.
+   */
   @Override
   public void visitFile(Path path, BasicFileAttributes attrs) {
     if (filter(path))
@@ -153,11 +161,11 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipPre
   private Path getMetadataPath(Path path) {
     Path result;
     switch (metaType) {
-      case SINGLEFILE:
+      case SINGLE_FILE:
         result = metadataPath;
         break;
-      case DIFFDIRECTORY: // uses the same logic as the next case
-      case SAMEDIRECTORY:
+      case DIFF_DIRECTORY: // uses the same logic as the next case
+      case SAME_DIRECTORY:
         result = getFileFromDir(path);
         break;
       default:
@@ -179,16 +187,29 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipPre
     return null;
   }
 
+  /**
+   * This method is empty in this class, but it's defined because of the
+   * TreeVisitor interface.
+   *
+   * @param path
+   *          The path of the file.
+   */
   @Override
   public void visitFileFailed(Path path) {
   }
 
+  /**
+   * Ends the tree visit, notifying the observers of modifications.
+   */
   @Override
   public void end() {
     setChanged();
     notifyObservers();
   }
 
+  /**
+   * @return The id of the visitor.
+   */
   @Override
   public String getId() {
     return id;

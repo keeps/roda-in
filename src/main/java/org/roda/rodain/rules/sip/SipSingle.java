@@ -137,6 +137,15 @@ public class SipSingle extends Observable implements TreeVisitor, SipPreviewCrea
       files.add(node);
   }
 
+  /**
+   * Adds the visited file to its parent. If the parent doesn't exist, adds a
+   * new TreeNode to the Deque.
+   *
+   * @param path
+   *          The path of the visited file
+   * @param attrs
+   *          The attributes of the visited file
+   */
   @Override
   public void visitFile(Path path, BasicFileAttributes attrs) {
     if (filter(path)) {
@@ -148,10 +157,21 @@ public class SipSingle extends Observable implements TreeVisitor, SipPreviewCrea
       nodes.peekLast().add(path);
   }
 
+  /**
+   * This method is empty in this class, but it's defined because of the
+   * TreeVisitor interface.
+   *
+   * @param path
+   *          The path of the file.
+   */
   @Override
   public void visitFileFailed(Path path) {
   }
 
+  /**
+   * Ends the tree visit, creating the SIP with all the files added during the
+   * visit and notifying the observers.
+   */
   @Override
   public void end() {
     Path metaPath = getMetadata();
@@ -173,11 +193,14 @@ public class SipSingle extends Observable implements TreeVisitor, SipPreviewCrea
 
   private Path getMetadata() {
     Path result = null;
-    if (metaType == MetadataTypes.SINGLEFILE)
+    if (metaType == MetadataTypes.SINGLE_FILE)
       result = metadataPath;
     return result;
   }
 
+  /**
+   * @return The id of the visitor.
+   */
   @Override
   public String getId() {
     return id;

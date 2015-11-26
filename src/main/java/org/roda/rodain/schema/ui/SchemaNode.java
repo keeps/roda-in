@@ -25,6 +25,12 @@ public class SchemaNode extends TreeItem<String>implements Observer {
 
   private List<SchemaNode> schemaNodes;
 
+  /**
+   * Creates a new SchemaNode
+   * 
+   * @param dobject
+   *          The DescriptionObject that defines the SchemaNode
+   */
   public SchemaNode(DescriptionObject dobject) {
     super(dobject.getTitle());
     dob = dobject;
@@ -48,6 +54,14 @@ public class SchemaNode extends TreeItem<String>implements Observer {
     }
   }
 
+  /**
+   * Updates the node when a Rule has been modified.
+   * 
+   * @param o
+   *          The observable object
+   * @param arg
+   *          The arguments sent by the object
+   */
   @Override
   public void update(final Observable o, Object arg) {
     if (o instanceof Rule) {
@@ -82,29 +96,43 @@ public class SchemaNode extends TreeItem<String>implements Observer {
       setValue(dob.getTitle());
   }
 
+  /**
+   * Adds a new Rule to the SchemaNode.
+   *
+   * @param r
+   *          The Rule to be added
+   */
   public void addRule(Rule r) {
     int count = r.getSipCount();
     Integer idInt = r.getId();
     String id = idInt.toString();
+    // add the rule the maps
     rules.put(id, count);
     ruleObjects.put(id, r);
+    // update the value of the TreeItem
     int sipCount = getSipCount();
     if (sipCount > 0)
       setValue(String.format("%s  (%d items)", dob.getTitle(), getSipCount()));
     setExpanded(true);
   }
 
+  /**
+   * Removes a rule from the SchemaNode.
+   *
+   * @param r
+   */
   public void removeRule(Rule r) {
     Integer idInt = r.getId();
     String id = idInt.toString();
     if (sips.get(id) != null) {
       getChildren().removeAll(sips.get(id));
     }
+    // remove the rules from the maps
     rules.remove(id);
     ruleObjects.remove(id);
     sips.remove(id);
     r.remove();
-
+    // update the value of the TreeItem
     String text = dob.getTitle();
     int count = getSipCount();
     if (count > 0)
@@ -112,6 +140,9 @@ public class SchemaNode extends TreeItem<String>implements Observer {
     setValue(text);
   }
 
+  /**
+   * @return The count of all the SIPs associated to the SchemaNode
+   */
   public int getSipCount() {
     int result = 0;
     for (int i : rules.values())
@@ -119,18 +150,31 @@ public class SchemaNode extends TreeItem<String>implements Observer {
     return result;
   }
 
+  /**
+   * @return The icon of the SchemaNode
+   */
   public Image getImage() {
     return icon;
   }
 
+  /**
+   * @return The DescriptionObject that defines the SchemaNode
+   */
   public DescriptionObject getDob() {
     return dob;
   }
 
+  /**
+   * @return The Set of rules associated to the SchemaNode, ordered by Rule id
+   */
   public Set<Rule> getRules() {
     return new TreeSet<>(ruleObjects.values());
   }
 
+  /**
+   * @return A map of all the SIPs in the SchemaNode and in the SchemaNode's
+   *         children
+   */
   public Map<SipPreview, String> getSipPreviews() {
     Map<SipPreview, String> result = new HashMap<>();
     // this node's sips

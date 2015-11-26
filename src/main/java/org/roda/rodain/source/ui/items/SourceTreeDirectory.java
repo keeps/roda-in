@@ -445,12 +445,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
     rules.add(r);
     if (state == SourceTreeItemState.NORMAL) {
       state = SourceTreeItemState.MAPPED;
-      // PathCollection.addPath(fullPath, state);
     }
-    /*
-     * for(TreeItem it: getChildren()){ SourceTreeItem item =
-     * (SourceTreeItem)it; item.addMapping(r); }
-     */
     verifyState();
   }
 

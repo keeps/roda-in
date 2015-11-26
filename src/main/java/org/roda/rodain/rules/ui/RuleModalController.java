@@ -39,6 +39,17 @@ public class RuleModalController {
 
   }
 
+  /**
+   * Creates the scene to show the modal window with the options to create a new
+   * Rule.
+   * 
+   * @param primStage
+   *          The main stage of the application.
+   * @param source
+   *          The set of items chosen by the user to create the new association.
+   * @param schemaNode
+   *          The destination of the SIPs that will be created.
+   */
   public static void newAssociation(final Stage primStage, Set<SourceTreeItem> source, SchemaNode schemaNode) {
     if (stage == null)
       stage = new RuleModalStage(primStage);
@@ -71,6 +82,22 @@ public class RuleModalController {
     new Thread(task).start();
   }
 
+  /**
+   * Confirms the creation of a new Rule.
+   *
+   * <p>
+   * The method starts by getting the association and metadata types chosen by
+   * the user. Then creates a new Rule using that information and, if it
+   * applies, the options from each chosen type (file names, maximum folder
+   * depth, etc.).
+   * </p>
+   * <p>
+   * The next step is to create the tree visitor to walk the files tree and add
+   * it to the queue of visitors. Finally, notifies the other components of the
+   * interface that a new association has been created and they need to adapt to
+   * it.
+   * </p>
+   */
   public static void confirm() {
     stage.close();
     try {
@@ -82,16 +109,16 @@ public class RuleModalController {
       Path metadataPath = null;
       String metadataResource = null;
       switch (metaType) {
-        case SAMEDIRECTORY:
+        case SAME_DIRECTORY:
           metadataPath = pane.getSameDir();
           break;
-        case DIFFDIRECTORY:
+        case DIFF_DIRECTORY:
           metadataPath = pane.getDiffDir();
           break;
-        case SINGLEFILE:
+        case SINGLE_FILE:
           metadataPath = pane.getFromFile();
           break;
-        case NEWTEXT:
+        case TEMPLATE:
           metadataResource = pane.getTemplate();
           break;
         default:
@@ -119,6 +146,9 @@ public class RuleModalController {
     }
   }
 
+  /**
+   * Closes the stage of the modal window.
+   */
   public static void cancel() {
     stage.close();
   }

@@ -99,7 +99,7 @@ public class SourceTreeFile extends SourceTreeItem {
   @Override
   public void removeMapping(Rule r) {
     if (rule == null || r == rule) {
-      if (!r.isMapped(fullPath)) {
+      if (PathCollection.getState(fullPath) == SourceTreeItemState.MAPPED) {
         state = SourceTreeItemState.NORMAL;
         PathCollection.addPath(fullPath, state);
       }

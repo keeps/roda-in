@@ -21,6 +21,9 @@ public class TreeNode extends Observable {
     files = new HashMap<>();
   }
 
+  /**
+   * Flattens the TreeNode, i.e., moves all it's child nodes to one level.
+   */
   public void flatten() {
     Map<String, TreeNode> newFiles = new HashMap<>();
     for (String file : files.keySet()) {
@@ -36,6 +39,10 @@ public class TreeNode extends Observable {
     changed();
   }
 
+  /**
+   * @return A set with all the paths from the tree that starts in the TreeNode
+   *         where this method is called.
+   */
   public Set<String> getFullTreePaths() {
     Set<String> result = new HashSet<>();
     result.add(path.toString());
@@ -44,10 +51,17 @@ public class TreeNode extends Observable {
     return result;
   }
 
+  /**
+   * @return The direct children of the TreeNode.
+   */
   public Map<String, TreeNode> getAllFiles() {
     return files;
   }
 
+  /**
+   * @return The direct children of the TreeNode that are files (not
+   *         directories)
+   */
   public Map<String, TreeNode> getOnlyFiles() {
     Map<String, TreeNode> result = new HashMap<>();
     for (String file : files.keySet()) {
@@ -87,21 +101,47 @@ public class TreeNode extends Observable {
     return result;
   }
 
+  /**
+   * Adds new TreeNodes to the node's children.
+   * 
+   * @param map
+   *          The map with the new TreeNodes
+   */
   public void addAll(Map<String, TreeNode> map) {
     files.putAll(map);
     changed();
   }
 
+  /**
+   * Adds a new TreeNode to the node's children
+   * 
+   * @param node
+   *          The new TreeNode to be added
+   */
   public void add(TreeNode node) {
     files.put(node.getPath().toString(), node);
     changed();
   }
 
+  /**
+   * Adds a new TreeNode to the node's children
+   *
+   * @param node
+   *          The path of the file to be added to the children. Before being
+   *          added, the method creates a new TreeNode with this path.
+   */
   public void add(Path node) {
     files.put(node.toString(), new TreeNode(node));
     changed();
   }
 
+  /**
+   * Removes the TreeNode with the path received as parameter.
+   * 
+   * @param path
+   *          The path of the TreeNode to be removed
+   * @return The removed TreeNode
+   */
   public TreeNode remove(Path path) {
     TreeNode result = files.get(path.toString());
     files.remove(path.toString());
@@ -109,14 +149,25 @@ public class TreeNode extends Observable {
     return result;
   }
 
+  /**
+   * @return The node's path
+   */
   public Path getPath() {
     return path;
   }
 
+  /**
+   * @return A set of the node's children's paths.
+   */
   public Set<String> getKeys() {
     return files.keySet();
   }
 
+  /**
+   * @param key
+   *          The path of the TreeNode we want to get.
+   * @return The TreeNode with the path received as parameter
+   */
   public TreeNode get(String key) {
     return files.get(key);
   }
@@ -126,6 +177,12 @@ public class TreeNode extends Observable {
     notifyObservers();
   }
 
+  /**
+   * Adds a new observer to the TreeNode and all its children
+   * 
+   * @param o
+   *          The Observer to be added
+   */
   @Override
   public void addObserver(Observer o) {
     super.addObserver(o);

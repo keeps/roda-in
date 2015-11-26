@@ -74,11 +74,4 @@ public class DescriptionObject {
   public void setChildren(List<DescriptionObject> children) {
     this.children = children;
   }
-
-  @Override
-  public String toString() {
-    return "DescriptionObject{" + "id='" + id + '\'' + ", title='" + title + '\'' + ", parentId='" + parentId + '\''
-      + ", level='" + level + '\'' + ", descriptionlevel='" + descriptionlevel + '\'' + ", children=" + children
-      + "}\n\n";
-  }
 }

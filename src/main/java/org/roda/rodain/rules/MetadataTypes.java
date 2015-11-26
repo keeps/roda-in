@@ -5,5 +5,5 @@ package org.roda.rodain.rules;
  * @since 19-10-2015.
  */
 public enum MetadataTypes {
-  SINGLEFILE, SAMEDIRECTORY, DIFFDIRECTORY, NEWTEXT
+  SINGLE_FILE, SAME_DIRECTORY, DIFF_DIRECTORY, TEMPLATE
 }
