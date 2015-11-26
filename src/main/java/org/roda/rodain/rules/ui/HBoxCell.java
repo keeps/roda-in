@@ -14,24 +14,24 @@ import javafx.scene.layout.VBox;
  */
 public class HBoxCell extends HBox {
 
-    public HBoxCell(String icon, String title, String description, Node options){
-        super(20);
+  public HBoxCell(String icon, String title, String description, Node options) {
+    super(20);
 
-        getStyleClass().add("cell");
-        setAlignment(Pos.CENTER_LEFT);
+    getStyleClass().add("cell");
+    setAlignment(Pos.CENTER_LEFT);
 
-        VBox rightBox = new VBox(5);
-        Label lTitle = new Label(title);
-        lTitle.getStyleClass().add("title");
+    VBox rightBox = new VBox(5);
+    Label lTitle = new Label(title);
+    lTitle.getStyleClass().add("title");
 
-        Label lDescription = new Label(description);
-        lDescription.getStyleClass().add("description");
-        lDescription.setWrapText(true);
-        lDescription.setMaxWidth(675);
+    Label lDescription = new Label(description);
+    lDescription.getStyleClass().add("description");
+    lDescription.setWrapText(true);
+    lDescription.setMaxWidth(675);
 
-        rightBox.getChildren().addAll(lTitle, lDescription, options);
+    rightBox.getChildren().addAll(lTitle, lDescription, options);
 
-        Image imIcon = new Image(ClassLoader.getSystemResourceAsStream(icon));
-        getChildren().addAll(new ImageView(imIcon), rightBox);
-    }
+    Image imIcon = new Image(ClassLoader.getSystemResourceAsStream(icon));
+    getChildren().addAll(new ImageView(imIcon), rightBox);
+  }
 }

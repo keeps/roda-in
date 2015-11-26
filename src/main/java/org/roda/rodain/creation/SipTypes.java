@@ -5,5 +5,5 @@ package org.roda.rodain.creation;
  * @since 19/11/2015.
  */
 public enum SipTypes {
-    BAGIT
+  BAGIT
 }

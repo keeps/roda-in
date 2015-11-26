@@ -15,67 +15,72 @@ import javafx.stage.StageStyle;
  * @since 19/11/2015.
  */
 public class CreationModalStage extends Stage {
-    private ColorAdjust colorAdjust;
-    private Stage primaryStage;
-    public CreationModalStage(Stage primaryStage){
-        super(StageStyle.TRANSPARENT);
-        this.primaryStage = primaryStage;
-        initModality(Modality.WINDOW_MODAL);
-        initOwner(primaryStage);
+  private ColorAdjust colorAdjust;
+  private Stage primaryStage;
 
-        colorAdjust = new ColorAdjust();
-        colorAdjust.setBrightness(-0.275);
+  public CreationModalStage(Stage primaryStage) {
+    super(StageStyle.TRANSPARENT);
+    this.primaryStage = primaryStage;
+    initModality(Modality.WINDOW_MODAL);
+    initOwner(primaryStage);
 
-        setResizable(true);
+    colorAdjust = new ColorAdjust();
+    colorAdjust.setBrightness(-0.275);
 
-        Scene scene = new Scene(new HBox(), 400, 180);
-        scene.getStylesheets().add(ClassLoader.getSystemResource("css/modal.css").toExternalForm());
-        scene.getStylesheets().add(ClassLoader.getSystemResource("css/shared.css").toExternalForm());
-        setScene(scene);
-    }
+    setResizable(true);
 
-    /**
-     * Used to remove the color adjustment effect on the background and remove this Stage.
-     */
-    @Override
-    public void close(){
-        getOwner().getScene().getRoot().setEffect(null);
-        super.close();
-    }
+    Scene scene = new Scene(new HBox(), 400, 180);
+    scene.getStylesheets().add(ClassLoader.getSystemResource("css/modal.css").toExternalForm());
+    scene.getStylesheets().add(ClassLoader.getSystemResource("css/shared.css").toExternalForm());
+    setScene(scene);
+  }
 
-    /**
-     * Sets the root Scene of this Stage, applies a color adjustment effect and enables dragging of the window.
-     * @param root
-     */
-    public void setRoot(Parent root){
-        this.getScene().setRoot(root);
+  /**
+   * Used to remove the color adjustment effect on the background and remove
+   * this Stage.
+   */
+  @Override
+  public void close() {
+    getOwner().getScene().getRoot().setEffect(null);
+    super.close();
+  }
 
-        primaryStage.getScene().getRoot().setEffect(colorAdjust);
+  /**
+   * Sets the root Scene of this Stage, applies a color adjustment effect and
+   * enables dragging of the window.
+   * 
+   * @param root
+   */
+  public void setRoot(Parent root) {
+    this.getScene().setRoot(root);
 
-        // allow the dialog to be dragged around.
-        final Delta dragDelta = new Delta();
-        final CreationModalStage thisDialog = this; //reference to be used in the handlers
-        root.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                // record a delta distance for the drag and drop operation.
-                dragDelta.x = thisDialog.getX() - mouseEvent.getScreenX();
-                dragDelta.y = thisDialog.getY() - mouseEvent.getScreenY();
-            }
-        });
-        root.setOnMouseDragged(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                thisDialog.setX(mouseEvent.getScreenX() + dragDelta.x);
-                thisDialog.setY(mouseEvent.getScreenY() + dragDelta.y);
-            }
-        });
+    primaryStage.getScene().getRoot().setEffect(colorAdjust);
 
-        show();
-    }
+    // allow the dialog to be dragged around.
+    final Delta dragDelta = new Delta();
+    final CreationModalStage thisDialog = this; // reference to be used in the
+                                                // handlers
+    root.setOnMousePressed(new EventHandler<MouseEvent>() {
+      @Override
+      public void handle(MouseEvent mouseEvent) {
+        // record a delta distance for the drag and drop operation.
+        dragDelta.x = thisDialog.getX() - mouseEvent.getScreenX();
+        dragDelta.y = thisDialog.getY() - mouseEvent.getScreenY();
+      }
+    });
+    root.setOnMouseDragged(new EventHandler<MouseEvent>() {
+      @Override
+      public void handle(MouseEvent mouseEvent) {
+        thisDialog.setX(mouseEvent.getScreenX() + dragDelta.x);
+        thisDialog.setY(mouseEvent.getScreenY() + dragDelta.y);
+      }
+    });
 
-    // records relative x and y co-ordinates.
-    class Delta {
-        double x, y;
-    }
+    show();
+  }
+
+  // records relative x and y co-ordinates.
+  class Delta {
+    double x, y;
+  }
 }

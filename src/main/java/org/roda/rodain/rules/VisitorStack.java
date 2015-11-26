@@ -12,90 +12,91 @@ import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 
 import org.roda.rodain.source.ui.items.SourceTreeItem;
-import org.slf4j.LoggerFactory;
-
 import org.roda.rodain.utils.TreeVisitor;
 import org.roda.rodain.utils.WalkFileTree;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 06-10-2015.
  */
-public class VisitorStack extends Observable{
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(VisitorStack.class.getName());
-    private static ExecutorService visitors;
-    private HashMap<String, Future> futures;
-    private String runningTask;
+public class VisitorStack extends Observable {
+  private static final org.slf4j.Logger log = LoggerFactory.getLogger(VisitorStack.class.getName());
+  private static ExecutorService visitors;
+  private HashMap<String, Future> futures;
+  private String runningTask;
 
-    public VisitorStack(){
-        visitors = Executors.newSingleThreadExecutor();
-        futures = new HashMap<>();
-    }
+  public VisitorStack() {
+    visitors = Executors.newSingleThreadExecutor();
+    futures = new HashMap<>();
+  }
 
-    public void add(final Set<SourceTreeItem> items, Set<String> paths, TreeVisitor vis){
-        final WalkFileTree walker = new WalkFileTree(paths, vis);
-        final String id = vis.getId();
-        Task toRun = new Task<Void>() {
-            @Override
-            public Void call() {
-                walker.start();
-                try {
-                    walker.join();
-                } catch (InterruptedException e) {
-                    log.debug(e.getMessage());
-                    walker.interrupt();
-                }
-                return null;
-            }
-        };
-        toRun.setOnRunning(new EventHandler<WorkerStateEvent>() {
-            @Override
-            public void handle(WorkerStateEvent workerStateEvent) {
-                runningTask = id;
-                update();
-            }
-        });
-        //notify the observers when the task finishes
-        toRun.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-            @Override
-            public void handle(WorkerStateEvent workerStateEvent) {
-                runningTask = null;
-                for(SourceTreeItem it: items){
-                    it.parentVerify();
-                }
-                update();
-            }
-        });
-
-        Future fut = visitors.submit(toRun);
-        futures.put(vis.getId(), fut);
+  public void add(final Set<SourceTreeItem> items, Set<String> paths, TreeVisitor vis) {
+    final WalkFileTree walker = new WalkFileTree(paths, vis);
+    final String id = vis.getId();
+    Task toRun = new Task<Void>() {
+      @Override
+      public Void call() {
+        walker.start();
+        try {
+          walker.join();
+        } catch (InterruptedException e) {
+          log.debug(e.getMessage());
+          walker.interrupt();
+        }
+        return null;
+      }
+    };
+    toRun.setOnRunning(new EventHandler<WorkerStateEvent>() {
+      @Override
+      public void handle(WorkerStateEvent workerStateEvent) {
+        runningTask = id;
         update();
-    }
+      }
+    });
+    // notify the observers when the task finishes
+    toRun.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+      @Override
+      public void handle(WorkerStateEvent workerStateEvent) {
+        runningTask = null;
+        for (SourceTreeItem it : items) {
+          it.parentVerify();
+        }
+        update();
+      }
+    });
 
-    private void update(){
-        setChanged();
-        notifyObservers();
-    }
+    Future fut = visitors.submit(toRun);
+    futures.put(vis.getId(), fut);
+    update();
+  }
 
-    public VisitorState isDone(String visitorId){
-        Future fut = futures.get(visitorId);
-        if(fut == null)
-            return VisitorState.VISITOR_NOTSUBMITTED;
-        if(runningTask != null && visitorId.equals(runningTask))
-            return VisitorState.VISITOR_RUNNING;
-        if(fut.isDone())
-            return VisitorState.VISITOR_DONE;
-        else return VisitorState.VISITOR_QUEUED;
-    }
+  private void update() {
+    setChanged();
+    notifyObservers();
+  }
 
-    public boolean cancel(TreeVisitor vis){
-        if(vis != null && futures.containsKey(vis.getId()))
-            return futures.get(vis.getId()).cancel(true);
-        else return false;
-    }
+  public VisitorState isDone(String visitorId) {
+    Future fut = futures.get(visitorId);
+    if (fut == null)
+      return VisitorState.VISITOR_NOTSUBMITTED;
+    if (runningTask != null && visitorId.equals(runningTask))
+      return VisitorState.VISITOR_RUNNING;
+    if (fut.isDone())
+      return VisitorState.VISITOR_DONE;
+    else
+      return VisitorState.VISITOR_QUEUED;
+  }
 
-    public static void end(){
-        if(visitors != null)
-            visitors.shutdownNow();
-    }
+  public boolean cancel(TreeVisitor vis) {
+    if (vis != null && futures.containsKey(vis.getId()))
+      return futures.get(vis.getId()).cancel(true);
+    else
+      return false;
+  }
+
+  public static void end() {
+    if (visitors != null)
+      visitors.shutdownNow();
+  }
 }

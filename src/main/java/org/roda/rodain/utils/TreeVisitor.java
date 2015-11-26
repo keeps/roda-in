@@ -8,11 +8,17 @@ import java.nio.file.attribute.BasicFileAttributes;
  * @since 01-10-2015.
  */
 public interface TreeVisitor {
-    void preVisitDirectory(Path path, BasicFileAttributes attrs);
-    void postVisitDirectory(Path path);
-    void visitFile(Path path, BasicFileAttributes attrs);
-    void visitFileFailed(Path path);
-    void end();
-    String getId();
-    void setStartPath(String path);
+  void preVisitDirectory(Path path, BasicFileAttributes attrs);
+
+  void postVisitDirectory(Path path);
+
+  void visitFile(Path path, BasicFileAttributes attrs);
+
+  void visitFileFailed(Path path);
+
+  void end();
+
+  String getId();
+
+  void setStartPath(String path);
 }

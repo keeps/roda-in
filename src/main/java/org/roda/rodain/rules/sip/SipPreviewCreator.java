@@ -7,8 +7,11 @@ import java.util.Map;
  * @since 20-10-2015.
  */
 public interface SipPreviewCreator {
-    Map<String, SipPreview> getSips();
-    int getCount();
-    SipPreview getNext();
-    boolean hasNext();
+  Map<String, SipPreview> getSips();
+
+  int getCount();
+
+  SipPreview getNext();
+
+  boolean hasNext();
 }

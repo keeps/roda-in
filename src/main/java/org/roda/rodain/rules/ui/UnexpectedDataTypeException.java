@@ -5,7 +5,7 @@ package org.roda.rodain.rules.ui;
  * @since 29-10-2015.
  */
 public class UnexpectedDataTypeException extends Exception {
-    public UnexpectedDataTypeException(){
-        super("Unexpected user data type.");
-    }
+  public UnexpectedDataTypeException() {
+    super("Unexpected user data type.");
+  }
 }

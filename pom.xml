@@ -28,6 +28,8 @@
            <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
+                    <finalName>rodain-app-${project.version}</finalName>
+                    <attach>true</attach>
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
@@ -40,6 +42,15 @@
                     </descriptorRefs>
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
+               <executions>
+                   <execution>
+                       <id>make-assembly</id>
+                       <phase>package</phase>
+                       <goals>
+                           <goal>single</goal>
+                       </goals>
+                   </execution>
+               </executions>
             </plugin>
         </plugins>
     </build>

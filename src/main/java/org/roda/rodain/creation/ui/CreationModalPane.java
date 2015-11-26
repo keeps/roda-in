@@ -1,5 +1,8 @@
 package org.roda.rodain.creation.ui;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -11,148 +14,146 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import org.roda.rodain.creation.CreateSips;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import org.roda.rodain.creation.CreateSips;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 19/11/2015.
  */
 public class CreationModalPane extends BorderPane {
-    private CreateSips creator;
-    private CreationModalStage stage;
+  private CreateSips creator;
+  private CreationModalStage stage;
 
-    // top
-    private Label subtitle;
-    private String subtitleFormat = "Created %d of %d";
-    // center
-    private ProgressBar progress;
-    private Label sipName, sipAction;
-    private TimerTask updater;
-    private Timer timer;
+  // top
+  private Label subtitle;
+  private String subtitleFormat = "Created %d of %d";
+  // center
+  private ProgressBar progress;
+  private Label sipName, sipAction;
+  private TimerTask updater;
+  private Timer timer;
 
-    private HBox finishedBox;
+  private HBox finishedBox;
 
-    public CreationModalPane(CreateSips creator, CreationModalStage stage){
-        this.creator = creator;
-        this.stage = stage;
+  public CreationModalPane(CreateSips creator, CreationModalStage stage) {
+    this.creator = creator;
+    this.stage = stage;
 
-        getStyleClass().add("sipcreator");
+    getStyleClass().add("sipcreator");
 
-        createTop();
-        createCenter();
-        createBottom();
+    createTop();
+    createCenter();
+    createBottom();
 
-        createUpdateTask();
-    }
+    createUpdateTask();
+  }
 
-    private void createTop(){
-        VBox top = new VBox(5);
-        top.setPadding(new Insets(10, 10, 10, 0));
-        top.getStyleClass().add("hbox");
-        top.setAlignment(Pos.CENTER);
+  private void createTop() {
+    VBox top = new VBox(5);
+    top.setPadding(new Insets(10, 10, 10, 0));
+    top.getStyleClass().add("hbox");
+    top.setAlignment(Pos.CENTER);
 
-        Label title = new Label("Creating SIPs");
-        title.setId("title");
+    Label title = new Label("Creating SIPs");
+    title.setId("title");
 
-        top.getChildren().add(title);
-        setTop(top);
-    }
+    top.getChildren().add(title);
+    setTop(top);
+  }
 
-    private void createCenter(){
-        VBox center = new VBox();
-        center.setAlignment(Pos.CENTER_LEFT);
-        center.setPadding(new Insets(0, 10, 10, 10));
+  private void createCenter() {
+    VBox center = new VBox();
+    center.setAlignment(Pos.CENTER_LEFT);
+    center.setPadding(new Insets(0, 10, 10, 10));
 
-        subtitle = new Label("");
-        subtitle.setId("subtitle");
+    subtitle = new Label("");
+    subtitle.setId("subtitle");
 
-        progress = new ProgressBar();
-        progress.setPadding(new Insets(5,0,10,0));
-        progress.setPrefSize(380, 25);
+    progress = new ProgressBar();
+    progress.setPadding(new Insets(5, 0, 10, 0));
+    progress.setPrefSize(380, 25);
 
-        HBox sip = new HBox(10);
-        sip.maxWidth(380);
-        Label lName = new Label("Current SIP:");
-        lName.setMinWidth(80);
-        sipName = new Label("");
-        sip.getChildren().addAll(lName, sipName);
+    HBox sip = new HBox(10);
+    sip.maxWidth(380);
+    Label lName = new Label("Current SIP:");
+    lName.setMinWidth(80);
+    sipName = new Label("");
+    sip.getChildren().addAll(lName, sipName);
 
-        HBox action = new HBox(10);
-        Label lAction = new Label("Action:");
-        lAction.setMinWidth(80);
-        sipAction = new Label("");
-        action.getChildren().addAll(lAction, sipAction);
+    HBox action = new HBox(10);
+    Label lAction = new Label("Action:");
+    lAction.setMinWidth(80);
+    sipAction = new Label("");
+    action.getChildren().addAll(lAction, sipAction);
 
-        center.getChildren().addAll(subtitle, progress, sip, action);
-        setCenter(center);
-    }
+    center.getChildren().addAll(subtitle, progress, sip, action);
+    setCenter(center);
+  }
 
-    private void createBottom(){
-        HBox bottom = new HBox();
-        bottom.setPadding(new Insets(0, 10, 10, 10));
-        bottom.setAlignment(Pos.CENTER_RIGHT);
-        Button cancel = new Button("Cancel");
-        cancel.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                timer.cancel();
-                creator.cancel();
-                stage.close();
-            }
-        });
-
-        bottom.getChildren().add(cancel);
-        setBottom(bottom);
-
-        finishedBox = new HBox();
-        finishedBox.setPadding(new Insets(0, 10, 10, 10));
-        finishedBox.setAlignment(Pos.CENTER_RIGHT);
-        Button finish = new Button("Finish");
-
-        finish.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                stage.close();
-            }
-        });
-
-        finishedBox.getChildren().add(finish);
-    }
-
-    private void createUpdateTask(){
-        updater = new TimerTask() {
-            @Override
-            public void run(){
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        int created = creator.getCreatedSipsCount();
-                        int size = creator.getSipsCount();
-
-                        subtitle.setText(String.format(subtitleFormat, created, size));
-                        progress.setProgress(creator.getProgress());
-
-                        sipName.setText(creator.getSipName());
-                        sipAction.setText(creator.getAction());
-
-                        // stop the timer when all the SIPs have been created
-                        if(created == size){
-                            finished();
-                        }
-                    }
-                });
-            }
-        };
-
-        timer = new Timer();
-        timer.schedule(updater, 0, 300);
-    }
-
-    private void finished(){
+  private void createBottom() {
+    HBox bottom = new HBox();
+    bottom.setPadding(new Insets(0, 10, 10, 10));
+    bottom.setAlignment(Pos.CENTER_RIGHT);
+    Button cancel = new Button("Cancel");
+    cancel.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent actionEvent) {
         timer.cancel();
-        setBottom(finishedBox);
-    }
+        creator.cancel();
+        stage.close();
+      }
+    });
+
+    bottom.getChildren().add(cancel);
+    setBottom(bottom);
+
+    finishedBox = new HBox();
+    finishedBox.setPadding(new Insets(0, 10, 10, 10));
+    finishedBox.setAlignment(Pos.CENTER_RIGHT);
+    Button finish = new Button("Finish");
+
+    finish.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent actionEvent) {
+        stage.close();
+      }
+    });
+
+    finishedBox.getChildren().add(finish);
+  }
+
+  private void createUpdateTask() {
+    updater = new TimerTask() {
+      @Override
+      public void run() {
+        Platform.runLater(new Runnable() {
+          @Override
+          public void run() {
+            int created = creator.getCreatedSipsCount();
+            int size = creator.getSipsCount();
+
+            subtitle.setText(String.format(subtitleFormat, created, size));
+            progress.setProgress(creator.getProgress());
+
+            sipName.setText(creator.getSipName());
+            sipAction.setText(creator.getAction());
+
+            // stop the timer when all the SIPs have been created
+            if (created == size) {
+              finished();
+            }
+          }
+        });
+      }
+    };
+
+    timer = new Timer();
+    timer.schedule(updater, 0, 300);
+  }
+
+  private void finished() {
+    timer.cancel();
+    setBottom(finishedBox);
+  }
 }
