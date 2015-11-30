@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -27,7 +26,7 @@ import org.roda.rodain.source.ui.items.SourceTreeItemState;
  * @since 12-11-2015.
  */
 public class PathCollection {
-  private static Map<String, SourceTreeItemState> states = new ConcurrentHashMap<>();
+  private static Map<String, SourceTreeItemState> states = new HashMap<>();
   private static Map<String, SourceTreeItem> items = new HashMap<>();
 
   private PathCollection() {
@@ -59,8 +58,13 @@ public class PathCollection {
    *          The state of the item.
    */
   public static void addPath(String path, SourceTreeItemState st) {
+    // ignoring or removing the ignore of an item
     if (st == SourceTreeItemState.IGNORED) {
-      ignore(path);
+      applySameStateAllChildren(path, SourceTreeItemState.NORMAL, st);
+    }
+    if (st == SourceTreeItemState.NORMAL && states.get(path) == SourceTreeItemState.IGNORED) {
+      applySameStateAllChildren(path, SourceTreeItemState.IGNORED, st);
+      verifyStateAncestors(path);
     }
 
     if (states.get(path) != SourceTreeItemState.NORMAL) {
@@ -84,16 +88,17 @@ public class PathCollection {
     }
   }
 
-  private static void ignore(String path) {
-    states.put(path, SourceTreeItemState.IGNORED);
+  private static void applySameStateAllChildren(String path, SourceTreeItemState previousState,
+    SourceTreeItemState state) {
+    states.put(path, state);
 
     Map<String, SourceTreeItemState> children = getAllChildren(path);
     for (String child : children.keySet()) {
-      if (states.get(child) == SourceTreeItemState.NORMAL) {
-        states.put(child, SourceTreeItemState.IGNORED);
+      if (states.get(child) == previousState) {
+        states.put(child, state);
         // update the item
         if (items.containsKey(child)) {
-          items.get(child).setState(SourceTreeItemState.IGNORED);
+          items.get(child).setState(state);
         }
       }
     }
@@ -180,6 +185,11 @@ public class PathCollection {
         // slash
         end = index - 1;
         verifyState(sub);
+
+        if (items.containsKey(sub)) {
+          SourceTreeDirectory dir = (SourceTreeDirectory) items.get(sub);
+          dir.moveChildrenWrongState();
+        }
       }
     }
   }
@@ -223,7 +233,6 @@ public class PathCollection {
       SourceTreeItem item = items.get(path);
       item.setState(states.get(path));
     }
-
   }
 
   private static Map<String, SourceTreeItemState> getDirectChildren(String path) {

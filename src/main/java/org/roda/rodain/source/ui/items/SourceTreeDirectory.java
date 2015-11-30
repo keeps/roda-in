@@ -418,6 +418,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
     if (state != st) {
       state = st;
     }
+    forceUpdate();
   }
 
   @Override

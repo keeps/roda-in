@@ -35,6 +35,7 @@ public class SourceTreeItem extends TreeItem<String>implements Observer {
     if (st != state) {
       state = st;
     }
+    forceUpdate();
   }
 
   public SourceTreeDirectory getParentDir() {
@@ -67,6 +68,5 @@ public class SourceTreeItem extends TreeItem<String>implements Observer {
 
   @Override
   public void update(Observable o, Object arg) {
-
   }
 }

@@ -22,6 +22,6 @@ public class SourceTreeLoadMore extends SourceTreeItem {
 
   @Override
   public SourceTreeItemState getState() {
-    return SourceTreeItemState.IGNORED;
+    return SourceTreeItemState.NORMAL;
   }
 }
