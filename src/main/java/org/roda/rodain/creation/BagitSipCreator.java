@@ -82,6 +82,7 @@ public class BagitSipCreator extends SimpleSipCreator {
     } catch (Exception e) {
       log.error("Error creating SIP", e);
       unsuccessful.add(sip);
+      deleteDirectory(name);
     }
   }
 

@@ -13,6 +13,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -292,6 +293,16 @@ public class InspectionPane extends BorderPane {
     TextField textField = new TextField(label.getText());
     textField.setEditable(false);
     textField.getStyleClass().add("hiddenTextField");
+
+    textField.setOnMouseClicked(new EventHandler<MouseEvent>() {
+      @Override
+      public void handle(MouseEvent event) {
+        if (event.getClickCount() == 1) {
+          textField.requestFocus();
+          textField.selectAll();
+        }
+      }
+    });
 
     // the invisible label is a hack to get the textField to size like a label.
     Label invisibleLabel = new Label();

@@ -10,14 +10,17 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 19/11/2015.
  */
 public class SimpleSipCreator extends Thread {
+  private static final org.slf4j.Logger log = LoggerFactory.getLogger(SimpleSipCreator.class.getName());
   protected final Path outputPath;
   protected final Map<SipPreview, String> previews;
   protected final int sipPreviewCount;
@@ -81,6 +84,14 @@ public class SimpleSipCreator extends Thread {
     } else {
       Path destination = dest.resolve(nodePath.getFileName().toString());
       Files.copy(nodePath, destination, COPY_ATTRIBUTES);
+    }
+  }
+
+  protected void deleteDirectory(Path dir) {
+    try {
+      FileUtils.deleteDirectory(dir.toFile());
+    } catch (IOException e) {
+      log.error("Error deleting directory", e);
     }
   }
 

@@ -48,7 +48,7 @@
 }
 
 .tree-cell:filled:hover {
-    -fx-background-color: powderblue;
+    -fx-background-color: lightgray;
 }
 
 .tree-cell:focused:selected {
@@ -70,7 +70,7 @@
 }
 
 .schemaNode:filled:hover {
-    -fx-background-color: powderblue;
+    -fx-background-color: lightgray;
 }
 
 .schemaNode:focused:selected{
@@ -79,7 +79,7 @@
 }
 
 .schemaNodeHovered{
-    -fx-background-color: powderblue;
+    -fx-background-color: lightgray;
 }
 
 /* List-cell */
