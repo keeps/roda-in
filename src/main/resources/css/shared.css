@@ -2,6 +2,14 @@
     -fx-font-family: "Ubuntu Light";
 }
 
+.border-pane {
+    -fx-background-color: white;
+}
+
+.split-pane {
+    -fx-background-color: white;
+}
+
 .button {
     -fx-background-color: #089de3;
     -fx-background-insets: 0, 1, 2;

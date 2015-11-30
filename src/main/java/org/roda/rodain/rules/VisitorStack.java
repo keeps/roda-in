@@ -77,9 +77,6 @@ public class VisitorStack extends Observable {
       @Override
       public void handle(WorkerStateEvent workerStateEvent) {
         runningTask = null;
-        for (SourceTreeItem it : items) {
-          it.parentVerify();
-        }
         update();
       }
     });

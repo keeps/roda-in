@@ -275,7 +275,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
       // If we mapped the files here, there could be some files that wouldn't be
       // added in the SIP creation
       if (item instanceof SourceTreeDirectory) {
-        item.addMapping(r);
+        PathCollection.addPath(item.getPath(), SourceTreeItemState.MAPPED);
 
         SourceTreeDirectory dirParent = item.getParentDir();
         if (!isShowMapped()) {

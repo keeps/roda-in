@@ -160,6 +160,7 @@ public class Main extends Application {
     HBox footer = new Footer();
 
     mainPane = new BorderPane();
+    mainPane.getStyleClass().add("border-pane");
     mainPane.setCenter(split);
     mainPane.setBottom(footer);
   }
