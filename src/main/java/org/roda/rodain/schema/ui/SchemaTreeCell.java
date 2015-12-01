@@ -27,14 +27,14 @@ public class SchemaTreeCell extends TreeCell<String> {
       setText(null);
       setGraphic(null);
       // To hide the hover color in the empty nodes
-      if(getStyleClass().contains("schemaNode"))
+      if (getStyleClass().contains("schemaNode"))
         getStyleClass().remove("schemaNode");
-      if(getStyleClass().contains("tree-cell"))
+      if (getStyleClass().contains("tree-cell"))
         getStyleClass().remove("tree-cell");
     } else {
-      if(!getStyleClass().contains("tree-cell"))
+      if (!getStyleClass().contains("tree-cell"))
         getStyleClass().add("tree-cell");
-      if(!getStyleClass().contains("schemaNode"))
+      if (!getStyleClass().contains("schemaNode"))
         getStyleClass().add("schemaNode");
 
       HBox hbox = new HBox();

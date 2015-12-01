@@ -23,7 +23,6 @@ import javafx.util.Callback;
 
 import org.roda.rodain.core.Footer;
 import org.roda.rodain.core.PathCollection;
-import org.roda.rodain.rules.Rule;
 import org.roda.rodain.source.representation.SourceDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeItem;

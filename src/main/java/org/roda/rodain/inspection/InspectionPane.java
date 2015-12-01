@@ -107,8 +107,8 @@ public class InspectionPane extends BorderPane {
     });
   }
 
-  public void saveMetadata(){
-    if(currentSIP != null) {
+  public void saveMetadata() {
+    if (currentSIP != null) {
       String oldMetadata = currentSIP.getMetadataContent();
       String newMetadata = metaText.getText();
       // only update if there's been modifications or there's no old

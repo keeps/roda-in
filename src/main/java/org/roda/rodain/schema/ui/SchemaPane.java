@@ -197,8 +197,7 @@ public class SchemaPane extends BorderPane {
         TreeItem<String> treeItem = cell.getTreeItem();
         if (treeItem instanceof SchemaNode) {
           SchemaNode item = (SchemaNode) cell.getTreeItem();
-          if (item != null && event.getGestureSource() != cell
-            && event.getDragboard().hasString()) {
+          if (item != null && event.getGestureSource() != cell && event.getDragboard().hasString()) {
             event.acceptTransferModes(TransferMode.COPY);
           }
         }

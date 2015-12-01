@@ -1,14 +1,14 @@
 package org.roda.rodain.creation;
 
-import org.apache.commons.io.FileUtils;
-import org.roda.rodain.rules.TreeNode;
-import org.roda.rodain.rules.sip.SipPreview;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
+import static java.nio.file.StandardCopyOption.COPY_ATTRIBUTES;
+
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -18,15 +18,16 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
-import static java.nio.file.StandardCopyOption.COPY_ATTRIBUTES;
+import org.apache.commons.io.FileUtils;
+import org.roda.rodain.rules.TreeNode;
+import org.roda.rodain.rules.sip.SipPreview;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -108,21 +109,22 @@ public class SimpleSipCreator extends Thread {
     }
   }
 
-  protected Map<String, String> getMetadata(String input){
+  protected Map<String, String> getMetadata(String input) {
     Map<String, String> result = new HashMap<>();
 
     try {
       // apply the XSLT to the metadata content
       String transformed = transformXML(input);
 
-      //parse the resulting document
+      // parse the resulting document
       DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
       DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
       Document doc = dBuilder.parse(new InputSource(new StringReader(transformed)));
 
-      //add all the field nodes to the result map. Example: <field name=".RDF.Description.date_txt">27-05-2016</field>
+      // add all the field nodes to the result map. Example: <field
+      // name=".RDF.Description.date_txt">27-05-2016</field>
       NodeList fields = doc.getElementsByTagName("field");
-      for(int i= 0; i < fields.getLength(); i++){
+      for (int i = 0; i < fields.getLength(); i++) {
         Node field = fields.item(i);
         NamedNodeMap attributes = field.getAttributes();
         String fieldName = attributes.getNamedItem("name").getNodeValue();
@@ -130,7 +132,10 @@ public class SimpleSipCreator extends Thread {
         result.put(fieldName, fieldValue);
       }
     } catch (Exception e) {
-      //if there's been an error when transforming the XML, remove all new-lines from the metadata text and add it to the result as a single line
+      log.info("Error parsing the XML file, falling back to simple metadata mode", e);
+      // if there's been an error when transforming the XML, remove all
+      // new-lines from the metadata text and add it to the result as a single
+      // line
       String noBreaks = input.replaceAll("\\r\\n|\\r|\\n", " ");
       result.put("metadata", noBreaks);
     }
@@ -138,18 +143,18 @@ public class SimpleSipCreator extends Thread {
     return result;
   }
 
-  private String transformXML(String input) throws TransformerException, IOException{
-     Source xmlSource = new StreamSource(new ByteArrayInputStream( input.getBytes() ));
-     StreamSource xsltSource = new StreamSource(ClassLoader.getSystemResource("plain.xslt").openStream());
+  private String transformXML(String input) throws TransformerException, IOException {
+    Source xmlSource = new StreamSource(new ByteArrayInputStream(input.getBytes()));
+    StreamSource xsltSource = new StreamSource(ClassLoader.getSystemResource("plain.xslt").openStream());
 
-     TransformerFactory transFact = TransformerFactory.newInstance();
-     Transformer trans = transFact.newTransformer(xsltSource);
+    TransformerFactory transFact = TransformerFactory.newInstance();
+    Transformer trans = transFact.newTransformer(xsltSource);
 
-     Writer writer = new StringWriter();
-     StreamResult streamResult = new StreamResult(writer);
-     trans.transform(xmlSource, streamResult);
-     return writer.toString();
-   }
+    Writer writer = new StringWriter();
+    StreamResult streamResult = new StreamResult(writer);
+    trans.transform(xmlSource, streamResult);
+    return writer.toString();
+  }
 
   /**
    * Halts the execution of this SIP creator.
