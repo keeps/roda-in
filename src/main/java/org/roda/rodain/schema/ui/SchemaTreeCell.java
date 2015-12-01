@@ -17,17 +17,26 @@ public class SchemaTreeCell extends TreeCell<String> {
    * Creates a new SchemaTreeCell
    */
   public SchemaTreeCell() {
-    getStyleClass().add("schemaNode");
   }
 
   @Override
   public void updateItem(String item, boolean empty) {
     super.updateItem(item, empty);
 
-    if (empty) {
+    if (empty || item == null) {
       setText(null);
       setGraphic(null);
+      // To hide the hover color in the empty nodes
+      if(getStyleClass().contains("schemaNode"))
+        getStyleClass().remove("schemaNode");
+      if(getStyleClass().contains("tree-cell"))
+        getStyleClass().remove("tree-cell");
     } else {
+      if(!getStyleClass().contains("tree-cell"))
+        getStyleClass().add("tree-cell");
+      if(!getStyleClass().contains("schemaNode"))
+        getStyleClass().add("schemaNode");
+
       HBox hbox = new HBox();
       hbox.setAlignment(Pos.BOTTOM_LEFT);
       Label lab = new Label(item);
