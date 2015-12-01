@@ -59,6 +59,7 @@
 
 .list-cell{
     -fx-padding: 5px;
+    -fx-background-color: white;
 }
 
 .list-cell:focused {

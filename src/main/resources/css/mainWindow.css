@@ -141,19 +141,18 @@
 }
 
 .ruleCell .top .button:hover {
-    -fx-background-color: #c8c8c8;
-    -fx-border-color: #555555;
+    -fx-text-fill: dimgray;
+}
+
+.ruleCell .top .button:pressed {
+    -fx-text-fill: #089de3;
 }
 
 .list-cell:focused:selected .top .button:hover {
-    -fx-background-color: #3998d0;
-    -fx-border-color: transparent;
-    -fx-text-fill: white;
+    -fx-text-fill: #08577e;
 }
 
 .list-cell:focused:selected .top .button:pressed {
-    -fx-background-color: #5bbeff;
-    -fx-border-color: transparent;
-    -fx-text-fill: white;
+    -fx-text-fill: black;
 }
 

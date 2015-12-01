@@ -279,6 +279,7 @@ public class InspectionPane extends BorderPane {
     bottom.setAlignment(Pos.CENTER_LEFT);
 
     remove = new Button("Remove");
+    remove.setMinWidth(100);
     remove.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
