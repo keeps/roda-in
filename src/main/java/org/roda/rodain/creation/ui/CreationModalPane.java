@@ -28,7 +28,7 @@ public class CreationModalPane extends BorderPane {
 
   // top
   private Label subtitleSuccess, subtitleError;
-  private String subtitleFormat = "Created %d of %d";
+  private String subtitleFormat = "Created %d of %d (%d%%)";
   // center
   private ProgressBar progress;
   private Label sipName, sipAction;
@@ -143,12 +143,13 @@ public class CreationModalPane extends BorderPane {
             int created = creator.getCreatedSipsCount();
             int size = creator.getSipsCount();
             int errors = creator.getErrorCount();
+            double prog = creator.getProgress();
 
             if (errors > 0) {
               subtitleError.setText(errors + " errors");
             }
-            subtitleSuccess.setText(String.format(subtitleFormat, created, size));
-            progress.setProgress(creator.getProgress());
+            subtitleSuccess.setText(String.format(subtitleFormat, created, size, (int) (prog * 100)));
+            progress.setProgress(prog);
 
             sipName.setText(creator.getSipName());
             sipAction.setText(creator.getAction());
