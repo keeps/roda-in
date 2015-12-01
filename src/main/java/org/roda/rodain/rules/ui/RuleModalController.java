@@ -139,7 +139,6 @@ public class RuleModalController {
       visitors.add(sourceSet, sourcePaths, visitor);
 
       schema.addRule(rule);
-      Main.mapSelected(rule);
       Main.inspectionNotifyChanged();
     } catch (Exception e) {
       log.debug("Exception in confirm rule", e);

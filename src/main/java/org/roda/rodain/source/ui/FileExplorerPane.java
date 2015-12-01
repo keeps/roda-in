@@ -267,31 +267,6 @@ public class FileExplorerPane extends BorderPane implements Observer {
     return oldMapped.contains(item);
   }
 
-  public void map(Rule r) {
-    Set<SourceTreeItem> items = getSelectedItems();
-    for (SourceTreeItem item : items) {
-      // We'll only map the directories this way, the files are mapped when the
-      // SIP creator reaches each file
-      // If we mapped the files here, there could be some files that wouldn't be
-      // added in the SIP creation
-      if (item instanceof SourceTreeDirectory) {
-        PathCollection.addPath(item.getPath(), SourceTreeItemState.MAPPED);
-
-        SourceTreeDirectory dirParent = item.getParentDir();
-        if (!isShowMapped()) {
-          if (dirParent != null) {
-            dirParent.hideMapped();
-          }
-          treeView.getSelectionModel().clearSelection();
-        } else {// force update
-          String value = item.getValue();
-          item.setValue(null);
-          item.setValue(value);
-        }
-      }
-    }
-  }
-
   /*
    * Ignores the selected items If an item is normal, this method ignores it.
    * Depending on the state of the showIgnored flag, it shows or hides the

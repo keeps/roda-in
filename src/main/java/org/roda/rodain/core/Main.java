@@ -293,10 +293,6 @@ public class Main extends Application {
     return previewExplorer.getSelectedItems();
   }
 
-  public static void mapSelected(Rule r) {
-    previewExplorer.map(r);
-  }
-
   public static InspectionPane getInspectionPane() {
     return inspectionPane;
   }
