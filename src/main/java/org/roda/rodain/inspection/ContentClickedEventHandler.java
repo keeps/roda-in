@@ -1,7 +1,5 @@
 package org.roda.rodain.inspection;
 
-import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 
 import javafx.event.EventHandler;
@@ -17,6 +15,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ContentClickedEventHandler implements EventHandler<MouseEvent> {
   private static final org.slf4j.Logger log = LoggerFactory.getLogger(ContentClickedEventHandler.class.getName());
+  private static String OS = System.getProperty("os.name").toLowerCase();
   private TreeView<Object> treeView;
   private InspectionPane ipane;
 
@@ -38,12 +37,37 @@ public class ContentClickedEventHandler implements EventHandler<MouseEvent> {
       Object source = treeView.getSelectionModel().getSelectedItem();
       if (source instanceof SipContentFile) {
         SipContentFile sipFile = (SipContentFile) source;
+        String command;
+        // Different commands for different operating systems
+        if (isWindows()) {
+          command = "start";
+        } else if (isMac()) {
+          command = "open";
+        } else if (isUnix()) {
+          command = "gnome-open";
+        } else {
+          return;
+        }
+        // Execute the command
         try {
-          Desktop.getDesktop().open(new File(sipFile.getPath().toString()));
+          ProcessBuilder pb = new ProcessBuilder(command, sipFile.getPath().toString());
+          pb.start();
         } catch (IOException e) {
           log.info("Error opening file from SIP content", e);
         }
       }
     }
+  }
+
+  public static boolean isWindows() {
+    return OS.contains("win");
+  }
+
+  public static boolean isMac() {
+    return OS.contains("mac");
+  }
+
+  public static boolean isUnix() {
+    return OS.contains("nix") || OS.contains("nux") || OS.contains("aix");
   }
 }
