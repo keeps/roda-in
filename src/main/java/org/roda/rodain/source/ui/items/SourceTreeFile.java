@@ -100,7 +100,7 @@ public class SourceTreeFile extends SourceTreeItem {
 
   @Override
   public void update(Observable o, Object arg) {
-    if (o instanceof Rule) {
+    if (o instanceof Rule && arg instanceof String && ((String) arg).contains("Removed")) {
       Rule rul = (Rule) o;
       removeMapping(rul);
     }

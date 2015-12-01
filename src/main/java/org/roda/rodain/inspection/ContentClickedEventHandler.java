@@ -40,7 +40,7 @@ public class ContentClickedEventHandler implements EventHandler<MouseEvent> {
         String command;
         // Different commands for different operating systems
         if (isWindows()) {
-          command = "start";
+          command = "explorer";
         } else if (isMac()) {
           command = "open";
         } else if (isUnix()) {
