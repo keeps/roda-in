@@ -38,7 +38,6 @@ import org.roda.rodain.creation.ui.CreationModalPane;
 import org.roda.rodain.creation.ui.CreationModalStage;
 import org.roda.rodain.inspection.InspectionPane;
 import org.roda.rodain.inspection.RuleCell;
-import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.VisitorStack;
 import org.roda.rodain.rules.sip.SipMetadata;
 import org.roda.rodain.rules.sip.SipPreview;
@@ -160,6 +159,7 @@ public class Main extends Application {
     HBox footer = new Footer();
 
     mainPane = new BorderPane();
+    mainPane.getStyleClass().add("border-pane");
     mainPane.setCenter(split);
     mainPane.setBottom(footer);
   }
@@ -206,6 +206,9 @@ public class Main extends Application {
         if (selectedDirectory == null)
           return;
         Path path = selectedDirectory.toPath();
+
+        // force the edits to the metadata text area to be saved
+        inspectionPane.saveMetadata();
 
         CreateSips creator = new CreateSips(path, SipTypes.BAGIT);
         creator.start();
@@ -290,10 +293,6 @@ public class Main extends Application {
 
   public static Set<SourceTreeItem> getSourceSelectedItems() {
     return previewExplorer.getSelectedItems();
-  }
-
-  public static void mapSelected(Rule r) {
-    previewExplorer.map(r);
   }
 
   public static InspectionPane getInspectionPane() {

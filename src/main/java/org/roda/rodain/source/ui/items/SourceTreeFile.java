@@ -25,7 +25,6 @@ public class SourceTreeFile extends SourceTreeItem {
     this(file, parent);
     state = st;
     this.parent = parent;
-    PathCollection.addPath(fullPath, state);
   }
 
   public SourceTreeFile(Path file, SourceTreeDirectory parent) {
@@ -46,7 +45,6 @@ public class SourceTreeFile extends SourceTreeItem {
     }
 
     state = SourceTreeItemState.NORMAL;
-    PathCollection.addPath(fullPath, state);
   }
 
   @Override
@@ -58,7 +56,6 @@ public class SourceTreeFile extends SourceTreeItem {
   public void setState(SourceTreeItemState st) {
     if (state != st) {
       state = st;
-      parent.verifyState();
     }
   }
 
@@ -72,7 +69,6 @@ public class SourceTreeFile extends SourceTreeItem {
     if (state == SourceTreeItemState.NORMAL) {
       state = SourceTreeItemState.IGNORED;
       PathCollection.addPath(fullPath, state);
-      parent.verifyState();
     }
   }
 
@@ -81,8 +77,6 @@ public class SourceTreeFile extends SourceTreeItem {
     rule = r;
     if (state == SourceTreeItemState.NORMAL) {
       state = SourceTreeItemState.MAPPED;
-      if (parent != null)
-        parent.verifyState();
     }
   }
 
@@ -91,8 +85,6 @@ public class SourceTreeFile extends SourceTreeItem {
     if (state == SourceTreeItemState.IGNORED) {
       state = SourceTreeItemState.NORMAL;
       PathCollection.addPath(fullPath, state);
-      if (parent != null)
-        parent.verifyState();
     }
   }
 
@@ -108,7 +100,7 @@ public class SourceTreeFile extends SourceTreeItem {
 
   @Override
   public void update(Observable o, Object arg) {
-    if (o instanceof Rule) {
+    if (o instanceof Rule && arg instanceof String && ((String) arg).contains("Removed")) {
       Rule rul = (Rule) o;
       removeMapping(rul);
     }

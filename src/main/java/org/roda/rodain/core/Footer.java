@@ -18,6 +18,7 @@ public class Footer extends HBox {
 
   public Footer() {
     super();
+    getStyleClass().add("footer");
 
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);

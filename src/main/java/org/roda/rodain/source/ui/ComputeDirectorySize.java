@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Observable;
 
+import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.utils.TreeVisitor;
 
 /**
@@ -25,12 +26,14 @@ public class ComputeDirectorySize extends Observable implements TreeVisitor {
 
   @Override
   public void postVisitDirectory(Path path) {
+    PathCollection.simpleAddPath(path.toString());
     directoryCount++;
     update();
   }
 
   @Override
   public void visitFile(Path path, BasicFileAttributes attrs) {
+    PathCollection.simpleAddPath(path.toString());
     size += attrs.size();
     filesCount++;
     update();

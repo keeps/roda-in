@@ -13,6 +13,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -99,23 +100,29 @@ public class InspectionPane extends BorderPane {
     metaText.focusedProperty().addListener(new ChangeListener<Boolean>() {
       @Override
       public void changed(ObservableValue<? extends Boolean> observableValue, Boolean aBoolean, Boolean t1) {
-        if (!t1 && currentSIP != null) { // lost focus, so update
-          String oldMetadata = currentSIP.getMetadataContent();
-          String newMetadata = metaText.getText();
-          // only update if there's been modifications or there's no old
-          // metadata and the new isn't empty
-          boolean update = false;
-          if (newMetadata != null) {
-            if (oldMetadata == null)
-              update = true;
-            else if (!oldMetadata.equals(newMetadata))
-              update = true;
-          }
-          if (update)
-            currentSIP.updateMetadata(metaText.getText());
+        if (!t1) { // lost focus, so update
+          saveMetadata();
         }
       }
     });
+  }
+
+  public void saveMetadata() {
+    if (currentSIP != null) {
+      String oldMetadata = currentSIP.getMetadataContent();
+      String newMetadata = metaText.getText();
+      // only update if there's been modifications or there's no old
+      // metadata and the new isn't empty
+      boolean update = false;
+      if (newMetadata != null) {
+        if (oldMetadata == null)
+          update = true;
+        else if (!oldMetadata.equals(newMetadata))
+          update = true;
+      }
+      if (update)
+        currentSIP.updateMetadata(metaText.getText());
+    }
   }
 
   private void createContent() {
@@ -272,6 +279,7 @@ public class InspectionPane extends BorderPane {
     bottom.setAlignment(Pos.CENTER_LEFT);
 
     remove = new Button("Remove");
+    remove.setMinWidth(100);
     remove.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
@@ -292,6 +300,16 @@ public class InspectionPane extends BorderPane {
     TextField textField = new TextField(label.getText());
     textField.setEditable(false);
     textField.getStyleClass().add("hiddenTextField");
+
+    textField.setOnMouseClicked(new EventHandler<MouseEvent>() {
+      @Override
+      public void handle(MouseEvent event) {
+        if (event.getClickCount() == 1) {
+          textField.requestFocus();
+          textField.selectAll();
+        }
+      }
+    });
 
     // the invisible label is a hack to get the textField to size like a label.
     Label invisibleLabel = new Label();

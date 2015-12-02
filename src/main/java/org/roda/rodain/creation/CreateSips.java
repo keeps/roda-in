@@ -46,6 +46,13 @@ public class CreateSips {
   }
 
   /**
+   * @return The number of SIPs not created due to an error.
+   */
+  public int getErrorCount() {
+    return creator.getErrorCount();
+  }
+
+  /**
    * @return A double resulting of the division of the number of SIPs already
    *         created by the total number of SIPs.
    */

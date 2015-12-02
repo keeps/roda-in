@@ -49,6 +49,7 @@ public class SipMetadata {
           InputStream contentStream = ClassLoader.getSystemResource(fileName).openStream();
           content = Utils.convertStreamToString(contentStream);
           contentStream.close();
+          loaded = true;
         }
       } else {
         if (path != null) {

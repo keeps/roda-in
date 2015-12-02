@@ -4,7 +4,6 @@ import java.io.File;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -68,31 +67,22 @@ public class BagitSipCreator extends SimpleSipCreator {
       b.getBagInfoTxt().put("parent", schemaId);
 
       currentAction = actionCopyingMetadata;
-      Map<String, String> metadata = createMetadata(sip);
+      Map<String, String> metadata = getMetadata(sip.getMetadataContent());
       for (String key : metadata.keySet())
         b.getBagInfoTxt().put(key, metadata.get(key));
 
       b.makeComplete();
-      b.close();
 
       currentAction = actionFinalizingSip;
       FileSystemWriter fsw = new FileSystemWriter(bf);
       fsw.write(b, new File(name.toString()));
       createdSipsCount++;
+
+      b.close();
     } catch (Exception e) {
       log.error("Error creating SIP", e);
       unsuccessful.add(sip);
+      deleteDirectory(name);
     }
-  }
-
-  private Map<String, String> createMetadata(SipPreview preview) {
-    Map<String, String> result = new HashMap<>();
-    String rawMetadata;
-    rawMetadata = preview.getMetadataContent();
-
-    if (rawMetadata != null) {
-      // TODO transform metadata. How?
-    }
-    return result;
   }
 }

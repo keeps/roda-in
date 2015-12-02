@@ -129,34 +129,21 @@ public class SchemaPane extends BorderPane {
     });
 
     Button addLevel = new Button("Add level");
-    Button removeLevel = new Button("Remove level");
-    Button editLevel = new Button("Edit level");
 
     addLevel.setDisable(true);
     addLevel.setMinWidth(100);
-    removeLevel.setDisable(true);
-    removeLevel.setMinWidth(100);
-    editLevel.setDisable(true);
-    editLevel.setMinWidth(100);
 
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
-    bottom.getChildren().addAll(associate, space, removeLevel, editLevel, addLevel);
+    bottom.getChildren().addAll(associate, space, addLevel);
   }
 
   private void startAssociation(SchemaNode descObj) {
     Set<SourceTreeItem> sourceSet = Main.getSourceSelectedItems();
     boolean valid = true;
-
-    if (sourceSet != null && !sourceSet.isEmpty() && descObj != null) { // both
-                                                                        // trees
-                                                                        // need
-                                                                        // to
-                                                                        // have
-                                                                        // 1
-                                                                        // element
-                                                                        // selected
+    // both trees need to have 1 element selected
+    if (sourceSet != null && !sourceSet.isEmpty() && descObj != null) {
       Set<SourceTreeItem> toRemove = new HashSet<>();
       for (SourceTreeItem source : sourceSet) {
         if (source.getState() != SourceTreeItemState.NORMAL) {
@@ -197,8 +184,7 @@ public class SchemaPane extends BorderPane {
         TreeItem<String> treeItem = cell.getTreeItem();
         if (treeItem instanceof SchemaNode) {
           SchemaNode item = (SchemaNode) cell.getTreeItem();
-          if ((item != null /* && !item.isLeaf() */) && event.getGestureSource() != cell
-            && event.getDragboard().hasString()) {
+          if (item != null && event.getGestureSource() != cell && event.getDragboard().hasString()) {
             event.acceptTransferModes(TransferMode.COPY);
           }
         }

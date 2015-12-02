@@ -20,7 +20,7 @@ public class SourceTreeItem extends TreeItem<String>implements Observer {
   protected SourceTreeItem(String path, SourceTreeDirectory parent) {
     this.path = path;
     this.parent = parent;
-    state = SourceTreeItemState.NORMAL;
+    state = SourceTreeItemState.IGNORED;
   }
 
   public String getPath() {
@@ -35,6 +35,7 @@ public class SourceTreeItem extends TreeItem<String>implements Observer {
     if (st != state) {
       state = st;
     }
+    forceUpdate();
   }
 
   public SourceTreeDirectory getParentDir() {
@@ -57,12 +58,6 @@ public class SourceTreeItem extends TreeItem<String>implements Observer {
 
   }
 
-  public void parentVerify() {
-    if (parent != null) {
-      parent.verifyState();
-    }
-  }
-
   public void forceUpdate() {
     String value = getValue();
     if (value != null && !"".equals(value)) {
@@ -73,6 +68,5 @@ public class SourceTreeItem extends TreeItem<String>implements Observer {
 
   @Override
   public void update(Observable o, Object arg) {
-
   }
 }

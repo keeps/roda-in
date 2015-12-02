@@ -13,6 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 import org.roda.rodain.creation.CreateSips;
@@ -26,8 +27,8 @@ public class CreationModalPane extends BorderPane {
   private CreationModalStage stage;
 
   // top
-  private Label subtitle;
-  private String subtitleFormat = "Created %d of %d";
+  private Label subtitleSuccess, subtitleError;
+  private String subtitleFormat = "Created %d of %d (%d%%)";
   // center
   private ProgressBar progress;
   private Label sipName, sipAction;
@@ -67,8 +68,17 @@ public class CreationModalPane extends BorderPane {
     center.setAlignment(Pos.CENTER_LEFT);
     center.setPadding(new Insets(0, 10, 10, 10));
 
-    subtitle = new Label("");
-    subtitle.setId("subtitle");
+    HBox subtitles = new HBox(5);
+    HBox space = new HBox();
+    HBox.setHgrow(space, Priority.ALWAYS);
+
+    subtitleSuccess = new Label("");
+    subtitleSuccess.setId("subtitle");
+
+    subtitleError = new Label("");
+    subtitleError.setId("subtitle");
+
+    subtitles.getChildren().addAll(subtitleSuccess, space, subtitleError);
 
     progress = new ProgressBar();
     progress.setPadding(new Insets(5, 0, 10, 0));
@@ -87,14 +97,14 @@ public class CreationModalPane extends BorderPane {
     sipAction = new Label("");
     action.getChildren().addAll(lAction, sipAction);
 
-    center.getChildren().addAll(subtitle, progress, sip, action);
+    center.getChildren().addAll(subtitles, progress, sip, action);
     setCenter(center);
   }
 
   private void createBottom() {
     HBox bottom = new HBox();
     bottom.setPadding(new Insets(0, 10, 10, 10));
-    bottom.setAlignment(Pos.CENTER_RIGHT);
+    bottom.setAlignment(Pos.CENTER_LEFT);
     Button cancel = new Button("Cancel");
     cancel.setOnAction(new EventHandler<ActionEvent>() {
       @Override
@@ -132,15 +142,20 @@ public class CreationModalPane extends BorderPane {
           public void run() {
             int created = creator.getCreatedSipsCount();
             int size = creator.getSipsCount();
+            int errors = creator.getErrorCount();
+            double prog = creator.getProgress();
 
-            subtitle.setText(String.format(subtitleFormat, created, size));
-            progress.setProgress(creator.getProgress());
+            if (errors > 0) {
+              subtitleError.setText(errors + " errors");
+            }
+            subtitleSuccess.setText(String.format(subtitleFormat, created, size, (int) (prog * 100)));
+            progress.setProgress(prog);
 
             sipName.setText(creator.getSipName());
             sipAction.setText(creator.getAction());
 
             // stop the timer when all the SIPs have been created
-            if (created == size) {
+            if ((created + errors) == size) {
               finished();
             }
           }

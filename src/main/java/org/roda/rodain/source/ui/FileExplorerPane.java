@@ -23,7 +23,6 @@ import javafx.util.Callback;
 
 import org.roda.rodain.core.Footer;
 import org.roda.rodain.core.PathCollection;
-import org.roda.rodain.rules.Rule;
 import org.roda.rodain.source.representation.SourceDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
@@ -265,31 +264,6 @@ public class FileExplorerPane extends BorderPane implements Observer {
     if (oldMapped == null)
       return false;
     return oldMapped.contains(item);
-  }
-
-  public void map(Rule r) {
-    Set<SourceTreeItem> items = getSelectedItems();
-    for (SourceTreeItem item : items) {
-      // We'll only map the directories this way, the files are mapped when the
-      // SIP creator reaches each file
-      // If we mapped the files here, there could be some files that wouldn't be
-      // added in the SIP creation
-      if (item instanceof SourceTreeDirectory) {
-        item.addMapping(r);
-
-        SourceTreeDirectory dirParent = item.getParentDir();
-        if (!isShowMapped()) {
-          if (dirParent != null) {
-            dirParent.hideMapped();
-          }
-          treeView.getSelectionModel().clearSelection();
-        } else {// force update
-          String value = item.getValue();
-          item.setValue(null);
-          item.setValue(value);
-        }
-      }
-    }
   }
 
   /*

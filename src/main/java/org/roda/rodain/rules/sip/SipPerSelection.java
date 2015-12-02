@@ -179,6 +179,9 @@ public class SipPerSelection extends Observable implements TreeVisitor, SipPrevi
     if (selectedPaths.contains(path.toString())) {
       createSip(path, new TreeNode(path));
     } else {
+      if (nodes.isEmpty()) {
+        nodes.add(new TreeNode(path.getParent()));
+      }
       nodes.peekLast().add(path);
     }
   }

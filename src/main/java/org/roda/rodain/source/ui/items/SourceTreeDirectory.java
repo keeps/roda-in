@@ -42,7 +42,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
   public SourceTreeDirectory(Path file, SourceDirectory directory, SourceTreeItemState st, SourceTreeDirectory parent) {
     this(file, directory, parent);
     state = st;
-    PathCollection.addPath(fullPath, state);
+    PathCollection.simpleAddPath(fullPath);
   }
 
   public SourceTreeDirectory(Path file, SourceDirectory directory, SourceTreeDirectory parent) {
@@ -78,7 +78,6 @@ public class SourceTreeDirectory extends SourceTreeItem {
         }
       }
     });
-    PathCollection.addPath(fullPath, state);
   }
 
   /**
@@ -418,8 +417,8 @@ public class SourceTreeDirectory extends SourceTreeItem {
   public void setState(SourceTreeItemState st) {
     if (state != st) {
       state = st;
-      verifyState();
     }
+    forceUpdate();
   }
 
   @Override
@@ -433,11 +432,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
       state = SourceTreeItemState.IGNORED;
       PathCollection.addPath(fullPath, state);
     }
-    for (TreeItem it : getChildren()) {
-      SourceTreeItem item = (SourceTreeItem) it;
-      item.addIgnore();
-    }
-    verifyState();
+    forceUpdate();
   }
 
   @Override
@@ -446,7 +441,6 @@ public class SourceTreeDirectory extends SourceTreeItem {
     if (state == SourceTreeItemState.NORMAL) {
       state = SourceTreeItemState.MAPPED;
     }
-    verifyState();
   }
 
   @Override
@@ -455,11 +449,6 @@ public class SourceTreeDirectory extends SourceTreeItem {
       state = SourceTreeItemState.NORMAL;
       PathCollection.addPath(fullPath, state);
     }
-    for (TreeItem it : getChildren()) {
-      SourceTreeItem item = (SourceTreeItem) it;
-      item.removeIgnore();
-    }
-    verifyState();
   }
 
   public SourceDirectory getDirectory() {
@@ -507,8 +496,6 @@ public class SourceTreeDirectory extends SourceTreeItem {
         children.removeAll(toRemove);
         // Set the children
         getChildren().setAll(children);
-
-        verifyState();
       }
     });
 
@@ -564,63 +551,6 @@ public class SourceTreeDirectory extends SourceTreeItem {
         children.add(item);
     } else
       mapped.add(item);
-  }
-
-  /**
-   * Verifies if the state of this item is right. Example: A directory with
-   * state MAPPED must have all children mapped
-   */
-  public void verifyState() {
-    int normalItems = 0, mappedItems = 0;
-    boolean stateChanged = false;
-
-    moveChildrenWrongState();
-
-    if (directory.isFirstLoaded()) {
-      for (TreeItem it : getChildren()) {
-        SourceTreeItem item = (SourceTreeItem) it;
-        switch (item.getState()) {
-          case MAPPED:
-            mappedItems++;
-            break;
-          default:
-            normalItems++;
-            break;
-        }
-      }
-      for (SourceTreeItem sti : mapped) {
-        if (sti.getState() == SourceTreeItemState.NORMAL) {
-          normalItems++;
-          mappedItems--;
-        } else
-          mappedItems++;
-      }
-
-      if (normalItems == 0) {
-        if (mappedItems != 0) {
-          state = SourceTreeItemState.MAPPED;
-          stateChanged = true;
-        } else {
-          state = SourceTreeItemState.IGNORED;
-          stateChanged = true;
-        }
-      } else {
-        if (state == SourceTreeItemState.MAPPED) {
-          state = SourceTreeItemState.NORMAL;
-          stateChanged = true;
-        } else if (state == SourceTreeItemState.IGNORED) {
-          state = SourceTreeItemState.NORMAL;
-          stateChanged = true;
-        }
-      }
-    }
-
-    forceUpdate();
-
-    if (stateChanged) {
-      PathCollection.addPath(fullPath, state);
-      parentVerify();
-    }
   }
 
   public void moveChildrenWrongState() {

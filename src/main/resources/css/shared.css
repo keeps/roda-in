@@ -2,13 +2,21 @@
     -fx-font-family: "Ubuntu Light";
 }
 
+.border-pane {
+    -fx-background-color: white;
+}
+
+.split-pane {
+    -fx-background-color: white;
+}
+
 .button {
     -fx-background-color: #089de3;
     -fx-background-insets: 0, 1, 2;
     -fx-background-radius: 5, 4, 3;
     -fx-padding: 0.333333em 0.666667em 0.416667em 0.666667em; /* 4 8 5 8 */
     -fx-text-fill: white;
-    -fx-border-radius: 4px;
+    -fx-border-radius: 2px;
 }
 
 .button .text {
