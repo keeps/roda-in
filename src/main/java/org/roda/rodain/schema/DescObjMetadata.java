@@ -4,6 +4,8 @@ package org.roda.rodain.schema;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.net.util.Base64;
+
 public class DescObjMetadata {
 
   private String id;
@@ -60,7 +62,8 @@ public class DescObjMetadata {
    *          The content
    */
   public void setContent(String content) {
-    this.content = content;
+    byte[] decoded = Base64.decodeBase64(content);
+    this.content = new String(decoded);
   }
 
   /**

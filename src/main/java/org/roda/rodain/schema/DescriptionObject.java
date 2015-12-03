@@ -12,8 +12,8 @@ public class DescriptionObject {
   private String id;
   private String parentId;
   private String descriptionlevel;
-  private List<DescObjMetadata> metadata = new ArrayList<DescObjMetadata>();
-  private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  private List<DescObjMetadata> metadata = new ArrayList<>();
+  private Map<String, Object> additionalProperties = new HashMap<>();
 
   /**
    * 

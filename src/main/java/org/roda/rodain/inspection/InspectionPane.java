@@ -4,6 +4,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javafx.beans.value.ChangeListener;
@@ -21,6 +22,7 @@ import javafx.util.Callback;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
+import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SipPreviewNode;
 
@@ -396,11 +398,19 @@ public class InspectionPane extends BorderPane {
     setBottom(bottom);
     currentSIP = null;
     currentSchema = node;
-    metaText.clear();
+
+    // metadata
+    List<DescObjMetadata> metadatas = node.getDob().getMetadata();
+    if (!metadatas.isEmpty()) {
+      // For now we only get the first metadata object
+      metaText.setText(metadatas.get(0).getContent());
+    } else
+      metaText.clear();
 
     center.getChildren().clear();
     center.getChildren().add(metadata);
 
+    // title
     Label title = new Label(node.getValue());
     title.getStyleClass().add("title");
 
@@ -408,6 +418,7 @@ public class InspectionPane extends BorderPane {
     top.setAlignment(Pos.CENTER_LEFT);
     top.getChildren().addAll(node.getGraphic(), title);
 
+    // rules
     updateRuleList();
     center.getChildren().add(rules);
     setCenter(center);

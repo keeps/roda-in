@@ -46,11 +46,6 @@ public class SchemaNode extends TreeItem<String>implements Observer {
     Image im = FontAwesomeImageCreator.generate(unicode);
     icon = im;
     this.setGraphic(new ImageView(im));
-
-    /*
-     * for (DescriptionObject obj : dob.getChildren()) { SchemaNode child = new
-     * SchemaNode(obj); this.getChildren().add(child); schemaNodes.add(child); }
-     */
   }
 
   /**
