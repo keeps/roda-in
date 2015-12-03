@@ -10,6 +10,7 @@
     -fx-background-color: white;
 }
 
+/* Buttons */
 .button {
     -fx-background-color: #089de3;
     -fx-background-insets: 0, 1, 2;
@@ -30,5 +31,25 @@
 
 .button:pressed {
     -fx-background-color: #5bbeff;
+    -fx-text-fill: white;
+}
+
+/* Help */
+.helpTitle {
+    /*-fx-font-size: 140%;*/
+    -fx-font-size: xx-large;
+}
+
+.helpButton {
+    -fx-border-color: black;
+    -fx-border-radius: 2px;
+    -fx-border-width: 1px;
+    -fx-background-color: #eaeaea;
+    -fx-text-fill: black;
+    -fx-font-size: x-large;
+}
+
+.helpButton:hover {
+    -fx-background-color: #089de3;
     -fx-text-fill: white;
 }

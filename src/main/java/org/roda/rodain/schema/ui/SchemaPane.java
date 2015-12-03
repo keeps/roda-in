@@ -1,5 +1,9 @@
 package org.roda.rodain.schema.ui;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -15,6 +19,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.TextAlignment;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
@@ -27,12 +33,16 @@ import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 28-09-2015.
  */
 public class SchemaPane extends BorderPane {
+  private static final org.slf4j.Logger log = LoggerFactory.getLogger(SchemaPane.class.getName());
   private TreeView<String> treeView;
   private TreeItem<String> rootNode;
   private HBox refresh;
@@ -41,18 +51,20 @@ public class SchemaPane extends BorderPane {
 
   private ArrayList<SchemaNode> schemaNodes;
 
+  // center help
+  private VBox centerHelp;
+
   public SchemaPane(Stage stage) {
     super();
     primaryStage = stage;
     schemaNodes = new ArrayList<>();
 
+    createCenterHelp();
     createTreeView();
     createTop();
     createBottom();
 
-    this.setTop(refresh);
-    this.setCenter(treeView);
-    this.setBottom(bottom);
+    this.setCenter(centerHelp);
 
     this.prefWidthProperty().bind(stage.widthProperty().multiply(0.33));
     this.minWidthProperty().bind(stage.widthProperty().multiply(0.2));
@@ -66,6 +78,43 @@ public class SchemaPane extends BorderPane {
     refresh.setPadding(new Insets(10, 10, 10, 10));
     refresh.setAlignment(Pos.CENTER_LEFT);
     refresh.getChildren().add(title);
+  }
+
+  private void createCenterHelp() {
+    centerHelp = new VBox();
+    centerHelp.setPadding(new Insets(0, 10, 0, 10));
+    VBox.setVgrow(centerHelp, Priority.ALWAYS);
+    centerHelp.setAlignment(Pos.CENTER);
+
+    VBox box = new VBox(40);
+    box.setPadding(new Insets(10, 10, 10, 10));
+    box.setMaxWidth(355);
+    box.setMaxHeight(200);
+    box.setMinHeight(200);
+
+    HBox titleBox = new HBox();
+    titleBox.setAlignment(Pos.CENTER);
+    Label title = new Label("Load the\nclassification schema");
+    title.getStyleClass().add("helpTitle");
+    title.setTextAlignment(TextAlignment.CENTER);
+    titleBox.getChildren().add(title);
+
+    HBox loadBox = new HBox();
+    loadBox.setAlignment(Pos.CENTER);
+    Button load = new Button("Load");
+    load.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent event) {
+        loadClassificationSchema();
+      }
+    });
+    load.setMinHeight(65);
+    load.setMinWidth(115);
+    load.getStyleClass().add("helpButton");
+    loadBox.getChildren().add(load);
+
+    box.getChildren().addAll(titleBox, loadBox);
+    centerHelp.getChildren().add(box);
   }
 
   private void createTreeView() {
@@ -105,7 +154,37 @@ public class SchemaPane extends BorderPane {
     return result;
   }
 
-  public void loadClassificationSchema(ClassificationSchema cs) throws MalformedSchemaException {
+  public void loadClassificationSchema() {
+    FileChooser chooser = new FileChooser();
+    chooser.setTitle("Please choose a file");
+    File selectedFile = chooser.showOpenDialog(primaryStage);
+    if (selectedFile == null)
+      return;
+    String inputFile = selectedFile.toPath().toString();
+    try {
+      ClassificationSchema schema = loadClassificationSchemaFile(inputFile);
+      updateClassificationSchema(schema);
+    } catch (IOException e) {
+      log.error("Error reading classification schema specification", e);
+    } catch (MalformedSchemaException e) {
+      log.error("Error creating the schema tree", e);
+    }
+  }
+
+  private ClassificationSchema loadClassificationSchemaFile(String fileName) throws IOException {
+    InputStream input = new FileInputStream(fileName);
+
+    // create ObjectMapper instance
+    ObjectMapper objectMapper = new ObjectMapper();
+
+    // convert json string to object
+    return objectMapper.readValue(input, ClassificationSchema.class);
+  }
+
+  private void updateClassificationSchema(ClassificationSchema cs) throws MalformedSchemaException {
+    setTop(refresh);
+    setCenter(treeView);
+    setBottom(bottom);
     rootNode.getChildren().clear();
     List<DescriptionObject> dos = cs.getDos();
     Map<String, SchemaNode> nodes = new HashMap<>();

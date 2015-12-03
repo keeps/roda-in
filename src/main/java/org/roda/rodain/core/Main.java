@@ -5,11 +5,7 @@ package org.roda.rodain.core;
  * @since 16-09-2015.
  */
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Path;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -29,7 +25,9 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
-import javafx.stage.*;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import org.roda.rodain.creation.ui.CreationModalPreparation;
 import org.roda.rodain.creation.ui.CreationModalStage;
@@ -39,15 +37,11 @@ import org.roda.rodain.rules.VisitorStack;
 import org.roda.rodain.rules.sip.SipMetadata;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.rules.ui.RuleModalPane;
-import org.roda.rodain.schema.ClassificationSchema;
-import org.roda.rodain.schema.ui.MalformedSchemaException;
 import org.roda.rodain.schema.ui.SchemaPane;
 import org.roda.rodain.source.ui.FileExplorerPane;
 import org.roda.rodain.source.ui.SourceTreeCell;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Main extends Application {
   private static final org.slf4j.Logger log = LoggerFactory.getLogger(Main.class.getName());
@@ -177,13 +171,7 @@ public class Main extends Application {
     openFolder.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent t) {
-        DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle("Please choose a folder");
-        File selectedDirectory = chooser.showDialog(stage);
-        if (selectedDirectory == null)
-          return;
-        Path path = selectedDirectory.toPath();
-        previewExplorer.setFileExplorerRoot(path);
+        previewExplorer.chooseNewRoot();
       }
     });
 
@@ -192,20 +180,7 @@ public class Main extends Application {
     updateCS.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent t) {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("Please choose a file");
-        File selectedFile = chooser.showOpenDialog(stage);
-        if (selectedFile == null)
-          return;
-        String inputFile = selectedFile.toPath().toString();
-        try {
-          ClassificationSchema schema = loadClassificationSchema(inputFile);
-          schemaPane.loadClassificationSchema(schema);
-        } catch (IOException e) {
-          log.error("Error reading classification schema specification", e);
-        } catch (MalformedSchemaException e) {
-          log.error("Error creating the schema tree", e);
-        }
+        schemaPane.loadClassificationSchema();
       }
     });
 
@@ -293,16 +268,6 @@ public class Main extends Application {
     } catch (IOException e) {
       log.error("Error while loading properties", e);
     }
-  }
-
-  private ClassificationSchema loadClassificationSchema(String fileName) throws IOException {
-    InputStream input = new FileInputStream(fileName);
-
-    // create ObjectMapper instance
-    ObjectMapper objectMapper = new ObjectMapper();
-
-    // convert json string to object
-    return objectMapper.readValue(input, ClassificationSchema.class);
   }
 
   public static Set<SourceTreeItem> getSourceSelectedItems() {

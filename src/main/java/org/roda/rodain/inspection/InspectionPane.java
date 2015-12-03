@@ -16,6 +16,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
@@ -37,6 +38,8 @@ public class InspectionPane extends BorderPane {
   private VBox metadata;
   private TextArea metaText;
 
+  private VBox centerHelp;
+
   private BorderPane content;
   private TreeView sipFiles;
   private SipContentDirectory sipRoot;
@@ -51,6 +54,7 @@ public class InspectionPane extends BorderPane {
   private SchemaNode currentSchema;
 
   public InspectionPane(Stage stage) {
+    createCenterHelp();
     createTop();
     createMetadata();
     createContent();
@@ -59,6 +63,8 @@ public class InspectionPane extends BorderPane {
 
     center = new VBox(10);
     center.setPadding(new Insets(10, 10, 10, 10));
+
+    setCenter(centerHelp);
 
     metadata.minHeightProperty().bind(stage.heightProperty().multiply(0.40));
     this.prefWidthProperty().bind(stage.widthProperty().multiply(0.32));
@@ -71,7 +77,7 @@ public class InspectionPane extends BorderPane {
     topBox.getChildren().add(top);
     topBox.setPadding(new Insets(10, 10, 5, 10));
     topBox.setAlignment(Pos.CENTER_LEFT);
-    setTop(topBox);
+
   }
 
   private void createMetadata() {
@@ -125,6 +131,29 @@ public class InspectionPane extends BorderPane {
       if (update)
         currentSIP.updateMetadata(metaText.getText());
     }
+  }
+
+  private void createCenterHelp() {
+    centerHelp = new VBox();
+    centerHelp.setPadding(new Insets(0, 10, 0, 10));
+    VBox.setVgrow(centerHelp, Priority.ALWAYS);
+    centerHelp.setAlignment(Pos.CENTER);
+
+    VBox box = new VBox(40);
+    box.setPadding(new Insets(10, 10, 10, 10));
+    box.setMaxWidth(355);
+    box.setMaxHeight(200);
+    box.setMinHeight(200);
+
+    HBox titleBox = new HBox();
+    titleBox.setAlignment(Pos.CENTER);
+    Label title = new Label("Select an item from \nthe classification schema\nto inspect it");
+    title.getStyleClass().add("helpTitle");
+    title.setTextAlignment(TextAlignment.CENTER);
+    titleBox.getChildren().add(title);
+
+    box.getChildren().addAll(titleBox);
+    centerHelp.getChildren().add(box);
   }
 
   private void createContent() {
@@ -287,6 +316,9 @@ public class InspectionPane extends BorderPane {
       public void handle(ActionEvent e) {
         currentSIP.setRemoved();
         currentSIP.changedAndNotify();
+        setCenter(centerHelp);
+        setTop(new HBox());
+        setBottom(new HBox());
       }
     });
     bottom.getChildren().add(remove);
@@ -345,6 +377,8 @@ public class InspectionPane extends BorderPane {
    */
   public void update(SipPreviewNode sip) {
     setBottom(bottom);
+    setTop(topBox);
+    setCenter(center);
     currentSIP = sip.getSip();
     currentSchema = null;
     createContent(sip);
@@ -396,6 +430,8 @@ public class InspectionPane extends BorderPane {
    */
   public void update(SchemaNode node) {
     setBottom(bottom);
+    setTop(topBox);
+    setCenter(center);
     currentSIP = null;
     currentSchema = node;
 
