@@ -44,6 +44,7 @@ import org.roda.rodain.rules.sip.SipMetadata;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.rules.ui.RuleModalPane;
 import org.roda.rodain.schema.ClassificationSchema;
+import org.roda.rodain.schema.ui.MalformedSchemaException;
 import org.roda.rodain.schema.ui.SchemaPane;
 import org.roda.rodain.source.ui.FileExplorerPane;
 import org.roda.rodain.source.ui.SourceTreeCell;
@@ -195,8 +196,14 @@ public class Main extends Application {
     updateCS.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent t) {
-        ClassificationSchema schema = loadClassificationSchema("plan.json");
-        schemaPane.loadClassificationSchema(schema);
+        try {
+          ClassificationSchema schema = loadClassificationSchema("plan.json");
+          schemaPane.loadClassificationSchema(schema);
+        } catch (IOException e) {
+          log.error("Error reading classification schema specification", e);
+        } catch (MalformedSchemaException e) {
+          log.error("Error creating the schema tree", e);
+        }
       }
     });
 
@@ -295,19 +302,14 @@ public class Main extends Application {
     }
   }
 
-  private ClassificationSchema loadClassificationSchema(String fileName) {
-    try {
-      InputStream input = ClassLoader.getSystemResourceAsStream(fileName);
+  private ClassificationSchema loadClassificationSchema(String fileName) throws IOException {
+    InputStream input = ClassLoader.getSystemResourceAsStream(fileName);
 
-      // create ObjectMapper instance
-      ObjectMapper objectMapper = new ObjectMapper();
+    // create ObjectMapper instance
+    ObjectMapper objectMapper = new ObjectMapper();
 
-      // convert json string to object
-      return objectMapper.readValue(input, ClassificationSchema.class);
-    } catch (IOException e) {
-      log.error("Error reading classification schema specification", e);
-    }
-    return null;
+    // convert json string to object
+    return objectMapper.readValue(input, ClassificationSchema.class);
   }
 
   public static Set<SourceTreeItem> getSourceSelectedItems() {
