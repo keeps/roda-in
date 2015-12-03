@@ -47,11 +47,10 @@ public class SchemaNode extends TreeItem<String>implements Observer {
     icon = im;
     this.setGraphic(new ImageView(im));
 
-    for (DescriptionObject obj : dob.getChildren()) {
-      SchemaNode child = new SchemaNode(obj);
-      this.getChildren().add(child);
-      schemaNodes.add(child);
-    }
+    /*
+     * for (DescriptionObject obj : dob.getChildren()) { SchemaNode child = new
+     * SchemaNode(obj); this.getChildren().add(child); schemaNodes.add(child); }
+     */
   }
 
   /**

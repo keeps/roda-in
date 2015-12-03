@@ -32,8 +32,8 @@ import org.roda.rodain.source.ui.items.SourceTreeItemState;
  * @since 28-09-2015.
  */
 public class SchemaPane extends BorderPane {
-  private static Properties style;
   private TreeView<String> treeView;
+  private TreeItem<String> rootNode;
   private HBox refresh;
   private HBox bottom;
   private Stage primaryStage;
@@ -72,16 +72,8 @@ public class SchemaPane extends BorderPane {
     VBox treeBox = new VBox();
     treeBox.setPadding(new Insets(10, 10, 10, 10));
 
-    TreeItem<String> rootNode = new TreeItem<>();
+    rootNode = new TreeItem<>();
     rootNode.setExpanded(true);
-
-    // get the classification schema and add all its nodes to the tree
-    ClassificationSchema cs = ClassificationSchema.instantiate();
-    for (DescriptionObject obj : cs.getDos()) {
-      SchemaNode sn = new SchemaNode(obj);
-      rootNode.getChildren().add(sn);
-      schemaNodes.add(sn);
-    }
 
     // create the tree view
     treeView = new TreeView<>(rootNode);
@@ -110,6 +102,15 @@ public class SchemaPane extends BorderPane {
       }
     }
     return result;
+  }
+
+  public void loadClassificationSchema(ClassificationSchema cs) {
+    rootNode.getChildren().clear();
+    for (DescriptionObject obj : cs.getDos()) {
+      SchemaNode sn = new SchemaNode(obj);
+      rootNode.getChildren().add(sn);
+      schemaNodes.add(sn);
+    }
   }
 
   private void createBottom() {
@@ -265,13 +266,5 @@ public class SchemaPane extends BorderPane {
       result.putAll(sn.getSipPreviews());
     }
     return result;
-  }
-
-  /**
-   * @param style
-   *          Sets the Properties object to this class
-   */
-  public static void setStyleProperties(Properties style) {
-    SchemaPane.style = style;
   }
 }

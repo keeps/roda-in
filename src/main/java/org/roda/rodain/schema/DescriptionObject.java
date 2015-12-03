@@ -1,77 +1,111 @@
+
 package org.roda.rodain.schema;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-/**
- * @author Andre Pereira apereira@keep.pt
- * @since 22-09-2015.
- */
 public class DescriptionObject {
-  private String id;
+
   private String title;
+  private String id;
   private String parentId;
-  private String level;
   private String descriptionlevel;
-  private List<DescriptionObject> children;
+  private List<DescObjMetadata> metadata = new ArrayList<DescObjMetadata>();
+  private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-  public DescriptionObject() {
-  }
-
-  public DescriptionObject(String id, String title, String parentId, String level, String descriptionlevel,
-    List<DescriptionObject> children) {
-    this.id = id;
-    this.title = title;
-    this.parentId = parentId;
-    this.level = level;
-    this.descriptionlevel = descriptionlevel;
-    this.children = children;
-  }
-
+  /**
+   * 
+   * @return The title
+   */
   public String getTitle() {
     return title;
   }
 
+  /**
+   * 
+   * @param title
+   *          The title
+   */
   public void setTitle(String title) {
     this.title = title;
   }
 
+  /**
+   * 
+   * @return The id
+   */
   public String getId() {
     return id;
   }
 
+  /**
+   * 
+   * @param id
+   *          The id
+   */
   public void setId(String id) {
     this.id = id;
   }
 
+  /**
+   * 
+   * @return The parentId
+   */
   public String getParentId() {
     return parentId;
   }
 
+  /**
+   * 
+   * @param parentId
+   *          The parentId
+   */
   public void setParentId(String parentId) {
     this.parentId = parentId;
   }
 
-  public String getLevel() {
-    return level;
-  }
-
-  public void setLevel(String level) {
-    this.level = level;
-  }
-
+  /**
+   * 
+   * @return The descriptionlevel
+   */
   public String getDescriptionlevel() {
     return descriptionlevel;
   }
 
+  /**
+   * 
+   * @param descriptionlevel
+   *          The descriptionlevel
+   */
   public void setDescriptionlevel(String descriptionlevel) {
     this.descriptionlevel = descriptionlevel;
   }
 
-  public List<DescriptionObject> getChildren() {
-    return children;
+  /**
+   * 
+   * @return The metadata
+   */
+  public List<DescObjMetadata> getMetadata() {
+    return metadata;
   }
 
-  public void setChildren(List<DescriptionObject> children) {
-    this.children = children;
+  /**
+   * 
+   * @param metadata
+   *          The metadata
+   */
+  public void setMetadata(List<DescObjMetadata> metadata) {
+    this.metadata = metadata;
   }
+
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  public void setAdditionalProperty(String name, Object value) {
+    this.additionalProperties.put(name, value);
+  }
+
 }

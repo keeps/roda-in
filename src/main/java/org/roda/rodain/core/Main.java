@@ -7,6 +7,7 @@ package org.roda.rodain.core;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.Properties;
@@ -42,11 +43,14 @@ import org.roda.rodain.rules.VisitorStack;
 import org.roda.rodain.rules.sip.SipMetadata;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.rules.ui.RuleModalPane;
+import org.roda.rodain.schema.ClassificationSchema;
 import org.roda.rodain.schema.ui.SchemaPane;
 import org.roda.rodain.source.ui.FileExplorerPane;
 import org.roda.rodain.source.ui.SourceTreeCell;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Main extends Application {
   private static final org.slf4j.Logger log = LoggerFactory.getLogger(Main.class.getName());
@@ -191,7 +195,8 @@ public class Main extends Application {
     updateCS.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent t) {
-        // TODO
+        ClassificationSchema schema = loadClassificationSchema("plan.json");
+        schemaPane.loadClassificationSchema(schema);
       }
     });
 
@@ -278,7 +283,6 @@ public class Main extends Application {
     try {
       Properties style = new Properties();
       style.load(ClassLoader.getSystemResource("properties/styles.properties").openStream());
-      SchemaPane.setStyleProperties(style);
       SourceTreeCell.setStyleProperties(style);
 
       Properties config = new Properties();
@@ -289,6 +293,21 @@ public class Main extends Application {
     } catch (IOException e) {
       log.error("Error while loading properties", e);
     }
+  }
+
+  private ClassificationSchema loadClassificationSchema(String fileName) {
+    try {
+      InputStream input = ClassLoader.getSystemResourceAsStream(fileName);
+
+      // create ObjectMapper instance
+      ObjectMapper objectMapper = new ObjectMapper();
+
+      // convert json string to object
+      return objectMapper.readValue(input, ClassificationSchema.class);
+    } catch (IOException e) {
+      log.error("Error reading classification schema specification", e);
+    }
+    return null;
   }
 
   public static Set<SourceTreeItem> getSourceSelectedItems() {
