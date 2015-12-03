@@ -6,6 +6,7 @@ package org.roda.rodain.core;
  */
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -28,10 +29,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.Screen;
-import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
+import javafx.stage.*;
 
 import org.roda.rodain.creation.CreateSips;
 import org.roda.rodain.creation.SipTypes;
@@ -191,13 +189,19 @@ public class Main extends Application {
       }
     });
 
-    final MenuItem updateCS = new MenuItem("Update classification schema");
-    updateCS.setAccelerator(KeyCombination.keyCombination("Ctrl+U"));
+    final MenuItem updateCS = new MenuItem("Load classification schema");
+    updateCS.setAccelerator(KeyCombination.keyCombination("Ctrl+L"));
     updateCS.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent t) {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Please choose a file");
+        File selectedFile = chooser.showOpenDialog(stage);
+        if (selectedFile == null)
+          return;
+        String inputFile = selectedFile.toPath().toString();
         try {
-          ClassificationSchema schema = loadClassificationSchema("plan.json");
+          ClassificationSchema schema = loadClassificationSchema(inputFile);
           schemaPane.loadClassificationSchema(schema);
         } catch (IOException e) {
           log.error("Error reading classification schema specification", e);
@@ -303,7 +307,7 @@ public class Main extends Application {
   }
 
   private ClassificationSchema loadClassificationSchema(String fileName) throws IOException {
-    InputStream input = ClassLoader.getSystemResourceAsStream(fileName);
+    InputStream input = new FileInputStream(fileName);
 
     // create ObjectMapper instance
     ObjectMapper objectMapper = new ObjectMapper();
