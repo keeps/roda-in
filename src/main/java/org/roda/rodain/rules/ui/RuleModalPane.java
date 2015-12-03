@@ -357,7 +357,7 @@ public class RuleModalPane extends BorderPane {
     box.setAlignment(Pos.CENTER_LEFT);
 
     templateTypes = new ComboBox<>();
-    templateTypes.getItems().addAll("DCMES - Dublin Core", "EAD-C");
+    templateTypes.getItems().addAll("Dublin Core", "EAD");
     templateTypes.getSelectionModel().selectFirst();
 
     box.getChildren().add(templateTypes);

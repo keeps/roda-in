@@ -31,9 +31,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 import javafx.stage.*;
 
-import org.roda.rodain.creation.CreateSips;
-import org.roda.rodain.creation.SipTypes;
-import org.roda.rodain.creation.ui.CreationModalPane;
+import org.roda.rodain.creation.ui.CreationModalPreparation;
 import org.roda.rodain.creation.ui.CreationModalStage;
 import org.roda.rodain.inspection.InspectionPane;
 import org.roda.rodain.inspection.RuleCell;
@@ -216,20 +214,11 @@ public class Main extends Application {
     createSIPs.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent t) {
-        DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle("Please choose a folder");
-        File selectedDirectory = chooser.showDialog(stage);
-        if (selectedDirectory == null)
-          return;
-        Path path = selectedDirectory.toPath();
-
         // force the edits to the metadata text area to be saved
         inspectionPane.saveMetadata();
 
-        CreateSips creator = new CreateSips(path, SipTypes.BAGIT);
-        creator.start();
         CreationModalStage creationStage = new CreationModalStage(stage);
-        CreationModalPane pane = new CreationModalPane(creator, creationStage);
+        CreationModalPreparation pane = new CreationModalPreparation(creationStage);
         creationStage.setRoot(pane);
       }
     });

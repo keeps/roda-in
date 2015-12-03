@@ -22,7 +22,7 @@ import org.roda.rodain.creation.CreateSips;
  * @author Andre Pereira apereira@keep.pt
  * @since 19/11/2015.
  */
-public class CreationModalPane extends BorderPane {
+public class CreationModalProcessing extends BorderPane {
   private CreateSips creator;
   private CreationModalStage stage;
 
@@ -37,7 +37,7 @@ public class CreationModalPane extends BorderPane {
 
   private HBox finishedBox;
 
-  public CreationModalPane(CreateSips creator, CreationModalStage stage) {
+  public CreationModalProcessing(CreateSips creator, CreationModalStage stage) {
     this.creator = creator;
     this.stage = stage;
 
