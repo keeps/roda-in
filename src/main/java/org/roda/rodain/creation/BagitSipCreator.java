@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import gov.loc.repository.bagit.Bag;
 import gov.loc.repository.bagit.BagFactory;
 import gov.loc.repository.bagit.PreBag;
-import gov.loc.repository.bagit.writer.impl.FileSystemWriter;
+import gov.loc.repository.bagit.writer.impl.ZipWriter;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -44,7 +44,7 @@ public class BagitSipCreator extends SimpleSipCreator {
     // conflicts
     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd kk'h'mm'm'ss's'SSS");
     String dateToString = format.format(new Date());
-    String timestampedName = String.format("%s %s", dateToString, sip.getName());
+    String timestampedName = String.format("%s %s.zip", dateToString, sip.getName());
     currentSipName = timestampedName;
     currentAction = actionCreatingFolders;
     // make the directories
@@ -62,22 +62,28 @@ public class BagitSipCreator extends SimpleSipCreator {
       PreBag pb = bf.createPreBag(new File(name.toString()));
       Bag b = pb.makeBagInPlace(BagFactory.Version.V0_97, false);
 
-      // id and parent
+      // additional metadata
       b.getBagInfoTxt().put("id", sip.getId());
       b.getBagInfoTxt().put("parent", schemaId);
+      b.getBagInfoTxt().put("title", sip.getName());
+      b.getBagInfoTxt().put("level", "item");
 
       currentAction = actionCopyingMetadata;
       Map<String, String> metadata = getMetadata(sip.getMetadataContent());
-      for (String key : metadata.keySet())
-        b.getBagInfoTxt().put(key, metadata.get(key));
+      for (String key : metadata.keySet()) {
+        if (key.endsWith("title")) {
+          b.getBagInfoTxt().put("title", metadata.get(key));
+        } else
+          b.getBagInfoTxt().put(key, metadata.get(key));
+      }
 
       b.makeComplete();
 
       currentAction = actionFinalizingSip;
-      FileSystemWriter fsw = new FileSystemWriter(bf);
-      fsw.write(b, new File(name.toString()));
+      ZipWriter zipWriter = new ZipWriter(bf);
+      zipWriter.write(b, new File(name.toString()));
+      zipWriter.endPayload();
       createdSipsCount++;
-
       b.close();
     } catch (Exception e) {
       log.error("Error creating SIP", e);

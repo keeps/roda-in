@@ -15,6 +15,7 @@ import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.RuleTypes;
 import org.roda.rodain.rules.VisitorStack;
+import org.roda.rodain.rules.sip.TemplateType;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.utils.TreeVisitor;
@@ -107,7 +108,7 @@ public class RuleModalController {
         level = pane.getLevel();
       MetadataTypes metaType = pane.getMetadataType();
       Path metadataPath = null;
-      String metadataResource = null;
+      TemplateType templateType = null;
       switch (metaType) {
         case SAME_DIRECTORY:
           metadataPath = pane.getSameDir();
@@ -119,12 +120,12 @@ public class RuleModalController {
           metadataPath = pane.getFromFile();
           break;
         case TEMPLATE:
-          metadataResource = pane.getTemplate();
+          templateType = pane.getTemplate();
           break;
         default:
           break;
       }
-      Rule rule = new Rule(sourceSet, assocType, level, metadataPath, metadataResource, metaType);
+      Rule rule = new Rule(sourceSet, assocType, level, metadataPath, templateType, metaType);
       rule.addObserver(schema);
 
       TreeVisitor visitor = rule.apply();

@@ -26,6 +26,7 @@ import javafx.stage.Stage;
 
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.RuleTypes;
+import org.roda.rodain.rules.sip.TemplateType;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
@@ -550,7 +551,14 @@ public class RuleModalPane extends BorderPane {
   /**
    * @return The template from the metadata option TEMPLATE
    */
-  public String getTemplate() {
-    return templateTypes.getSelectionModel().getSelectedItem();
+  public TemplateType getTemplate() {
+    String selected = templateTypes.getSelectionModel().getSelectedItem();
+    TemplateType result;
+    if (selected.startsWith("Dublin")) {
+      result = TemplateType.DUBLIN_CORE;
+    } else
+      result = TemplateType.EAD;
+
+    return result;
   }
 }
