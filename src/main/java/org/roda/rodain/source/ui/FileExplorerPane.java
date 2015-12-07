@@ -142,7 +142,8 @@ public class FileExplorerPane extends BorderPane implements Observer {
       }
     });
     load.setMinHeight(65);
-    load.setMinWidth(115);
+    load.setMinWidth(220);
+    load.setMaxWidth(220);
     load.getStyleClass().add("helpButton");
     loadBox.getChildren().add(load);
 

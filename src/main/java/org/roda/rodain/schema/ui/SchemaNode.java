@@ -77,6 +77,7 @@ public class SchemaNode extends TreeItem<String>implements Observer {
           Set<SipPreviewNode> nodes = new HashSet<>(rule.getSipNodes());
           sips.put(id, nodes);
           getChildren().addAll(rule.getSipNodes());
+          sortChildren();
         }
       });
     }
@@ -132,6 +133,17 @@ public class SchemaNode extends TreeItem<String>implements Observer {
     if (count > 0)
       text += String.format("  (%d items)", count);
     setValue(text);
+  }
+
+  /**
+   * Sorts the children of the SchemaNode
+   * 
+   * @see SchemaComparator
+   */
+  public void sortChildren() {
+    ArrayList<TreeItem<String>> aux = new ArrayList<>(getChildren());
+    Collections.sort(aux, new SchemaComparator());
+    getChildren().setAll(aux);
   }
 
   /**

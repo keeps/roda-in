@@ -45,6 +45,9 @@ public class SchemaTreeCell extends TreeCell<String> {
 
       // Get the correct item
       TreeItem<String> treeItem = getTreeItem();
+      if (treeItem == null)
+        return;
+
       if (treeItem instanceof SchemaNode) {
         icon = ((SchemaNode) treeItem).getImage();
         int begin = item.lastIndexOf("(");

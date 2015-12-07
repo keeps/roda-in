@@ -109,7 +109,8 @@ public class SchemaPane extends BorderPane {
       }
     });
     load.setMinHeight(65);
-    load.setMinWidth(115);
+    load.setMinWidth(130);
+    load.setMaxWidth(130);
     load.getStyleClass().add("helpButton");
     loadBox.getChildren().add(load);
 
@@ -236,6 +237,9 @@ public class SchemaPane extends BorderPane {
       rootNode.getChildren().add(sn);
       schemaNodes.add(sn);
     }
+    ArrayList<TreeItem<String>> aux = new ArrayList<>(rootNode.getChildren());
+    Collections.sort(aux, new SchemaComparator());
+    rootNode.getChildren().setAll(aux);
   }
 
   private void createBottom() {

@@ -38,6 +38,7 @@
 .helpTitle {
     /*-fx-font-size: 140%;*/
     -fx-font-size: xx-large;
+    -fx-text-fill: black;
 }
 
 .helpButton {

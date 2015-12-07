@@ -1,6 +1,7 @@
 package org.roda.rodain.inspection;
 
 import javafx.scene.control.TreeCell;
+import javafx.scene.control.TreeItem;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -19,7 +20,10 @@ public class InspectionTreeCell extends TreeCell<String> {
       setGraphic(null);
     } else {
       setText(item);
-      setGraphic(getTreeItem().getGraphic());
+      TreeItem treeItem = getTreeItem();
+      if (treeItem != null) {
+        setGraphic(treeItem.getGraphic());
+      }
     }
   }
 }

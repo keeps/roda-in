@@ -46,6 +46,7 @@ public class InspectionPane extends BorderPane {
 
   private BorderPane rules;
   private ListView<RuleCell> ruleList;
+  private VBox emptyRulesPane;
 
   private Button remove, flatten, skip;
   private HBox bottom;
@@ -290,7 +291,7 @@ public class InspectionPane extends BorderPane {
   private void createRulesList() {
     rules = new BorderPane();
     rules.getStyleClass().add("inspectionPart");
-    VBox.setVgrow(content, Priority.ALWAYS);
+    VBox.setVgrow(rules, Priority.ALWAYS);
 
     HBox top = new HBox();
     top.getStyleClass().add("hbox");
@@ -299,9 +300,26 @@ public class InspectionPane extends BorderPane {
     Label title = new Label("Rules");
     top.getChildren().add(title);
     rules.setTop(top);
-
     ruleList = new ListView<>();
-    rules.setCenter(ruleList);
+
+    emptyRulesPane = new VBox();
+    emptyRulesPane.setPadding(new Insets(0, 10, 0, 10));
+    VBox.setVgrow(emptyRulesPane, Priority.ALWAYS);
+    emptyRulesPane.setAlignment(Pos.CENTER);
+
+    VBox box = new VBox(40);
+    box.setPadding(new Insets(10, 10, 10, 10));
+
+    HBox titleBox = new HBox();
+    titleBox.setAlignment(Pos.CENTER);
+    Label emptyText = new Label("Associate files/directories \nto a description object \nto create a rule");
+    emptyText.getStyleClass().add("helpTitle");
+    emptyText.setTextAlignment(TextAlignment.CENTER);
+    titleBox.getChildren().add(emptyText);
+
+    box.getChildren().addAll(titleBox);
+    emptyRulesPane.getChildren().add(box);
+    rules.setCenter(emptyRulesPane);
   }
 
   private void createBottom() {
@@ -450,6 +468,17 @@ public class InspectionPane extends BorderPane {
     Label title = new Label(node.getValue());
     title.getStyleClass().add("title");
 
+    HBox idBox = new HBox(5);
+    Label idKey = new Label("ID:");
+    idKey.getStyleClass().add("sipId");
+
+    Label id = new Label(node.getDob().getId());
+    id.setWrapText(true);
+    id.getStyleClass().add("sipId");
+    id = makeSelectable(id);
+
+    idBox.getChildren().addAll(idKey, id);
+
     HBox top = new HBox(5);
     top.setAlignment(Pos.CENTER_LEFT);
     top.getChildren().addAll(node.getGraphic(), title);
@@ -460,17 +489,22 @@ public class InspectionPane extends BorderPane {
     setCenter(center);
 
     topBox.getChildren().clear();
-    topBox.getChildren().add(top);
+    topBox.getChildren().addAll(top, idBox);
 
     remove.setDisable(true);
   }
 
   private void updateRuleList() {
     ruleList.getItems().clear();
-    for (Rule rule : currentSchema.getRules()) {
+    Set<Rule> currentRules = currentSchema.getRules();
+    for (Rule rule : currentRules) {
       RuleCell cell = new RuleCell(currentSchema, rule);
       ruleList.getItems().add(cell);
     }
+    if (currentRules.isEmpty()) {
+      rules.setCenter(emptyRulesPane);
+    } else
+      rules.setCenter(ruleList);
   }
 
   /**

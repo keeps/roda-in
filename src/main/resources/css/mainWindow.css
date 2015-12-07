@@ -17,6 +17,11 @@
     -fx-text-fill: white;
 }
 
+.inspectionPart .helpTitle {
+    -fx-font-size: x-large;
+    -fx-text-fill: black;
+}
+
 .sipId {
     -fx-font-size: small;
 }
