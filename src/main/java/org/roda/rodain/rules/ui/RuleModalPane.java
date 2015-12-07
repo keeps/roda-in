@@ -98,9 +98,9 @@ public class RuleModalPane extends BorderPane {
     pane.setPadding(new Insets(0, 0, 10, 0));
 
     VBox box = new VBox(5);
-    box.setAlignment(Pos.CENTER);
+    box.setAlignment(Pos.CENTER_LEFT);
     box.getStyleClass().add("hbox");
-    box.setPadding(new Insets(5, 5, 5, 5));
+    box.setPadding(new Insets(10, 10, 10, 10));
     pane.getChildren().add(box);
 
     Label title = new Label("Create association to \"" + schema.getDob().getTitle() + "\"");
@@ -374,12 +374,18 @@ public class RuleModalPane extends BorderPane {
     space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
+    VBox bottom = new VBox();
+    VBox.setVgrow(bottom, Priority.ALWAYS);
+    Separator separator = new Separator();
+
     buttons = new HBox(10);
     buttons.setPadding(new Insets(10, 10, 10, 10));
     buttons.setAlignment(Pos.CENTER);
     buttons.getChildren().addAll(btCancel, space, btContinue);
 
-    setBottom(buttons);
+    bottom.getChildren().addAll(separator, buttons);
+
+    setBottom(bottom);
   }
 
   private void createContinueButton() {

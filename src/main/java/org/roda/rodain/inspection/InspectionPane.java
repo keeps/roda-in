@@ -49,7 +49,7 @@ public class InspectionPane extends BorderPane {
   private VBox emptyRulesPane;
 
   private Button remove, flatten, skip;
-  private HBox bottom;
+  private VBox bottom;
 
   private SipPreview currentSIP;
   private SchemaNode currentSchema;
@@ -63,22 +63,20 @@ public class InspectionPane extends BorderPane {
     createBottom();
 
     center = new VBox(10);
-    center.setPadding(new Insets(10, 10, 10, 10));
+    center.setPadding(new Insets(0, 10, 10, 10));
 
     setCenter(centerHelp);
 
     metadata.minHeightProperty().bind(stage.heightProperty().multiply(0.40));
-    this.prefWidthProperty().bind(stage.widthProperty().multiply(0.32));
     this.minWidthProperty().bind(stage.widthProperty().multiply(0.2));
   }
 
   private void createTop() {
     Label top = new Label(" ");
-    topBox = new VBox(5);
+    topBox = new VBox();
     topBox.getChildren().add(top);
-    topBox.setPadding(new Insets(10, 10, 5, 10));
+    topBox.setPadding(new Insets(10, 0, 10, 0));
     topBox.setAlignment(Pos.CENTER_LEFT);
-
   }
 
   private void createMetadata() {
@@ -323,9 +321,14 @@ public class InspectionPane extends BorderPane {
   }
 
   private void createBottom() {
-    bottom = new HBox();
-    bottom.setPadding(new Insets(10, 10, 10, 10));
+    bottom = new VBox(10);
+    bottom.setPadding(new Insets(0, 0, 10, 0));
     bottom.setAlignment(Pos.CENTER_LEFT);
+
+    Separator separatorBottom = new Separator();
+
+    HBox buttonBox = new HBox();
+    buttonBox.setPadding(new Insets(0, 10, 0, 10));
 
     remove = new Button("Remove");
     remove.setMinWidth(100);
@@ -339,7 +342,8 @@ public class InspectionPane extends BorderPane {
         setBottom(new HBox());
       }
     });
-    bottom.getChildren().add(remove);
+    buttonBox.getChildren().add(remove);
+    bottom.getChildren().addAll(separatorBottom, buttonBox);
   }
 
   /**
@@ -399,19 +403,24 @@ public class InspectionPane extends BorderPane {
     setCenter(center);
     currentSIP = sip.getSip();
     currentSchema = null;
-    createContent(sip);
-    center.getChildren().clear();
-    center.getChildren().addAll(metadata, content);
-    setCenter(center);
 
-    String meta = sip.getSip().getMetadataContent();
-    metaText.setText(meta);
-
+    /* Top */
     Label title = new Label(sip.getValue());
     title.setWrapText(true);
     title.getStyleClass().add("title");
 
-    // ID labels
+    HBox top = new HBox(5);
+    top.setPadding(new Insets(0, 10, 10, 10));
+    top.setAlignment(Pos.CENTER_LEFT);
+    top.getChildren().addAll(sip.getGraphic(), title);
+    Separator separatorTop = new Separator();
+
+    topBox.getChildren().clear();
+    topBox.getChildren().addAll(top, separatorTop);
+
+    /* Center */
+    center.getChildren().clear();
+    // id
     HBox idBox = new HBox(5);
     Label idKey = new Label("ID:");
     idKey.getStyleClass().add("sipId");
@@ -423,12 +432,15 @@ public class InspectionPane extends BorderPane {
 
     idBox.getChildren().addAll(idKey, id);
 
-    HBox top = new HBox(5);
-    top.setAlignment(Pos.CENTER_LEFT);
-    top.getChildren().addAll(sip.getGraphic(), title);
+    // metadata
+    String meta = sip.getSip().getMetadataContent();
+    metaText.setText(meta);
 
-    topBox.getChildren().clear();
-    topBox.getChildren().addAll(top, idBox);
+    // content tree
+    createContent(sip);
+
+    center.getChildren().addAll(idBox, metadata, content);
+    setCenter(center);
 
     remove.setDisable(false);
   }
@@ -449,25 +461,26 @@ public class InspectionPane extends BorderPane {
   public void update(SchemaNode node) {
     setBottom(bottom);
     setTop(topBox);
-    setCenter(center);
     currentSIP = null;
     currentSchema = node;
 
-    // metadata
-    List<DescObjMetadata> metadatas = node.getDob().getMetadata();
-    if (!metadatas.isEmpty()) {
-      // For now we only get the first metadata object
-      metaText.setText(metadatas.get(0).getContent());
-    } else
-      metaText.clear();
-
-    center.getChildren().clear();
-    center.getChildren().add(metadata);
-
+    /* top */
     // title
     Label title = new Label(node.getValue());
     title.getStyleClass().add("title");
 
+    HBox top = new HBox(5);
+    top.setPadding(new Insets(0, 10, 10, 10));
+    top.setAlignment(Pos.CENTER_LEFT);
+    top.getChildren().addAll(node.getGraphic(), title);
+
+    Separator separatorTop = new Separator();
+    topBox.getChildren().clear();
+    topBox.getChildren().addAll(top, separatorTop);
+
+    /* center */
+    center.getChildren().clear();
+    // id
     HBox idBox = new HBox(5);
     Label idKey = new Label("ID:");
     idKey.getStyleClass().add("sipId");
@@ -479,17 +492,19 @@ public class InspectionPane extends BorderPane {
 
     idBox.getChildren().addAll(idKey, id);
 
-    HBox top = new HBox(5);
-    top.setAlignment(Pos.CENTER_LEFT);
-    top.getChildren().addAll(node.getGraphic(), title);
+    // metadata
+    List<DescObjMetadata> metadatas = node.getDob().getMetadata();
+    if (!metadatas.isEmpty()) {
+      // For now we only get the first metadata object
+      metaText.setText(metadatas.get(0).getContent());
+    } else
+      metaText.clear();
 
     // rules
     updateRuleList();
-    center.getChildren().add(rules);
-    setCenter(center);
 
-    topBox.getChildren().clear();
-    topBox.getChildren().addAll(top, idBox);
+    center.getChildren().addAll(idBox, metadata, rules);
+    setCenter(center);
 
     remove.setDisable(true);
   }

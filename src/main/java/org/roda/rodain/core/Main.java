@@ -23,7 +23,6 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -151,7 +150,7 @@ public class Main extends Application {
     split.getItems().addAll(previewExplorer, schemaPane, inspectionPane);
 
     // Create Footer
-    HBox footer = new Footer();
+    Footer footer = new Footer();
 
     mainPane = new BorderPane();
     mainPane.getStyleClass().add("border-pane");

@@ -47,9 +47,9 @@ public class LoadingPane extends BorderPane {
     pane.setPadding(new Insets(0, 0, 10, 0));
 
     VBox box = new VBox(5);
-    box.setAlignment(Pos.CENTER);
+    box.setAlignment(Pos.CENTER_LEFT);
     box.getStyleClass().add("hbox");
-    box.setPadding(new Insets(5, 5, 5, 5));
+    box.setPadding(new Insets(10, 10, 10, 10));
     pane.getChildren().add(box);
 
     Label title = new Label("Create association to \"" + schema.getDob().getTitle() + "\"");

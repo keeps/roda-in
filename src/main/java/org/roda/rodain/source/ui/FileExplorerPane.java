@@ -127,7 +127,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
     HBox titleBox = new HBox();
     titleBox.setAlignment(Pos.CENTER);
-    Label title = new Label("Choose a directory\nto archive");
+    Label title = new Label("Choose your\nworking directory");
     title.getStyleClass().add("helpTitle");
     title.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(title);
@@ -154,11 +154,13 @@ public class FileExplorerPane extends BorderPane implements Observer {
   private void createFileExplorer() {
     // create tree pane
     final VBox treeBox = new VBox();
+    Separator separatorTop = new Separator();
+    Separator separatorBottom = new Separator();
 
     treeView = new TreeView<>();
     treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     // add everything to the tree pane
-    treeBox.getChildren().addAll(treeView);
+    treeBox.getChildren().addAll(separatorTop, treeView, separatorBottom);
     VBox.setVgrow(treeView, Priority.ALWAYS);
     treeView.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
       @Override

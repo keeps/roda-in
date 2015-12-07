@@ -44,6 +44,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class SchemaPane extends BorderPane {
   private static final org.slf4j.Logger log = LoggerFactory.getLogger(SchemaPane.class.getName());
   private TreeView<String> treeView;
+  private VBox treeBox;
   private TreeItem<String> rootNode;
   private HBox refresh;
   private HBox bottom;
@@ -94,7 +95,7 @@ public class SchemaPane extends BorderPane {
 
     HBox titleBox = new HBox();
     titleBox.setAlignment(Pos.CENTER);
-    Label title = new Label("Load the\nclassification schema");
+    Label title = new Label("Load your\nclassification schema");
     title.getStyleClass().add("helpTitle");
     title.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(title);
@@ -120,14 +121,15 @@ public class SchemaPane extends BorderPane {
 
   private void createTreeView() {
     // create tree pane
-    VBox treeBox = new VBox();
-    treeBox.setPadding(new Insets(10, 10, 10, 10));
+    treeBox = new VBox();
+    VBox.setVgrow(treeBox, Priority.ALWAYS);
 
     rootNode = new TreeItem<>();
     rootNode.setExpanded(true);
 
     // create the tree view
     treeView = new TreeView<>(rootNode);
+    VBox.setVgrow(treeView, Priority.ALWAYS);
     treeView.setShowRoot(false);
     treeView.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
       @Override
@@ -138,8 +140,10 @@ public class SchemaPane extends BorderPane {
       }
     });
 
+    Separator separatorTop = new Separator();
+    Separator separatorBottom = new Separator();
     // add everything to the tree pane
-    treeBox.getChildren().add(treeView);
+    treeBox.getChildren().addAll(separatorTop, treeView, separatorBottom);
     treeView.setOnMouseClicked(new SchemaClickedEventHandler(this));
   }
 
@@ -184,7 +188,7 @@ public class SchemaPane extends BorderPane {
 
   private void updateClassificationSchema(ClassificationSchema cs) throws MalformedSchemaException {
     setTop(refresh);
-    setCenter(treeView);
+    setCenter(treeBox);
     setBottom(bottom);
     rootNode.getChildren().clear();
     List<DescriptionObject> dos = cs.getDos();
