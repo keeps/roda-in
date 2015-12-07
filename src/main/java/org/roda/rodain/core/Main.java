@@ -281,8 +281,4 @@ public class Main extends Application {
   public static Map<SipPreview, String> getSipPreviews() {
     return schemaPane.getSipPreviews();
   }
-
-  public static void inspectionNotifyChanged() {
-    inspectionPane.notifyChange();
-  }
 }

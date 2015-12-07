@@ -497,8 +497,10 @@ public class InspectionPane extends BorderPane {
   private void updateRuleList() {
     ruleList.getItems().clear();
     Set<Rule> currentRules = currentSchema.getRules();
+
     for (Rule rule : currentRules) {
       RuleCell cell = new RuleCell(currentSchema, rule);
+      rule.addObserver(cell);
       ruleList.getItems().add(cell);
     }
     if (currentRules.isEmpty()) {

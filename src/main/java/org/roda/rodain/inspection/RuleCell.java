@@ -1,9 +1,8 @@
 package org.roda.rodain.inspection;
 
-import java.util.ArrayList;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -28,10 +27,13 @@ import org.roda.rodain.source.ui.items.SourceTreeItem;
  * @author Andre Pereira apereira@keep.pt
  * @since 16-11-2015.
  */
-public class RuleCell extends HBox {
+public class RuleCell extends HBox implements Observer {
   private static Properties properties;
   private Rule rule;
   private SchemaNode schemaNode;
+
+  private String titleFormat = "Created %d item";
+  private Label lCreated;
 
   public RuleCell(SchemaNode node, Rule rule) {
     this.rule = rule;
@@ -70,17 +72,17 @@ public class RuleCell extends HBox {
       @Override
       public void handle(ActionEvent e) {
         schemaNode.removeRule(rule);
-        Main.inspectionNotifyChanged();
+        Main.getInspectionPane().notifyChange();
       }
     });
 
     int sipCount = rule.getSipCount();
-    String format = "Created %d item";
+    String format = titleFormat;
     if (sipCount != 1) {
       format += "s";
     }
     String created = String.format(format, rule.getSipCount());
-    Label lCreated = new Label(created);
+    lCreated = new Label(created);
 
     top.getChildren().addAll(id, spaceLeft, lCreated, spaceRight, remove);
     return top;
@@ -155,5 +157,25 @@ public class RuleCell extends HBox {
    */
   public static void setProperties(Properties prop) {
     properties = prop;
+  }
+
+  @Override
+  public void update(Observable o, Object arg) {
+    if (o instanceof Rule) {
+      Rule rule = (Rule) o;
+
+      Platform.runLater(new Runnable() {
+        @Override
+        public void run() {
+          int sipCount = rule.getSipCount();
+          String format = titleFormat;
+          if (sipCount != 1) {
+            format += "s";
+          }
+          String created = String.format(format, rule.getSipCount());
+          lCreated.setText(created);
+        }
+      });
+    }
   }
 }

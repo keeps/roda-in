@@ -10,7 +10,6 @@ import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.stage.Stage;
 
-import org.roda.rodain.core.Main;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.RuleTypes;
@@ -140,7 +139,6 @@ public class RuleModalController {
       visitors.add(sourceSet, sourcePaths, visitor);
 
       schema.addRule(rule);
-      Main.inspectionNotifyChanged();
     } catch (Exception e) {
       log.debug("Exception in confirm rule", e);
     }
