@@ -197,7 +197,18 @@ public class Main extends Application {
         creationStage.setRoot(pane);
       }
     });
-    menuFile.getItems().addAll(openFolder, updateCS, createSIPs);
+
+    final MenuItem quit = new MenuItem("Quit");
+    quit.setAccelerator(KeyCombination.keyCombination("Ctrl+Q"));
+    quit.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent t) {
+        VisitorStack.end();
+        Platform.exit();
+      }
+    });
+
+    menuFile.getItems().addAll(openFolder, updateCS, createSIPs, quit);
 
     // Edit
     final MenuItem ignoreItems = new MenuItem("Ignore item(s)");
