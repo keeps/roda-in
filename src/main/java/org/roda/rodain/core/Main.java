@@ -80,7 +80,7 @@ public class Main extends Application {
    * This method sets the application logo, loads fonts, styles and property
    * files. Furthermore, creates the frame structure and the menu. The frame
    * structure is a SplitPane, split in three sections - file explorer,
-   * classification schema, inspection - and a footer.
+   * classification scheme, inspection - and a footer.
    * </p>
    * 
    * @param primaryStage
@@ -174,7 +174,7 @@ public class Main extends Application {
       }
     });
 
-    final MenuItem updateCS = new MenuItem("Load classification schema");
+    final MenuItem updateCS = new MenuItem("Load classification scheme");
     updateCS.setAccelerator(KeyCombination.keyCombination("Ctrl+L"));
     updateCS.setOnAction(new EventHandler<ActionEvent>() {
       @Override

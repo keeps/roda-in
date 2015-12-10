@@ -72,7 +72,7 @@ public class SchemaPane extends BorderPane {
   }
 
   private void createTop() {
-    Label title = new Label("Classification Schema");
+    Label title = new Label("Classification Scheme");
     title.getStyleClass().add("title");
 
     refresh = new HBox();
@@ -95,7 +95,7 @@ public class SchemaPane extends BorderPane {
 
     HBox titleBox = new HBox();
     titleBox.setAlignment(Pos.CENTER);
-    Label title = new Label("Load your\nclassification schema");
+    Label title = new Label("Load your\nclassification scheme");
     title.getStyleClass().add("helpTitle");
     title.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(title);
@@ -170,9 +170,9 @@ public class SchemaPane extends BorderPane {
       ClassificationSchema schema = loadClassificationSchemaFile(inputFile);
       updateClassificationSchema(schema);
     } catch (IOException e) {
-      log.error("Error reading classification schema specification", e);
+      log.error("Error reading classification scheme specification", e);
     } catch (MalformedSchemaException e) {
-      log.error("Error creating the schema tree", e);
+      log.error("Error creating the scheme tree", e);
     }
   }
 

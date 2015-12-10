@@ -146,7 +146,7 @@ public class InspectionPane extends BorderPane {
 
     HBox titleBox = new HBox();
     titleBox.setAlignment(Pos.CENTER);
-    Label title = new Label("Select an item from \nthe classification schema\nto inspect it");
+    Label title = new Label("Select an item from \nthe classification scheme\nto inspect it");
     title.getStyleClass().add("helpTitle");
     title.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(title);
