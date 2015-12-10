@@ -1,10 +1,9 @@
 package org.roda.rodain.rules;
 
-import java.nio.file.Path;
-import java.util.*;
-
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
 import javafx.scene.image.Image;
-
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.filters.ContentFilter;
 import org.roda.rodain.rules.sip.*;
@@ -14,6 +13,9 @@ import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.TreeVisitor;
+
+import java.nio.file.Path;
+import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -255,19 +257,38 @@ public class Rule extends Observable implements Observer, Comparable {
    * SipPreviewNodes.
    */
   public void remove() {
-    for (SipPreview sip : sips.values()) {
-      sip.setRemoved();
-    }
+    Task<Void> task = new Task<Void>() {
+      @Override
+      protected Void call() throws Exception {
+        for (SipPreview sip : sips.values()) {
+          sip.setRemoved();
+        }
 
-    sipNodes.clear();
-    for (SipPreview sip : sips.values()) {
-      for (TreeNode tn : sip.getFiles()) {
-        PathCollection.addPaths(tn.getFullTreePaths(), SourceTreeItemState.NORMAL);
+        int removedSips = 0;
+        sipNodes.clear();
+        for (SipPreview sip : sips.values()) {
+          for (TreeNode tn : sip.getFiles()) {
+            PathCollection.addPaths(tn.getFullTreePaths(), SourceTreeItemState.NORMAL);
+          }
+          removedSips++;
+          setChanged();
+          notifyObservers(removedSips);
+        }
+        sips.clear();
+        return null;
       }
-    }
-    sips.clear();
-    setChanged();
-    notifyObservers("Removed SIP");
+    };
+
+    // After everything is loaded, we add all the items to the TreeView at once.
+    task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+      @Override
+      public void handle(WorkerStateEvent workerStateEvent) {
+        setChanged();
+        notifyObservers("Removed SIP");
+      }
+    });
+
+    new Thread(task).start();
   }
 
   /**

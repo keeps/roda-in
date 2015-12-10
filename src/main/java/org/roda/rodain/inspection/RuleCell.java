@@ -18,6 +18,7 @@ import org.apache.commons.lang.StringUtils;
 import org.roda.rodain.core.Main;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.RuleTypes;
+import org.roda.rodain.rules.ui.RuleModalController;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
@@ -71,6 +72,7 @@ public class RuleCell extends HBox implements Observer {
     remove.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
+        RuleModalController.removeRule(rule);
         schemaNode.removeRule(rule);
         Main.getInspectionPane().notifyChange();
       }

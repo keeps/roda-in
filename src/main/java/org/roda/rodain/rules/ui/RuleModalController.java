@@ -159,6 +159,15 @@ public class RuleModalController {
     }
   }
 
+  public static void removeRule(Rule r) {
+    RuleModalRemoving removing = new RuleModalRemoving(r);
+    r.addObserver(removing);
+    stage.setRoot(removing);
+    stage.setHeight(120);
+    stage.setWidth(400);
+    stage.centerOnScreen();
+  }
+
   /**
    * Closes the stage of the modal window.
    */
