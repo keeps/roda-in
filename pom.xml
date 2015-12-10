@@ -6,7 +6,7 @@
 
     <groupId>org.roda</groupId>
     <artifactId>rodain</artifactId>
-    <version>1.0.0-alpha.5</version>
+    <version>1.0.0-beta.1</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
