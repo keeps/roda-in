@@ -23,7 +23,7 @@ public class SchemaNode extends TreeItem<String>implements Observer {
   private Map<String, Set<SipPreviewNode>> sips;
   private Image icon;
 
-  private List<SchemaNode> schemaNodes;
+  private Set<SchemaNode> schemaNodes;
 
   /**
    * Creates a new SchemaNode
@@ -37,7 +37,7 @@ public class SchemaNode extends TreeItem<String>implements Observer {
     rules = new HashMap<>();
     sips = new HashMap<>();
     ruleObjects = new HashMap<>();
-    schemaNodes = new ArrayList<>();
+    schemaNodes = new HashSet<>();
 
     ResourceBundle hierarchyConfig = ResourceBundle.getBundle("properties/roda-description-levels-hierarchy");
     String category = hierarchyConfig.getString("category." + dobject.getDescriptionlevel());
@@ -133,6 +133,10 @@ public class SchemaNode extends TreeItem<String>implements Observer {
     if (count > 0)
       text += String.format("  (%d items)", count);
     setValue(text);
+  }
+
+  public void addChildrenNode(SchemaNode node) {
+    schemaNodes.add(node);
   }
 
   /**
