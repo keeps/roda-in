@@ -171,8 +171,6 @@ public class SchemaPane extends BorderPane {
       updateClassificationSchema(schema);
     } catch (IOException e) {
       log.error("Error reading classification scheme specification", e);
-    } catch (MalformedSchemaException e) {
-      log.error("Error creating the scheme tree", e);
     }
   }
 
@@ -186,7 +184,7 @@ public class SchemaPane extends BorderPane {
     return objectMapper.readValue(input, ClassificationSchema.class);
   }
 
-  private void updateClassificationSchema(ClassificationSchema cs) throws MalformedSchemaException {
+  private void updateClassificationSchema(ClassificationSchema cs) {
     setTop(refresh);
     setCenter(treeBox);
     setBottom(bottom);
@@ -213,7 +211,8 @@ public class SchemaPane extends BorderPane {
         if (parents.size() != 1) {
           String format = "The node \"%s\" has %d parents";
           String message = String.format(format, descObj.getTitle(), parents.size());
-          throw new MalformedSchemaException(message);
+          log.error("Error creating the scheme tree", new MalformedSchemaException(message));
+          continue;
         }
         DescriptionObject parent = parents.get(0);
         SchemaNode parentNode;

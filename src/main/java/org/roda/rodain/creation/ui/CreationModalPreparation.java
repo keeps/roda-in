@@ -94,7 +94,7 @@ public class CreationModalPreparation extends BorderPane {
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
-    Label sipTypesLabel = new Label("SIP type");
+    Label sipTypesLabel = new Label("SIP format");
 
     sipTypes = new ComboBox<>();
     sipTypes.getItems().addAll("BagIt", "EARK");

@@ -14,7 +14,7 @@
         <param name="maxFileSize" value="36700160"/><!-- 36700160 bytes = 35MB -->
         <param name="maxBackupIndex" value="3"/>
         <param name="append" value="true"/>
-        <param name="threshold" value="debug"/>
+        <param name="threshold" value="error"/>
         <param name="encoding" value="UTF-8"/>
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%p %d (%c{1}) %m%n"/>
@@ -31,7 +31,7 @@
     <root>
         <level value="WARN"/>
         <!--<level value="DEBUG" />-->
-        <!-- <level value="TRACE" /> -->
+        <!--<level value="TRACE" /> -->
         <appender-ref ref="STDOUT"/>
     </root>
 

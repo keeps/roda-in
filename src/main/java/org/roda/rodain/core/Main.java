@@ -40,10 +40,11 @@ import org.roda.rodain.schema.ui.SchemaPane;
 import org.roda.rodain.source.ui.FileExplorerPane;
 import org.roda.rodain.source.ui.SourceTreeCell;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Main extends Application {
-  private static final org.slf4j.Logger log = LoggerFactory.getLogger(Main.class.getName());
+  private static final Logger log = LoggerFactory.getLogger(Main.class.getName());
   private static Stage stage;
   private static double javaVersion;
 
@@ -89,7 +90,7 @@ public class Main extends Application {
   public void start(Stage primaryStage) {
     stage = primaryStage;
     stage.setMinWidth(1024);
-    stage.setMinHeight(512);
+    stage.setMinHeight(600);
 
     stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
       @Override

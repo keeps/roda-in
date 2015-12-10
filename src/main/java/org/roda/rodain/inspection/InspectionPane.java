@@ -94,7 +94,6 @@ public class InspectionPane extends BorderPane {
 
     metaText = new TextArea();
     metaText.setWrapText(true);
-    HBox.setHgrow(metaText, Priority.ALWAYS);
     VBox.setVgrow(metaText, Priority.ALWAYS);
     metadata.getChildren().addAll(box, metaText);
 
@@ -177,7 +176,6 @@ public class InspectionPane extends BorderPane {
     // add everything to the tree pane
     treeBox.getChildren().addAll(sipFiles);
     VBox.setVgrow(sipFiles, Priority.ALWAYS);
-    HBox.setHgrow(sipFiles, Priority.ALWAYS);
 
     sipFiles.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
       @Override
@@ -200,7 +198,6 @@ public class InspectionPane extends BorderPane {
     HBox box = new HBox(10);
     box.setPadding(new Insets(10, 10, 10, 10));
     box.setAlignment(Pos.CENTER);
-    HBox.setHgrow(box, Priority.ALWAYS);
 
     Button ignore = new Button("Ignore");
     ignore.setOnAction(new EventHandler<ActionEvent>() {
@@ -249,9 +246,9 @@ public class InspectionPane extends BorderPane {
       }
     });
 
-    ignore.minWidthProperty().bind(content.widthProperty().multiply(0.3));
-    flatten.minWidthProperty().bind(content.widthProperty().multiply(0.3));
-    skip.minWidthProperty().bind(content.widthProperty().multiply(0.3));
+    ignore.minWidthProperty().bind(this.widthProperty().multiply(0.25));
+    flatten.minWidthProperty().bind(this.widthProperty().multiply(0.25));
+    skip.minWidthProperty().bind(this.widthProperty().multiply(0.25));
 
     setStateContentButtons(true);
 
