@@ -19,12 +19,15 @@ import org.roda_project.commons_ip.model.impl.eark.EARKSIP;
 import org.roda_project.commons_ip.utils.EARKEnums;
 import org.roda_project.commons_ip.utils.METSEnums;
 import org.roda_project.commons_ip.utils.SIPException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 19/11/2015.
  */
 public class EarkSipCreator extends SimpleSipCreator {
+  private static final Logger log = LoggerFactory.getLogger(EarkSipCreator.class.getName());
   public EarkSipCreator(Path outputPath, Map<SipPreview, String> previews) {
     super(outputPath, previews);
   }
@@ -85,10 +88,10 @@ public class EarkSipCreator extends SimpleSipCreator {
       Files.move(result, outputPath.resolve(result.getFileName()));
       createdSipsCount++;
     } catch (SIPException e) {
-      e.printStackTrace();
+      log.error("Commons IP exception", e);
       unsuccessful.add(sip);
     } catch (IOException e) {
-      e.printStackTrace();
+      log.error("Error accessing the files", e);
       unsuccessful.add(sip);
     } finally {
       if (Files.exists(Paths.get(home + metadataName))) {
