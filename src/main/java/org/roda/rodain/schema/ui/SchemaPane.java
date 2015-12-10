@@ -271,7 +271,7 @@ public class SchemaPane extends BorderPane {
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
-    bottom.getChildren().addAll(associate, space, addLevel);
+    bottom.getChildren().addAll(associate, space);
   }
 
   private void startAssociation(SchemaNode descObj) {

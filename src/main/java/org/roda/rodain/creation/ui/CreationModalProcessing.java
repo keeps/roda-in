@@ -121,16 +121,16 @@ public class CreationModalProcessing extends BorderPane {
     finishedBox = new HBox();
     finishedBox.setPadding(new Insets(0, 10, 10, 10));
     finishedBox.setAlignment(Pos.CENTER_RIGHT);
-    Button finish = new Button("Finish");
+    Button close = new Button("Close");
 
-    finish.setOnAction(new EventHandler<ActionEvent>() {
+    close.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent actionEvent) {
         stage.close();
       }
     });
 
-    finishedBox.getChildren().add(finish);
+    finishedBox.getChildren().add(close);
   }
 
   private void createUpdateTask() {

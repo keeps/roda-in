@@ -49,7 +49,7 @@ public class Main extends Application {
 
   private BorderPane mainPane;
   private MenuBar menu;
-  private double initialWidth, initialHeight;
+  private double initialWidth = 1200, initialHeight = 700;
 
   private static FileExplorerPane previewExplorer;
   private static InspectionPane inspectionPane;
@@ -118,11 +118,12 @@ public class Main extends Application {
     // setup and show the window
     stage.setTitle("RODA-In");
     Scene scene = new Scene(mainPane, initialWidth, initialHeight);
-    stage.setMaximized(true);
 
     scene.getStylesheets().add(ClassLoader.getSystemResource("css/mainWindow.css").toExternalForm());
     scene.getStylesheets().add(ClassLoader.getSystemResource("css/shared.css").toExternalForm());
     stage.setScene(scene);
+
+    stage.setMaximized(true);
 
     stage.show();
   }

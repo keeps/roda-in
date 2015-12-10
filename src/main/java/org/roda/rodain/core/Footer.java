@@ -4,11 +4,15 @@ import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * The Node used as the footer of the UI to show a status message.
@@ -17,22 +21,20 @@ import javafx.scene.text.TextAlignment;
  * @since 28-09-2015.
  */
 public class Footer extends VBox {
-  public static Label status;
+  private static Label status;
 
   public Footer() {
     super(5);
     getStyleClass().add("footer");
-
-    HBox space = new HBox();
-    HBox.setHgrow(space, Priority.ALWAYS);
-
-    this.setAlignment(Pos.CENTER_LEFT);
+    setAlignment(Pos.CENTER_LEFT);
 
     Separator separator = new Separator();
+
     status = new Label();
     status.setPadding(new Insets(0, 0, 5, 5));
     status.setAlignment(Pos.CENTER_LEFT);
     status.setTextAlignment(TextAlignment.CENTER);
+
     this.getChildren().addAll(separator, status);
   }
 

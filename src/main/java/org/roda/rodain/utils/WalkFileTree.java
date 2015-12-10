@@ -16,6 +16,8 @@ public class WalkFileTree extends Thread {
   private Set<String> paths;
   private TreeVisitor handler;
 
+  private int processedFiles = 0, processedDirs = 0;
+
   public WalkFileTree(Set<String> startPath, TreeVisitor handler) {
     this.paths = startPath;
     this.handler = handler;
@@ -35,6 +37,7 @@ public class WalkFileTree extends Thread {
           Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+              processedFiles++;
               handler.visitFile(file, attrs);
               return isTerminated();
             }
@@ -47,6 +50,7 @@ public class WalkFileTree extends Thread {
 
             @Override
             public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
+              processedDirs++;
               handler.postVisitDirectory(dir);
               return isTerminated();
             }
@@ -65,6 +69,14 @@ public class WalkFileTree extends Thread {
       }
     }
     handler.end();
+  }
+
+  public int getProcessedDirs() {
+    return processedDirs;
+  }
+
+  public int getProcessedFiles() {
+    return processedFiles;
   }
 
   private FileVisitResult isTerminated() {
