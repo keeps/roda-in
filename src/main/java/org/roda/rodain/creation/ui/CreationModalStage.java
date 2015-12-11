@@ -1,5 +1,7 @@
 package org.roda.rodain.creation.ui;
 
+import java.nio.file.Path;
+
 import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -9,6 +11,9 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
+import org.roda.rodain.creation.CreateSips;
+import org.roda.rodain.creation.SipTypes;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -33,6 +38,13 @@ public class CreationModalStage extends Stage {
     scene.getStylesheets().add(ClassLoader.getSystemResource("css/modal.css").toExternalForm());
     scene.getStylesheets().add(ClassLoader.getSystemResource("css/shared.css").toExternalForm());
     setScene(scene);
+  }
+
+  public void startCreation(Path outputFolder, SipTypes type) {
+    CreateSips creator = new CreateSips(outputFolder, type);
+    CreationModalProcessing pane = new CreationModalProcessing(creator, this);
+    setRoot(pane);
+    creator.start();
   }
 
   /**

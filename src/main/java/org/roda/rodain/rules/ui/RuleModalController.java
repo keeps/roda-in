@@ -10,14 +10,16 @@ import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.stage.Stage;
 
-import org.roda.rodain.core.Main;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.RuleTypes;
 import org.roda.rodain.rules.VisitorStack;
+import org.roda.rodain.rules.sip.SipPreviewCreator;
+import org.roda.rodain.rules.sip.TemplateType;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.utils.TreeVisitor;
+import org.roda.rodain.utils.WalkFileTree;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -53,6 +55,9 @@ public class RuleModalController {
   public static void newAssociation(final Stage primStage, Set<SourceTreeItem> source, SchemaNode schemaNode) {
     if (stage == null)
       stage = new RuleModalStage(primStage);
+    stage.setWidth(800);
+    stage.setHeight(580);
+
     loadingPane = new LoadingPane(schemaNode);
     stage.setRoot(loadingPane);
 
@@ -99,7 +104,6 @@ public class RuleModalController {
    * </p>
    */
   public static void confirm() {
-    stage.close();
     try {
       RuleTypes assocType = pane.getAssociationType();
       int level = 0;
@@ -107,7 +111,7 @@ public class RuleModalController {
         level = pane.getLevel();
       MetadataTypes metaType = pane.getMetadataType();
       Path metadataPath = null;
-      String metadataResource = null;
+      TemplateType templateType = null;
       switch (metaType) {
         case SAME_DIRECTORY:
           metadataPath = pane.getSameDir();
@@ -119,12 +123,12 @@ public class RuleModalController {
           metadataPath = pane.getFromFile();
           break;
         case TEMPLATE:
-          metadataResource = pane.getTemplate();
+          templateType = pane.getTemplate();
           break;
         default:
           break;
       }
-      Rule rule = new Rule(sourceSet, assocType, level, metadataPath, metadataResource, metaType);
+      Rule rule = new Rule(sourceSet, assocType, level, metadataPath, templateType, metaType);
       rule.addObserver(schema);
 
       TreeVisitor visitor = rule.apply();
@@ -136,13 +140,32 @@ public class RuleModalController {
         rule.addObserver(sti);
       }
 
-      visitors.add(sourceSet, sourcePaths, visitor);
+      WalkFileTree fileWalker = visitors.add(sourcePaths, visitor);
 
       schema.addRule(rule);
-      Main.inspectionNotifyChanged();
+
+      Platform.runLater(new Runnable() {
+        @Override
+        public void run() {
+          RuleModalProcessing processing = new RuleModalProcessing((SipPreviewCreator) visitor, visitor, visitors, fileWalker);
+          stage.setRoot(processing);
+          stage.setHeight(180);
+          stage.setWidth(400);
+          stage.centerOnScreen();
+        }
+      });
     } catch (Exception e) {
       log.debug("Exception in confirm rule", e);
     }
+  }
+
+  public static void removeRule(Rule r) {
+    RuleModalRemoving removing = new RuleModalRemoving(r);
+    r.addObserver(removing);
+    stage.setRoot(removing);
+    stage.setHeight(120);
+    stage.setWidth(400);
+    stage.centerOnScreen();
   }
 
   /**

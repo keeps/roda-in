@@ -60,6 +60,11 @@ public class SourceTreeCell extends TreeCell<String> {
         empty();
         return;
       }
+
+      if (sti == null) {
+        return;
+      }
+
       if (sti.getState() == SourceTreeItemState.IGNORED) {
         // the context menu only makes sense if the item is ignored
         setContextMenu(menu);

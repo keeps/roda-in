@@ -1,5 +1,6 @@
 package org.roda.rodain.source.ui;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,6 +19,8 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
+import javafx.scene.text.TextAlignment;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
@@ -37,10 +40,12 @@ import org.slf4j.LoggerFactory;
  */
 public class FileExplorerPane extends BorderPane implements Observer {
   private static final org.slf4j.Logger log = LoggerFactory.getLogger(FileExplorerPane.class.getName());
+  private Stage stage;
   private HBox top;
   private StackPane fileExplorer;
   private TreeView<String> treeView;
   private HBox bottom;
+  private VBox centerHelp;
 
   private ComputeDirectorySize computeSize;
 
@@ -58,16 +63,14 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
   public FileExplorerPane(Stage stage) {
     super();
+    this.stage = stage;
 
+    createCenterHelp();
     createTop();
     createFileExplorer();
     createBottom();
 
-    setFileExplorerRoot(Paths.get(System.getProperty("user.home")));
-
-    this.setTop(top);
-    this.setCenter(fileExplorer);
-    this.setBottom(bottom);
+    this.setCenter(centerHelp);
     this.prefWidthProperty().bind(stage.widthProperty().multiply(0.32));
     this.minWidthProperty().bind(stage.widthProperty().multiply(0.2));
   }
@@ -110,14 +113,54 @@ public class FileExplorerPane extends BorderPane implements Observer {
     bottom.getChildren().add(ignore);
   }
 
+  private void createCenterHelp() {
+    centerHelp = new VBox();
+    centerHelp.setPadding(new Insets(0, 10, 0, 10));
+    VBox.setVgrow(centerHelp, Priority.ALWAYS);
+    centerHelp.setAlignment(Pos.CENTER);
+
+    VBox box = new VBox(40);
+    box.setPadding(new Insets(10, 10, 10, 10));
+    box.setMaxWidth(355);
+    box.setMaxHeight(200);
+    box.setMinHeight(200);
+
+    HBox titleBox = new HBox();
+    titleBox.setAlignment(Pos.CENTER);
+    Label title = new Label("Choose your\nworking directory");
+    title.getStyleClass().add("helpTitle");
+    title.setTextAlignment(TextAlignment.CENTER);
+    titleBox.getChildren().add(title);
+
+    HBox loadBox = new HBox();
+    loadBox.setAlignment(Pos.CENTER);
+    Button load = new Button("Choose directory");
+    load.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent event) {
+        chooseNewRoot();
+      }
+    });
+    load.setMinHeight(65);
+    load.setMinWidth(220);
+    load.setMaxWidth(220);
+    load.getStyleClass().add("helpButton");
+    loadBox.getChildren().add(load);
+
+    box.getChildren().addAll(titleBox, loadBox);
+    centerHelp.getChildren().add(box);
+  }
+
   private void createFileExplorer() {
     // create tree pane
     final VBox treeBox = new VBox();
+    Separator separatorTop = new Separator();
+    Separator separatorBottom = new Separator();
 
     treeView = new TreeView<>();
     treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     // add everything to the tree pane
-    treeBox.getChildren().addAll(treeView);
+    treeBox.getChildren().addAll(separatorTop, treeView, separatorBottom);
     VBox.setVgrow(treeView, Priority.ALWAYS);
     treeView.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
       @Override
@@ -135,7 +178,20 @@ public class FileExplorerPane extends BorderPane implements Observer {
     treeView.setOnMouseClicked(new SourceClickedEventHandler(this));
   }
 
-  public void setFileExplorerRoot(Path rootPath) {
+  public void chooseNewRoot() {
+    DirectoryChooser chooser = new DirectoryChooser();
+    chooser.setTitle("Please choose a directory");
+    File selectedDirectory = chooser.showDialog(stage);
+    if (selectedDirectory == null)
+      return;
+    Path path = selectedDirectory.toPath();
+    setFileExplorerRoot(path);
+  }
+
+  private void setFileExplorerRoot(Path rootPath) {
+    this.setTop(top);
+    this.setCenter(fileExplorer);
+    this.setBottom(bottom);
     if (treeView.getRoot() != null) {
       oldIgnored = ((SourceTreeDirectory) treeView.getRoot()).getIgnored();
       oldMapped = ((SourceTreeDirectory) treeView.getRoot()).getMapped();

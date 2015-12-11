@@ -6,7 +6,7 @@
 
     <groupId>org.roda</groupId>
     <artifactId>rodain</artifactId>
-    <version>1.0.0-alpha.4</version>
+    <version>1.0.0-beta.1</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -15,13 +15,6 @@
     </properties>
 
     <repositories>
-        <repository>
-            <id>maven-central-repo</id>
-            <url>http://repo1.maven.org/maven2</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
         <repository>
             <id>vendorDependencies</id>
             <name>Vendor dependencies</name>
@@ -33,6 +26,13 @@
                 <enabled>true</enabled>
             </snapshots>
             <url>file://${projectLocalRepository}/</url>
+        </repository>
+        <repository>
+            <id>maven-central-repo</id>
+            <url>http://repo1.maven.org/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
     </repositories>
 
@@ -138,11 +138,11 @@
             <version>4.0.1-alpha</version>
             <scope>test</scope>
         </dependency>
-        <!--<dependency>-->
-        <!--<groupId>org.roda-project</groupId>-->
-        <!--<artifactId>commons-ip</artifactId>-->
-        <!--<version>1.0.0-SNAPSHOT</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.roda-project</groupId>
+            <artifactId>commons-ip</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
 </project>

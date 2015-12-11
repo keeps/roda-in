@@ -28,6 +28,9 @@ public class CreateSips {
     if (type == SipTypes.BAGIT) {
       creator = new BagitSipCreator(outputPath, sips);
       creator.start();
+    } else {
+      creator = new EarkSipCreator(outputPath, sips);
+      creator.start();
     }
   }
 

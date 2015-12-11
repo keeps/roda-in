@@ -21,10 +21,10 @@ public class SipPreview extends Observable implements Observer {
   private boolean removed = false;
 
   public SipPreview(String name, Set<TreeNode> files, MetadataTypes metaType, Path metadataPath,
-    String metadataResource) {
+    TemplateType templateType) {
     this.name = name;
     this.files = files;
-    metadata = new SipMetadata(metaType, metadataPath, metadataResource);
+    metadata = new SipMetadata(metaType, metadataPath, templateType);
     id = UUID.randomUUID().toString();
 
     setPathsAsMapped();
@@ -59,6 +59,13 @@ public class SipPreview extends Observable implements Observer {
    */
   public String getMetadataContent() {
     return metadata.getMetadataContent();
+  }
+
+  /**
+   * @return The type of the metadata.
+   */
+  public TemplateType getTemplateType() {
+    return metadata.getTemplateType();
   }
 
   /**

@@ -26,6 +26,7 @@ import javafx.stage.Stage;
 
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.RuleTypes;
+import org.roda.rodain.rules.sip.TemplateType;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
@@ -97,9 +98,9 @@ public class RuleModalPane extends BorderPane {
     pane.setPadding(new Insets(0, 0, 10, 0));
 
     VBox box = new VBox(5);
-    box.setAlignment(Pos.CENTER);
+    box.setAlignment(Pos.CENTER_LEFT);
     box.getStyleClass().add("hbox");
-    box.setPadding(new Insets(5, 5, 5, 5));
+    box.setPadding(new Insets(10, 10, 10, 10));
     pane.getChildren().add(box);
 
     Label title = new Label("Create association to \"" + schema.getDob().getTitle() + "\"");
@@ -357,7 +358,7 @@ public class RuleModalPane extends BorderPane {
     box.setAlignment(Pos.CENTER_LEFT);
 
     templateTypes = new ComboBox<>();
-    templateTypes.getItems().addAll("DCMES - Dublin Core", "EAD-C");
+    templateTypes.getItems().addAll("Dublin Core", "EAD");
     templateTypes.getSelectionModel().selectFirst();
 
     box.getChildren().add(templateTypes);
@@ -373,12 +374,18 @@ public class RuleModalPane extends BorderPane {
     space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
+    VBox bottom = new VBox();
+    VBox.setVgrow(bottom, Priority.ALWAYS);
+    Separator separator = new Separator();
+
     buttons = new HBox(10);
     buttons.setPadding(new Insets(10, 10, 10, 10));
     buttons.setAlignment(Pos.CENTER);
     buttons.getChildren().addAll(btCancel, space, btContinue);
 
-    setBottom(buttons);
+    bottom.getChildren().addAll(separator, buttons);
+
+    setBottom(bottom);
   }
 
   private void createContinueButton() {
@@ -550,7 +557,14 @@ public class RuleModalPane extends BorderPane {
   /**
    * @return The template from the metadata option TEMPLATE
    */
-  public String getTemplate() {
-    return templateTypes.getSelectionModel().getSelectedItem();
+  public TemplateType getTemplate() {
+    String selected = templateTypes.getSelectionModel().getSelectedItem();
+    TemplateType result;
+    if (selected.startsWith("Dublin")) {
+      result = TemplateType.DUBLIN_CORE;
+    } else
+      result = TemplateType.EAD;
+
+    return result;
   }
 }

@@ -37,26 +37,33 @@ public class ContentClickedEventHandler implements EventHandler<MouseEvent> {
       Object source = treeView.getSelectionModel().getSelectedItem();
       if (source instanceof SipContentFile) {
         SipContentFile sipFile = (SipContentFile) source;
-        String command;
+        String fileName = sipFile.getPath().toString();
         // Different commands for different operating systems
         if (isWindows()) {
-          command = "explorer";
+          executeCommand("explorer", fileName);
         } else if (isMac()) {
-          command = "open";
+          executeCommand("open", fileName);
         } else if (isUnix()) {
-          command = "gnome-open";
+          boolean result = executeCommand("xdg-open", fileName);
+          if (result == false) {
+            executeCommand("gnome-open", fileName);
+          }
         } else {
           return;
         }
-        // Execute the command
-        try {
-          ProcessBuilder pb = new ProcessBuilder(command, sipFile.getPath().toString());
-          pb.start();
-        } catch (IOException e) {
-          log.info("Error opening file from SIP content", e);
-        }
       }
     }
+  }
+
+  private boolean executeCommand(String command, String file) {
+    try {
+      ProcessBuilder pb = new ProcessBuilder(command, file);
+      pb.start();
+    } catch (IOException e) {
+      log.info("Error opening file from SIP content", e);
+      return false;
+    }
+    return true;
   }
 
   public static boolean isWindows() {

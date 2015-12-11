@@ -23,7 +23,7 @@ public class SchemaNode extends TreeItem<String>implements Observer {
   private Map<String, Set<SipPreviewNode>> sips;
   private Image icon;
 
-  private List<SchemaNode> schemaNodes;
+  private Set<SchemaNode> schemaNodes;
 
   /**
    * Creates a new SchemaNode
@@ -37,7 +37,7 @@ public class SchemaNode extends TreeItem<String>implements Observer {
     rules = new HashMap<>();
     sips = new HashMap<>();
     ruleObjects = new HashMap<>();
-    schemaNodes = new ArrayList<>();
+    schemaNodes = new HashSet<>();
 
     ResourceBundle hierarchyConfig = ResourceBundle.getBundle("properties/roda-description-levels-hierarchy");
     String category = hierarchyConfig.getString("category." + dobject.getDescriptionlevel());
@@ -46,12 +46,6 @@ public class SchemaNode extends TreeItem<String>implements Observer {
     Image im = FontAwesomeImageCreator.generate(unicode);
     icon = im;
     this.setGraphic(new ImageView(im));
-
-    for (DescriptionObject obj : dob.getChildren()) {
-      SchemaNode child = new SchemaNode(obj);
-      this.getChildren().add(child);
-      schemaNodes.add(child);
-    }
   }
 
   /**
@@ -83,6 +77,7 @@ public class SchemaNode extends TreeItem<String>implements Observer {
           Set<SipPreviewNode> nodes = new HashSet<>(rule.getSipNodes());
           sips.put(id, nodes);
           getChildren().addAll(rule.getSipNodes());
+          sortChildren();
         }
       });
     }
@@ -138,6 +133,21 @@ public class SchemaNode extends TreeItem<String>implements Observer {
     if (count > 0)
       text += String.format("  (%d items)", count);
     setValue(text);
+  }
+
+  public void addChildrenNode(SchemaNode node) {
+    schemaNodes.add(node);
+  }
+
+  /**
+   * Sorts the children of the SchemaNode
+   * 
+   * @see SchemaComparator
+   */
+  public void sortChildren() {
+    ArrayList<TreeItem<String>> aux = new ArrayList<>(getChildren());
+    Collections.sort(aux, new SchemaComparator());
+    getChildren().setAll(aux);
   }
 
   /**

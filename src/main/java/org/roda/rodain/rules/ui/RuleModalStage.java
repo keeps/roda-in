@@ -27,9 +27,9 @@ public class RuleModalStage extends Stage {
     colorAdjust = new ColorAdjust();
     colorAdjust.setBrightness(-0.275);
 
-    setResizable(true);
+    setResizable(false);
 
-    Scene scene = new Scene(new HBox(), 800, 560);
+    Scene scene = new Scene(new HBox(), 800, 580);
     scene.getStylesheets().add(ClassLoader.getSystemResource("css/modal.css").toExternalForm());
     scene.getStylesheets().add(ClassLoader.getSystemResource("css/shared.css").toExternalForm());
     setScene(scene);

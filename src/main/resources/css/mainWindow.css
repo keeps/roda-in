@@ -17,8 +17,13 @@
     -fx-text-fill: white;
 }
 
+.inspectionPart .helpTitle {
+    -fx-font-size: x-large;
+    -fx-text-fill: black;
+}
+
 .sipId {
-    -fx-font-size: small;
+    -fx-font-size: medium;
 }
 
 .hiddenTextField{
@@ -155,4 +160,5 @@
 .list-cell:focused:selected .top .button:pressed {
     -fx-text-fill: black;
 }
+
 

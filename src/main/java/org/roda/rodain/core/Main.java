@@ -5,9 +5,7 @@ package org.roda.rodain.core;
  * @since 16-09-2015.
  */
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -25,16 +23,12 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-import org.roda.rodain.creation.CreateSips;
-import org.roda.rodain.creation.SipTypes;
-import org.roda.rodain.creation.ui.CreationModalPane;
+import org.roda.rodain.creation.ui.CreationModalPreparation;
 import org.roda.rodain.creation.ui.CreationModalStage;
 import org.roda.rodain.inspection.InspectionPane;
 import org.roda.rodain.inspection.RuleCell;
@@ -46,16 +40,17 @@ import org.roda.rodain.schema.ui.SchemaPane;
 import org.roda.rodain.source.ui.FileExplorerPane;
 import org.roda.rodain.source.ui.SourceTreeCell;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Main extends Application {
-  private static final org.slf4j.Logger log = LoggerFactory.getLogger(Main.class.getName());
+  private static final Logger log = LoggerFactory.getLogger(Main.class.getName());
   private static Stage stage;
   private static double javaVersion;
 
   private BorderPane mainPane;
   private MenuBar menu;
-  private double initialWidth, initialHeight;
+  private double initialWidth = 1200, initialHeight = 700;
 
   private static FileExplorerPane previewExplorer;
   private static InspectionPane inspectionPane;
@@ -86,7 +81,7 @@ public class Main extends Application {
    * This method sets the application logo, loads fonts, styles and property
    * files. Furthermore, creates the frame structure and the menu. The frame
    * structure is a SplitPane, split in three sections - file explorer,
-   * classification schema, inspection - and a footer.
+   * classification scheme, inspection - and a footer.
    * </p>
    * 
    * @param primaryStage
@@ -95,7 +90,7 @@ public class Main extends Application {
   public void start(Stage primaryStage) {
     stage = primaryStage;
     stage.setMinWidth(1024);
-    stage.setMinHeight(512);
+    stage.setMinHeight(600);
 
     stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
       @Override
@@ -124,11 +119,12 @@ public class Main extends Application {
     // setup and show the window
     stage.setTitle("RODA-In");
     Scene scene = new Scene(mainPane, initialWidth, initialHeight);
-    stage.setMaximized(true);
 
     scene.getStylesheets().add(ClassLoader.getSystemResource("css/mainWindow.css").toExternalForm());
     scene.getStylesheets().add(ClassLoader.getSystemResource("css/shared.css").toExternalForm());
     stage.setScene(scene);
+
+    stage.setMaximized(true);
 
     stage.show();
   }
@@ -156,7 +152,7 @@ public class Main extends Application {
     split.getItems().addAll(previewExplorer, schemaPane, inspectionPane);
 
     // Create Footer
-    HBox footer = new Footer();
+    Footer footer = new Footer();
 
     mainPane = new BorderPane();
     mainPane.getStyleClass().add("border-pane");
@@ -176,22 +172,16 @@ public class Main extends Application {
     openFolder.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent t) {
-        DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle("Please choose a folder");
-        File selectedDirectory = chooser.showDialog(stage);
-        if (selectedDirectory == null)
-          return;
-        Path path = selectedDirectory.toPath();
-        previewExplorer.setFileExplorerRoot(path);
+        previewExplorer.chooseNewRoot();
       }
     });
 
-    final MenuItem updateCS = new MenuItem("Update classification schema");
-    updateCS.setAccelerator(KeyCombination.keyCombination("Ctrl+U"));
+    final MenuItem updateCS = new MenuItem("Load classification scheme");
+    updateCS.setAccelerator(KeyCombination.keyCombination("Ctrl+L"));
     updateCS.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent t) {
-        // TODO
+        schemaPane.loadClassificationSchema();
       }
     });
 
@@ -200,24 +190,26 @@ public class Main extends Application {
     createSIPs.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent t) {
-        DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle("Please choose a folder");
-        File selectedDirectory = chooser.showDialog(stage);
-        if (selectedDirectory == null)
-          return;
-        Path path = selectedDirectory.toPath();
-
         // force the edits to the metadata text area to be saved
         inspectionPane.saveMetadata();
 
-        CreateSips creator = new CreateSips(path, SipTypes.BAGIT);
-        creator.start();
         CreationModalStage creationStage = new CreationModalStage(stage);
-        CreationModalPane pane = new CreationModalPane(creator, creationStage);
+        CreationModalPreparation pane = new CreationModalPreparation(creationStage);
         creationStage.setRoot(pane);
       }
     });
-    menuFile.getItems().addAll(openFolder, updateCS, createSIPs);
+
+    final MenuItem quit = new MenuItem("Quit");
+    quit.setAccelerator(KeyCombination.keyCombination("Ctrl+Q"));
+    quit.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent t) {
+        VisitorStack.end();
+        Platform.exit();
+      }
+    });
+
+    menuFile.getItems().addAll(openFolder, updateCS, createSIPs, quit);
 
     // Edit
     final MenuItem ignoreItems = new MenuItem("Ignore item(s)");
@@ -278,7 +270,6 @@ public class Main extends Application {
     try {
       Properties style = new Properties();
       style.load(ClassLoader.getSystemResource("properties/styles.properties").openStream());
-      SchemaPane.setStyleProperties(style);
       SourceTreeCell.setStyleProperties(style);
 
       Properties config = new Properties();
@@ -301,9 +292,5 @@ public class Main extends Application {
 
   public static Map<SipPreview, String> getSipPreviews() {
     return schemaPane.getSipPreviews();
-  }
-
-  public static void inspectionNotifyChanged() {
-    inspectionPane.notifyChange();
   }
 }

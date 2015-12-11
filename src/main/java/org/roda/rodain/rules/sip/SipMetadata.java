@@ -18,15 +18,15 @@ public class SipMetadata {
   private static final org.slf4j.Logger log = LoggerFactory.getLogger(SipMetadata.class.getName());
   private static Properties properties;
   private MetadataTypes type;
+  private TemplateType templateType;
   private boolean loaded = false, modified = false;
   private String content;
   private Path path;
-  private String resource;
 
-  public SipMetadata(MetadataTypes type, Path path, String resource) {
+  public SipMetadata(MetadataTypes type, Path path, TemplateType templateType) {
     this.type = type;
     this.path = path;
-    this.resource = resource;
+    this.templateType = templateType;
   }
 
   /**
@@ -39,9 +39,9 @@ public class SipMetadata {
   private void loadMetadata() {
     try {
       if (type == MetadataTypes.TEMPLATE) {
-        if (resource != null) {
+        if (templateType != null) {
           String fileName;
-          if ("EAD-C".equals(resource)) {
+          if (templateType == TemplateType.EAD) {
             fileName = properties.getProperty("metadata.template.ead");
           } else
             fileName = properties.getProperty("metadata.template.dcmes");
@@ -73,6 +73,13 @@ public class SipMetadata {
       loadMetadata();
     }
     return content;
+  }
+
+  /**
+   * @return The type of the metadata.
+   */
+  public TemplateType getTemplateType() {
+    return templateType;
   }
 
   /**

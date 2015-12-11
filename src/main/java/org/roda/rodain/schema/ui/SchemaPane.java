@@ -1,6 +1,11 @@
 package org.roda.rodain.schema.ui;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -14,6 +19,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.TextAlignment;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
@@ -26,39 +33,46 @@ import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 28-09-2015.
  */
 public class SchemaPane extends BorderPane {
-  private static Properties style;
+  private static final org.slf4j.Logger log = LoggerFactory.getLogger(SchemaPane.class.getName());
   private TreeView<String> treeView;
+  private VBox treeBox;
+  private TreeItem<String> rootNode;
   private HBox refresh;
   private HBox bottom;
   private Stage primaryStage;
 
   private ArrayList<SchemaNode> schemaNodes;
 
+  // center help
+  private VBox centerHelp;
+
   public SchemaPane(Stage stage) {
     super();
     primaryStage = stage;
     schemaNodes = new ArrayList<>();
 
+    createCenterHelp();
     createTreeView();
     createTop();
     createBottom();
 
-    this.setTop(refresh);
-    this.setCenter(treeView);
-    this.setBottom(bottom);
+    this.setCenter(centerHelp);
 
     this.prefWidthProperty().bind(stage.widthProperty().multiply(0.33));
     this.minWidthProperty().bind(stage.widthProperty().multiply(0.2));
   }
 
   private void createTop() {
-    Label title = new Label("Classification Schema");
+    Label title = new Label("Classification Scheme");
     title.getStyleClass().add("title");
 
     refresh = new HBox();
@@ -67,24 +81,55 @@ public class SchemaPane extends BorderPane {
     refresh.getChildren().add(title);
   }
 
+  private void createCenterHelp() {
+    centerHelp = new VBox();
+    centerHelp.setPadding(new Insets(0, 10, 0, 10));
+    VBox.setVgrow(centerHelp, Priority.ALWAYS);
+    centerHelp.setAlignment(Pos.CENTER);
+
+    VBox box = new VBox(40);
+    box.setPadding(new Insets(10, 10, 10, 10));
+    box.setMaxWidth(355);
+    box.setMaxHeight(200);
+    box.setMinHeight(200);
+
+    HBox titleBox = new HBox();
+    titleBox.setAlignment(Pos.CENTER);
+    Label title = new Label("Load your\nclassification scheme");
+    title.getStyleClass().add("helpTitle");
+    title.setTextAlignment(TextAlignment.CENTER);
+    titleBox.getChildren().add(title);
+
+    HBox loadBox = new HBox();
+    loadBox.setAlignment(Pos.CENTER);
+    Button load = new Button("Load");
+    load.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent event) {
+        loadClassificationSchema();
+      }
+    });
+    load.setMinHeight(65);
+    load.setMinWidth(130);
+    load.setMaxWidth(130);
+    load.getStyleClass().add("helpButton");
+    loadBox.getChildren().add(load);
+
+    box.getChildren().addAll(titleBox, loadBox);
+    centerHelp.getChildren().add(box);
+  }
+
   private void createTreeView() {
     // create tree pane
-    VBox treeBox = new VBox();
-    treeBox.setPadding(new Insets(10, 10, 10, 10));
+    treeBox = new VBox();
+    VBox.setVgrow(treeBox, Priority.ALWAYS);
 
-    TreeItem<String> rootNode = new TreeItem<>();
+    rootNode = new TreeItem<>();
     rootNode.setExpanded(true);
-
-    // get the classification schema and add all its nodes to the tree
-    ClassificationSchema cs = ClassificationSchema.instantiate();
-    for (DescriptionObject obj : cs.getDos()) {
-      SchemaNode sn = new SchemaNode(obj);
-      rootNode.getChildren().add(sn);
-      schemaNodes.add(sn);
-    }
 
     // create the tree view
     treeView = new TreeView<>(rootNode);
+    VBox.setVgrow(treeView, Priority.ALWAYS);
     treeView.setShowRoot(false);
     treeView.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
       @Override
@@ -95,8 +140,10 @@ public class SchemaPane extends BorderPane {
       }
     });
 
+    Separator separatorTop = new Separator();
+    Separator separatorBottom = new Separator();
     // add everything to the tree pane
-    treeBox.getChildren().add(treeView);
+    treeBox.getChildren().addAll(separatorTop, treeView, separatorBottom);
     treeView.setOnMouseClicked(new SchemaClickedEventHandler(this));
   }
 
@@ -110,6 +157,93 @@ public class SchemaPane extends BorderPane {
       }
     }
     return result;
+  }
+
+  public void loadClassificationSchema() {
+    FileChooser chooser = new FileChooser();
+    chooser.setTitle("Please choose a file");
+    File selectedFile = chooser.showOpenDialog(primaryStage);
+    if (selectedFile == null)
+      return;
+    String inputFile = selectedFile.toPath().toString();
+    try {
+      ClassificationSchema schema = loadClassificationSchemaFile(inputFile);
+      updateClassificationSchema(schema);
+    } catch (IOException e) {
+      log.error("Error reading classification scheme specification", e);
+    }
+  }
+
+  private ClassificationSchema loadClassificationSchemaFile(String fileName) throws IOException {
+    InputStream input = new FileInputStream(fileName);
+
+    // create ObjectMapper instance
+    ObjectMapper objectMapper = new ObjectMapper();
+
+    // convert json string to object
+    return objectMapper.readValue(input, ClassificationSchema.class);
+  }
+
+  private void updateClassificationSchema(ClassificationSchema cs) {
+    setTop(refresh);
+    setCenter(treeBox);
+    setBottom(bottom);
+    rootNode.getChildren().clear();
+    List<DescriptionObject> dos = cs.getDos();
+    Map<String, SchemaNode> nodes = new HashMap<>();
+    Set<SchemaNode> roots = new HashSet<>();
+
+    for (DescriptionObject descObj : dos) {
+      // Check if the node is a root node
+      if (descObj.getParentId() == null) {
+        // Create a new node if it hasn't been created
+        if (!nodes.containsKey(descObj.getId())) {
+          SchemaNode root = new SchemaNode(descObj);
+          nodes.put(descObj.getId(), root);
+        }
+        roots.add(nodes.get(descObj.getId()));
+      } else {
+        // Get a list with the items where the id equals the node's parent's id
+        List<DescriptionObject> parents = dos.stream().filter(p -> p.getId().equals(descObj.getParentId()))
+          .collect(Collectors.toList());
+        // If the input file is well formed, there should be one item in the
+        // list, no more and no less
+        if (parents.size() != 1) {
+          String format = "The node \"%s\" has %d parents";
+          String message = String.format(format, descObj.getTitle(), parents.size());
+          log.error("Error creating the scheme tree", new MalformedSchemaException(message));
+          continue;
+        }
+        DescriptionObject parent = parents.get(0);
+        SchemaNode parentNode;
+        // If the parent node hasn't been processed yet, add it to the nodes map
+        if (nodes.containsKey(parent.getId())) {
+          parentNode = nodes.get(parent.getId());
+        } else {
+          parentNode = new SchemaNode(parent);
+          nodes.put(parent.getId(), parentNode);
+        }
+        SchemaNode node;
+        // If the node hasn't been added yet, create it and add it to the nodes
+        // map
+        if (nodes.containsKey(descObj.getId())) {
+          node = nodes.get(descObj.getId());
+        } else {
+          node = new SchemaNode(descObj);
+        }
+        parentNode.getChildren().add(node);
+        parentNode.addChildrenNode(node);
+      }
+    }
+
+    // Add all the root nodes as children of the hidden rootNode
+    for (SchemaNode sn : roots) {
+      rootNode.getChildren().add(sn);
+      schemaNodes.add(sn);
+    }
+    ArrayList<TreeItem<String>> aux = new ArrayList<>(rootNode.getChildren());
+    Collections.sort(aux, new SchemaComparator());
+    rootNode.getChildren().setAll(aux);
   }
 
   private void createBottom() {
@@ -136,7 +270,7 @@ public class SchemaPane extends BorderPane {
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
-    bottom.getChildren().addAll(associate, space, addLevel);
+    bottom.getChildren().addAll(associate, space);
   }
 
   private void startAssociation(SchemaNode descObj) {
@@ -265,13 +399,5 @@ public class SchemaPane extends BorderPane {
       result.putAll(sn.getSipPreviews());
     }
     return result;
-  }
-
-  /**
-   * @param style
-   *          Sets the Properties object to this class
-   */
-  public static void setStyleProperties(Properties style) {
-    SchemaPane.style = style;
   }
 }

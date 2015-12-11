@@ -22,16 +22,17 @@
 			</xsl:variable>
 			<xsl:variable name="attributeName">
 				<xsl:for-each select="ancestor-or-self::*">
-					<xsl:value-of select="concat(local-name(),'.')" />
+					<xsl:value-of select="concat(local-name(),'.')"/>
 				</xsl:for-each>
-				<xsl:value-of select="local-name()" />
+				<xsl:value-of select="concat('@',local-name())"/>
 			</xsl:variable>
 			<xsl:if
 				test="not(normalize-space($attributeValue)='') and not(normalize-space($attributeName)='')">
 				<field>
 					<xsl:attribute name="name">
-                        <xsl:value-of select="$prefix" />.<xsl:value-of
-						select="$attributeName" />_txt</xsl:attribute>
+						<xsl:value-of select="$prefix"/><xsl:value-of
+							select="$attributeName"/>
+					</xsl:attribute>
 					<xsl:value-of select="$attributeValue" />
 				</field>
 				<xsl:text>&#xA;</xsl:text>
@@ -65,8 +66,9 @@
 			test="not(normalize-space($path)='') and not(normalize-space($value)='')">
 			<field>
 				<xsl:attribute name="name">
-                    <xsl:value-of select="$prefix" />.<xsl:value-of
-					select="$path" />_txt</xsl:attribute>
+					<xsl:value-of select="$prefix"/><xsl:value-of
+						select="$path"/>
+				</xsl:attribute>
 				<xsl:value-of select="$value" />
 			</field>
 			<xsl:text>&#xA;</xsl:text>

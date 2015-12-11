@@ -22,7 +22,7 @@ import org.roda.rodain.creation.CreateSips;
  * @author Andre Pereira apereira@keep.pt
  * @since 19/11/2015.
  */
-public class CreationModalPane extends BorderPane {
+public class CreationModalProcessing extends BorderPane {
   private CreateSips creator;
   private CreationModalStage stage;
 
@@ -37,7 +37,7 @@ public class CreationModalPane extends BorderPane {
 
   private HBox finishedBox;
 
-  public CreationModalPane(CreateSips creator, CreationModalStage stage) {
+  public CreationModalProcessing(CreateSips creator, CreationModalStage stage) {
     this.creator = creator;
     this.stage = stage;
 
@@ -121,16 +121,16 @@ public class CreationModalPane extends BorderPane {
     finishedBox = new HBox();
     finishedBox.setPadding(new Insets(0, 10, 10, 10));
     finishedBox.setAlignment(Pos.CENTER_RIGHT);
-    Button finish = new Button("Finish");
+    Button close = new Button("Close");
 
-    finish.setOnAction(new EventHandler<ActionEvent>() {
+    close.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent actionEvent) {
         stage.close();
       }
     });
 
-    finishedBox.getChildren().add(finish);
+    finishedBox.getChildren().add(close);
   }
 
   private void createUpdateTask() {

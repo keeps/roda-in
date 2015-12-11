@@ -32,18 +32,18 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipPre
   private String id;
   private Set<ContentFilter> filters;
   private MetadataTypes metaType;
-  private String metadataResource;
+  private TemplateType templateType;
   private Path metadataPath;
 
   public SipPerFileVisitor(String id, Set<ContentFilter> filters, MetadataTypes metaType, Path metadataPath,
-    String metadataResource) {
+    TemplateType templateType) {
     sips = new ArrayList<>();
     sipsMap = new HashMap<>();
     this.id = id;
     this.filters = filters;
     this.metaType = metaType;
     this.metadataPath = metadataPath;
-    this.metadataResource = metadataResource;
+    this.templateType = templateType;
   }
 
   /**
@@ -147,7 +147,7 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipPre
     Set<TreeNode> files = new HashSet<>();
     files.add(node);
 
-    SipPreview sipPreview = new SipPreview(path.getFileName().toString(), files, metaType, metaPath, metadataResource);
+    SipPreview sipPreview = new SipPreview(path.getFileName().toString(), files, metaType, metaPath, templateType);
     node.addObserver(sipPreview);
 
     sips.add(sipPreview);

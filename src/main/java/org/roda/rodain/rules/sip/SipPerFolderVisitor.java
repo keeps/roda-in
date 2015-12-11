@@ -32,15 +32,15 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipP
   private Set<ContentFilter> filters;
   private MetadataTypes metaType;
   private Path metadataPath;
-  private String metadataResource;
+  private TemplateType templateType;
 
   public SipPerFolderVisitor(String id, int maxLevel, Set<ContentFilter> filters, MetadataTypes metaType,
-    Path metadataPath, String metadataResource) {
+    Path metadataPath, TemplateType templateType) {
     this.maxLevel = maxLevel;
     this.filters = filters;
     this.metaType = metaType;
     this.metadataPath = metadataPath;
-    this.metadataResource = metadataResource;
+    this.templateType = templateType;
     sips = new ArrayList<>();
     sipsMap = new HashMap<>();
     nodes = new ArrayDeque<>();
@@ -150,7 +150,7 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipP
       files.add(node);
 
       SipPreview sipPreview = new SipPreview(path.getFileName().toString(), files, metaType, metaPath,
-        metadataResource);
+ templateType);
       node.addObserver(sipPreview);
 
       sips.add(sipPreview);

@@ -1,10 +1,9 @@
 package org.roda.rodain.rules;
 
-import java.nio.file.Path;
-import java.util.*;
-
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
 import javafx.scene.image.Image;
-
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.filters.ContentFilter;
 import org.roda.rodain.rules.sip.*;
@@ -15,6 +14,9 @@ import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.TreeVisitor;
 
+import java.nio.file.Path;
+import java.util.*;
+
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 29-09-2015.
@@ -24,7 +26,7 @@ public class Rule extends Observable implements Observer, Comparable {
   private static int ruleCount = 0;
 
   private Set<SourceTreeItem> source;
-  private String metadataContent;
+  private TemplateType templateType;
   private Path metadataPath;
   private RuleTypes assocType;
   private MetadataTypes metaType;
@@ -51,19 +53,18 @@ public class Rule extends Observable implements Observer, Comparable {
    *          type only.
    * @param metadataPath
    *          The path to the metadata file(s)
-   * @param metadataContent
-   *          Since the metadata won't always be in a file, we can also input
-   *          the content string.
+   * @param template
+   *          The type of the chosen template
    * @param metaType
    *          The type of metadata to be applied to the SIPs.
    */
-  public Rule(Set<SourceTreeItem> source, RuleTypes assocType, int level, Path metadataPath, String metadataContent,
+  public Rule(Set<SourceTreeItem> source, RuleTypes assocType, int level, Path metadataPath, TemplateType template,
     MetadataTypes metaType) {
     ruleCount++;
     this.source = source;
     this.assocType = assocType;
     this.level = level;
-    this.metadataContent = metadataContent;
+    this.templateType = template;
     this.metadataPath = metadataPath;
     this.metaType = metaType;
     filters = new HashSet<>();
@@ -173,7 +174,7 @@ public class Rule extends Observable implements Observer, Comparable {
     switch (assocType) {
       case SIP_PER_FOLDER:
         SipPerFolderVisitor visitorFolder = new SipPerFolderVisitor(id.toString(), level, filters, metaType,
-          metadataPath, metadataContent);
+          metadataPath, templateType);
         visitorFolder.addObserver(this);
         visitor = visitorFolder;
         break;
@@ -184,19 +185,19 @@ public class Rule extends Observable implements Observer, Comparable {
           selection.add(sti.getPath());
         }
         SipPerSelection visitorSelection = new SipPerSelection(id.toString(), selection, filters, metaType,
-          metadataPath, metadataContent);
+          metadataPath, templateType);
         visitorSelection.addObserver(this);
         visitor = visitorSelection;
         break;
       case SIP_PER_FILE:
         SipPerFileVisitor visitorFile = new SipPerFileVisitor(id.toString(), filters, metaType, metadataPath,
-          metadataContent);
+          templateType);
         visitorFile.addObserver(this);
         visitor = visitorFile;
         break;
       default:
       case SINGLE_SIP:
-        SipSingle visitorSingle = new SipSingle(id.toString(), filters, metaType, metadataPath, metadataContent);
+        SipSingle visitorSingle = new SipSingle(id.toString(), filters, metaType, metadataPath, templateType);
         visitorSingle.addObserver(this);
         visitor = visitorSingle;
         break;
@@ -256,19 +257,38 @@ public class Rule extends Observable implements Observer, Comparable {
    * SipPreviewNodes.
    */
   public void remove() {
-    for (SipPreview sip : sips.values()) {
-      sip.setRemoved();
-    }
+    Task<Void> task = new Task<Void>() {
+      @Override
+      protected Void call() throws Exception {
+        for (SipPreview sip : sips.values()) {
+          sip.setRemoved();
+        }
 
-    sipNodes.clear();
-    for (SipPreview sip : sips.values()) {
-      for (TreeNode tn : sip.getFiles()) {
-        PathCollection.addPaths(tn.getFullTreePaths(), SourceTreeItemState.NORMAL);
+        int removedSips = 0;
+        sipNodes.clear();
+        for (SipPreview sip : sips.values()) {
+          for (TreeNode tn : sip.getFiles()) {
+            PathCollection.addPaths(tn.getFullTreePaths(), SourceTreeItemState.NORMAL);
+          }
+          removedSips++;
+          setChanged();
+          notifyObservers(removedSips);
+        }
+        sips.clear();
+        return null;
       }
-    }
-    sips.clear();
-    setChanged();
-    notifyObservers("Removed SIP");
+    };
+
+    // After everything is loaded, we add all the items to the TreeView at once.
+    task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+      @Override
+      public void handle(WorkerStateEvent workerStateEvent) {
+        setChanged();
+        notifyObservers("Removed SIP");
+      }
+    });
+
+    new Thread(task).start();
   }
 
   /**
