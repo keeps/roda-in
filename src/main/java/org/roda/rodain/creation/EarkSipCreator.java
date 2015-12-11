@@ -47,6 +47,7 @@ public class EarkSipCreator extends SimpleSipCreator {
     String metadataName = "metadata.xml";
     try {
       SIP earkSip = new EARKSIP(sip.getId(), EARKEnums.ContentType.mixed, "RODA-In");
+      earkSip.setParent(schemaId);
       SIPRepresentation rep = new SIPRepresentation("rep1");
 
       // for now, we need to create a temporary folder to create the metadata
