@@ -49,9 +49,7 @@ public class SipMetadata {
             fileName = properties.getProperty("metadata.template.dcmes");
 
           InputStream contentStream = ClassLoader.getSystemResource(fileName).openStream();
-          content = Utils.convertStreamToString(contentStream);
-          //TODO configurable tags maybe...
-          
+          content = Utils.convertStreamToString(contentStream);          
           contentStream.close();
           loaded = true;
         }

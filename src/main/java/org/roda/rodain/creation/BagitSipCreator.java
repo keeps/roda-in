@@ -71,8 +71,6 @@ public class BagitSipCreator extends SimpleSipCreator {
 
       currentAction = actionCopyingMetadata;
       String content = sip.getMetadataContent();
-      content = Utils.replaceTag(content,"#title#",sip.getName());
-      content = Utils.replaceTag(content,"#date#",new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
       
       Map<String, String> metadata = getMetadata(content);
       for (String key : metadata.keySet()) {

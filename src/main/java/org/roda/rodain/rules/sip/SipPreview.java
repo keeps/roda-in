@@ -1,12 +1,14 @@
 package org.roda.rodain.rules.sip;
 
 import java.nio.file.Path;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
+import org.roda.rodain.utils.Utils;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -58,7 +60,13 @@ public class SipPreview extends Observable implements Observer {
    * @see SipMetadata#getMetadataContent()
    */
   public String getMetadataContent() {
-    return metadata.getMetadataContent();
+	  String content = metadata.getMetadataContent();
+	  if(content!=null){
+		  //TODO configurable tags...
+		  content = Utils.replaceTag(content,"#title#",getName());
+	      content = Utils.replaceTag(content,"#date#",new SimpleDateFormat("yyyy-MM-dd").format(new Date()));  
+	  }
+    return content;
   }
 
   /**

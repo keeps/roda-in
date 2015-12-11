@@ -73,8 +73,6 @@ public class EarkSipCreator extends SimpleSipCreator {
       }
       
       String content = sip.getMetadataContent();
-      content = Utils.replaceTag(content,"#title#",sip.getName());
-      content = Utils.replaceTag(content,"#date#",new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
       
       FileUtils.writeStringToFile(new File(home + metadataName), content);
       SIPDescriptiveMetadata metadata = new SIPDescriptiveMetadata(Paths.get(home + metadataName), null, metadataType);
