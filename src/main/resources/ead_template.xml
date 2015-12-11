@@ -20,8 +20,8 @@
     <ead:archdesc level=" ">
         <ead:did>
             <ead:unitid repositorycode=" "> </ead:unitid>
-            <ead:unittitle> </ead:unittitle>
-            <ead:unitdate normal=" "> </ead:unitdate>
+            <ead:unittitle>#title#</ead:unittitle>
+            <ead:unitdate normal=" ">#date#</ead:unitdate>
         </ead:did>
     </ead:archdesc>
 </ead:ead>

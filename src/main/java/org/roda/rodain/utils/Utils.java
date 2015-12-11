@@ -83,4 +83,8 @@ public class Utils {
     java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
     return s.hasNext() ? s.next() : "";
   }
+
+  public static String replaceTag(String content, String tag, String replacement) {
+    return content.replaceAll(tag, replacement);
+  }
 }

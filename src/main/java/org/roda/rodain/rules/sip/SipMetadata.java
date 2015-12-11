@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Properties;
 
 import org.roda.rodain.rules.MetadataTypes;
@@ -48,6 +50,9 @@ public class SipMetadata {
 
           InputStream contentStream = ClassLoader.getSystemResource(fileName).openStream();
           content = Utils.convertStreamToString(contentStream);
+          //TODO configurable tags maybe...
+          content = Utils.replaceTag(content,"#title#",fileName);
+          content = Utils.replaceTag(content,"#date#",new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
           contentStream.close();
           loaded = true;
         }
