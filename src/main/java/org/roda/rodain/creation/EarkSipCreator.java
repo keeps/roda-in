@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
@@ -12,6 +14,7 @@ import org.apache.commons.io.FileUtils;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.rules.sip.TemplateType;
+import org.roda.rodain.utils.Utils;
 import org.roda_project.commons_ip.model.SIP;
 import org.roda_project.commons_ip.model.SIPDescriptiveMetadata;
 import org.roda_project.commons_ip.model.SIPRepresentation;
@@ -68,7 +71,12 @@ public class EarkSipCreator extends SimpleSipCreator {
           metadataType = METSEnums.MetadataType.EAD;
         }
       }
-      FileUtils.writeStringToFile(new File(home + metadataName), sip.getMetadataContent());
+      
+      String content = sip.getMetadataContent();
+      content = Utils.replaceTag(content,"#title#",sip.getName());
+      content = Utils.replaceTag(content,"#date#",new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+      
+      FileUtils.writeStringToFile(new File(home + metadataName), content);
       SIPDescriptiveMetadata metadata = new SIPDescriptiveMetadata(Paths.get(home + metadataName), null, metadataType);
       earkSip.addDescriptiveMetadata(metadata);
 

@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
+import org.roda.rodain.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +70,11 @@ public class BagitSipCreator extends SimpleSipCreator {
       b.getBagInfoTxt().put("level", "item");
 
       currentAction = actionCopyingMetadata;
-      Map<String, String> metadata = getMetadata(sip.getMetadataContent());
+      String content = sip.getMetadataContent();
+      content = Utils.replaceTag(content,"#title#",sip.getName());
+      content = Utils.replaceTag(content,"#date#",new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+      
+      Map<String, String> metadata = getMetadata(content);
       for (String key : metadata.keySet()) {
         if (key.endsWith("title")) {
           b.getBagInfoTxt().put("title", metadata.get(key));
