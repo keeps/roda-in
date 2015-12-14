@@ -54,6 +54,10 @@ public class InspectionPane extends BorderPane {
   private SipPreview currentSIP;
   private SchemaNode currentSchema;
 
+  /**
+   * Creates a new inspection pane.
+   * @param stage The primary stage of the application
+   */
   public InspectionPane(Stage stage) {
     createCenterHelp();
     createTop();
@@ -113,6 +117,9 @@ public class InspectionPane extends BorderPane {
     });
   }
 
+  /**
+   * Saves the metadata from the text area in the SIP.
+   */
   public void saveMetadata() {
     if (currentSIP != null) {
       String oldMetadata = currentSIP.getMetadataContent();

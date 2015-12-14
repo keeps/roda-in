@@ -36,6 +36,11 @@ public class RuleCell extends HBox implements Observer {
   private String titleFormat = "Created %d item";
   private Label lCreated;
 
+  /**
+   * Creates a new RuleCell, associating it to a Rule.
+   * @param node The SchemaNode being inspected
+   * @param rule The rule to be associated to the cell
+   */
   public RuleCell(SchemaNode node, Rule rule) {
     this.rule = rule;
     this.schemaNode = node;
@@ -161,6 +166,11 @@ public class RuleCell extends HBox implements Observer {
     properties = prop;
   }
 
+  /**
+   * Updates the created SIPs count label
+   * @param o The Observable object. Should be a Rule.
+   * @param arg The arguments of the update.
+   */
   @Override
   public void update(Observable o, Object arg) {
     if (o instanceof Rule) {

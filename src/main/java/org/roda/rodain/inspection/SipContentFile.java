@@ -15,6 +15,11 @@ public class SipContentFile extends TreeItem<Object>implements InspectionTreeIte
   private Path fullPath;
   private TreeItem parent;
 
+  /**
+   * Creates a new TreeItem, representing a file.
+   * @param file The Path that will be associated to the item.
+   * @param parent The item's parent.
+   */
   public SipContentFile(Path file, TreeItem parent) {
     super(file.toString());
     this.fullPath = file;

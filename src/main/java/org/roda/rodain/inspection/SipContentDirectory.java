@@ -27,6 +27,11 @@ public class SipContentDirectory extends TreeItem<Object>implements InspectionTr
   private TreeNode treeNode;
   private TreeItem parent;
 
+  /**
+   * Creates a new TreeItem, representing a directory.
+   * @param treeNode The TreeNode that will be associated to the item.
+   * @param parent The item's parent.
+   */
   public SipContentDirectory(TreeNode treeNode, TreeItem parent) {
     super(treeNode.getPath());
     this.treeNode = treeNode;
