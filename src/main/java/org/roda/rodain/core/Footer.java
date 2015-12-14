@@ -23,6 +23,9 @@ import java.util.TimerTask;
 public class Footer extends VBox {
   private static Label status;
 
+  /**
+   * Creates a new Footer object
+   */
   public Footer() {
     super(5);
     getStyleClass().add("footer");

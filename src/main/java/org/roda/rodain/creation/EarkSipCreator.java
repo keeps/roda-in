@@ -31,10 +31,20 @@ import org.slf4j.LoggerFactory;
  */
 public class EarkSipCreator extends SimpleSipCreator {
   private static final Logger log = LoggerFactory.getLogger(EarkSipCreator.class.getName());
+
+  /**
+   * Creates a new EARK SIP exporter.
+   *
+   * @param outputPath The path to the output folder of the SIP exportation
+   * @param previews The map with the SIPs that will be exported
+   */
   public EarkSipCreator(Path outputPath, Map<SipPreview, String> previews) {
     super(outputPath, previews);
   }
 
+  /**
+   * Attempts to create an EARK SIP of each SipPreview
+   */
   @Override
   public void run() {
     for (SipPreview preview : previews.keySet()) {

@@ -32,6 +32,11 @@ public class PathCollection {
   private PathCollection() {
   }
 
+  /**
+   * If the path isn't in the collection, adds it and sets its state as NORMAL.
+   *
+   * @param path The path to be added to the collection
+   */
   public static void simpleAddPath(String path) {
     if (!states.containsKey(path)) {
       states.put(path, SourceTreeItemState.NORMAL);

@@ -28,6 +28,15 @@ public class CreationModalPreparation extends BorderPane {
   private Path outputFolder;
   private ComboBox<String> sipTypes;
 
+  /**
+   * Creates a modal to prepare for the SIP exportation.
+   *
+   * <p>
+   *   This class creates a pane with a field to choose what the output directory for the SIP exportation should be
+   *   and the format of the SIPs.
+   * </p>
+   * @param stage The stage of the pane
+   */
   public CreationModalPreparation(CreationModalStage stage) {
     this.stage = stage;
 

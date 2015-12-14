@@ -26,10 +26,19 @@ public class BagitSipCreator extends SimpleSipCreator {
   private static final Logger log = LoggerFactory.getLogger(BagitSipCreator.class.getName());
   private static final String DATAFOLDER = "data";
 
+  /**
+   * Creates a new BagIt exporter.
+   *
+   * @param outputPath The path to the output folder of the SIP exportation
+   * @param previews The map with the SIPs that will be exported
+   */
   public BagitSipCreator(Path outputPath, Map<SipPreview, String> previews) {
     super(outputPath, previews);
   }
 
+  /**
+   * Attempts to create a BagIt SIP of each SipPreview
+   */
   @Override
   public void run() {
     for (SipPreview preview : previews.keySet()) {

@@ -51,6 +51,15 @@ public class SimpleSipCreator extends Thread {
 
   protected Set<SipPreview> unsuccessful;
 
+  /**
+   * Creates a simple SIP exporter.
+   *
+   * <p>
+   *   This object doesn't export any SIPs, it must be extended and the run() method overridden.
+   * </p>
+   * @param outputPath The path to the output folder of the SIP exportation
+   * @param previews The map with the SIPs that will be exported
+   */
   public SimpleSipCreator(Path outputPath, Map<SipPreview, String> previews) {
     this.outputPath = outputPath;
     this.previews = previews;
@@ -163,6 +172,9 @@ public class SimpleSipCreator extends Thread {
     canceled = true;
   }
 
+  /**
+   * This method must be overridden.
+   */
   @Override
   public void run() {
 

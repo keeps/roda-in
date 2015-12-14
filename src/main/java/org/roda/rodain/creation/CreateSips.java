@@ -17,11 +17,19 @@ public class CreateSips {
 
   private int sipsCount;
 
+  /**
+   * Creates a new object of the SIP exporter
+   * @param outputPath The path of the output folder of the SIP exportation
+   * @param type The format of the SIP output
+   */
   public CreateSips(Path outputPath, SipTypes type) {
     this.type = type;
     this.outputPath = outputPath;
   }
 
+  /**
+   * Starts the exportation process.
+   */
   public void start() {
     Map<SipPreview, String> sips = Main.getSipPreviews();
     sipsCount = sips.size();
