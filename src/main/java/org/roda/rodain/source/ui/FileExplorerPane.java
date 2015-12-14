@@ -48,9 +48,6 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
   private ComputeDirectorySize computeSize;
 
-  private static Set<String> oldIgnored;
-  private static Set<String> oldMapped;
-
   // Filter control
   private static boolean showFiles = true;
   private static boolean showIgnored = false;
@@ -187,14 +184,10 @@ public class FileExplorerPane extends BorderPane implements Observer {
     setFileExplorerRoot(path);
   }
 
-  private void setFileExplorerRoot(Path rootPath) {
+  public void setFileExplorerRoot(Path rootPath) {
     this.setTop(top);
     this.setCenter(fileExplorer);
     this.setBottom(bottom);
-    if (treeView.getRoot() != null) {
-      oldIgnored = ((SourceTreeDirectory) treeView.getRoot()).getIgnored();
-      oldMapped = ((SourceTreeDirectory) treeView.getRoot()).getMapped();
-    }
 
     SourceTreeDirectory rootNode = new SourceTreeDirectory(rootPath, new SourceDirectory(rootPath, isShowFiles()),
         null);
