@@ -15,6 +15,9 @@ public class ContentFilter {
   private HashSet<String> ignored;
   private HashSet<String> mapped;
 
+  /**
+   * Creates a new ContentFilter object
+   */
   public ContentFilter() {
     ignored = new HashSet<>();
     mapped = new HashSet<>();

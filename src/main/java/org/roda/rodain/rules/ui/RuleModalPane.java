@@ -69,6 +69,14 @@ public class RuleModalPane extends BorderPane {
 
   private int folderCount;
 
+
+  /**
+   * Creates a new RuleModalPane, used to create a new Rule.
+   *
+   * @param stage      The stage of the pane
+   * @param sourceSet  The set of selected SourceTreeItems
+   * @param schemaNode The destination SchemaNode, where the SIPs will be created
+   */
   public RuleModalPane(Stage stage, Set<SourceTreeItem> sourceSet, SchemaNode schemaNode) {
     super();
     schema = schemaNode;

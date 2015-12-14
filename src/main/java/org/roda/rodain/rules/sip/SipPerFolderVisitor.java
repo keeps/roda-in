@@ -34,6 +34,16 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipP
   private Path metadataPath;
   private TemplateType templateType;
 
+  /**
+   * Creates a new SipPreviewCreator where there's a new SIP created for each visited directory, until a max depth.
+   *
+   * @param id           The id of the SipPreviewCreator.
+   * @param maxLevel     The max depth of the SIP creation
+   * @param filters      The set of content filters
+   * @param metaType     The type of metadata to be applied to each SIP
+   * @param metadataPath The path of the metadata
+   * @param templateType The type of the metadata template
+   */
   public SipPerFolderVisitor(String id, int maxLevel, Set<ContentFilter> filters, MetadataTypes metaType,
     Path metadataPath, TemplateType templateType) {
     this.maxLevel = maxLevel;

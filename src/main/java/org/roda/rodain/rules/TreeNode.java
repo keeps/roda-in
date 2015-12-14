@@ -16,6 +16,11 @@ public class TreeNode extends Observable {
   private Path path;
   private Map<String, TreeNode> files;
 
+  /**
+   * Creates a new TreeNode object.
+   *
+   * @param path The path to be associated to the TreeNode.
+   */
   public TreeNode(Path path) {
     this.path = path;
     files = new HashMap<>();

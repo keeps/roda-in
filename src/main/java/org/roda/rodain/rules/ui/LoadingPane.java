@@ -24,6 +24,11 @@ public class LoadingPane extends BorderPane {
   private static Image loadingGif;
   private SchemaNode schema;
 
+  /**
+   * Creates a new LoadingPane object
+   *
+   * @param schemaNode The SchemaNode to be used to set the title of the pane
+   */
   public LoadingPane(SchemaNode schemaNode) {
     super();
     this.schema = schemaNode;

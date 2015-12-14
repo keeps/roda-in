@@ -22,6 +22,15 @@ public class SipPreview extends Observable implements Observer {
   private boolean contentModified = false;
   private boolean removed = false;
 
+  /**
+   * Creates a new SipPreview object.
+   *
+   * @param name         The name of the SIP
+   * @param files        The set of files to be added to the SIP's content
+   * @param metaType     The type of metadata to be applied to the SIP
+   * @param metadataPath The path of the metadata
+   * @param templateType The type of the metadata template
+   */
   public SipPreview(String name, Set<TreeNode> files, MetadataTypes metaType, Path metadataPath,
     TemplateType templateType) {
     this.name = name;
@@ -63,9 +72,9 @@ public class SipPreview extends Observable implements Observer {
 	  String content = metadata.getMetadataContent();
 	  if(content!=null){
 		  //TODO configurable tags...
-		  content = Utils.replaceTag(content,"#title#",getName());
-	      content = Utils.replaceTag(content,"#date#",new SimpleDateFormat("yyyy-MM-dd").format(new Date()));  
-	  }
+      content = Utils.replaceTag(content, "#title#", getName());
+      content = Utils.replaceTag(content, "#date#", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+    }
     return content;
   }
 

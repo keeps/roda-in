@@ -32,6 +32,15 @@ public class SipSingle extends Observable implements TreeVisitor, SipPreviewCrea
   private Path metadataPath;
   private TemplateType templateType;
 
+  /**
+   * Creates a new SipPreviewCreator where there's a new SIP created with all the visited paths.
+   *
+   * @param id           The id of the SipPreviewCreator.
+   * @param filters      The set of content filters
+   * @param metaType     The type of metadata to be applied to each SIP
+   * @param metadataPath The path of the metadata
+   * @param templateType The type of the metadata template
+   */
   public SipSingle(String id, Set<ContentFilter> filters, MetadataTypes metaType, Path metadataPath,
     TemplateType templateType) {
     this.filters = filters;

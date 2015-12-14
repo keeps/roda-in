@@ -40,6 +40,15 @@ public class RuleModalProcessing extends BorderPane {
   private TimerTask updater;
   private Timer timer;
 
+
+  /**
+   * Creates a new RuleModalProcessing object, that indicates the progress of the SipPreview creation.
+   *
+   * @param creator      The SipPreviewCreator object
+   * @param visitor      The TreeVisitor object
+   * @param visitorStack The VisitorStack, so the process can be cancelled
+   * @param fileWalker   The WalkFileTree object, to get the processed files and directories
+   */
   public RuleModalProcessing(SipPreviewCreator creator, TreeVisitor visitor, VisitorStack visitorStack, WalkFileTree fileWalker) {
     this.creator = creator;
     this.visitor = visitor;

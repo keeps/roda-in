@@ -25,6 +25,13 @@ public class SipMetadata {
   private String content;
   private Path path;
 
+  /**
+   * Creates a new SipMetadata object.
+   *
+   * @param type         The metadata type
+   * @param path         The path to the metadata file
+   * @param templateType The type of the metadata template
+   */
   public SipMetadata(MetadataTypes type, Path path, TemplateType templateType) {
     this.type = type;
     this.path = path;
@@ -95,6 +102,12 @@ public class SipMetadata {
     content = meta;
   }
 
+  /**
+   * Sets the Properties object of SipMetadata.
+   *
+   * @param prop
+   *          The new Properties object.
+   */
   public static void setProperties(Properties prop) {
     properties = prop;
   }

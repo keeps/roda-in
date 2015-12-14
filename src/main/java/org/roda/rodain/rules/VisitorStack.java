@@ -27,6 +27,9 @@ public class VisitorStack extends Observable {
   private HashMap<String, Future> futures;
   private String runningTask;
 
+  /**
+   * Creates a new VisitorStack object.
+   */
   public VisitorStack() {
     visitors = Executors.newSingleThreadExecutor();
     futures = new HashMap<>();
@@ -39,9 +42,7 @@ public class VisitorStack extends Observable {
    * Creates a new WalkFileTree with the set of paths and TreeVisitor received
    * as parameter. Wraps it in a Task and adds the Task to an ExecutorService.
    * </p>
-   * 
-   * @param items
-   *          The set of items associated in the Rule
+   *
    * @param paths
    *          The set of paths associated in the Rule
    * @param vis

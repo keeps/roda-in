@@ -35,6 +35,16 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipPre
   private TemplateType templateType;
   private Path metadataPath;
 
+
+  /**
+   * Creates a new SipPreviewCreator where there's a new SIP created for each visited file.
+   *
+   * @param id           The id of the SipPreviewCreator.
+   * @param filters      The set of content filters
+   * @param metaType     The type of metadata to be applied to each SIP
+   * @param metadataPath The path of the metadata
+   * @param templateType The type of the metadata template
+   */
   public SipPerFileVisitor(String id, Set<ContentFilter> filters, MetadataTypes metaType, Path metadataPath,
     TemplateType templateType) {
     sips = new ArrayList<>();

@@ -32,6 +32,16 @@ public class SipPerSelection extends Observable implements TreeVisitor, SipPrevi
   private Path metadataPath;
   private TemplateType templateType;
 
+  /**
+   * Creates a new SipPreviewCreator where there's a new SIP created for each selected path.
+   *
+   * @param id            The id of the SipPreviewCreator.
+   * @param selectedPaths The set of selected paths for the SIPs creation
+   * @param filters       The set of content filters
+   * @param metaType      The type of metadata to be applied to each SIP
+   * @param metadataPath  The path of the metadata
+   * @param templateType  The type of the metadata template
+   */
   public SipPerSelection(String id, Set<String> selectedPaths, Set<ContentFilter> filters, MetadataTypes metaType,
     Path metadataPath, TemplateType templateType) {
     this.selectedPaths = selectedPaths;

@@ -159,6 +159,12 @@ public class RuleModalController {
     }
   }
 
+  /**
+   * Creates a new RuleModalRemoving pane and sets the stage's root scene as that pane.
+   *
+   * @param r The rule to be removed
+   * @see RuleModalRemoving
+   */
   public static void removeRule(Rule r) {
     RuleModalRemoving removing = new RuleModalRemoving(r);
     r.addObserver(removing);
