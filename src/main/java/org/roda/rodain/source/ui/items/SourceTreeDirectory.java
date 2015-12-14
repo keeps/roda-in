@@ -1,23 +1,22 @@
 package org.roda.rodain.source.ui.items;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
-
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.source.representation.SourceDirectory;
 import org.roda.rodain.source.representation.SourceItem;
 import org.roda.rodain.source.ui.ExpandedEventHandler;
 import org.roda.rodain.source.ui.FileExplorerPane;
+
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -26,7 +25,7 @@ import org.roda.rodain.source.ui.FileExplorerPane;
 public class SourceTreeDirectory extends SourceTreeItem {
   public static final Image folderCollapseImage = new Image(ClassLoader.getSystemResourceAsStream("icons/folder.png"));
   public static final Image folderExpandImage = new Image(
-    ClassLoader.getSystemResourceAsStream("icons/folder-open.png"));
+      ClassLoader.getSystemResourceAsStream("icons/folder-open.png"));
   public static final Comparator<? super TreeItem> comparator = createComparator();
 
   public boolean expanded = false;
@@ -83,7 +82,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
   /**
    * Creates a task to hide all this item's mapped items. The task is needed to
    * prevent the UI thread from hanging due to the computations.
-   *
+   * <p/>
    * First, it removes all the children with the MAPPED state and adds them to
    * the mapped set, so that they can be shown at a later date. If a child is a
    * directory, this method is called in that item. Finally, clears the children
@@ -123,7 +122,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
   /**
    * Creates a task to show all this item's mapped items. The task is needed to
    * prevent the UI thread from hanging due to the computations.
-   *
+   * <p/>
    * First, it adds all the items in the mapped set, which are the previously
    * hidden items, and clears the set. We need to be careful in this step
    * because if the hiddenFiles flag is true, then we must hide the mapped items
@@ -172,7 +171,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
   /**
    * Creates a task to hide all this item's ignored items. The task is needed to
    * prevent the UI thread from hanging due to the computations.
-   *
+   * <p/>
    * First, it removes all the children with the IGNORED state and adds them to
    * the ignored set, so that they can be shown at a later date. If a child is a
    * directory, this method is called in that item. Then, calls this method for
@@ -217,7 +216,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
   /**
    * Creates a task to show all this item's ignored items. The task is needed to
    * prevent the UI thread from hanging due to the computations.
-   *
+   * <p/>
    * First, it adds all the items in the ignored set, which are the previously
    * hidden items, and clears the set. We need to be careful in this step
    * because if the hiddenFiles flag is true, then we must hide the ignored
@@ -264,7 +263,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
   /**
    * Creates a task to hide all this item's file items. The task is needed to
    * prevent the UI thread from hanging due to the computations.
-   *
+   * <p/>
    * First, it removes all the children that are a file and adds them to the
    * files set, so that they can be shown at a later date. If a child is a
    * directory, this method is called in that item. Finally, clears the children
@@ -304,7 +303,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
   /**
    * Creates a task to show all this item's file items. The task is needed to
    * prevent the UI thread from hanging due to the computations.
-   *
+   * <p/>
    * First, it adds all the items in the files set, which are the previously
    * hidden items, and clears the set. Then makes a call to this method for all
    * its children and hidden ignored/mapped items. Finally, clears the children,
@@ -386,7 +385,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
       @Override
       public int compare(TreeItem o1, TreeItem o2) {
         if (o1.getClass() == o2.getClass()) { // sort items of the same class by
-                                              // value
+          // value
           String s1 = (String) o1.getValue();
           String s2 = (String) o2.getValue();
           return s1.compareToIgnoreCase(s2);

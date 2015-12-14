@@ -1,12 +1,5 @@
 package org.roda.rodain.inspection;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -19,13 +12,19 @@ import javafx.scene.layout.*;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SipPreviewNode;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -56,6 +55,7 @@ public class InspectionPane extends BorderPane {
 
   /**
    * Creates a new inspection pane.
+   *
    * @param stage The primary stage of the application
    */
   public InspectionPane(Stage stage) {
@@ -387,7 +387,7 @@ public class InspectionPane extends BorderPane {
 
   /**
    * Updates the UI using a SipPreviewNode.
-   *
+   * <p/>
    * <p>
    * This method gets the id, metadata and content of a SipPreviewNode and uses
    * them to update the UI. The content is used to create a tree of
@@ -395,11 +395,10 @@ public class InspectionPane extends BorderPane {
    * TreeView.
    * </p>
    *
+   * @param sip The SipPreviewNode used to update the UI.
    * @see SipPreviewNode
    * @see SipContentDirectory
    * @see SipContentFile
-   * @param sip
-   *          The SipPreviewNode used to update the UI.
    */
   public void update(SipPreviewNode sip) {
     setBottom(bottom);
@@ -451,16 +450,15 @@ public class InspectionPane extends BorderPane {
 
   /**
    * Updates the UI using a SchemaNode.
-   *
+   * <p/>
    * <p>
    * Uses the metadata and rule list to update the UI. The rule list is used to
    * create a ListView of RuleCell.
    * </p>
    *
+   * @param node The SchemaNode used to update the UI.
    * @see RuleCell
    * @see SchemaNode
-   * @param node
-   *          The SchemaNode used to update the UI.
    */
   public void update(SchemaNode node) {
     setBottom(bottom);
@@ -541,14 +539,13 @@ public class InspectionPane extends BorderPane {
   /**
    * Sets the state of the SIP content buttons: "Flatten directory" and
    * "Skip directory".
-   *
+   * <p/>
    * <p>
    * Used by ContentClickedEventHandler to set the state of the SIP content
    * buttons, since they are only enabled when a directory is selected.
    * </p>
-   * 
-   * @param state
-   *          The new state of the buttons.
+   *
+   * @param state The new state of the buttons.
    */
   public void setStateContentButtons(boolean state) {
     flatten.setDisable(state);

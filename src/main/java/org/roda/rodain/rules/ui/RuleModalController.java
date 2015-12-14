@@ -1,15 +1,10 @@
 package org.roda.rodain.rules.ui;
 
-import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.Set;
-
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.stage.Stage;
-
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.RuleTypes;
@@ -21,6 +16,10 @@ import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.utils.TreeVisitor;
 import org.roda.rodain.utils.WalkFileTree;
 import org.slf4j.LoggerFactory;
+
+import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -44,13 +43,10 @@ public class RuleModalController {
   /**
    * Creates the scene to show the modal window with the options to create a new
    * Rule.
-   * 
-   * @param primStage
-   *          The main stage of the application.
-   * @param source
-   *          The set of items chosen by the user to create the new association.
-   * @param schemaNode
-   *          The destination of the SIPs that will be created.
+   *
+   * @param primStage  The main stage of the application.
+   * @param source     The set of items chosen by the user to create the new association.
+   * @param schemaNode The destination of the SIPs that will be created.
    */
   public static void newAssociation(final Stage primStage, Set<SourceTreeItem> source, SchemaNode schemaNode) {
     if (stage == null)
@@ -89,7 +85,7 @@ public class RuleModalController {
 
   /**
    * Confirms the creation of a new Rule.
-   *
+   * <p/>
    * <p>
    * The method starts by getting the association and metadata types chosen by
    * the user. Then creates a new Rule using that information and, if it

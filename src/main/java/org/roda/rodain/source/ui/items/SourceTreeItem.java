@@ -1,18 +1,17 @@
 package org.roda.rodain.source.ui.items;
 
+import javafx.scene.control.TreeItem;
+import org.roda.rodain.rules.Rule;
+
 import java.util.Observable;
 import java.util.Observer;
-
-import javafx.scene.control.TreeItem;
-
-import org.roda.rodain.rules.Rule;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 28-09-2015.
  */
 
-public class SourceTreeItem extends TreeItem<String>implements Observer {
+public class SourceTreeItem extends TreeItem<String> implements Observer {
   private String path;
   protected SourceTreeItemState state;
   protected SourceTreeDirectory parent;

@@ -1,11 +1,11 @@
 package org.roda.rodain.utils;
 
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Set;
-
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt

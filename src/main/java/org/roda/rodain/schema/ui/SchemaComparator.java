@@ -1,13 +1,27 @@
 package org.roda.rodain.schema.ui;
 
-import java.util.Comparator;
-
 import javafx.scene.control.TreeItem;
 
+import java.util.Comparator;
+
 /**
- * Created by adrapereira on 07-12-2015.
+ * @author Andre Pereira apereira@keep.pt
+ * @since 07-12-2015.
  */
 public class SchemaComparator implements Comparator<TreeItem<String>> {
+  /**
+   * Compares two TreeItems.
+   * <p/>
+   * <p>
+   * If the items are of the same class, compares its titles/names.
+   * Otherwise, puts the SchemaNodes in the top.
+   * </p>
+   *
+   * @param o1 The first TreeItem in the comparison.
+   * @param o2 The second TreeItem in the comparison.
+   * @return A value smaller than 0 if the o1 should appear first, 0 if they are equal
+   * and bigger than 0 if o2 should appear first.
+   */
   @Override
   public int compare(TreeItem o1, TreeItem o2) {
     if (o1.getClass() == o2.getClass()) { // sort items of the same class by

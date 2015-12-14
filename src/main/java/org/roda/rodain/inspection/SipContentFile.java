@@ -1,23 +1,24 @@
 package org.roda.rodain.inspection;
 
-import java.nio.file.Path;
-
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+
+import java.nio.file.Path;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 17-09-2015.
  */
-public class SipContentFile extends TreeItem<Object>implements InspectionTreeItem {
+public class SipContentFile extends TreeItem<Object> implements InspectionTreeItem {
   public static final Image fileImage = new Image(ClassLoader.getSystemResourceAsStream("icons/file.png"));
   private Path fullPath;
   private TreeItem parent;
 
   /**
    * Creates a new TreeItem, representing a file.
-   * @param file The Path that will be associated to the item.
+   *
+   * @param file   The Path that will be associated to the item.
    * @param parent The item's parent.
    */
   public SipContentFile(Path file, TreeItem parent) {

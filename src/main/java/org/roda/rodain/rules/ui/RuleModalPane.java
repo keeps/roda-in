@@ -1,13 +1,5 @@
 package org.roda.rodain.rules.ui;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
-
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -23,7 +15,6 @@ import javafx.scene.layout.*;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.RuleTypes;
 import org.roda.rodain.rules.sip.TemplateType;
@@ -33,6 +24,14 @@ import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.Utils;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -93,9 +92,8 @@ public class RuleModalPane extends BorderPane {
 
   /**
    * Sets the properties object for this class.
-   * 
-   * @param prop
-   *          The properties object.
+   *
+   * @param prop The properties object.
    */
   public static void setProperties(Properties prop) {
     properties = prop;
@@ -207,7 +205,7 @@ public class RuleModalPane extends BorderPane {
 
     int depth = 0;
     if (folderCount == sourceSet.size()) { // check if the selected items are
-                                           // all directories
+      // all directories
       // we only need to compute the depth if we'll be going to activate the
       // radio button
       for (SourceTreeItem std : sourceSet) {
@@ -500,9 +498,8 @@ public class RuleModalPane extends BorderPane {
   }
 
   /**
-   *
    * @return The association type of the item the user selected or null if there
-   *         was no selection.
+   * was no selection.
    * @throws UnexpectedDataTypeException
    */
   public RuleTypes getAssociationType() throws UnexpectedDataTypeException {
@@ -523,9 +520,8 @@ public class RuleModalPane extends BorderPane {
   }
 
   /**
-   *
    * @return The metadata type of the item the user selected or null if there
-   *         was no selection.
+   * was no selection.
    * @throws UnexpectedDataTypeException
    */
   public MetadataTypes getMetadataType() throws UnexpectedDataTypeException {
@@ -540,7 +536,7 @@ public class RuleModalPane extends BorderPane {
 
   /**
    * @return The path of the file selected by the user in the metadata option
-   *         SINGLE_FILE
+   * SINGLE_FILE
    */
   public Path getFromFile() {
     return Paths.get(fromFile);
@@ -548,7 +544,7 @@ public class RuleModalPane extends BorderPane {
 
   /**
    * @return The path of the directory selected by the user in the metadata
-   *         option DIFF_DIRECTORY
+   * option DIFF_DIRECTORY
    */
   public Path getDiffDir() {
     return Paths.get(diffDir);
@@ -556,7 +552,7 @@ public class RuleModalPane extends BorderPane {
 
   /**
    * @return The path of the directory that is an ancestor to all the selected
-   *         files
+   * files
    */
   public Path getSameDir() {
     return Paths.get(sameDir);

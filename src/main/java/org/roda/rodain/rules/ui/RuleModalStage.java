@@ -51,6 +51,7 @@ public class RuleModalStage extends Stage {
 
   /**
    * Sets the root pane of the stage.
+   *
    * @param root The pane to be set as root.
    */
   public void setRoot(Parent root) {
@@ -61,7 +62,7 @@ public class RuleModalStage extends Stage {
     // allow the dialog to be dragged around.
     final Delta dragDelta = new Delta();
     final RuleModalStage thisDialog = this; // reference to be used in the
-                                            // handlers
+    // handlers
     root.setOnMousePressed(new EventHandler<MouseEvent>() {
       @Override
       public void handle(MouseEvent mouseEvent) {

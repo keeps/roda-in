@@ -43,23 +43,16 @@ public class Rule extends Observable implements Observer, Comparable {
   private Integer id;
 
   /**
-   *
-   * @param source
-   *          The set of items to be transformed into SIPs
-   * @param assocType
-   *          The association type of the rule.
-   * @param level
-   *          The maximum level of the directory. Used in the SIP_PER_FOLDER
-   *          type only.
-   * @param metadataPath
-   *          The path to the metadata file(s)
-   * @param template
-   *          The type of the chosen template
-   * @param metaType
-   *          The type of metadata to be applied to the SIPs.
+   * @param source       The set of items to be transformed into SIPs
+   * @param assocType    The association type of the rule.
+   * @param level        The maximum level of the directory. Used in the SIP_PER_FOLDER
+   *                     type only.
+   * @param metadataPath The path to the metadata file(s)
+   * @param template     The type of the chosen template
+   * @param metaType     The type of metadata to be applied to the SIPs.
    */
   public Rule(Set<SourceTreeItem> source, RuleTypes assocType, int level, Path metadataPath, TemplateType template,
-    MetadataTypes metaType) {
+              MetadataTypes metaType) {
     ruleCount++;
     this.source = source;
     this.assocType = assocType;
@@ -146,19 +139,19 @@ public class Rule extends Observable implements Observer, Comparable {
 
   /**
    * Creates a TreeVisitor with the options defined in the rule.
-   *
+   * <p/>
    * <p>
    * For each different type of association, creates a different TreeVisitor
    * with the specific options. For example, when the type of the association is
    * SIP_PER_FOLDER, the created TreeVisitor is a SipPerFolderVisitor, that
    * receives the maximum level as a parameter.
    * </p>
-   *
+   * <p/>
    * <p>
    * The method also adds the rule as an observer of the TreeVisitor, to be
    * notified of any changes.
    * </p>
-   * 
+   *
    * @return The TreeVisitor created using the options defined in the rule.
    * @see TreeVisitor
    * @see SipPerFileVisitor
@@ -174,7 +167,7 @@ public class Rule extends Observable implements Observer, Comparable {
     switch (assocType) {
       case SIP_PER_FOLDER:
         SipPerFolderVisitor visitorFolder = new SipPerFolderVisitor(id.toString(), level, filters, metaType,
-          metadataPath, templateType);
+            metadataPath, templateType);
         visitorFolder.addObserver(this);
         visitor = visitorFolder;
         break;
@@ -185,13 +178,13 @@ public class Rule extends Observable implements Observer, Comparable {
           selection.add(sti.getPath());
         }
         SipPerSelection visitorSelection = new SipPerSelection(id.toString(), selection, filters, metaType,
-          metadataPath, templateType);
+            metadataPath, templateType);
         visitorSelection.addObserver(this);
         visitor = visitorSelection;
         break;
       case SIP_PER_FILE:
         SipPerFileVisitor visitorFile = new SipPerFileVisitor(id.toString(), filters, metaType, metadataPath,
-          templateType);
+            templateType);
         visitorFile.addObserver(this);
         visitor = visitorFile;
         break;
@@ -212,14 +205,14 @@ public class Rule extends Observable implements Observer, Comparable {
    * SipPreviewNodes until a maximum of 100 items. Finally, notifies the rule's
    * observers of changes.
    * </p>
-   *
+   * <p/>
    * <p>
    * When the notification is from a SipPreview, the method only does work if
    * the item has been removed, in which case, it sets all the paths of the
    * SIP's content with the NORMAL state and removes the SipPreview from the
    * list of SIPs.
    * </p>
-   * 
+   *
    * @param o
    * @param arg
    */
@@ -293,14 +286,13 @@ public class Rule extends Observable implements Observer, Comparable {
 
   /**
    * Compares two rules, by their id.
-   * 
-   * @param o
-   *          The rule to be compared
+   *
+   * @param o The rule to be compared
    * @return the value 0 if this Rule's id is equal to the argument Rule's id; a
-   *         value less than 0 if this Rule's id is numerically less than the
-   *         argument Rule's id; and a value greater than 0 if this Rule's id is
-   *         numerically greater than the argument Rule's id (signed
-   *         comparison).
+   * value less than 0 if this Rule's id is numerically less than the
+   * argument Rule's id; and a value greater than 0 if this Rule's id is
+   * numerically greater than the argument Rule's id (signed
+   * comparison).
    */
   @Override
   public int compareTo(Object o) {
@@ -314,8 +306,7 @@ public class Rule extends Observable implements Observer, Comparable {
   }
 
   /**
-   * @param o
-   *          The rule to be compared
+   * @param o The rule to be compared
    * @return True if the ids of the rules match, false otherwise
    */
   @Override

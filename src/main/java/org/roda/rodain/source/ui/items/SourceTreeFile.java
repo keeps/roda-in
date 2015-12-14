@@ -1,14 +1,13 @@
 package org.roda.rodain.source.ui.items;
 
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import org.roda.rodain.core.PathCollection;
+import org.roda.rodain.rules.Rule;
+
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Observable;
-
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-
-import org.roda.rodain.core.PathCollection;
-import org.roda.rodain.rules.Rule;
 
 /**
  * @author Andre Pereira apereira@keep.pt

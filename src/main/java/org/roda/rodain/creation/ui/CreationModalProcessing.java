@@ -1,8 +1,5 @@
 package org.roda.rodain.creation.ui;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -15,8 +12,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-
 import org.roda.rodain.creation.CreateSips;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -39,8 +38,9 @@ public class CreationModalProcessing extends BorderPane {
 
   /**
    * Creates a pane to show the progress of the SIP exportation.
+   *
    * @param creator The SIP creator object
-   * @param stage The stage of the pane
+   * @param stage   The stage of the pane
    */
   public CreationModalProcessing(CreateSips creator, CreationModalStage stage) {
     this.creator = creator;

@@ -5,11 +5,6 @@ package org.roda.rodain.core;
  * @since 16-09-2015.
  */
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -27,7 +22,6 @@ import javafx.scene.text.Font;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-
 import org.roda.rodain.creation.ui.CreationModalPreparation;
 import org.roda.rodain.creation.ui.CreationModalStage;
 import org.roda.rodain.inspection.InspectionPane;
@@ -42,6 +36,11 @@ import org.roda.rodain.source.ui.SourceTreeCell;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 public class Main extends Application {
   private static final Logger log = LoggerFactory.getLogger(Main.class.getName());
@@ -59,8 +58,7 @@ public class Main extends Application {
   /**
    * The entry point of the application.
    *
-   * @param args
-   *          The arguments passed to the application.
+   * @param args The arguments passed to the application.
    */
   public static void main(String[] args) {
     // get the java version
@@ -76,14 +74,14 @@ public class Main extends Application {
 
   /**
    * Creates the interface structure and loads resources.
-   *
+   * <p/>
    * <p>
    * This method sets the application logo, loads fonts, styles and property
    * files. Furthermore, creates the frame structure and the menu. The frame
    * structure is a SplitPane, split in three sections - file explorer,
    * classification scheme, inspection - and a footer.
    * </p>
-   * 
+   *
    * @param primaryStage
    */
   @Override

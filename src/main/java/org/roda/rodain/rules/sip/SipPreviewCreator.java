@@ -24,7 +24,7 @@ public interface SipPreviewCreator {
 
   /**
    * @return True if the number of SIPs returned is smaller than the count of
-   *         added SIPs.
+   * added SIPs.
    */
   boolean hasNext();
 }

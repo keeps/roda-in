@@ -16,16 +16,12 @@ public class HBoxCell extends HBox {
 
   /**
    * Creates a new HBoxCell using the data received as parameter.
-   * 
-   * @param icon
-   *          The icon to be used on the cell.
-   * @param title
-   *          The title of the cell.
-   * @param description
-   *          The description of the cell.
-   * @param options
-   *          A node with options to be included at the bottom of the cell. This
-   *          can be used to add buttons, combo boxes, etc.
+   *
+   * @param icon        The icon to be used on the cell.
+   * @param title       The title of the cell.
+   * @param description The description of the cell.
+   * @param options     A node with options to be included at the bottom of the cell. This
+   *                    can be used to add buttons, combo boxes, etc.
    */
   public HBoxCell(String icon, String title, String description, Node options) {
     super(20);

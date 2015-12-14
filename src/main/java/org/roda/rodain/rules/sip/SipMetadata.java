@@ -1,16 +1,14 @@
 package org.roda.rodain.rules.sip;
 
+import org.roda.rodain.rules.MetadataTypes;
+import org.roda.rodain.utils.Utils;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Properties;
-
-import org.roda.rodain.rules.MetadataTypes;
-import org.roda.rodain.utils.Utils;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -56,7 +54,7 @@ public class SipMetadata {
             fileName = properties.getProperty("metadata.template.dcmes");
 
           InputStream contentStream = ClassLoader.getSystemResource(fileName).openStream();
-          content = Utils.convertStreamToString(contentStream);          
+          content = Utils.convertStreamToString(contentStream);
           contentStream.close();
           loaded = true;
         }
@@ -93,9 +91,8 @@ public class SipMetadata {
 
   /**
    * Updates the metadata content of the SIP.
-   * 
-   * @param meta
-   *          The new metadata content.
+   *
+   * @param meta The new metadata content.
    */
   public void update(String meta) {
     modified = true;
@@ -105,8 +102,7 @@ public class SipMetadata {
   /**
    * Sets the Properties object of SipMetadata.
    *
-   * @param prop
-   *          The new Properties object.
+   * @param prop The new Properties object.
    */
   public static void setProperties(Properties prop) {
     properties = prop;
