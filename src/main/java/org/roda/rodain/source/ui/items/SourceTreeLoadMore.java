@@ -15,11 +15,17 @@ public class SourceTreeLoadMore extends SourceTreeItem {
     this.setGraphic(new ImageView(fileImage));
   }
 
+  /**
+   * @return Nullm because this item has no path
+   */
   @Override
   public String getPath() {
     return null;
   }
 
+  /**
+   * @return The NORMAL state
+   */
   @Override
   public SourceTreeItemState getState() {
     return SourceTreeItemState.NORMAL;

@@ -20,7 +20,6 @@ public class ComputeDirectorySize extends Observable implements TreeVisitor {
   }
 
   @Override
-
   public void preVisitDirectory(Path path, BasicFileAttributes attrs) {
   }
 

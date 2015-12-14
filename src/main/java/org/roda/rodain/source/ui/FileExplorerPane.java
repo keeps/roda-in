@@ -309,22 +309,12 @@ public class FileExplorerPane extends BorderPane implements Observer {
     return result;
   }
 
-  public static boolean isIgnored(String item) {
-    if (oldIgnored == null)
-      return false;
-    return oldIgnored.contains(item);
-  }
-
-  public static boolean isMapped(String item) {
-    if (oldMapped == null)
-      return false;
-    return oldMapped.contains(item);
-  }
-
-  /*
-   * Ignores the selected items If an item is normal, this method ignores it.
+  /**
+   * Ignores the items received in parameter.
+   * If an item is normal, this method ignores it.
    * Depending on the state of the showIgnored flag, it shows or hides the
    * ignored items.
+   * @param items The set of items to be ignored
    */
   public void ignore(Set<SourceTreeItem> items) {
     for (SourceTreeItem item : items) {
@@ -343,6 +333,9 @@ public class FileExplorerPane extends BorderPane implements Observer {
     }
   }
 
+  /**
+   * Ignores the selected items.
+   */
   public void ignore() {
     Set<SourceTreeItem> items = getSelectedItems();
     ignore(items);

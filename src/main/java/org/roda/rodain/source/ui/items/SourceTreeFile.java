@@ -46,21 +46,12 @@ public class SourceTreeFile extends SourceTreeItem {
     state = SourceTreeItemState.NORMAL;
   }
 
-  @Override
-  public String getPath() {
-    return this.fullPath;
-  }
 
   @Override
   public void setState(SourceTreeItemState st) {
     if (state != st) {
       state = st;
     }
-  }
-
-  @Override
-  public SourceTreeItemState getState() {
-    return state;
   }
 
   @Override

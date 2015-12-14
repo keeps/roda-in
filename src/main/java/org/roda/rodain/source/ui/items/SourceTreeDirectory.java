@@ -346,6 +346,9 @@ public class SourceTreeDirectory extends SourceTreeItem {
     new Thread(task).start();
   }
 
+  /**
+   * @return The set of the ignored items in the directory.
+   */
   public Set<String> getIgnored() {
     Set<String> result = new HashSet<>();
     // we need to include the items that are being shown and the hidden
@@ -363,6 +366,9 @@ public class SourceTreeDirectory extends SourceTreeItem {
     return result;
   }
 
+  /**
+   * @return The set of the mapped items in the directory.
+   */
   public Set<String> getMapped() {
     Set<String> result = new HashSet<>();
     // we need to include the items that are being shown and the hidden
@@ -401,17 +407,28 @@ public class SourceTreeDirectory extends SourceTreeItem {
     };
   }
 
+  /**
+   * Sorts the children array
+   */
   public void sortChildren() {
     ArrayList<TreeItem<String>> aux = new ArrayList<>(getChildren());
     Collections.sort(aux, comparator);
     getChildren().setAll(aux);
   }
 
+  /**
+   * @return The path of the directory
+   */
   @Override
   public String getPath() {
     return this.fullPath;
   }
 
+  /**
+   * Sets the state of the directory and forces an update of the item
+   *
+   * @param st The new state
+   */
   @Override
   public void setState(SourceTreeItemState st) {
     if (state != st) {
@@ -420,11 +437,9 @@ public class SourceTreeDirectory extends SourceTreeItem {
     forceUpdate();
   }
 
-  @Override
-  public SourceTreeItemState getState() {
-    return state;
-  }
-
+  /**
+   * Sets the directory as ignored and forces an update of the item
+   */
   @Override
   public void addIgnore() {
     if (state == SourceTreeItemState.NORMAL) {
@@ -434,6 +449,9 @@ public class SourceTreeDirectory extends SourceTreeItem {
     forceUpdate();
   }
 
+  /**
+   * Sets the directory as mapped
+   */
   @Override
   public void addMapping(Rule r) {
     rules.add(r);
@@ -442,6 +460,9 @@ public class SourceTreeDirectory extends SourceTreeItem {
     }
   }
 
+  /**
+   * Sets the directory as normal (if it was ignored)
+   */
   @Override
   public void removeIgnore() {
     if (state == SourceTreeItemState.IGNORED) {
@@ -450,13 +471,16 @@ public class SourceTreeDirectory extends SourceTreeItem {
     }
   }
 
+  /**
+   * @return The SourceDirectory object associated to the item
+   */
   public SourceDirectory getDirectory() {
     return directory;
   }
 
-  /*
-   * We need to create a task to load the items to a temporary collection,
-   * otherwise the UI will hang while we access the disk.
+  /**
+   * Creates a task to load the items to a temporary collection, otherwise the UI will hang while accessing the disk.
+   * Then, sets the new collection as the item's children.
    */
   public void loadMore() {
     final ArrayList<TreeItem<String>> children = new ArrayList<>(getChildren());
@@ -552,6 +576,20 @@ public class SourceTreeDirectory extends SourceTreeItem {
       mapped.add(item);
   }
 
+  /**
+   * Moves the children with the wrong state to the correct collection.
+   *
+   * <p>
+   *   The normal items in the mapped collection are moved to the children collection.
+   * </p>
+   *
+   * <p>
+   *   If the mapped items are hidden, moves the mapped items in the children collection to the mapped collection.
+   * </p>
+   * <p>
+   *   If the ignored items are hidden, moves the ignored items in the children collection to the ignored collection.
+   * </p>
+   */
   public void moveChildrenWrongState() {
     Set<SourceTreeItem> toRemove = new HashSet<>();
     boolean modified = false;
