@@ -98,6 +98,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     bottom.setPadding(new Insets(10, 10, 10, 10));
 
     Button ignore = new Button("Ignore");
+    ignore.setId("bt_ignore");
     ignore.setMinWidth(100);
     ignore.setOnAction(new EventHandler<ActionEvent>() {
       @Override

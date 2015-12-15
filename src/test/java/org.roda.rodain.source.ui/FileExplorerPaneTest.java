@@ -1,5 +1,6 @@
 package org.roda.rodain.source.ui;
 
+import javafx.scene.Scene;
 import javafx.scene.control.TreeItem;
 import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
@@ -9,7 +10,6 @@ import org.junit.Test;
 import org.roda.rodain.core.Footer;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
-import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.AsyncCallState;
 import org.testfx.framework.junit.ApplicationTest;
 
@@ -36,6 +36,9 @@ public class FileExplorerPaneTest extends ApplicationTest {
     new Footer(); //footer needs to be initialized because of setStatus
     fileExplorer = new FileExplorerPane(stage);
     fileExplorer.setFileExplorerRoot(testDir);
+    Scene scene = new Scene(fileExplorer, 600, 600);
+    stage.setScene(scene);
+    stage.show();
   }
 
   @Before
@@ -235,6 +238,7 @@ public class FileExplorerPaneTest extends ApplicationTest {
       try {
         synchronized (dirTask) {
           dirTask.wait();
+          dir.setExpanded(true);
         }
       } catch (InterruptedException e) {
         e.printStackTrace();
