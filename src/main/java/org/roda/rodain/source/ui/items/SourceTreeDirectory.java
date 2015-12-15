@@ -11,12 +11,14 @@ import org.roda.rodain.source.representation.SourceDirectory;
 import org.roda.rodain.source.representation.SourceItem;
 import org.roda.rodain.source.ui.ExpandedEventHandler;
 import org.roda.rodain.source.ui.FileExplorerPane;
+import org.roda.rodain.utils.AsyncCallState;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -394,7 +396,8 @@ public class SourceTreeDirectory extends SourceTreeItem {
           // value
           String s1 = (String) o1.getValue();
           String s2 = (String) o2.getValue();
-          return s1.compareToIgnoreCase(s2);
+          if (s1 != null && s2 != null)
+            return s1.compareToIgnoreCase(s2);
         }
         // directories must appear first
         if (o1 instanceof SourceTreeDirectory)
@@ -482,8 +485,15 @@ public class SourceTreeDirectory extends SourceTreeItem {
    * Creates a task to load the items to a temporary collection, otherwise the UI will hang while accessing the disk.
    * Then, sets the new collection as the item's children.
    */
-  public void loadMore() {
+  public AsyncCallState loadMore() {
     final ArrayList<TreeItem<String>> children = new ArrayList<>(getChildren());
+    AsyncCallState result = new AsyncCallState();
+
+    // Remove "loading" items
+    List<Object> toRemove = children.stream().
+        filter(p -> p instanceof SourceTreeLoading || p instanceof SourceTreeLoadMore).
+        collect(Collectors.toList());
+    children.removeAll(toRemove);
 
     // First we access the disk and save the loaded items to a temporary
     // collection
@@ -511,18 +521,28 @@ public class SourceTreeDirectory extends SourceTreeItem {
     task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
       @Override
       public void handle(WorkerStateEvent workerStateEvent) {
-        // Remove "loading" items
-        ArrayList<Object> toRemove = new ArrayList<>();
-        for (Object o : children)
-          if (o instanceof SourceTreeLoading)
-            toRemove.add(o);
-        children.removeAll(toRemove);
         // Set the children
         getChildren().setAll(children);
+        result.setFinished();
+      }
+    });
+
+    task.setOnCancelled(new EventHandler<WorkerStateEvent>() {
+      @Override
+      public void handle(WorkerStateEvent event) {
+        result.setFinished();
+      }
+    });
+
+    task.setOnFailed(new EventHandler<WorkerStateEvent>() {
+      @Override
+      public void handle(WorkerStateEvent event) {
+        result.setFinished();
       }
     });
 
     new Thread(task).start();
+    return result;
   }
 
   private void addChild(List children, String sourceItem) {

@@ -24,13 +24,4 @@ public class SourceFile implements SourceItem {
   public Path getPath() {
     return path;
   }
-
-  /**
-   * Sets the path of the object
-   *
-   * @param path The path
-   */
-  public void setPath(Path path) {
-    this.path = path;
-  }
 }
