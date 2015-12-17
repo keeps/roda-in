@@ -6,7 +6,7 @@
 
     <groupId>org.roda</groupId>
     <artifactId>rodain</artifactId>
-    <version>1.0.0-beta.1</version>
+    <version>1.0.0-beta.1.1</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -74,6 +74,11 @@
                        </goals>
                    </execution>
                </executions>
+           </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.19</version>
             </plugin>
         </plugins>
     </build>

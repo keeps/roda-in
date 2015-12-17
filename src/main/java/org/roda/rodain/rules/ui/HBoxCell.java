@@ -23,8 +23,10 @@ public class HBoxCell extends HBox {
    * @param options     A node with options to be included at the bottom of the cell. This
    *                    can be used to add buttons, combo boxes, etc.
    */
-  public HBoxCell(String icon, String title, String description, Node options) {
+  public HBoxCell(String id, String icon, String title, String description, Node options) {
     super(20);
+
+    setId(id);
 
     getStyleClass().add("cell");
     setAlignment(Pos.CENTER_LEFT);

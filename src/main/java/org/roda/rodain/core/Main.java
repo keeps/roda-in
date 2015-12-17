@@ -288,6 +288,15 @@ public class Main extends Application {
     return inspectionPane;
   }
 
+
+  public static FileExplorerPane getPreviewExplorer() {
+    return previewExplorer;
+  }
+
+  public static SchemaPane getSchemaPane() {
+    return schemaPane;
+  }
+
   public static Map<SipPreview, String> getSipPreviews() {
     return schemaPane.getSipPreviews();
   }

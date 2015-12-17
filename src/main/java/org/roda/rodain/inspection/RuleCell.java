@@ -72,6 +72,7 @@ public class RuleCell extends HBox implements Observer {
     id.getStyleClass().add("title");
 
     Button remove = new Button("Remove");
+    remove.setId("removeRule" + rule.getId());
     remove.setAlignment(Pos.CENTER);
 
     remove.setOnAction(new EventHandler<ActionEvent>() {

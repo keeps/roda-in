@@ -166,26 +166,26 @@ public class RuleModalPane extends BorderPane {
     String icon = properties.getProperty("association.singleSip.icon");
     String title = properties.getProperty("association.singleSip.title");
     String description = properties.getProperty("association.singleSip.description");
-    HBoxCell cellSingleSip = new HBoxCell(icon, title, description, new HBox());
+    HBoxCell cellSingleSip = new HBoxCell("assoc1", icon, title, description, new HBox());
     cellSingleSip.setUserData(RuleTypes.SINGLE_SIP);
 
     icon = properties.getProperty("association.sipSelection.icon");
     title = properties.getProperty("association.sipSelection.title");
     description = properties.getProperty("association.sipSelection.description");
-    HBoxCell cellSelected = new HBoxCell(icon, title, description, new HBox());
+    HBoxCell cellSelected = new HBoxCell("assoc2", icon, title, description, new HBox());
     cellSelected.setUserData(RuleTypes.SIP_PER_SELECTION);
 
     icon = properties.getProperty("association.sipPerFile.icon");
     title = properties.getProperty("association.sipPerFile.title");
     description = properties.getProperty("association.sipPerFile.description");
-    HBoxCell cellSipPerFile = new HBoxCell(icon, title, description, new HBox());
+    HBoxCell cellSipPerFile = new HBoxCell("assoc3", icon, title, description, new HBox());
     cellSipPerFile.setUserData(RuleTypes.SIP_PER_FILE);
 
     icon = properties.getProperty("association.sipPerFolder.icon");
     title = properties.getProperty("association.sipPerFolder.title");
     description = properties.getProperty("association.sipPerFolder.description");
     HBox options = createPerFolderOptions();
-    HBoxCell cellSipPerFolder = new HBoxCell(icon, title, description, options);
+    HBoxCell cellSipPerFolder = new HBoxCell("assoc4", icon, title, description, options);
     cellSipPerFolder.setUserData(RuleTypes.SIP_PER_FOLDER);
 
     ObservableList<HBoxCell> hboxList = FXCollections.observableArrayList();
@@ -262,26 +262,26 @@ public class RuleModalPane extends BorderPane {
     String icon = properties.getProperty("metadata.singleFile.icon");
     String title = properties.getProperty("metadata.singleFile.title");
     String description = properties.getProperty("metadata.singleFile.description");
-    cellSingleFile = new HBoxCell(icon, title, description, optionsSingleFile());
+    cellSingleFile = new HBoxCell("meta1", icon, title, description, optionsSingleFile());
     cellSingleFile.setUserData(MetadataTypes.SINGLE_FILE);
 
     icon = properties.getProperty("metadata.sameFolder.icon");
     String tempTitle = properties.getProperty("metadata.sameFolder.title");
     title = String.format("%s \"%s\"", tempTitle, pathSameFolder());
     description = properties.getProperty("metadata.sameFolder.description");
-    cellSameFolder = new HBoxCell(icon, title, description, new HBox());
+    cellSameFolder = new HBoxCell("meta2", icon, title, description, new HBox());
     cellSameFolder.setUserData(MetadataTypes.SAME_DIRECTORY);
 
     icon = properties.getProperty("metadata.diffFolder.icon");
     title = properties.getProperty("metadata.diffFolder.title");
     description = properties.getProperty("metadata.diffFolder.description");
-    cellDiffFolder = new HBoxCell(icon, title, description, optionsDiffFolder());
+    cellDiffFolder = new HBoxCell("meta3", icon, title, description, optionsDiffFolder());
     cellDiffFolder.setUserData(MetadataTypes.DIFF_DIRECTORY);
 
     icon = properties.getProperty("metadata.template.icon");
     title = properties.getProperty("metadata.template.title");
     description = properties.getProperty("metadata.template.description");
-    cellTemplate = new HBoxCell(icon, title, description, optionsTemplate());
+    cellTemplate = new HBoxCell("meta4", icon, title, description, optionsTemplate());
     cellTemplate.setUserData(MetadataTypes.TEMPLATE);
 
     ObservableList<HBoxCell> hboxList = FXCollections.observableArrayList();

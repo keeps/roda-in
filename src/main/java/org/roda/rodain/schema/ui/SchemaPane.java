@@ -181,6 +181,22 @@ public class SchemaPane extends BorderPane {
     }
   }
 
+  /**
+   * Creates a ClassificationSchema object from the InputStream and builds a tree using it.
+   * @param stream The stream with the JSON file used to create the ClassificationSchema
+   */
+  public void loadClassificationSchemeFromStream(InputStream stream){
+    try {
+      // create ObjectMapper instance
+      ObjectMapper objectMapper = new ObjectMapper();
+      // convert stream to object
+      ClassificationSchema scheme = objectMapper.readValue(stream, ClassificationSchema.class);
+      updateClassificationSchema(scheme);
+    } catch (IOException e) {
+      log.error("Error reading classification scheme from stream", e);
+    }
+  }
+
   private ClassificationSchema loadClassificationSchemaFile(String fileName) throws IOException {
     InputStream input = new FileInputStream(fileName);
 
