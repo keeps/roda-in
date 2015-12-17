@@ -317,7 +317,9 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
       SourceTreeDirectory parent = item.getParentDir();
       if (!isShowIgnored()) {
-        parent.hideIgnored();
+        if (parent != null) {
+          parent.hideIgnored();
+        }
         treeView.getSelectionModel().clearSelection();
       } else {// force update
         String value = item.getValue();
