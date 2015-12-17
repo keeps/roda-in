@@ -1,13 +1,15 @@
 package org.roda.rodain.source.ui;
 
-import javafx.scene.Scene;
 import javafx.scene.control.TreeItem;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.roda.rodain.core.Footer;
+import org.roda.rodain.core.Main;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
@@ -26,13 +28,11 @@ public class IgnoreTest extends ApplicationTest {
 
   @Override
   public void start(Stage stage) throws Exception {
-    new Footer(); //footer needs to be initialized because of setStatus
-    fileExplorer = new FileExplorerPane(stage);
-    fileExplorer.setFileExplorerRoot(testDir);
+    Main main = new Main();
+    main.start(stage);
 
-    Scene scene = new Scene(fileExplorer, 600, 600);
-    stage.setScene(scene);
-    stage.show();
+    fileExplorer = Main.getPreviewExplorer();
+    fileExplorer.setFileExplorerRoot(testDir);
   }
 
   @BeforeClass
@@ -54,7 +54,8 @@ public class IgnoreTest extends ApplicationTest {
     assert root.getChildren().size() == 3;
     assert root.getChildren().get(2) != dir4;
 
-    fileExplorer.toggleIgnoredShowing();
+    //fileExplorer.toggleIgnoredShowing();
+    push(new KeyCodeCombination(KeyCode.I, KeyCombination.CONTROL_DOWN));
     sleep(1000);
     assert root.getChildren().size() == 4;
     assert root.getChildren().get(3) == dir4;
