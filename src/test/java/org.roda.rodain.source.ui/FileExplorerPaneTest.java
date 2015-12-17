@@ -40,7 +40,6 @@ public class FileExplorerPaneTest extends ApplicationTest {
 
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
-    System.out.println("criar antes");
     testDir = Utils.createFolderStructure();
   }
 
@@ -62,7 +61,6 @@ public class FileExplorerPaneTest extends ApplicationTest {
   @Test
   public void dir1() {
     sleep(1000);
-    System.out.println("dir1");
     TreeItem<String> root = fileExplorer.getTreeView().getRoot();
     TreeItem<String> dir1 = root.getChildren().get(0);
     assert dir1 != null;
