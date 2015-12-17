@@ -20,6 +20,7 @@ public class SourceTreeCell extends TreeCell<String> {
 
   public SourceTreeCell() {
     MenuItem removeIgnore = new MenuItem("Remove Ignore");
+    removeIgnore.setId("removeIgnore");
     menu.getItems().add(removeIgnore);
     removeIgnore.setOnAction(new EventHandler<ActionEvent>() {
       @Override
