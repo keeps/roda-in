@@ -54,7 +54,6 @@ public class IgnoreTest extends ApplicationTest {
     assert root.getChildren().size() == 3;
     assert root.getChildren().get(2) != dir4;
 
-    //fileExplorer.toggleIgnoredShowing();
     push(new KeyCodeCombination(KeyCode.I, KeyCombination.CONTROL_DOWN));
     sleep(1000);
     assert root.getChildren().size() == 4;
@@ -64,7 +63,7 @@ public class IgnoreTest extends ApplicationTest {
     SourceTreeDirectory dirA = (SourceTreeDirectory) dir4.getChildren().get(0);
     assert dirA.getState() == SourceTreeItemState.IGNORED;
 
-    dirA.setExpanded(true);
+    doubleClickOn("dirA");
     sleep(1000);
     rightClickOn("dirAA");
     sleep(500);
