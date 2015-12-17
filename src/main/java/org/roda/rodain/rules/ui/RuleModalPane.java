@@ -57,7 +57,9 @@ public class RuleModalPane extends BorderPane {
   // Metadata
   private VBox boxMetadata;
   private ListView<HBoxCell> metaList;
-  private HBoxCell cellSingleFile, cellSameFolder, cellDiffFolder, cellTemplate;
+  private HBoxCell cellSingleFile;
+  private HBoxCell cellSameFolder;
+  private HBoxCell cellDiffFolder;
   private Button chooseDir, chooseFile;
   private ComboBox<String> templateTypes;
 
@@ -113,12 +115,9 @@ public class RuleModalPane extends BorderPane {
     title.setId("title");
 
     ArrayList<String> dirs = new ArrayList<>();
-    ArrayList<String> fil = new ArrayList<>();
     for (SourceTreeItem it : sourceSet) {
       if (it instanceof SourceTreeDirectory)
         dirs.add(it.getValue());
-      else
-        fil.add(it.getValue());
     }
     folderCount = dirs.size();
 
@@ -281,7 +280,7 @@ public class RuleModalPane extends BorderPane {
     icon = properties.getProperty("metadata.template.icon");
     title = properties.getProperty("metadata.template.title");
     description = properties.getProperty("metadata.template.description");
-    cellTemplate = new HBoxCell("meta4", icon, title, description, optionsTemplate());
+    HBoxCell cellTemplate = new HBoxCell("meta4", icon, title, description, optionsTemplate());
     cellTemplate.setUserData(MetadataTypes.TEMPLATE);
 
     ObservableList<HBoxCell> hboxList = FXCollections.observableArrayList();

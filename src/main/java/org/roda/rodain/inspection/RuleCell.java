@@ -174,9 +174,7 @@ public class RuleCell extends HBox implements Observer {
    */
   @Override
   public void update(Observable o, Object arg) {
-    if (o instanceof Rule) {
-      Rule rule = (Rule) o;
-
+    if (o == rule) {
       Platform.runLater(new Runnable() {
         @Override
         public void run() {

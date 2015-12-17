@@ -31,7 +31,6 @@ public class CreationModalProcessing extends BorderPane {
   // center
   private ProgressBar progress;
   private Label sipName, sipAction;
-  private TimerTask updater;
   private Timer timer;
 
   private HBox finishedBox;
@@ -139,7 +138,7 @@ public class CreationModalProcessing extends BorderPane {
   }
 
   private void createUpdateTask() {
-    updater = new TimerTask() {
+    TimerTask updater = new TimerTask() {
       @Override
       public void run() {
         Platform.runLater(new Runnable() {

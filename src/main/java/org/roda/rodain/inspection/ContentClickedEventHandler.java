@@ -56,11 +56,9 @@ public class ContentClickedEventHandler implements EventHandler<MouseEvent> {
           executeCommand("open", fileName);
         } else if (isUnix()) {
           boolean result = executeCommand("xdg-open", fileName);
-          if (result == false) {
+          if (!result) {
             executeCommand("gnome-open", fileName);
           }
-        } else {
-          return;
         }
       }
     }

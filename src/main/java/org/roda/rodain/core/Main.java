@@ -45,10 +45,8 @@ import java.util.Set;
 public class Main extends Application {
   private static final Logger log = LoggerFactory.getLogger(Main.class.getName());
   private static Stage stage;
-  private static double javaVersion;
 
   private BorderPane mainPane;
-  private MenuBar menu;
   private double initialWidth = 1200, initialHeight = 700;
 
   private static FileExplorerPane previewExplorer;
@@ -63,7 +61,7 @@ public class Main extends Application {
   public static void main(String[] args) {
     // get the java version
     String javaString = Runtime.class.getPackage().getSpecificationVersion();
-    javaVersion = Double.parseDouble(javaString);
+    double javaVersion = Double.parseDouble(javaString);
     if (javaVersion < 1.8) {
       log.error("Java version is " + javaString + ". Please use at least \"Java 1.8\".");
       return;
@@ -159,7 +157,7 @@ public class Main extends Application {
   }
 
   private void createMenu() {
-    menu = new MenuBar();
+    MenuBar menu = new MenuBar();
     Menu menuFile = new Menu("File");
     Menu menuEdit = new Menu("Edit");
     Menu menuView = new Menu("View");

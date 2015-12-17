@@ -135,7 +135,7 @@ public class CreationModalPreparation extends BorderPane {
       public void handle(ActionEvent actionEvent) {
         String selectedType = sipTypes.getSelectionModel().getSelectedItem();
         SipTypes type;
-        if (selectedType.equals("BagIt"))
+        if ("BagIt".equals(selectedType))
           type = SipTypes.BAGIT;
         else
           type = SipTypes.EARK;

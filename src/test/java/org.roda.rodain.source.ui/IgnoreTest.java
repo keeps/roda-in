@@ -4,8 +4,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.TreeItem;
 import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
 import org.junit.Test;
 import org.roda.rodain.core.Footer;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
@@ -21,12 +20,12 @@ import java.nio.file.Path;
  * @since 15-12-2015.
  */
 public class IgnoreTest extends ApplicationTest {
-  private Path testDir;
+  private static Path testDir;
   private FileExplorerPane fileExplorer;
 
   @Override
   public void start(Stage stage) throws Exception {
-    setUp();
+    setUpBeforeClass();
     new Footer(); //footer needs to be initialized because of setStatus
     fileExplorer = new FileExplorerPane(stage);
     fileExplorer.setFileExplorerRoot(testDir);
@@ -36,8 +35,7 @@ public class IgnoreTest extends ApplicationTest {
     stage.show();
   }
 
-  @Before
-  public void setUp() throws Exception {
+  public void setUpBeforeClass() throws Exception {
     testDir = Utils.createFolderStructure();
   }
 
@@ -102,8 +100,8 @@ public class IgnoreTest extends ApplicationTest {
   }
 
 
-  @After
-  public void tearDown() throws Exception {
+  @AfterClass
+  public static void tearDownAfterClass() throws Exception {
     FileUtils.deleteDirectory(testDir.toFile());
   }
 }

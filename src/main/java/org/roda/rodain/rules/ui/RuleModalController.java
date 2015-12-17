@@ -32,8 +32,6 @@ public class RuleModalController {
   private static Set<SourceTreeItem> sourceSet;
   private static SchemaNode schema;
 
-  private static LoadingPane loadingPane;
-
   private static VisitorStack visitors = new VisitorStack();
 
   private RuleModalController() {
@@ -54,7 +52,7 @@ public class RuleModalController {
     stage.setWidth(800);
     stage.setHeight(580);
 
-    loadingPane = new LoadingPane(schemaNode);
+    LoadingPane loadingPane = new LoadingPane(schemaNode);
     stage.setRoot(loadingPane);
 
     sourceSet = source;

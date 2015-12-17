@@ -318,7 +318,7 @@ public class SchemaPane extends BorderPane {
 
     // we need to check the size again because we may have deleted some items in
     // the "for" loop
-    if (sourceSet.isEmpty())
+    if (sourceSet == null || sourceSet.isEmpty())
       valid = false;
 
     if (valid)

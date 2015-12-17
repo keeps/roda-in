@@ -38,8 +38,6 @@ public class SourceTreeDirectory extends SourceTreeItem {
   private HashSet<SourceTreeItem> mapped;
   private HashSet<SourceTreeFile> files;
 
-  private Set<Rule> rules = new HashSet<>();
-
   public SourceTreeDirectory(Path file, SourceDirectory directory, SourceTreeItemState st, SourceTreeDirectory parent) {
     this(file, directory, parent);
     state = st;
@@ -457,7 +455,6 @@ public class SourceTreeDirectory extends SourceTreeItem {
    */
   @Override
   public void addMapping(Rule r) {
-    rules.add(r);
     if (state == SourceTreeItemState.NORMAL) {
       state = SourceTreeItemState.MAPPED;
     }

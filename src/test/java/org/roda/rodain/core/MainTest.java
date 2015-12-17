@@ -5,6 +5,7 @@ import javafx.scene.control.TreeItem;
 import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.roda.rodain.schema.ui.SchemaNode;
@@ -23,14 +24,13 @@ import java.nio.file.Paths;
  * Created by adrapereira on 17-12-2015.
  */
 public class MainTest extends ApplicationTest {
-  private Path testDir;
-  private Main main;
+  private static Path testDir;
   private SchemaPane schemaPane;
   private FileExplorerPane fileExplorer;
 
   @Override
   public void start(Stage stage) throws Exception {
-    main = new Main();
+    Main main = new Main();
     main.start(stage);
 
     schemaPane = Main.getSchemaPane();
@@ -42,7 +42,7 @@ public class MainTest extends ApplicationTest {
   }
 
   @Before
-  public void setUp() throws Exception {
+  public void setUpBeforeClass() throws Exception {
     testDir = Utils.createFolderStructure();
   }
 
@@ -53,7 +53,7 @@ public class MainTest extends ApplicationTest {
     clickOn("Unicamp");
     TreeItem selected = schemaPane.getTreeView().getSelectionModel().getSelectedItem();
     int selectedIndex = schemaPane.getTreeView().getSelectionModel().getSelectedIndex();
-    assert selected.getValue().equals("Unicamp");
+    assert "Unicamp".equals(selected.getValue());
     assert selectedIndex == 7;
 
     doubleClickOn("Unicamp");
@@ -85,7 +85,7 @@ public class MainTest extends ApplicationTest {
     assert selected instanceof SipPreviewNode;
     TreeItem parent = selected.getParent();
     assert parent instanceof SchemaNode;
-    assert ((SchemaNode) parent).getDob().getTitle().equals("Unicamp");
+    assert "Unicamp".equals(((SchemaNode) parent).getDob().getTitle());
 
     assert parent.getChildren().size() == 14;
 
@@ -101,8 +101,8 @@ public class MainTest extends ApplicationTest {
     assert parent.getChildren().size() == 1;
   }
 
-  @After
-  public void tearDown() throws Exception {
+  @AfterClass
+  public static void tearDownAfterClass() throws Exception {
     FileUtils.deleteDirectory(testDir.toFile());
   }
 

@@ -36,7 +36,6 @@ public class Rule extends Observable implements Observer, Comparable {
   private Map<String, SipPreview> sips;
   // map of SipPreview id -> SipPreviewNode
   private HashMap<String, SipPreviewNode> sipNodes = new HashMap<>();
-  private TreeVisitor visitor;
   private Image icon;
   private int added = 0;
   private int level;
@@ -164,6 +163,7 @@ public class Rule extends Observable implements Observer, Comparable {
     sips = new HashMap<>();
     sipNodes = new HashMap<>();
 
+    TreeVisitor visitor;
     switch (assocType) {
       case SIP_PER_FOLDER:
         SipPerFolderVisitor visitorFolder = new SipPerFolderVisitor(id.toString(), level, filters, metaType,
