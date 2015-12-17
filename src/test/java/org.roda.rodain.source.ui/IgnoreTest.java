@@ -40,7 +40,7 @@ public class IgnoreTest extends ApplicationTest {
     testDir = Utils.createFolderStructure();
   }
 
-  @Test
+  //@Test
   public void ignore() {
     TreeItem<String> root = fileExplorer.getTreeView().getRoot();
     root.setExpanded(true);
