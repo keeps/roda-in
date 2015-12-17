@@ -67,11 +67,13 @@ public class IgnoreTest extends ApplicationTest {
     dirA.setExpanded(true);
     sleep(1000);
     rightClickOn("dirAA");
+    sleep(500);
     clickOn("Remove Ignore");
     SourceTreeDirectory dirAA = (SourceTreeDirectory) dirA.getChildren().get(0);
     assert dirAA.getState() == SourceTreeItemState.NORMAL;
 
     rightClickOn("dirAB");
+    sleep(500);
     clickOn("Remove Ignore");
     SourceTreeDirectory dirAB = (SourceTreeDirectory) dirA.getChildren().get(1);
     assert dirAB.getState() == SourceTreeItemState.NORMAL;
