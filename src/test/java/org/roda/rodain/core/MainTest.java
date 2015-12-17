@@ -76,6 +76,7 @@ public class MainTest extends ApplicationTest {
     sleep(1000); //wait for the modal to open
     clickOn("#assoc3");
     clickOn("Continue");
+    sleep(1000); //wait for the modal to update
     clickOn("#meta4");
     clickOn("Confirm");
     sleep(2000); //wait for the SIPs creation

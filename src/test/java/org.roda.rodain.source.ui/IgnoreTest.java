@@ -40,11 +40,10 @@ public class IgnoreTest extends ApplicationTest {
     testDir = Utils.createFolderStructure();
   }
 
-  //@Test
+  @Test
   public void ignore() {
+    sleep(1000);
     TreeItem<String> root = fileExplorer.getTreeView().getRoot();
-    root.setExpanded(true);
-    sleep(500);
 
     fileExplorer.getTreeView().getSelectionModel().selectIndices(4);
     sleep(1000);
@@ -56,7 +55,7 @@ public class IgnoreTest extends ApplicationTest {
     assert root.getChildren().get(2) != dir4;
 
     fileExplorer.toggleIgnoredShowing();
-    sleep(500);
+    sleep(1000);
     assert root.getChildren().size() == 4;
     assert root.getChildren().get(3) == dir4;
 
@@ -65,7 +64,7 @@ public class IgnoreTest extends ApplicationTest {
     assert dirA.getState() == SourceTreeItemState.IGNORED;
 
     dirA.setExpanded(true);
-    sleep(500);
+    sleep(1000);
     rightClickOn("dirAA");
     clickOn("Remove Ignore");
     SourceTreeDirectory dirAA = (SourceTreeDirectory) dirA.getChildren().get(0);
@@ -77,7 +76,7 @@ public class IgnoreTest extends ApplicationTest {
     assert dirAB.getState() == SourceTreeItemState.NORMAL;
 
     doubleClickOn("dirAB");
-    sleep(500);
+    sleep(1000);
     SourceTreeFile file1AB = (SourceTreeFile) dirAB.getChildren().get(0);
     assert file1AB.getState() == SourceTreeItemState.NORMAL;
 
