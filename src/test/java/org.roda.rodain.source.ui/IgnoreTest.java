@@ -1,11 +1,11 @@
 package org.roda.rodain.source.ui;
 
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.TreeItem;
 import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.roda.rodain.core.Footer;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
@@ -26,7 +26,6 @@ public class IgnoreTest extends ApplicationTest {
 
   @Override
   public void start(Stage stage) throws Exception {
-    setUpBeforeClass();
     new Footer(); //footer needs to be initialized because of setStatus
     fileExplorer = new FileExplorerPane(stage);
     fileExplorer.setFileExplorerRoot(testDir);
@@ -36,7 +35,8 @@ public class IgnoreTest extends ApplicationTest {
     stage.show();
   }
 
-  public void setUpBeforeClass() throws Exception {
+  @BeforeClass
+  public static void setUpBeforeClass() throws Exception {
     testDir = Utils.createFolderStructure();
   }
 
@@ -45,7 +45,7 @@ public class IgnoreTest extends ApplicationTest {
     sleep(1000);
     TreeItem<String> root = fileExplorer.getTreeView().getRoot();
 
-    fileExplorer.getTreeView().getSelectionModel().selectIndices(4);
+    clickOn("dir4");
     sleep(1000);
     SourceTreeDirectory dir4 = (SourceTreeDirectory) root.getChildren().get(3);
 
