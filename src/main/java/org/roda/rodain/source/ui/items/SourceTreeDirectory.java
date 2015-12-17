@@ -11,7 +11,6 @@ import org.roda.rodain.source.representation.SourceDirectory;
 import org.roda.rodain.source.representation.SourceItem;
 import org.roda.rodain.source.ui.ExpandedEventHandler;
 import org.roda.rodain.source.ui.FileExplorerPane;
-import org.roda.rodain.utils.AsyncCallState;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -482,9 +481,8 @@ public class SourceTreeDirectory extends SourceTreeItem {
    * Creates a task to load the items to a temporary collection, otherwise the UI will hang while accessing the disk.
    * Then, sets the new collection as the item's children.
    */
-  public AsyncCallState loadMore() {
+  public void loadMore() {
     final ArrayList<TreeItem<String>> children = new ArrayList<>(getChildren());
-    AsyncCallState result = new AsyncCallState();
 
     // Remove "loading" items
     List<Object> toRemove = children.stream().
@@ -520,26 +518,10 @@ public class SourceTreeDirectory extends SourceTreeItem {
       public void handle(WorkerStateEvent workerStateEvent) {
         // Set the children
         getChildren().setAll(children);
-        result.setFinished();
-      }
-    });
-
-    task.setOnCancelled(new EventHandler<WorkerStateEvent>() {
-      @Override
-      public void handle(WorkerStateEvent event) {
-        result.setFinished();
-      }
-    });
-
-    task.setOnFailed(new EventHandler<WorkerStateEvent>() {
-      @Override
-      public void handle(WorkerStateEvent event) {
-        result.setFinished();
       }
     });
 
     new Thread(task).start();
-    return result;
   }
 
   private void addChild(List children, String sourceItem) {

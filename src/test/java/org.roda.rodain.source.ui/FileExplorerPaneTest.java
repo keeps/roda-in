@@ -1,5 +1,6 @@
 package org.roda.rodain.source.ui;
 
+import javafx.geometry.VerticalDirection;
 import javafx.scene.Scene;
 import javafx.scene.control.TreeItem;
 import javafx.stage.Stage;
@@ -11,7 +12,6 @@ import org.roda.rodain.core.Footer;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.testing.Utils;
-import org.roda.rodain.utils.AsyncCallState;
 import org.testfx.framework.junit.ApplicationTest;
 
 import java.io.File;
@@ -53,8 +53,6 @@ public class FileExplorerPaneTest extends ApplicationTest {
     assert root instanceof SourceTreeDirectory;
     assert ((SourceTreeDirectory) root).getPath().equals(testDir.toString());
 
-    /* Tree is well structured */
-    loadMore(root);
     assert root.getChildren().size() == 4;
   }
 
@@ -66,14 +64,16 @@ public class FileExplorerPaneTest extends ApplicationTest {
     assert dir1 != null;
     assert "dir1".equals(dir1.getValue());
 
-    loadMore(dir1);
+    doubleClickOn("dir1");
     assert dir1.getChildren().size() == LOAD_MORE_SIZE + 1;
     assert dir1.getChildren().get(0) instanceof SourceTreeFile;
 
-    loadMore(dir1);
+    scroll(50, VerticalDirection.DOWN);
+    clickOn("Load More...");
     assert dir1.getChildren().size() == (LOAD_MORE_SIZE * 2) + 1;
 
-    loadMore(dir1);
+    scroll(50, VerticalDirection.DOWN);
+    clickOn("Load More...");
     assert dir1.getChildren().size() == 120;
 
     SourceTreeFile file = (SourceTreeFile) dir1.getChildren().get(0);
@@ -93,14 +93,16 @@ public class FileExplorerPaneTest extends ApplicationTest {
     assert dir2 != null;
     assert "dir2".equals(dir2.getValue());
 
-    loadMore(dir2);
+    doubleClickOn("dir2");
     assert dir2.getChildren().size() == LOAD_MORE_SIZE + 1;
     assert dir2.getChildren().get(0) instanceof SourceTreeDirectory;
 
-    loadMore(dir2);
+    scroll(50, VerticalDirection.DOWN);
+    clickOn("Load More...");
     assert dir2.getChildren().size() == (LOAD_MORE_SIZE * 2) + 1;
 
-    loadMore(dir2);
+    scroll(50, VerticalDirection.DOWN);
+    clickOn("Load More...");
     assert dir2.getChildren().size() == 120;
   }
 
@@ -112,13 +114,15 @@ public class FileExplorerPaneTest extends ApplicationTest {
     assert dir3 != null;
     assert "dir3".equals(dir3.getValue());
 
-    loadMore(dir3);
+    doubleClickOn("dir3");
     assert dir3.getChildren().size() == LOAD_MORE_SIZE + 1;
 
-    loadMore(dir3);
+    scroll(50, VerticalDirection.DOWN);
+    clickOn("Load More...");
     assert dir3.getChildren().size() == (LOAD_MORE_SIZE * 2) + 1;
 
-    loadMore(dir3);
+    scroll(50, VerticalDirection.DOWN);
+    clickOn("Load More...");
     assert dir3.getChildren().size() == 140;
 
     List<Object> files = dir3.getChildren().stream().
@@ -140,42 +144,28 @@ public class FileExplorerPaneTest extends ApplicationTest {
     assert dir4 != null;
     assert "dir4".equals(dir4.getValue());
 
-    loadMore(dir4);
+    doubleClickOn("dir4");
     assert dir4.getChildren().size() == 5;
 
     TreeItem<String> dirA = dir4.getChildren().get(0);
     assert "dirA".equals(dirA.getValue());
     assert dirA instanceof SourceTreeDirectory;
 
-    loadMore(dirA);
+    doubleClickOn("dirA");
     assert dirA.getChildren().size() == 2;
     SourceTreeDirectory dirAA = (SourceTreeDirectory) dirA.getChildren().get(0);
     assert "dirAA".equals(dirAA.getValue());
 
-    loadMore(dirAA);
+    doubleClickOn("dirAA");
     assert dirAA.getChildren().size() == 3;
     SourceTreeDirectory dirAAC = (SourceTreeDirectory) dirAA.getChildren().get(2);
     assert "dirAAC".equals(dirAAC.getValue());
 
-    loadMore(dirAAC);
+    doubleClickOn("dirAAC");
     assert dirAAC.getChildren().size() == 10;
     SourceTreeFile file = (SourceTreeFile) dirAAC.getChildren().get(0);
     assert "file0.txt".equals(file.getValue());
 
-  }
-
-  private void loadMore(TreeItem dir) {
-    if (dir instanceof SourceTreeDirectory) {
-      AsyncCallState dirTask = ((SourceTreeDirectory) dir).loadMore();
-      try {
-        synchronized (dirTask) {
-          dirTask.wait();
-          dir.setExpanded(true);
-        }
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-    }
   }
 
   @AfterClass

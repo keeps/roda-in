@@ -45,12 +45,8 @@ public class IgnoreTest extends ApplicationTest {
     TreeItem<String> root = fileExplorer.getTreeView().getRoot();
     root.setExpanded(true);
     sleep(500);
-    Platform.runLater(new Runnable() {
-      @Override
-      public void run() {
-        fileExplorer.getTreeView().getSelectionModel().selectIndices(4);
-      }
-    });
+
+    fileExplorer.getTreeView().getSelectionModel().selectIndices(4);
     sleep(1000);
     SourceTreeDirectory dir4 = (SourceTreeDirectory) root.getChildren().get(3);
 
