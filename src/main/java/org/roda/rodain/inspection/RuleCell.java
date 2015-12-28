@@ -12,6 +12,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.apache.commons.lang.StringUtils;
+import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.Main;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.RuleTypes;
@@ -28,7 +29,6 @@ import java.util.*;
  * @since 16-11-2015.
  */
 public class RuleCell extends HBox implements Observer {
-  private static Properties properties;
   private Rule rule;
   private SchemaNode schemaNode;
 
@@ -105,16 +105,16 @@ public class RuleCell extends HBox implements Observer {
     String type;
     switch (ruleType) {
       case SINGLE_SIP:
-        type = properties.getProperty("association.singleSip.title");
+        type = AppProperties.getConfig("association.singleSip.title");
         break;
       case SIP_PER_FILE:
-        type = properties.getProperty("association.sipPerFile.title");
+        type = AppProperties.getConfig("association.sipPerFile.title");
         break;
       case SIP_PER_FOLDER:
-        type = properties.getProperty("association.sipPerFolder.title");
+        type = AppProperties.getConfig("association.sipPerFolder.title");
         break;
       case SIP_PER_SELECTION:
-        type = properties.getProperty("association.sipSelection.title");
+        type = AppProperties.getConfig("association.sipSelection.title");
         break;
       default:
         type = "Unknown association type";
@@ -155,15 +155,6 @@ public class RuleCell extends HBox implements Observer {
     content.getChildren().addAll(lType, sourceBox);
 
     return content;
-  }
-
-  /**
-   * Sets the Properties object of RuleCell.
-   *
-   * @param prop The new Properties object.
-   */
-  public static void setProperties(Properties prop) {
-    properties = prop;
   }
 
   /**

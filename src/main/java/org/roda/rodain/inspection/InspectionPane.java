@@ -81,6 +81,8 @@ public class InspectionPane extends BorderPane {
     topBox.getChildren().add(top);
     topBox.setPadding(new Insets(10, 0, 10, 0));
     topBox.setAlignment(Pos.CENTER_LEFT);
+
+
   }
 
   private void createMetadata() {
@@ -103,7 +105,7 @@ public class InspectionPane extends BorderPane {
 
     /*
      * We listen to the focused property and not the text property because we
-     * only need to update when the text area loses focus Using text property,
+     * only need to update when the text area loses focus. Using text property,
      * we would update after every single character modification, making the
      * application slower
      */

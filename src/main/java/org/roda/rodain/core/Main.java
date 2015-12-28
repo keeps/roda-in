@@ -107,8 +107,6 @@ public class Main extends Application {
     Font.loadFont(ClassLoader.getSystemResource("fonts/Ubuntu-Medium.ttf").toExternalForm(), 10);
     Font.loadFont(ClassLoader.getSystemResource("fonts/Ubuntu-Light.ttf").toExternalForm(), 10);
 
-    loadProperties();
-
     createFrameStructure();
     createMenu();
 
@@ -260,22 +258,6 @@ public class Main extends Application {
 
     menu.getMenus().addAll(menuFile, menuEdit, menuView);
     mainPane.setTop(menu);
-  }
-
-  private void loadProperties() {
-    try {
-      Properties style = new Properties();
-      style.load(ClassLoader.getSystemResource("properties/styles.properties").openStream());
-      SourceTreeCell.setStyleProperties(style);
-
-      Properties config = new Properties();
-      config.load(ClassLoader.getSystemResource("properties/config.properties").openStream());
-      RuleModalPane.setProperties(config);
-      RuleCell.setProperties(config);
-      SipMetadata.setProperties(config);
-    } catch (IOException e) {
-      log.error("Error while loading properties", e);
-    }
   }
 
   public static Set<SourceTreeItem> getSourceSelectedItems() {

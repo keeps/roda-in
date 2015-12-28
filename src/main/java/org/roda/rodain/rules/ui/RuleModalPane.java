@@ -15,6 +15,7 @@ import javafx.scene.layout.*;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.RuleTypes;
 import org.roda.rodain.rules.sip.TemplateType;
@@ -44,8 +45,6 @@ public class RuleModalPane extends BorderPane {
   private enum States {
     ASSOCIATION, METADATA
   }
-
-  private static Properties properties;
 
   private Stage stage;
   private SchemaNode schema;
@@ -90,15 +89,6 @@ public class RuleModalPane extends BorderPane {
     createBottom();
 
     currentState = States.ASSOCIATION;
-  }
-
-  /**
-   * Sets the properties object for this class.
-   *
-   * @param prop The properties object.
-   */
-  public static void setProperties(Properties prop) {
-    properties = prop;
   }
 
   private void createTop() {
@@ -162,27 +152,27 @@ public class RuleModalPane extends BorderPane {
       }
     });
 
-    String icon = properties.getProperty("association.singleSip.icon");
-    String title = properties.getProperty("association.singleSip.title");
-    String description = properties.getProperty("association.singleSip.description");
+    String icon = AppProperties.getConfig("association.singleSip.icon");
+    String title = AppProperties.getConfig("association.singleSip.title");
+    String description = AppProperties.getConfig("association.singleSip.description");
     HBoxCell cellSingleSip = new HBoxCell("assoc1", icon, title, description, new HBox());
     cellSingleSip.setUserData(RuleTypes.SINGLE_SIP);
 
-    icon = properties.getProperty("association.sipSelection.icon");
-    title = properties.getProperty("association.sipSelection.title");
-    description = properties.getProperty("association.sipSelection.description");
+    icon = AppProperties.getConfig("association.sipSelection.icon");
+    title = AppProperties.getConfig("association.sipSelection.title");
+    description = AppProperties.getConfig("association.sipSelection.description");
     HBoxCell cellSelected = new HBoxCell("assoc2", icon, title, description, new HBox());
     cellSelected.setUserData(RuleTypes.SIP_PER_SELECTION);
 
-    icon = properties.getProperty("association.sipPerFile.icon");
-    title = properties.getProperty("association.sipPerFile.title");
-    description = properties.getProperty("association.sipPerFile.description");
+    icon = AppProperties.getConfig("association.sipPerFile.icon");
+    title = AppProperties.getConfig("association.sipPerFile.title");
+    description = AppProperties.getConfig("association.sipPerFile.description");
     HBoxCell cellSipPerFile = new HBoxCell("assoc3", icon, title, description, new HBox());
     cellSipPerFile.setUserData(RuleTypes.SIP_PER_FILE);
 
-    icon = properties.getProperty("association.sipPerFolder.icon");
-    title = properties.getProperty("association.sipPerFolder.title");
-    description = properties.getProperty("association.sipPerFolder.description");
+    icon = AppProperties.getConfig("association.sipPerFolder.icon");
+    title = AppProperties.getConfig("association.sipPerFolder.title");
+    description = AppProperties.getConfig("association.sipPerFolder.description");
     HBox options = createPerFolderOptions();
     HBoxCell cellSipPerFolder = new HBoxCell("assoc4", icon, title, description, options);
     cellSipPerFolder.setUserData(RuleTypes.SIP_PER_FOLDER);
@@ -258,28 +248,28 @@ public class RuleModalPane extends BorderPane {
       }
     });
 
-    String icon = properties.getProperty("metadata.singleFile.icon");
-    String title = properties.getProperty("metadata.singleFile.title");
-    String description = properties.getProperty("metadata.singleFile.description");
+    String icon = AppProperties.getConfig("metadata.singleFile.icon");
+    String title = AppProperties.getConfig("metadata.singleFile.title");
+    String description = AppProperties.getConfig("metadata.singleFile.description");
     cellSingleFile = new HBoxCell("meta1", icon, title, description, optionsSingleFile());
     cellSingleFile.setUserData(MetadataTypes.SINGLE_FILE);
 
-    icon = properties.getProperty("metadata.sameFolder.icon");
-    String tempTitle = properties.getProperty("metadata.sameFolder.title");
+    icon = AppProperties.getConfig("metadata.sameFolder.icon");
+    String tempTitle = AppProperties.getConfig("metadata.sameFolder.title");
     title = String.format("%s \"%s\"", tempTitle, pathSameFolder());
-    description = properties.getProperty("metadata.sameFolder.description");
+    description = AppProperties.getConfig("metadata.sameFolder.description");
     cellSameFolder = new HBoxCell("meta2", icon, title, description, new HBox());
     cellSameFolder.setUserData(MetadataTypes.SAME_DIRECTORY);
 
-    icon = properties.getProperty("metadata.diffFolder.icon");
-    title = properties.getProperty("metadata.diffFolder.title");
-    description = properties.getProperty("metadata.diffFolder.description");
+    icon = AppProperties.getConfig("metadata.diffFolder.icon");
+    title = AppProperties.getConfig("metadata.diffFolder.title");
+    description = AppProperties.getConfig("metadata.diffFolder.description");
     cellDiffFolder = new HBoxCell("meta3", icon, title, description, optionsDiffFolder());
     cellDiffFolder.setUserData(MetadataTypes.DIFF_DIRECTORY);
 
-    icon = properties.getProperty("metadata.template.icon");
-    title = properties.getProperty("metadata.template.title");
-    description = properties.getProperty("metadata.template.description");
+    icon = AppProperties.getConfig("metadata.template.icon");
+    title = AppProperties.getConfig("metadata.template.title");
+    description = AppProperties.getConfig("metadata.template.description");
     HBoxCell cellTemplate = new HBoxCell("meta4", icon, title, description, optionsTemplate());
     cellTemplate.setUserData(MetadataTypes.TEMPLATE);
 

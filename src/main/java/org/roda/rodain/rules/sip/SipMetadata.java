@@ -1,5 +1,6 @@
 package org.roda.rodain.rules.sip;
 
+import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.utils.Utils;
 import org.slf4j.LoggerFactory;
@@ -16,7 +17,6 @@ import java.util.Properties;
  */
 public class SipMetadata {
   private static final org.slf4j.Logger log = LoggerFactory.getLogger(SipMetadata.class.getName());
-  private static Properties properties;
   private MetadataTypes type;
   private TemplateType templateType;
   private boolean loaded = false, modified = false;
@@ -49,9 +49,9 @@ public class SipMetadata {
         if (templateType != null) {
           String fileName;
           if (templateType == TemplateType.EAD) {
-            fileName = properties.getProperty("metadata.template.ead");
+            fileName = AppProperties.getConfig("metadata.template.ead");
           } else
-            fileName = properties.getProperty("metadata.template.dcmes");
+            fileName = AppProperties.getConfig("metadata.template.dcmes");
 
           InputStream contentStream = ClassLoader.getSystemResource(fileName).openStream();
           content = Utils.convertStreamToString(contentStream);
@@ -97,14 +97,5 @@ public class SipMetadata {
   public void update(String meta) {
     modified = true;
     content = meta;
-  }
-
-  /**
-   * Sets the Properties object of SipMetadata.
-   *
-   * @param prop The new Properties object.
-   */
-  public static void setProperties(Properties prop) {
-    properties = prop;
   }
 }
