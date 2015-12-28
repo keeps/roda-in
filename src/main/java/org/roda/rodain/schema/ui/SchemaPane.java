@@ -265,6 +265,10 @@ public class SchemaPane extends BorderPane {
       rootNode.getChildren().add(sn);
       schemaNodes.add(sn);
     }
+    sortRootChildren();
+  }
+
+  private void sortRootChildren() {
     ArrayList<TreeItem<String>> aux = new ArrayList<>(rootNode.getChildren());
     Collections.sort(aux, new SchemaComparator());
     rootNode.getChildren().setAll(aux);
@@ -439,8 +443,10 @@ public class SchemaPane extends BorderPane {
             parent.getChildren().remove(selected);
             if (node == null) {
               rootNode.getChildren().add(selected);
+              sortRootChildren();
             } else {
               node.getChildren().add(selected);
+              node.sortChildren();
             }
           } else {
             startAssociation(node);
