@@ -1,5 +1,13 @@
 package org.roda.rodain.source.ui;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.*;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -15,6 +23,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+
 import org.roda.rodain.core.Footer;
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.source.representation.SourceDirectory;
@@ -24,14 +33,6 @@ import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.Utils;
 import org.roda.rodain.utils.WalkFileTree;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -282,7 +283,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
         if (item != null && item.getState() == SourceTreeItemState.NORMAL) {
           Dragboard db = cell.startDragAndDrop(TransferMode.COPY);
           ClipboardContent content = new ClipboardContent();
-          String s = item.getPath();
+          String s = "source node - " + item.getPath();
           if (s != null) {
             content.putString(s);
             db.setContent(content);

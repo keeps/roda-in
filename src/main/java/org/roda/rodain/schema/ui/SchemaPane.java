@@ -12,9 +12,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.TransferMode;
+import javafx.scene.input.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -329,11 +327,33 @@ public class SchemaPane extends BorderPane {
   }
 
   private void setDropEvent(SchemaTreeCell cell) {
+    setOnDragDetected(cell);
     setOnDragOver(cell);
     setOnDragEntered(cell);
     setOnDragExited(cell);
     setOnDragDropped(cell);
     setOnDragDone(cell);
+  }
+
+  private void setOnDragDetected(SchemaTreeCell cell) {
+    cell.setOnDragDetected(new EventHandler<MouseEvent>() {
+      @Override
+      public void handle(MouseEvent event) {
+        TreeItem item = cell.getTreeItem();
+        if (item instanceof SchemaNode) {
+          if (item != null) {
+            Dragboard db = cell.startDragAndDrop(TransferMode.COPY);
+            ClipboardContent content = new ClipboardContent();
+            String s = "scheme node - " + ((SchemaNode) item).getDob().getId();
+            if (s != null) {
+              content.putString(s);
+              db.setContent(content);
+            }
+            event.consume();
+          }
+        }
+      }
+    });
   }
 
   private void setOnDragOver(final SchemaTreeCell cell) {
@@ -345,7 +365,7 @@ public class SchemaPane extends BorderPane {
         if (treeItem instanceof SchemaNode) {
           SchemaNode item = (SchemaNode) cell.getTreeItem();
           if (item != null && event.getGestureSource() != cell && event.getDragboard().hasString()) {
-            event.acceptTransferModes(TransferMode.COPY);
+            event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
           }
         }
         event.consume();
@@ -387,12 +407,19 @@ public class SchemaPane extends BorderPane {
     cell.setOnDragDropped(new EventHandler<DragEvent>() {
       @Override
       public void handle(DragEvent event) {
+        SchemaNode descObj = (SchemaNode) cell.getTreeItem();
         Dragboard db = event.getDragboard();
         boolean success = false;
         if (db.hasString()) {
+          if (db.getString().startsWith("scheme")) {
+            TreeItem selected = treeView.getSelectionModel().getSelectedItem();
+            TreeItem parent = selected.getParent();
+            parent.getChildren().remove(selected);
+            descObj.getChildren().add(selected);
+          } else {
+            startAssociation(descObj);
+          }
           success = true;
-          SchemaNode descObj = (SchemaNode) cell.getTreeItem();
-          startAssociation(descObj);
         }
         event.setDropCompleted(success);
         event.consume();
