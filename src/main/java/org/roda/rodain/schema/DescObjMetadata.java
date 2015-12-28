@@ -64,11 +64,20 @@ public class DescObjMetadata {
   /**
    * Sets the content of the description object metadata.
    *
-   * @param content The content
+   * @param content The content enconded in Base64
    */
   public void setContent(String content) {
     byte[] decoded = Base64.decodeBase64(content);
     this.content = new String(decoded);
+  }
+
+  /**
+   * Sets the content of the description object metadata.
+   *
+   * @param content The decoded content
+   */
+  public void setContentDecoded(String content) {
+    this.content = content;
   }
 
   /**

@@ -121,20 +121,40 @@ public class InspectionPane extends BorderPane {
    * Saves the metadata from the text area in the SIP.
    */
   public void saveMetadata() {
+    String oldMetadata = null, newMetadata = null;
     if (currentSIP != null) {
-      String oldMetadata = currentSIP.getMetadataContent();
-      String newMetadata = metaText.getText();
-      // only update if there's been modifications or there's no old
-      // metadata and the new isn't empty
-      boolean update = false;
-      if (newMetadata != null) {
-        if (oldMetadata == null)
-          update = true;
-        else if (!oldMetadata.equals(newMetadata))
-          update = true;
+      oldMetadata = currentSIP.getMetadataContent();
+      newMetadata = metaText.getText();
+
+    } else if (currentSchema != null) {
+      newMetadata = metaText.getText();
+      List<DescObjMetadata> metadatas = currentSchema.getDob().getMetadata();
+      if (!metadatas.isEmpty()) {
+        oldMetadata = metadatas.get(0).getContent();
       }
-      if (update)
+    }
+    // only update if there's been modifications or there's no old
+    // metadata and the new isn't empty
+    boolean update = false;
+    if (newMetadata != null) {
+      if (oldMetadata == null)
+        update = true;
+      else if (!oldMetadata.equals(newMetadata))
+        update = true;
+    }
+    if (update) {
+      if (currentSIP != null) {
         currentSIP.updateMetadata(metaText.getText());
+      } else if (currentSchema != null) {
+        List<DescObjMetadata> metadatas = currentSchema.getDob().getMetadata();
+        if (!metadatas.isEmpty()) {
+          metadatas.get(0).setContentDecoded(newMetadata);
+        } else {
+          DescObjMetadata newObjMetadata = new DescObjMetadata();
+          newObjMetadata.setContentDecoded(newMetadata);
+          metadatas.add(newObjMetadata);
+        }
+      }
     }
   }
 
