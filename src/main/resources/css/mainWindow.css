@@ -87,6 +87,18 @@
     -fx-background-color: lightgray;
 }
 
+.schemaNodeEmpty {
+    -fx-text-fill: black;
+}
+
+.schemaNodeEmpty:filled:hover {
+    -fx-background-color: lightgray;
+}
+
+.schemaNodeEmpty:focused:selected {
+    -fx-background-color: #089de3;
+    -fx-text-fill: white;
+}
 /* List-cell */
 
 .list-view {
