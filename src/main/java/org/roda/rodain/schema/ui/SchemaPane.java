@@ -287,14 +287,33 @@ public class SchemaPane extends BorderPane {
     });
 
     Button addLevel = new Button("Add level");
-
-    addLevel.setDisable(true);
     addLevel.setMinWidth(100);
+
+    addLevel.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent actionEvent) {
+        SchemaNode selected = getSelectedItem();
+        DescriptionObject dobj = new DescriptionObject();
+        dobj.setId(UUID.randomUUID().toString());
+        dobj.setTitle("New node");
+        dobj.setDescriptionlevel("class");
+        SchemaNode newNode = new SchemaNode(dobj);
+        if (selected != null) {
+          dobj.setParentId(selected.getDob().getId());
+          selected.getChildren().add(newNode);
+        } else {
+          rootNode.getChildren().add(newNode);
+        }
+        // Edit the node's title as soon as it's created
+        treeView.layout();
+        treeView.edit(newNode);
+      }
+    });
 
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
-    bottom.getChildren().addAll(associate, space);
+    bottom.getChildren().addAll(associate, space, addLevel);
   }
 
   private void startAssociation(SchemaNode descObj) {
