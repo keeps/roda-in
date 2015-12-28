@@ -12,34 +12,22 @@ import java.util.Properties;
  */
 public class AppProperties {
   private static final Logger log = LoggerFactory.getLogger(AppProperties.class.getName());
-  private static Properties style = loadStyle(), config = loadConfig();
+  private static Properties style = load("styles"), config = load("config"), descLevels = load("roda-description-levels-hierarchy");
 
   private AppProperties() {
 
   }
 
-  private static Properties loadStyle() {
+  private static Properties load(String fileName) {
     Properties result = null;
     try {
       result = new Properties();
-      result.load(ClassLoader.getSystemResource("properties/styles.properties").openStream());
+      result.load(ClassLoader.getSystemResource("properties/" + fileName + ".properties").openStream());
     } catch (IOException e) {
       log.error("Error while loading properties", e);
     }
     return result;
   }
-
-  private static Properties loadConfig() {
-    Properties result = null;
-    try {
-      result = new Properties();
-      result.load(ClassLoader.getSystemResource("properties/config.properties").openStream());
-    } catch (IOException e) {
-      log.error("Error while loading properties", e);
-    }
-    return result;
-  }
-
   /**
    * @param key The name of the property (style)
    * @return The value of the property (style)
@@ -54,5 +42,13 @@ public class AppProperties {
    */
   public static String getConfig(String key) {
     return config.getProperty(key);
+  }
+
+  /**
+   * @param key The name of the property (description levels hierarchy)
+   * @return The value of the property (description levels hierarchy)
+   */
+  public static String getDescLevels(String key) {
+    return descLevels.getProperty(key);
   }
 }

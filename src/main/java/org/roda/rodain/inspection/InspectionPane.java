@@ -2,22 +2,29 @@ package org.roda.rodain.inspection;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
+import org.roda.rodain.rules.ui.HBoxCell;
 import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SipPreviewNode;
+import org.roda.rodain.utils.UIPair;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,25 +40,28 @@ import java.util.Set;
 public class InspectionPane extends BorderPane {
   private VBox topBox;
   private VBox center;
+  private HBox topSpace;
+  private ComboBox<UIPair> itemTypes;
 
-  private VBox metadata;
-  private TextArea metaText;
+  private SipPreview currentSIP;
+  private SchemaNode currentSchema;
+  private ImageView topIcon;
 
   private VBox centerHelp;
-
+  // Metadata
+  private VBox metadata;
+  private TextArea metaText;
+  // SIP Content
   private BorderPane content;
   private TreeView sipFiles;
   private SipContentDirectory sipRoot;
-
+  private Button remove, flatten, skip;
+  private VBox bottom;
+  // Rules
   private BorderPane rules;
   private ListView<RuleCell> ruleList;
   private VBox emptyRulesPane;
 
-  private Button remove, flatten, skip;
-  private VBox bottom;
-
-  private SipPreview currentSIP;
-  private SchemaNode currentSchema;
 
   /**
    * Creates a new inspection pane.
@@ -82,6 +92,27 @@ public class InspectionPane extends BorderPane {
     topBox.setPadding(new Insets(10, 0, 10, 0));
     topBox.setAlignment(Pos.CENTER_LEFT);
 
+    topSpace = new HBox();
+    HBox.setHgrow(topSpace, Priority.ALWAYS);
+
+    itemTypes = new ComboBox<>();
+    ObservableList<UIPair> itemList = FXCollections.observableArrayList();
+    String itemTypesRaw = AppProperties.getDescLevels("levels_ordered");
+    String[] itemTypesArray = itemTypesRaw.split(",");
+    for (String item : itemTypesArray) {
+      UIPair pair = new UIPair(item, AppProperties.getDescLevels("label.en." + item));
+      itemList.add(pair);
+    }
+    itemTypes.setItems(itemList);
+    itemTypes.valueProperty().addListener(new ChangeListener<UIPair>() {
+      @Override
+      public void changed(ObservableValue ov, UIPair t, UIPair t1) {
+        if (currentSchema != null) {
+          currentSchema.updateDescLevel(t1.getKey().toString());
+          topIcon.setImage(currentSchema.getImage());
+        }
+      }
+    });
 
   }
 
@@ -496,7 +527,17 @@ public class InspectionPane extends BorderPane {
     HBox top = new HBox(5);
     top.setPadding(new Insets(0, 10, 10, 10));
     top.setAlignment(Pos.CENTER_LEFT);
-    top.getChildren().addAll(node.getGraphic(), title);
+    topIcon = new ImageView(node.getImage());
+    top.getChildren().addAll(topIcon, title, topSpace, itemTypes);
+
+    // Select current description level
+    String currentDescLevel = node.getDob().getDescriptionlevel();
+    for (UIPair pair : itemTypes.getItems()) {
+      if (currentDescLevel.equals(pair.getKey())) {
+        itemTypes.getSelectionModel().select(pair);
+        break;
+      }
+    }
 
     Separator separatorTop = new Separator();
     topBox.getChildren().clear();

@@ -37,13 +37,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     ruleObjects = new HashMap<>();
     schemaNodes = new HashSet<>();
 
-    ResourceBundle hierarchyConfig = ResourceBundle.getBundle("properties/roda-description-levels-hierarchy");
-    String category = hierarchyConfig.getString("category." + dobject.getDescriptionlevel());
-    String unicode = hierarchyConfig.getString("icon." + category);
-
-    Image im = FontAwesomeImageCreator.generate(unicode);
-    icon = im;
-    this.setGraphic(new ImageView(im));
+    updateDescLevel(dob.getDescriptionlevel());
   }
 
   /**
@@ -158,6 +152,17 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     for (int i : rules.values())
       result += i;
     return result;
+  }
+
+  public void updateDescLevel(String descLevel) {
+    dob.setDescriptionlevel(descLevel);
+    ResourceBundle hierarchyConfig = ResourceBundle.getBundle("properties/roda-description-levels-hierarchy");
+    String category = hierarchyConfig.getString("category." + dob.getDescriptionlevel());
+    String unicode = hierarchyConfig.getString("icon." + category);
+
+    Image im = FontAwesomeImageCreator.generate(unicode);
+    icon = im;
+    this.setGraphic(new ImageView(im));
   }
 
   /**
