@@ -361,7 +361,7 @@ public class SchemaPane extends BorderPane {
         TreeItem item = cell.getTreeItem();
         if (item instanceof SchemaNode) {
           if (item != null) {
-            Dragboard db = cell.startDragAndDrop(TransferMode.COPY);
+            Dragboard db = cell.startDragAndDrop(TransferMode.MOVE);
             ClipboardContent content = new ClipboardContent();
             String s = "scheme node - " + ((SchemaNode) item).getDob().getId();
             if (s != null) {
@@ -381,6 +381,9 @@ public class SchemaPane extends BorderPane {
       @Override
       public void handle(DragEvent event) {
         TreeItem<String> treeItem = cell.getTreeItem();
+        if (treeItem == null) {
+          event.acceptTransferModes(TransferMode.MOVE);
+        }
         if (treeItem instanceof SchemaNode) {
           SchemaNode item = (SchemaNode) cell.getTreeItem();
           if (item != null && event.getGestureSource() != cell && event.getDragboard().hasString()) {
@@ -426,7 +429,7 @@ public class SchemaPane extends BorderPane {
     cell.setOnDragDropped(new EventHandler<DragEvent>() {
       @Override
       public void handle(DragEvent event) {
-        SchemaNode descObj = (SchemaNode) cell.getTreeItem();
+        SchemaNode node = (SchemaNode) cell.getTreeItem();
         Dragboard db = event.getDragboard();
         boolean success = false;
         if (db.hasString()) {
@@ -434,9 +437,13 @@ public class SchemaPane extends BorderPane {
             TreeItem selected = treeView.getSelectionModel().getSelectedItem();
             TreeItem parent = selected.getParent();
             parent.getChildren().remove(selected);
-            descObj.getChildren().add(selected);
+            if (node == null) {
+              rootNode.getChildren().add(selected);
+            } else {
+              node.getChildren().add(selected);
+            }
           } else {
-            startAssociation(descObj);
+            startAssociation(node);
           }
           success = true;
         }
