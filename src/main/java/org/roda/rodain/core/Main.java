@@ -66,7 +66,8 @@ public class Main extends Application {
     String javaString = Runtime.class.getPackage().getSpecificationVersion();
     double javaVersion = Double.parseDouble(javaString);
     if (javaVersion < 1.8) {
-      log.error("Java version is " + javaString + ". Please use at least \"Java 1.8\".");
+      String format = AppProperties.getLocalizedString("Main.useJava8");
+      log.error(String.format(format, javaVersion));
       return;
     }
 
@@ -102,7 +103,7 @@ public class Main extends Application {
     try {
       stage.getIcons().add(new Image(ClassLoader.getSystemResource("roda2-logo.png").openStream()));
     } catch (IOException e) {
-      log.error("Error reading logo file", e);
+      log.error(AppProperties.getLocalizedString("Main.errorLogo"), e);
     }
 
     // load the custom fonts
@@ -159,12 +160,12 @@ public class Main extends Application {
 
   private void createMenu() {
     MenuBar menu = new MenuBar();
-    Menu menuFile = new Menu("File");
-    Menu menuEdit = new Menu("Edit");
-    Menu menuView = new Menu("View");
+    Menu menuFile = new Menu(AppProperties.getLocalizedString("Main.file"));
+    Menu menuEdit = new Menu(AppProperties.getLocalizedString("Main.edit"));
+    Menu menuView = new Menu(AppProperties.getLocalizedString("Main.view"));
 
     // File
-    final MenuItem openFolder = new MenuItem("Open folder");
+    final MenuItem openFolder = new MenuItem(AppProperties.getLocalizedString("Main.openFolder"));
     openFolder.setAccelerator(KeyCombination.keyCombination("Ctrl+O"));
     openFolder.setOnAction(new EventHandler<ActionEvent>() {
       @Override
@@ -173,7 +174,7 @@ public class Main extends Application {
       }
     });
 
-    final MenuItem updateCS = new MenuItem("Load classification scheme");
+    final MenuItem updateCS = new MenuItem(AppProperties.getLocalizedString("Main.loadCS"));
     updateCS.setAccelerator(KeyCombination.keyCombination("Ctrl+L"));
     updateCS.setOnAction(new EventHandler<ActionEvent>() {
       @Override
@@ -182,13 +183,13 @@ public class Main extends Application {
       }
     });
 
-    final MenuItem exportCS = new MenuItem("Export classification scheme");
+    final MenuItem exportCS = new MenuItem(AppProperties.getLocalizedString("Main.exportCS"));
     exportCS.setAccelerator(KeyCombination.keyCombination("Ctrl+E"));
     exportCS.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent t) {
         FileChooser chooser = new FileChooser();
-        chooser.setTitle("Please choose a file");
+        chooser.setTitle(AppProperties.getLocalizedString("filechooser.title"));
         File selectedFile = chooser.showSaveDialog(stage);
         if (selectedFile == null)
           return;
@@ -205,7 +206,7 @@ public class Main extends Application {
       }
     });
 
-    final MenuItem createSIPs = new MenuItem("Export SIPs");
+    final MenuItem createSIPs = new MenuItem(AppProperties.getLocalizedString("Main.exportSips"));
     createSIPs.setAccelerator(KeyCombination.keyCombination("Ctrl+X"));
     createSIPs.setOnAction(new EventHandler<ActionEvent>() {
       @Override
@@ -219,7 +220,7 @@ public class Main extends Application {
       }
     });
 
-    final MenuItem quit = new MenuItem("Quit");
+    final MenuItem quit = new MenuItem(AppProperties.getLocalizedString("Main.quit"));
     quit.setAccelerator(KeyCombination.keyCombination("Ctrl+Q"));
     quit.setOnAction(new EventHandler<ActionEvent>() {
       @Override
@@ -232,7 +233,7 @@ public class Main extends Application {
     menuFile.getItems().addAll(openFolder, updateCS, exportCS, createSIPs, quit);
 
     // Edit
-    final MenuItem ignoreItems = new MenuItem("Ignore item(s)");
+    final MenuItem ignoreItems = new MenuItem(AppProperties.getLocalizedString("Main.ignoreItems"));
     ignoreItems.setAccelerator(KeyCombination.keyCombination("DELETE"));
     ignoreItems.setOnAction(new EventHandler<ActionEvent>() {
       @Override
@@ -243,40 +244,40 @@ public class Main extends Application {
     menuEdit.getItems().add(ignoreItems);
 
     // View
-    final MenuItem showFiles = new MenuItem("Hide Files");
+    final MenuItem showFiles = new MenuItem(AppProperties.getLocalizedString("Main.hideFiles"));
     showFiles.setAccelerator(KeyCombination.keyCombination("Ctrl+F"));
     showFiles.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent t) {
         previewExplorer.toggleFilesShowing();
         if (FileExplorerPane.isShowFiles())
-          showFiles.setText("Hide files");
+          showFiles.setText(AppProperties.getLocalizedString("Main.hideFiles"));
         else
-          showFiles.setText("Show files");
+          showFiles.setText(AppProperties.getLocalizedString("Main.showFiles"));
       }
     });
-    final MenuItem showIgnored = new MenuItem("Show Ignored");
+    final MenuItem showIgnored = new MenuItem(AppProperties.getLocalizedString("Main.showIgnored"));
     showIgnored.setAccelerator(KeyCombination.keyCombination("Ctrl+I"));
     showIgnored.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent t) {
         previewExplorer.toggleIgnoredShowing();
         if (FileExplorerPane.isShowIgnored())
-          showIgnored.setText("Hide ignored");
+          showIgnored.setText(AppProperties.getLocalizedString("Main.hideIgnored"));
         else
-          showIgnored.setText("Show ignored");
+          showIgnored.setText(AppProperties.getLocalizedString("Main.showIgnored"));
       }
     });
-    final MenuItem showMapped = new MenuItem("Show Mapped");
+    final MenuItem showMapped = new MenuItem(AppProperties.getLocalizedString("Main.showMapped"));
     showMapped.setAccelerator(KeyCombination.keyCombination("Ctrl+M"));
     showMapped.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent t) {
         previewExplorer.toggleMappedShowing();
         if (FileExplorerPane.isShowMapped())
-          showMapped.setText("Hide mapped");
+          showMapped.setText(AppProperties.getLocalizedString("Main.hideMapped"));
         else
-          showMapped.setText("Show mapped");
+          showMapped.setText(AppProperties.getLocalizedString("Main.showMapped"));
       }
     });
 
