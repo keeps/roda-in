@@ -4,6 +4,7 @@ import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
+
 import org.roda.rodain.core.Main;
 
 /**
@@ -38,6 +39,8 @@ public class SchemaClickedEventHandler implements EventHandler<MouseEvent> {
       if (source instanceof SchemaNode) {
         Main.getInspectionPane().update((SchemaNode) source);
       }
+    } else if (mouseEvent.getClickCount() == 2) {
+      treeView.getSelectionModel().clearSelection();
     }
   }
 }

@@ -17,7 +17,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -44,7 +46,7 @@ public class SchemaPane extends BorderPane {
   private TreeView<String> treeView;
   private VBox treeBox;
   private TreeItem<String> rootNode;
-  private HBox refresh;
+  private HBox topBox;
   private HBox bottom;
   private Stage primaryStage;
 
@@ -78,10 +80,10 @@ public class SchemaPane extends BorderPane {
     Label title = new Label("Classification Scheme");
     title.getStyleClass().add("title");
 
-    refresh = new HBox();
-    refresh.setPadding(new Insets(10, 10, 10, 10));
-    refresh.setAlignment(Pos.CENTER_LEFT);
-    refresh.getChildren().add(title);
+    topBox = new HBox();
+    topBox.setPadding(new Insets(10, 10, 10, 10));
+    topBox.setAlignment(Pos.CENTER_LEFT);
+    topBox.getChildren().add(title);
   }
 
   private void createCenterHelp() {
@@ -91,7 +93,7 @@ public class SchemaPane extends BorderPane {
     centerHelp.setAlignment(Pos.CENTER);
 
     VBox box = new VBox(40);
-    box.setPadding(new Insets(10, 10, 10, 10));
+    box.setPadding(new Insets(22, 10, 10, 10));
     box.setMaxWidth(355);
     box.setMaxHeight(200);
     box.setMinHeight(200);
@@ -118,8 +120,22 @@ public class SchemaPane extends BorderPane {
     load.getStyleClass().add("helpButton");
     loadBox.getChildren().add(load);
 
+    Hyperlink link = new Hyperlink("create");
+    link.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent event) {
+        setTop(topBox);
+        setCenter(treeBox);
+        setBottom(bottom);
+        rootNode.getChildren().clear();
+        addNewLevel();
+      }
+    });
+    TextFlow flow = new TextFlow(new Text("or "), link);
+    flow.setTextAlignment(TextAlignment.CENTER);
+
     box.getChildren().addAll(titleBox, loadBox);
-    centerHelp.getChildren().add(box);
+    centerHelp.getChildren().addAll(box, flow);
   }
 
   private void createTreeView() {
@@ -209,7 +225,7 @@ public class SchemaPane extends BorderPane {
   }
 
   private void updateClassificationSchema(ClassificationSchema cs) {
-    setTop(refresh);
+    setTop(topBox);
     setCenter(treeBox);
     setBottom(bottom);
     rootNode.getChildren().clear();
@@ -309,21 +325,7 @@ public class SchemaPane extends BorderPane {
     addLevel.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent actionEvent) {
-        SchemaNode selected = getSelectedItem();
-        DescriptionObject dobj = new DescriptionObject();
-        dobj.setId(UUID.randomUUID().toString());
-        dobj.setTitle("New node");
-        dobj.setDescriptionlevel("class");
-        SchemaNode newNode = new SchemaNode(dobj);
-        if (selected != null) {
-          dobj.setParentId(selected.getDob().getId());
-          selected.getChildren().add(newNode);
-        } else {
-          rootNode.getChildren().add(newNode);
-        }
-        // Edit the node's title as soon as it's created
-        treeView.layout();
-        treeView.edit(newNode);
+        addNewLevel();
       }
     });
 
@@ -331,6 +333,28 @@ public class SchemaPane extends BorderPane {
     HBox.setHgrow(space, Priority.ALWAYS);
 
     bottom.getChildren().addAll(associate, space, removeLevel, addLevel);
+  }
+
+  private SchemaNode addNewLevel() {
+    SchemaNode selected = getSelectedItem();
+    DescriptionObject dobj = new DescriptionObject();
+    dobj.setId(UUID.randomUUID().toString());
+    dobj.setTitle("New node");
+    dobj.setDescriptionlevel("class");
+    SchemaNode newNode = new SchemaNode(dobj);
+    if (selected != null) {
+      dobj.setParentId(selected.getDob().getId());
+      selected.getChildren().add(newNode);
+      if (!selected.isExpanded())
+        selected.setExpanded(true);
+    } else {
+      newNode.updateDescLevel("fonds");
+      rootNode.getChildren().add(newNode);
+    }
+    // Edit the node's title as soon as it's created
+    treeView.layout();
+    treeView.edit(newNode);
+    return newNode;
   }
 
   private void startAssociation(SchemaNode descObj) {
