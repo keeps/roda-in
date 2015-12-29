@@ -101,7 +101,7 @@ public class RuleModalPane extends BorderPane {
     box.setPadding(new Insets(10, 10, 10, 10));
     pane.getChildren().add(box);
 
-    Label title = new Label(AppProperties.getLocalizedString("LoadingPane.createAssociation") + schema.getDob().getTitle() + "\"");
+    Label title = new Label(AppProperties.getLocalizedString("LoadingPane.createAssociation") + " \"" + schema.getDob().getTitle() + "\"");
     title.setId("title");
 
     ArrayList<String> dirs = new ArrayList<>();

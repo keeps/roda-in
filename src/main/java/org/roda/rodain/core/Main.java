@@ -103,7 +103,7 @@ public class Main extends Application {
     try {
       stage.getIcons().add(new Image(ClassLoader.getSystemResource("roda2-logo.png").openStream()));
     } catch (IOException e) {
-      log.error(AppProperties.getLocalizedString("Main.errorLogo"), e);
+      log.error("Error reading logo file", e);
     }
 
     // load the custom fonts

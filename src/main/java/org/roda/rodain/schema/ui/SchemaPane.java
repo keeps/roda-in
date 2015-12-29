@@ -108,7 +108,7 @@ public class SchemaPane extends BorderPane {
 
     HBox loadBox = new HBox();
     loadBox.setAlignment(Pos.CENTER);
-    Button load = new Button("Load");
+    Button load = new Button(AppProperties.getLocalizedString("load"));
     load.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent event) {
@@ -121,7 +121,7 @@ public class SchemaPane extends BorderPane {
     load.getStyleClass().add("helpButton");
     loadBox.getChildren().add(load);
 
-    Hyperlink link = new Hyperlink("create");
+    Hyperlink link = new Hyperlink(AppProperties.getLocalizedString("SchemaPane.create"));
     link.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent event) {
@@ -132,7 +132,7 @@ public class SchemaPane extends BorderPane {
         addNewLevel();
       }
     });
-    TextFlow flow = new TextFlow(new Text("or "), link);
+    TextFlow flow = new TextFlow(new Text(AppProperties.getLocalizedString("SchemaPane.or")), link);
     flow.setTextAlignment(TextAlignment.CENTER);
 
     box.getChildren().addAll(titleBox, loadBox);

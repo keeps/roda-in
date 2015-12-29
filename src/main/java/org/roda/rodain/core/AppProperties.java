@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
@@ -14,7 +15,7 @@ import java.util.ResourceBundle;
 public class AppProperties {
   private static final Logger log = LoggerFactory.getLogger(AppProperties.class.getName());
   private static Properties style = load("styles"), config = load("config"), descLevels = load("roda-description-levels-hierarchy");
-  private static ResourceBundle resourceBundle = ResourceBundle.getBundle("properties/lang");
+  private static ResourceBundle resourceBundle = ResourceBundle.getBundle("properties/lang", Locale.forLanguageTag("pt"));
 
   private AppProperties() {
 
@@ -26,7 +27,7 @@ public class AppProperties {
       result = new Properties();
       result.load(ClassLoader.getSystemResource("properties/" + fileName + ".properties").openStream());
     } catch (IOException e) {
-      log.error(resourceBundle.getString("appProperties.properties.error"), e);
+      log.error("Error while loading properties", e);
     }
     return result;
   }

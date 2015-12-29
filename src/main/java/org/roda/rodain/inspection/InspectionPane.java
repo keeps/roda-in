@@ -124,7 +124,7 @@ public class InspectionPane extends BorderPane {
     box.setPadding(new Insets(5, 10, 5, 10));
     box.setAlignment(Pos.CENTER_LEFT);
 
-    Label title = new Label("Metadata");
+    Label title = new Label(AppProperties.getLocalizedString("InspectionPane.metadata"));
 
     box.getChildren().add(title);
 
@@ -352,7 +352,7 @@ public class InspectionPane extends BorderPane {
     top.getStyleClass().add("hbox");
     top.setPadding(new Insets(5, 10, 5, 10));
 
-    Label title = new Label("Rules");
+    Label title = new Label(AppProperties.getLocalizedString("InspectionPane.rules"));
     top.getChildren().add(title);
     rules.setTop(top);
     ruleList = new ListView<>();
