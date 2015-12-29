@@ -24,6 +24,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
+import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.Footer;
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.source.representation.SourceDirectory;
@@ -85,7 +86,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
   }
 
   private void createTop() {
-    Label title = new Label("Source File Explorer");
+    Label title = new Label(AppProperties.getLocalizedString("FileExplorerPane.title"));
     title.getStyleClass().add("title");
 
     top = new HBox();
@@ -98,7 +99,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     bottom = new HBox(10);
     bottom.setPadding(new Insets(10, 10, 10, 10));
 
-    Button ignore = new Button("Ignore");
+    Button ignore = new Button(AppProperties.getLocalizedString("ignore"));
     ignore.setId("bt_ignore");
     ignore.setMinWidth(100);
     ignore.setOnAction(new EventHandler<ActionEvent>() {
@@ -125,14 +126,14 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
     HBox titleBox = new HBox();
     titleBox.setAlignment(Pos.CENTER);
-    Label title = new Label("Choose your\nworking directory");
+    Label title = new Label(AppProperties.getLocalizedString("FileExplorerPane.help.title"));
     title.getStyleClass().add("helpTitle");
     title.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(title);
 
     HBox loadBox = new HBox();
     loadBox.setAlignment(Pos.CENTER);
-    Button load = new Button("Choose directory");
+    Button load = new Button(AppProperties.getLocalizedString("FileExplorerPane.chooseDir"));
     load.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent event) {
@@ -178,7 +179,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
   public void chooseNewRoot() {
     DirectoryChooser chooser = new DirectoryChooser();
-    chooser.setTitle("Please choose a directory");
+    chooser.setTitle(AppProperties.getLocalizedString("directorychooser.title"));
     File selectedDirectory = chooser.showDialog(stage);
     if (selectedDirectory == null)
       return;

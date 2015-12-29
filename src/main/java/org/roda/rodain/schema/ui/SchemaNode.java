@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.schema.DescriptionObject;
@@ -76,7 +77,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
   private void updateValue() {
     int sipCount = getSipCount();
     if (sipCount > 0)
-      setValue(String.format("%s  (%d items)", dob.getTitle(), getSipCount()));
+      setValue(String.format(AppProperties.getLocalizedString("SchemaNode.items.format"), dob.getTitle(), getSipCount()));
     else
       setValue(dob.getTitle());
   }
@@ -96,7 +97,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     // update the value of the TreeItem
     int sipCount = getSipCount();
     if (sipCount > 0)
-      setValue(String.format("%s  (%d items)", dob.getTitle(), getSipCount()));
+      setValue(String.format(AppProperties.getLocalizedString("SchemaNode.items.format"), dob.getTitle(), getSipCount()));
     setExpanded(true);
   }
 
@@ -120,7 +121,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     String text = dob.getTitle();
     int count = getSipCount();
     if (count > 0)
-      text += String.format("  (%d items)", count);
+      text += String.format(AppProperties.getLocalizedString("SchemaNode.items.formatSimple"), count);
     setValue(text);
   }
 

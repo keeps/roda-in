@@ -2,6 +2,7 @@ package org.roda.rodain.source.ui.items;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import org.roda.rodain.core.AppProperties;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -11,7 +12,7 @@ public class SourceTreeLoadMore extends SourceTreeItem {
   public static final Image fileImage = new Image(ClassLoader.getSystemResourceAsStream("icons/list-add.png"));
 
   public SourceTreeLoadMore() {
-    super("Load More ...", null);
+    super(AppProperties.getLocalizedString("SourceTreeLoadMore.title"), null);
     this.setGraphic(new ImageView(fileImage));
   }
 

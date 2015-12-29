@@ -19,7 +19,7 @@ public class SourceTreeCell extends TreeCell<String> {
   private ContextMenu menu = new ContextMenu();
 
   public SourceTreeCell() {
-    MenuItem removeIgnore = new MenuItem("Remove Ignore");
+    MenuItem removeIgnore = new MenuItem(AppProperties.getLocalizedString("SourceTreeCell.remove"));
     removeIgnore.setId("removeIgnore");
     menu.getItems().add(removeIgnore);
     removeIgnore.setOnAction(new EventHandler<ActionEvent>() {
@@ -87,7 +87,7 @@ public class SourceTreeCell extends TreeCell<String> {
       }
 
       if (treeItem instanceof SourceTreeLoadMore) {
-        lab.setText("Load More...");
+        lab.setText(AppProperties.getLocalizedString("SourceTreeLoadMore.title"));
       }
 
       hbox.getChildren().addAll(new ImageView(icon), lab);

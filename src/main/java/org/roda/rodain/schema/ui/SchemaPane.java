@@ -24,6 +24,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
+import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.Main;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.rules.ui.RuleModalController;
@@ -77,7 +78,7 @@ public class SchemaPane extends BorderPane {
   }
 
   private void createTop() {
-    Label title = new Label("Classification Scheme");
+    Label title = new Label(AppProperties.getLocalizedString("SchemaPane.title"));
     title.getStyleClass().add("title");
 
     topBox = new HBox();
@@ -100,7 +101,7 @@ public class SchemaPane extends BorderPane {
 
     HBox titleBox = new HBox();
     titleBox.setAlignment(Pos.CENTER);
-    Label title = new Label("Load your\nclassification scheme");
+    Label title = new Label(AppProperties.getLocalizedString("SchemaPane.help.title"));
     title.getStyleClass().add("helpTitle");
     title.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(title);
@@ -185,7 +186,7 @@ public class SchemaPane extends BorderPane {
    */
   public void loadClassificationSchema() {
     FileChooser chooser = new FileChooser();
-    chooser.setTitle("Please choose a file");
+    chooser.setTitle(AppProperties.getLocalizedString("filechooser.title"));
     File selectedFile = chooser.showOpenDialog(primaryStage);
     if (selectedFile == null)
       return;
@@ -295,7 +296,7 @@ public class SchemaPane extends BorderPane {
     bottom = new HBox(10);
     bottom.setPadding(new Insets(10, 10, 10, 10));
 
-    Button associate = new Button("Associate");
+    Button associate = new Button(AppProperties.getLocalizedString("associate"));
     associate.setMinWidth(100);
     associate.setOnAction(new EventHandler<ActionEvent>() {
       @Override
@@ -307,7 +308,7 @@ public class SchemaPane extends BorderPane {
       }
     });
 
-    Button removeLevel = new Button("Remove level");
+    Button removeLevel = new Button(AppProperties.getLocalizedString("SchemaPane.remove"));
     removeLevel.setMinWidth(100);
     removeLevel.setOnAction(new EventHandler<ActionEvent>() {
       @Override
@@ -320,7 +321,7 @@ public class SchemaPane extends BorderPane {
       }
     });
 
-    Button addLevel = new Button("Add level");
+    Button addLevel = new Button(AppProperties.getLocalizedString("SchemaPane.add"));
     addLevel.setMinWidth(100);
 
     addLevel.setOnAction(new EventHandler<ActionEvent>() {
@@ -340,7 +341,7 @@ public class SchemaPane extends BorderPane {
     SchemaNode selected = getSelectedItem();
     DescriptionObject dobj = new DescriptionObject();
     dobj.setId(UUID.randomUUID().toString());
-    dobj.setTitle("New node");
+    dobj.setTitle(AppProperties.getLocalizedString("SchemaPane.newNode"));
     dobj.setDescriptionlevel("class");
     SchemaNode newNode = new SchemaNode(dobj);
     if (selected != null) {
