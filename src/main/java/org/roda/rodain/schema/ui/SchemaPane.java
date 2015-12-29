@@ -270,6 +270,7 @@ public class SchemaPane extends BorderPane {
           node = nodes.get(descObj.getId());
         } else {
           node = new SchemaNode(descObj);
+          nodes.put(descObj.getId(), node);
         }
         parentNode.getChildren().add(node);
         parentNode.addChildrenNode(node);
