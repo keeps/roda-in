@@ -51,7 +51,7 @@ public class RuleCell extends HBox implements Observer {
   private boolean expanded = false, expanding = false;
   private int expandedHeight = 300, collapsedHeight = 115;
 
-  private String titleFormat = "Created %d item";
+  private String titleFormat = AppProperties.getLocalizedString("RuleCell.createdItem");
   private Label lCreated;
 
   /**
@@ -94,7 +94,7 @@ public class RuleCell extends HBox implements Observer {
     Label id = new Label("#" + rule.getId());
     id.getStyleClass().add("title");
 
-    Button remove = new Button("Remove");
+    Button remove = new Button(AppProperties.getLocalizedString("remove"));
     remove.setId("removeRule" + rule.getId());
     remove.setAlignment(Pos.CENTER);
 
@@ -217,7 +217,7 @@ public class RuleCell extends HBox implements Observer {
       public void handle(ActionEvent event) {
         expanded = true;
         expanding = false;
-        toggleLink.setText("Collapse");
+        toggleLink.setText(AppProperties.getLocalizedString("collapse"));
       }
     });
     animation.play();
@@ -236,7 +236,7 @@ public class RuleCell extends HBox implements Observer {
         expanded = false;
         expanding = false;
         sourceBoxWrapper.getChildren().removeAll(separator, sourceBox);
-        toggleLink.setText("Expand");
+        toggleLink.setText(AppProperties.getLocalizedString("expand"));
       }
     });
     animation.play();
@@ -248,8 +248,8 @@ public class RuleCell extends HBox implements Observer {
     if (!dirs.isEmpty()) {
       sb.append(dirs.size());
       if (dirs.size() == 1)
-        sb.append(" directory");
-      else sb.append(" directories");
+        sb.append(AppProperties.getLocalizedString("directory"));
+      else sb.append(AppProperties.getLocalizedString("directories"));
       sb.append(", ");
       Label dirsLabel = new Label(sb.toString());
       dirsLabel.setGraphic(new ImageView(SourceTreeDirectory.folderCollapseImage));
@@ -259,8 +259,8 @@ public class RuleCell extends HBox implements Observer {
     if (!fil.isEmpty()) {
       sb.append(fil.size());
       if (fil.size() == 1)
-        sb.append(" file");
-      else sb.append(" files");
+        sb.append(AppProperties.getLocalizedString("file"));
+      else sb.append(AppProperties.getLocalizedString("files"));
       Label filLabel = new Label(sb.toString());
       filLabel.setGraphic(new ImageView(SourceTreeFile.fileImage));
       result.getChildren().add(filLabel);

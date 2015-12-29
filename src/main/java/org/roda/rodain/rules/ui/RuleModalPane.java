@@ -101,7 +101,7 @@ public class RuleModalPane extends BorderPane {
     box.setPadding(new Insets(10, 10, 10, 10));
     pane.getChildren().add(box);
 
-    Label title = new Label("Create association to \"" + schema.getDob().getTitle() + "\"");
+    Label title = new Label(AppProperties.getLocalizedString("LoadingPane.createAssociation") + schema.getDob().getTitle() + "\"");
     title.setId("title");
 
     ArrayList<String> dirs = new ArrayList<>();
@@ -128,7 +128,7 @@ public class RuleModalPane extends BorderPane {
     boxAssociation.setPadding(new Insets(0, 10, 0, 10));
     boxAssociation.setAlignment(Pos.TOP_LEFT);
 
-    Label subtitle = new Label("Choose the association method");
+    Label subtitle = new Label(AppProperties.getLocalizedString("RuleModalPane.associationMethod"));
     subtitle.setPadding(new Insets(0, 0, 10, 0));
     subtitle.setId("sub-title");
 
@@ -213,7 +213,7 @@ public class RuleModalPane extends BorderPane {
     level = new ComboBox<>(options);
     level.setValue((int) Math.ceil(depth / 2.0));
 
-    Label lLevel = new Label("Max depth");
+    Label lLevel = new Label(AppProperties.getLocalizedString("RuleModalPane.maxDepth"));
     resultBox.getChildren().addAll(lLevel, level);
 
     return resultBox;
@@ -224,7 +224,7 @@ public class RuleModalPane extends BorderPane {
     boxMetadata.setAlignment(Pos.TOP_LEFT);
     boxMetadata.setPadding(new Insets(0, 10, 0, 10));
 
-    Label subtitle = new Label("Choose the metadata method");
+    Label subtitle = new Label(AppProperties.getLocalizedString("RuleModalPane.metadataMethod"));
     subtitle.setId("sub-title");
     subtitle.setPadding(new Insets(0, 0, 10, 0));
 
@@ -284,14 +284,14 @@ public class RuleModalPane extends BorderPane {
     HBox box = new HBox();
     box.setAlignment(Pos.CENTER_LEFT);
 
-    chooseFile = new Button("Choose File...");
+    chooseFile = new Button(AppProperties.getLocalizedString("RuleModalPane.chooseFile"));
     chooseFile.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
         metaList.getSelectionModel().clearSelection();
         metaList.getSelectionModel().select(cellSingleFile);
         FileChooser chooser = new FileChooser();
-        chooser.setTitle("Please choose a file");
+        chooser.setTitle(AppProperties.getLocalizedString("filechooser.title"));
         chooser.setInitialDirectory(new File(sameDir));
         File selectedFile = chooser.showOpenDialog(stage);
         if (selectedFile == null)
@@ -326,14 +326,14 @@ public class RuleModalPane extends BorderPane {
     HBox box = new HBox();
     box.setAlignment(Pos.CENTER_LEFT);
 
-    chooseDir = new Button("Choose Directory...");
+    chooseDir = new Button(AppProperties.getLocalizedString("RuleModalPane.chooseDirectory"));
     chooseDir.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
         metaList.getSelectionModel().clearSelection();
         metaList.getSelectionModel().select(cellDiffFolder);
         DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle("Please choose a folder");
+        chooser.setTitle(AppProperties.getLocalizedString("directorychooser.title"));
         chooser.setInitialDirectory(new File(sameDir));
         File selectedDirectory = chooser.showDialog(stage);
         if (selectedDirectory == null)
@@ -384,7 +384,7 @@ public class RuleModalPane extends BorderPane {
   }
 
   private void createContinueButton() {
-    btContinue = new Button("Continue");
+    btContinue = new Button(AppProperties.getLocalizedString("continue"));
     btContinue.setMaxWidth(100);
     btContinue.setMinWidth(100);
     btContinue.setGraphic(new ImageView(FontAwesomeImageCreator.im_w_chevron_right));
@@ -401,7 +401,7 @@ public class RuleModalPane extends BorderPane {
             enableMetaRadioButtons();
             buttons.getChildren().clear();
             buttons.getChildren().addAll(btCancel, space, btBack, btContinue);
-            btContinue.setText("Confirm");
+            btContinue.setText(AppProperties.getLocalizedString("confirm"));
             btContinue.setGraphicTextGap(16);
           }
         } else if (currentState == States.METADATA && metadataCheckContinue())
@@ -411,7 +411,7 @@ public class RuleModalPane extends BorderPane {
   }
 
   private void createCancelButton() {
-    btCancel = new Button("Cancel");
+    btCancel = new Button(AppProperties.getLocalizedString("cancel"));
     btCancel.setMaxWidth(100);
     btCancel.setMinWidth(100);
     btCancel.setGraphic(new ImageView(FontAwesomeImageCreator.im_w_times));
@@ -427,7 +427,7 @@ public class RuleModalPane extends BorderPane {
   }
 
   private void createBackButton() {
-    btBack = new Button("Back");
+    btBack = new Button(AppProperties.getLocalizedString("back"));
     btBack.setMaxWidth(100);
     btBack.setMinWidth(100);
     btBack.setGraphic(new ImageView(FontAwesomeImageCreator.im_w_chevron_left));
@@ -445,7 +445,7 @@ public class RuleModalPane extends BorderPane {
           currentState = States.ASSOCIATION;
           buttons.getChildren().clear();
           buttons.getChildren().addAll(btCancel, space, btContinue);
-          btContinue.setText("Continue");
+          btContinue.setText(AppProperties.getLocalizedString("continue"));
           btContinue.setGraphicTextGap(10);
         }
       }

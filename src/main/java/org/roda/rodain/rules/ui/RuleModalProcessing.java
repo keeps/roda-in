@@ -11,6 +11,7 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.VisitorStack;
 import org.roda.rodain.rules.VisitorState;
 import org.roda.rodain.rules.sip.SipPreviewCreator;
@@ -32,8 +33,8 @@ public class RuleModalProcessing extends BorderPane {
 
   // top
   private Label sipsCreatedLabel, filesProcessedLabel;
-  private String sipsCreatedFormat = "Created %d SIP previews";
-  private String filesProcessedFormat = "Processed %d directories and %d files";
+  private String sipsCreatedFormat = AppProperties.getLocalizedString("RuleModalProcessing.createdPreviews");
+  private String filesProcessedFormat = AppProperties.getLocalizedString("RuleModalProcessing.processedDirsFiles");
 
   private Timer timer;
 
@@ -67,7 +68,7 @@ public class RuleModalProcessing extends BorderPane {
     top.getStyleClass().add("hbox");
     top.setPadding(new Insets(10, 10, 10, 0));
 
-    Label title = new Label("Creating SIP previews");
+    Label title = new Label(AppProperties.getLocalizedString("RuleModalProcessing.creatingPreviewa"));
     title.setId("title");
 
     top.getChildren().add(title);
@@ -94,7 +95,7 @@ public class RuleModalProcessing extends BorderPane {
     HBox bottom = new HBox();
     bottom.setPadding(new Insets(0, 10, 10, 10));
     bottom.setAlignment(Pos.CENTER_RIGHT);
-    Button cancel = new Button("Cancel");
+    Button cancel = new Button(AppProperties.getLocalizedString("cancel"));
     cancel.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent actionEvent) {

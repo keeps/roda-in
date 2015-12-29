@@ -12,6 +12,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.creation.CreateSips;
 
 import java.util.Timer;
@@ -60,7 +61,7 @@ public class CreationModalProcessing extends BorderPane {
     top.getStyleClass().add("hbox");
     top.setAlignment(Pos.CENTER);
 
-    Label title = new Label("Creating SIPs");
+    Label title = new Label(AppProperties.getLocalizedString("CreationModalPreparation.creatingSips"));
     title.setId("title");
 
     top.getChildren().add(title);
@@ -90,13 +91,13 @@ public class CreationModalProcessing extends BorderPane {
 
     HBox sip = new HBox(10);
     sip.maxWidth(380);
-    Label lName = new Label("Current SIP:");
+    Label lName = new Label(AppProperties.getLocalizedString("CreationModalProcessing.currentSip"));
     lName.setMinWidth(80);
     sipName = new Label("");
     sip.getChildren().addAll(lName, sipName);
 
     HBox action = new HBox(10);
-    Label lAction = new Label("Action:");
+    Label lAction = new Label(AppProperties.getLocalizedString("CreationModalProcessing.action"));
     lAction.setMinWidth(80);
     sipAction = new Label("");
     action.getChildren().addAll(lAction, sipAction);
@@ -109,7 +110,7 @@ public class CreationModalProcessing extends BorderPane {
     HBox bottom = new HBox();
     bottom.setPadding(new Insets(0, 10, 10, 10));
     bottom.setAlignment(Pos.CENTER_LEFT);
-    Button cancel = new Button("Cancel");
+    Button cancel = new Button(AppProperties.getLocalizedString("cancel"));
     cancel.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent actionEvent) {
@@ -125,7 +126,7 @@ public class CreationModalProcessing extends BorderPane {
     finishedBox = new HBox();
     finishedBox.setPadding(new Insets(0, 10, 10, 10));
     finishedBox.setAlignment(Pos.CENTER_RIGHT);
-    Button close = new Button("Close");
+    Button close = new Button(AppProperties.getLocalizedString("close"));
 
     close.setOnAction(new EventHandler<ActionEvent>() {
       @Override
@@ -150,7 +151,7 @@ public class CreationModalProcessing extends BorderPane {
             double prog = creator.getProgress();
 
             if (errors > 0) {
-              subtitleError.setText(errors + " errors");
+              subtitleError.setText(errors + AppProperties.getLocalizedString("CreationModalProcessing.errors"));
             }
             subtitleSuccess.setText(String.format(subtitleFormat, created, size, (int) (prog * 100)));
             progress.setProgress(prog);

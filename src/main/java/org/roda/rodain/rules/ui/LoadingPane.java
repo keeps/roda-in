@@ -9,6 +9,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +57,7 @@ public class LoadingPane extends BorderPane {
     box.setPadding(new Insets(10, 10, 10, 10));
     pane.getChildren().add(box);
 
-    Label title = new Label("Create association to \"" + schema.getDob().getTitle() + "\"");
+    Label title = new Label(AppProperties.getLocalizedString("LoadingPane.createAssociation") + " \"" + schema.getDob().getTitle() + "\"");
     title.setId("title");
 
     box.getChildren().add(title);

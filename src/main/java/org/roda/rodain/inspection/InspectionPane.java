@@ -205,7 +205,7 @@ public class InspectionPane extends BorderPane {
 
     HBox titleBox = new HBox();
     titleBox.setAlignment(Pos.CENTER);
-    Label title = new Label("Select an item from \nthe classification scheme\nto inspect it");
+    Label title = new Label(AppProperties.getLocalizedString("InspectionPane.help.title"));
     title.getStyleClass().add("helpTitle");
     title.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(title);
@@ -223,7 +223,7 @@ public class InspectionPane extends BorderPane {
     top.getStyleClass().add("hbox");
     top.setPadding(new Insets(5, 10, 5, 10));
 
-    Label title = new Label("Content");
+    Label title = new Label(AppProperties.getLocalizedString("content"));
     top.getChildren().add(title);
     content.setTop(top);
 
@@ -259,7 +259,7 @@ public class InspectionPane extends BorderPane {
     box.setPadding(new Insets(10, 10, 10, 10));
     box.setAlignment(Pos.CENTER);
 
-    Button ignore = new Button("Ignore");
+    Button ignore = new Button(AppProperties.getLocalizedString("ignore"));
     ignore.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
@@ -276,7 +276,7 @@ public class InspectionPane extends BorderPane {
         }
       }
     });
-    flatten = new Button("Flatten directory");
+    flatten = new Button(AppProperties.getLocalizedString("InspectionPane.flatten"));
     flatten.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
@@ -287,7 +287,7 @@ public class InspectionPane extends BorderPane {
         }
       }
     });
-    skip = new Button("Skip Directory");
+    skip = new Button(AppProperties.getLocalizedString("InspectionPane.skip"));
     skip.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
@@ -367,7 +367,7 @@ public class InspectionPane extends BorderPane {
 
     HBox titleBox = new HBox();
     titleBox.setAlignment(Pos.CENTER);
-    Label emptyText = new Label("Associate files/directories \nto a description object \nto create a rule");
+    Label emptyText = new Label(AppProperties.getLocalizedString("InspectionPane.help.ruleList"));
     emptyText.getStyleClass().add("helpTitle");
     emptyText.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(emptyText);
