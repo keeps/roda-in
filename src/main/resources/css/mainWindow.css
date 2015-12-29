@@ -134,6 +134,18 @@
     -fx-background-color: lightgray;
 }
 
+.ruleCell .separator .line {
+    -fx-border-color: lightgray;
+}
+
+.ruleCell:focused:selected .separator .line {
+    -fx-border-color: lightgray;
+}
+
+.ruleCell .hyperlink {
+    -fx-text-fill: #089de3;
+}
+
 .list-cell:focused:selected .ruleCell {
     -fx-border-color: #089de3;
 }

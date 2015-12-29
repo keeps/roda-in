@@ -1,17 +1,26 @@
 package org.roda.rodain.inspection;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import org.apache.commons.lang.StringUtils;
+import javafx.scene.text.TextAlignment;
+import javafx.util.Duration;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.Main;
 import org.roda.rodain.rules.Rule;
@@ -22,6 +31,7 @@ import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 
+import java.sql.Time;
 import java.util.*;
 
 /**
@@ -29,8 +39,17 @@ import java.util.*;
  * @since 16-11-2015.
  */
 public class RuleCell extends HBox implements Observer {
+  private static final int ANIMATION_DURATION = 150;
   private Rule rule;
   private SchemaNode schemaNode;
+  private VBox sourceBox;
+  private Separator separator;
+  private VBox sourceBoxWrapper;
+
+  private HBox toggleBox;
+  private Hyperlink toggleLink;
+  private boolean expanded = false, expanding = false;
+  private int expandedHeight = 300, collapsedHeight = 115;
 
   private String titleFormat = "Created %d item";
   private Label lCreated;
@@ -54,6 +73,10 @@ public class RuleCell extends HBox implements Observer {
 
     root.getChildren().addAll(top, center);
     getChildren().add(root);
+
+    setMinHeight(collapsedHeight);
+    setMaxHeight(collapsedHeight);
+    setPrefHeight(collapsedHeight);
   }
 
   private HBox createTop() {
@@ -133,28 +156,116 @@ public class RuleCell extends HBox implements Observer {
         fil.add(it.getValue());
     }
 
-    VBox sourceBox = new VBox(5);
-    if (!dirs.isEmpty()) {
-      Label directories = new Label();
-      directories.maxWidthProperty().bind(widthProperty().subtract(20));
-      directories.setGraphic(new ImageView(SourceTreeDirectory.folderCollapseImage));
-      directories.setWrapText(true);
-      String directoriesString = StringUtils.join(dirs, ", ");
-      directories.setText(directoriesString);
-      sourceBox.getChildren().add(directories);
+    HBox contentSummary = buildContentSummary(dirs, fil);
+
+    toggleBox = new HBox();
+    toggleLink = new Hyperlink("Expand");
+    toggleLink.setTextAlignment(TextAlignment.CENTER);
+    toggleBox.getChildren().add(toggleLink);
+    HBox.setHgrow(toggleBox, Priority.ALWAYS);
+    toggleBox.setAlignment(Pos.CENTER);
+    toggleLink.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent event) {
+        if (!expanding) {
+          if (expanded) {
+            collapse();
+          } else {
+            expand();
+          }
+        }
+      }
+    });
+
+    sourceBox = new VBox(5);
+    for (String s : dirs) {
+      Label directory = new Label();
+      directory.maxWidthProperty().bind(widthProperty().subtract(20));
+      directory.setGraphic(new ImageView(SourceTreeDirectory.folderCollapseImage));
+      directory.setWrapText(true);
+      directory.setText(s);
+      sourceBox.getChildren().add(directory);
     }
-    if (!fil.isEmpty()) {
-      Label files = new Label();
-      files.maxWidthProperty().bind(widthProperty().subtract(20));
-      files.setGraphic(new ImageView(SourceTreeFile.fileImage));
-      files.setWrapText(true);
-      String filesString = StringUtils.join(fil, ", ");
-      files.setText(filesString);
-      sourceBox.getChildren().add(files);
+    for (String s : fil) {
+      Label file = new Label();
+      file.maxWidthProperty().bind(widthProperty().subtract(20));
+      file.setGraphic(new ImageView(SourceTreeFile.fileImage));
+      file.setWrapText(true);
+      file.setText(s);
+      sourceBox.getChildren().add(file);
     }
-    content.getChildren().addAll(lType, sourceBox);
+
+    separator = new Separator();
+    sourceBoxWrapper = new VBox();
+    content.getChildren().addAll(lType, contentSummary, sourceBoxWrapper, toggleBox);
+
+    expandedHeight = collapsedHeight + dirs.size() * 20 + fil.size() * 20;
 
     return content;
+  }
+
+  private void expand() {
+    expanding = true;
+    sourceBoxWrapper.getChildren().addAll(separator, sourceBox);
+    Timeline animation = new Timeline();
+    animation.getKeyFrames().add(new KeyFrame(Duration.millis(ANIMATION_DURATION),
+        new KeyValue(minHeightProperty(), expandedHeight),
+        new KeyValue(maxHeightProperty(), expandedHeight),
+        new KeyValue(prefHeightProperty(), expandedHeight)));
+    animation.setOnFinished(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent event) {
+        expanded = true;
+        expanding = false;
+        toggleLink.setText("Collapse");
+      }
+    });
+    animation.play();
+  }
+
+  private void collapse() {
+    expanding = true;
+    Timeline animation = new Timeline();
+    animation.getKeyFrames().add(new KeyFrame(Duration.millis(ANIMATION_DURATION),
+        new KeyValue(minHeightProperty(), collapsedHeight),
+        new KeyValue(maxHeightProperty(), collapsedHeight),
+        new KeyValue(prefHeightProperty(), collapsedHeight)));
+    animation.setOnFinished(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent event) {
+        expanded = false;
+        expanding = false;
+        sourceBoxWrapper.getChildren().removeAll(separator, sourceBox);
+        toggleLink.setText("Expand");
+      }
+    });
+    animation.play();
+  }
+
+  private HBox buildContentSummary(ArrayList<String> dirs, ArrayList<String> fil) {
+    HBox result = new HBox();
+    StringBuilder sb = new StringBuilder();
+    if (!dirs.isEmpty()) {
+      sb.append(dirs.size());
+      if (dirs.size() == 1)
+        sb.append(" directory");
+      else sb.append(" directories");
+      sb.append(", ");
+      Label dirsLabel = new Label(sb.toString());
+      dirsLabel.setGraphic(new ImageView(SourceTreeDirectory.folderCollapseImage));
+      result.getChildren().add(dirsLabel);
+    }
+    sb = new StringBuilder();
+    if (!fil.isEmpty()) {
+      sb.append(fil.size());
+      if (fil.size() == 1)
+        sb.append(" file");
+      else sb.append(" files");
+      Label filLabel = new Label(sb.toString());
+      filLabel.setGraphic(new ImageView(SourceTreeFile.fileImage));
+      result.getChildren().add(filLabel);
+    }
+    return result;
   }
 
   /**
