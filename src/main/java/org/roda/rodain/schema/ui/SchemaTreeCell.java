@@ -43,6 +43,17 @@ public class SchemaTreeCell extends TextFieldTreeCell<String> {
   }
 
   @Override
+  public void commitEdit(String newValue) {
+    super.commitEdit(newValue);
+    TreeItem<String> treeItem = getTreeItem();
+    if (treeItem != null && treeItem instanceof SchemaNode) {
+      SchemaNode node = (SchemaNode) treeItem;
+      node.getDob().setTitle(newValue);
+    }
+
+  }
+
+  @Override
   public void cancelEdit() {
     String item = super.getItem();
     super.cancelEdit();

@@ -505,6 +505,24 @@ public class SchemaPane extends BorderPane {
     });
   }
 
+  private Set<SchemaNode> recursiveGetSchemaNodes(TreeItem<String> root) {
+    Set<SchemaNode> result = new HashSet<>();
+    for (TreeItem<String> t : root.getChildren()) {
+      if (t instanceof SchemaNode) {
+        result.add((SchemaNode) t);
+      }
+      result.addAll(recursiveGetSchemaNodes(t));
+    }
+    return result;
+  }
+
+  /**
+   * @return A set with all the SchemaNodes in the tree
+   */
+  public Set<SchemaNode> getSchemaNodes() {
+    return recursiveGetSchemaNodes(rootNode);
+  }
+
   /**
    * @return The TreeView of the SchemaPane
    */

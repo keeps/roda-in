@@ -5,6 +5,13 @@ package org.roda.rodain.core;
  * @since 16-09-2015.
  */
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -19,28 +26,24 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
+import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+
 import org.roda.rodain.creation.ui.CreationModalPreparation;
 import org.roda.rodain.creation.ui.CreationModalStage;
 import org.roda.rodain.inspection.InspectionPane;
-import org.roda.rodain.inspection.RuleCell;
 import org.roda.rodain.rules.VisitorStack;
-import org.roda.rodain.rules.sip.SipMetadata;
 import org.roda.rodain.rules.sip.SipPreview;
-import org.roda.rodain.rules.ui.RuleModalPane;
+import org.roda.rodain.schema.ClassificationSchema;
+import org.roda.rodain.schema.DescriptionObject;
+import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SchemaPane;
 import org.roda.rodain.source.ui.FileExplorerPane;
-import org.roda.rodain.source.ui.SourceTreeCell;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
 
 public class Main extends Application {
   private static final Logger log = LoggerFactory.getLogger(Main.class.getName());
@@ -179,8 +182,31 @@ public class Main extends Application {
       }
     });
 
-    final MenuItem createSIPs = new MenuItem("Create SIPs");
-    createSIPs.setAccelerator(KeyCombination.keyCombination("Ctrl+S"));
+    final MenuItem exportCS = new MenuItem("Export classification scheme");
+    exportCS.setAccelerator(KeyCombination.keyCombination("Ctrl+E"));
+    exportCS.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent t) {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Please choose a file");
+        File selectedFile = chooser.showSaveDialog(stage);
+        if (selectedFile == null)
+          return;
+        String outputFile = selectedFile.toPath().toString();
+
+        Set<SchemaNode> nodes = schemaPane.getSchemaNodes();
+        List<DescriptionObject> dobjs = new ArrayList<>();
+        for (SchemaNode sn : nodes) {
+          dobjs.add(sn.getDob());
+        }
+        ClassificationSchema cs = new ClassificationSchema();
+        cs.setDos(dobjs);
+        cs.export(outputFile);
+      }
+    });
+
+    final MenuItem createSIPs = new MenuItem("Export SIPs");
+    createSIPs.setAccelerator(KeyCombination.keyCombination("Ctrl+X"));
     createSIPs.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent t) {
@@ -203,7 +229,7 @@ public class Main extends Application {
       }
     });
 
-    menuFile.getItems().addAll(openFolder, updateCS, createSIPs, quit);
+    menuFile.getItems().addAll(openFolder, updateCS, exportCS, createSIPs, quit);
 
     // Edit
     final MenuItem ignoreItems = new MenuItem("Ignore item(s)");

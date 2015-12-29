@@ -1,5 +1,12 @@
 package org.roda.rodain.inspection;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -9,29 +16,21 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
-import org.roda.rodain.rules.ui.HBoxCell;
 import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SipPreviewNode;
 import org.roda.rodain.utils.UIPair;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -163,7 +162,7 @@ public class InspectionPane extends BorderPane {
       newMetadata = metaText.getText();
       List<DescObjMetadata> metadatas = currentSchema.getDob().getMetadata();
       if (!metadatas.isEmpty()) {
-        oldMetadata = metadatas.get(0).getContent();
+        oldMetadata = metadatas.get(0).getContentDecoded();
       }
     }
     // only update if there's been modifications or there's no old
@@ -184,6 +183,7 @@ public class InspectionPane extends BorderPane {
           metadatas.get(0).setContentDecoded(newMetadata);
         } else {
           DescObjMetadata newObjMetadata = new DescObjMetadata();
+          newObjMetadata.setContentEncoding("Base64");
           newObjMetadata.setContentDecoded(newMetadata);
           metadatas.add(newObjMetadata);
         }
@@ -561,7 +561,7 @@ public class InspectionPane extends BorderPane {
     List<DescObjMetadata> metadatas = node.getDob().getMetadata();
     if (!metadatas.isEmpty()) {
       // For now we only get the first metadata object
-      metaText.setText(metadatas.get(0).getContent());
+      metaText.setText(metadatas.get(0).getContentDecoded());
     } else
       metaText.clear();
 
