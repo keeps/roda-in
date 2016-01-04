@@ -1,7 +1,5 @@
 package org.roda.rodain.source.representation;
 
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.DirectoryStream;
@@ -10,6 +8,8 @@ import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt

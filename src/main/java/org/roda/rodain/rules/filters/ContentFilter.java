@@ -1,11 +1,11 @@
 package org.roda.rodain.rules.filters;
 
-import org.roda.rodain.core.PathCollection;
-import org.roda.rodain.source.ui.items.SourceTreeItemState;
-
 import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
+
+import org.roda.rodain.core.PathCollection;
+import org.roda.rodain.source.ui.items.SourceTreeItemState;
 
 /**
  * @author Andre Pereira apereira@keep.pt

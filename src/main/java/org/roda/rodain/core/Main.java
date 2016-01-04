@@ -35,6 +35,7 @@ import org.roda.rodain.creation.ui.CreationModalPreparation;
 import org.roda.rodain.creation.ui.CreationModalStage;
 import org.roda.rodain.inspection.InspectionPane;
 import org.roda.rodain.rules.VisitorStack;
+import org.roda.rodain.rules.filters.IgnoredFilter;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.schema.ClassificationSchema;
 import org.roda.rodain.schema.DescriptionObject;
@@ -107,6 +108,11 @@ public class Main extends Application {
     }
 
     AppProperties.initialize();
+    String ignoredRaw = AppProperties.getConfig("app.ignoredFiles");
+    String[] ignored = ignoredRaw.split(",");
+    for (String s : ignored) {
+      IgnoredFilter.addIgnoreRule(s);
+    }
 
     // load the custom fonts
     Font.loadFont(ClassLoader.getSystemResource("fonts/Ubuntu-Regular.ttf").toExternalForm(), 10);
