@@ -1,12 +1,11 @@
 package org.roda.rodain.core;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
-import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -15,7 +14,8 @@ import java.util.ResourceBundle;
 public class AppProperties {
   private static final Logger log = LoggerFactory.getLogger(AppProperties.class.getName());
   private static Properties style = load("styles"), config = load("config"), descLevels = load("roda-description-levels-hierarchy");
-  private static ResourceBundle resourceBundle = ResourceBundle.getBundle("properties/lang", Locale.forLanguageTag("pt"));
+  private static ResourceBundle resourceBundle = ResourceBundle
+    .getBundle("properties/lang"/* , Locale.forLanguageTag("pt") */);
 
   private AppProperties() {
 

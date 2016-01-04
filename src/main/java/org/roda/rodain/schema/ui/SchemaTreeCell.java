@@ -17,7 +17,7 @@ import javafx.util.StringConverter;
  * @since 12-10-2015.
  */
 public class SchemaTreeCell extends TextFieldTreeCell<String> {
-  private static final String pattern = "(.+)(  )\\((\\d+ items)\\)";
+  private static final String pattern = "(.+)(  )\\((\\d+ ite[^)]*)\\)";
   /**
    * Creates a new SchemaTreeCell
    */

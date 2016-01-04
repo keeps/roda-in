@@ -56,7 +56,10 @@ public class MainTest extends ApplicationTest {
     assert"UCP".equals(selected.getValue());
     assert selectedIndex == 7;
 
+    doubleClickOn(".tree-view");
+
     doubleClickOn("UCP");
+
     assert selected.getChildren().size() == 1;
   }
 

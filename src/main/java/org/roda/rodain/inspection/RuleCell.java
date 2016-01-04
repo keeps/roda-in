@@ -1,16 +1,18 @@
 package org.roda.rodain.inspection;
 
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Set;
+import java.util.TreeSet;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
@@ -21,6 +23,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
+
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.Main;
 import org.roda.rodain.rules.Rule;
@@ -31,15 +34,13 @@ import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 
-import java.sql.Time;
-import java.util.*;
-
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 16-11-2015.
  */
 public class RuleCell extends HBox implements Observer {
   private static final int ANIMATION_DURATION = 150;
+  private static final int ITEM_HEIGHT = 21;
   private Rule rule;
   private SchemaNode schemaNode;
   private VBox sourceBox;
@@ -147,8 +148,8 @@ public class RuleCell extends HBox implements Observer {
 
     // source items
     Set<SourceTreeItem> source = rule.getSource();
-    ArrayList<String> dirs = new ArrayList<>();
-    ArrayList<String> fil = new ArrayList<>();
+    Set<String> dirs = new TreeSet<>();
+    Set<String> fil = new TreeSet<>();
     for (SourceTreeItem it : source) {
       if (it instanceof SourceTreeDirectory)
         dirs.add(it.getValue());
@@ -199,7 +200,7 @@ public class RuleCell extends HBox implements Observer {
     sourceBoxWrapper = new VBox();
     content.getChildren().addAll(lType, contentSummary, sourceBoxWrapper, toggleBox);
 
-    expandedHeight = collapsedHeight + dirs.size() * 20 + fil.size() * 20;
+    expandedHeight = collapsedHeight + dirs.size() * ITEM_HEIGHT + fil.size() * ITEM_HEIGHT;
 
     return content;
   }
@@ -242,7 +243,7 @@ public class RuleCell extends HBox implements Observer {
     animation.play();
   }
 
-  private HBox buildContentSummary(ArrayList<String> dirs, ArrayList<String> fil) {
+  private HBox buildContentSummary(Set<String> dirs, Set<String> fil) {
     HBox result = new HBox();
     StringBuilder sb = new StringBuilder();
     if (!dirs.isEmpty()) {
@@ -250,7 +251,6 @@ public class RuleCell extends HBox implements Observer {
       if (dirs.size() == 1)
         sb.append(AppProperties.getLocalizedString("directory"));
       else sb.append(AppProperties.getLocalizedString("directories"));
-      sb.append(", ");
       Label dirsLabel = new Label(sb.toString());
       dirsLabel.setGraphic(new ImageView(SourceTreeDirectory.folderCollapseImage));
       result.getChildren().add(dirsLabel);

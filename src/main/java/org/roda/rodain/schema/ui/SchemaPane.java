@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -166,6 +168,17 @@ public class SchemaPane extends BorderPane {
     // add everything to the tree pane
     treeBox.getChildren().addAll(separatorTop, treeView, separatorBottom);
     treeView.setOnMouseClicked(new SchemaClickedEventHandler(this));
+    treeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem>() {
+      @Override
+      public void changed(ObservableValue observable, TreeItem oldValue, TreeItem newValue) {
+        if (newValue instanceof SipPreviewNode) {
+          Main.getInspectionPane().update((SipPreviewNode) newValue);
+        }
+        if (newValue instanceof SchemaNode) {
+          Main.getInspectionPane().update((SchemaNode) newValue);
+        }
+      }
+    });
   }
 
   private SchemaNode getSelectedItem() {

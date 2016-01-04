@@ -1,16 +1,17 @@
 package org.roda.rodain.schema.ui;
 
+import java.util.*;
+
 import javafx.application.Platform;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
-
-import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -61,13 +62,13 @@ public class SchemaNode extends TreeItem<String> implements Observer {
       Platform.runLater(new Runnable() {
         @Override
         public void run() {
-          // replace sips from this rule
+          // replace the SIPs
           if (sips.get(id) != null) {
             getChildren().removeAll(sips.get(id));
           }
           Set<SipPreviewNode> nodes = new HashSet<>(rule.getSipNodes());
           sips.put(id, nodes);
-          getChildren().addAll(rule.getSipNodes());
+          getChildren().addAll(nodes);
           sortChildren();
         }
       });
@@ -75,11 +76,17 @@ public class SchemaNode extends TreeItem<String> implements Observer {
   }
 
   private void updateValue() {
-    int sipCount = getSipCount();
-    if (sipCount > 0)
-      setValue(String.format(AppProperties.getLocalizedString("SchemaNode.items.format"), dob.getTitle(), getSipCount()));
-    else
-      setValue(dob.getTitle());
+    Platform.runLater(new Runnable() {
+      @Override
+      public void run() {
+        int sipCount = getSipCount();
+        if (sipCount > 0)
+          setValue(
+            String.format(AppProperties.getLocalizedString("SchemaNode.items.format"), dob.getTitle(), getSipCount()));
+        else
+          setValue(dob.getTitle());
+      }
+    });
   }
 
   /**

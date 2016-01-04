@@ -523,6 +523,7 @@ public class InspectionPane extends BorderPane {
     // title
     Label title = new Label(node.getValue());
     title.getStyleClass().add("title");
+    title.textProperty().bindBidirectional(node.valueProperty());
 
     HBox top = new HBox(5);
     top.setPadding(new Insets(0, 10, 10, 10));
