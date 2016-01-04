@@ -1,12 +1,6 @@
 package org.roda.rodain.schema.ui;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-import java.util.stream.Collectors;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -23,7 +17,6 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-
 import org.roda.rodain.core.Main;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.rules.ui.RuleModalController;
@@ -35,7 +28,12 @@ import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -55,6 +53,11 @@ public class SchemaPane extends BorderPane {
   // center help
   private VBox centerHelp;
 
+  /**
+   * Creates a new SchemaPane object.
+   *
+   * @param stage The primary stage of the application.
+   */
   public SchemaPane(Stage stage) {
     super();
     primaryStage = stage;
@@ -159,6 +162,10 @@ public class SchemaPane extends BorderPane {
     return result;
   }
 
+  /**
+   * Creates a file chooser dialog so that the user can choose the classification scheme file to be loaded.
+   * Then, loads the file and creates the tree.
+   */
   public void loadClassificationSchema() {
     FileChooser chooser = new FileChooser();
     chooser.setTitle("Please choose a file");
@@ -171,6 +178,22 @@ public class SchemaPane extends BorderPane {
       updateClassificationSchema(schema);
     } catch (IOException e) {
       log.error("Error reading classification scheme specification", e);
+    }
+  }
+
+  /**
+   * Creates a ClassificationSchema object from the InputStream and builds a tree using it.
+   * @param stream The stream with the JSON file used to create the ClassificationSchema
+   */
+  public void loadClassificationSchemeFromStream(InputStream stream){
+    try {
+      // create ObjectMapper instance
+      ObjectMapper objectMapper = new ObjectMapper();
+      // convert stream to object
+      ClassificationSchema scheme = objectMapper.readValue(stream, ClassificationSchema.class);
+      updateClassificationSchema(scheme);
+    } catch (IOException e) {
+      log.error("Error reading classification scheme from stream", e);
     }
   }
 
@@ -205,7 +228,7 @@ public class SchemaPane extends BorderPane {
       } else {
         // Get a list with the items where the id equals the node's parent's id
         List<DescriptionObject> parents = dos.stream().filter(p -> p.getId().equals(descObj.getParentId()))
-          .collect(Collectors.toList());
+            .collect(Collectors.toList());
         // If the input file is well formed, there should be one item in the
         // list, no more and no less
         if (parents.size() != 1) {
@@ -295,7 +318,7 @@ public class SchemaPane extends BorderPane {
 
     // we need to check the size again because we may have deleted some items in
     // the "for" loop
-    if (sourceSet.isEmpty())
+    if (sourceSet == null || sourceSet.isEmpty())
       valid = false;
 
     if (valid)

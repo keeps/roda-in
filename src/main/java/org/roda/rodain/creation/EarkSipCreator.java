@@ -1,20 +1,9 @@
 package org.roda.rodain.creation;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.io.FileUtils;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.rules.sip.TemplateType;
-import org.roda.rodain.utils.Utils;
 import org.roda_project.commons_ip.model.SIP;
 import org.roda_project.commons_ip.model.SIPDescriptiveMetadata;
 import org.roda_project.commons_ip.model.SIPRepresentation;
@@ -25,16 +14,34 @@ import org.roda_project.commons_ip.utils.SIPException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 19/11/2015.
  */
 public class EarkSipCreator extends SimpleSipCreator {
   private static final Logger log = LoggerFactory.getLogger(EarkSipCreator.class.getName());
+
+  /**
+   * Creates a new EARK SIP exporter.
+   *
+   * @param outputPath The path to the output folder of the SIP exportation
+   * @param previews   The map with the SIPs that will be exported
+   */
   public EarkSipCreator(Path outputPath, Map<SipPreview, String> previews) {
     super(outputPath, previews);
   }
 
+  /**
+   * Attempts to create an EARK SIP of each SipPreview
+   */
   @Override
   public void run() {
     for (SipPreview preview : previews.keySet()) {
@@ -71,9 +78,9 @@ public class EarkSipCreator extends SimpleSipCreator {
           metadataType = METSEnums.MetadataType.EAD;
         }
       }
-      
+
       String content = sip.getMetadataContent();
-      
+
       FileUtils.writeStringToFile(new File(home + metadataName), content);
       SIPDescriptiveMetadata metadata = new SIPDescriptiveMetadata(Paths.get(home + metadataName), null, metadataType);
       earkSip.addDescriptiveMetadata(metadata);

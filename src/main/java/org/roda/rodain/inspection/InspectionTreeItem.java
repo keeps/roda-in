@@ -1,8 +1,8 @@
 package org.roda.rodain.inspection;
 
-import java.nio.file.Path;
-
 import javafx.scene.control.TreeItem;
+
+import java.nio.file.Path;
 
 /**
  * @author Andre Pereira apereira@keep.pt

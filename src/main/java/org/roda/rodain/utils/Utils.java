@@ -1,13 +1,13 @@
 package org.roda.rodain.utils;
 
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt

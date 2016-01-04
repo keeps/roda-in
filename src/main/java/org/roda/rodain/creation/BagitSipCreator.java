@@ -1,22 +1,20 @@
 package org.roda.rodain.creation;
 
+import gov.loc.repository.bagit.Bag;
+import gov.loc.repository.bagit.BagFactory;
+import gov.loc.repository.bagit.PreBag;
+import gov.loc.repository.bagit.writer.impl.ZipWriter;
+import org.roda.rodain.rules.TreeNode;
+import org.roda.rodain.rules.sip.SipPreview;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
-
-import org.roda.rodain.rules.TreeNode;
-import org.roda.rodain.rules.sip.SipPreview;
-import org.roda.rodain.utils.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import gov.loc.repository.bagit.Bag;
-import gov.loc.repository.bagit.BagFactory;
-import gov.loc.repository.bagit.PreBag;
-import gov.loc.repository.bagit.writer.impl.ZipWriter;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -26,10 +24,19 @@ public class BagitSipCreator extends SimpleSipCreator {
   private static final Logger log = LoggerFactory.getLogger(BagitSipCreator.class.getName());
   private static final String DATAFOLDER = "data";
 
+  /**
+   * Creates a new BagIt exporter.
+   *
+   * @param outputPath The path to the output folder of the SIP exportation
+   * @param previews   The map with the SIPs that will be exported
+   */
   public BagitSipCreator(Path outputPath, Map<SipPreview, String> previews) {
     super(outputPath, previews);
   }
 
+  /**
+   * Attempts to create a BagIt SIP of each SipPreview
+   */
   @Override
   public void run() {
     for (SipPreview preview : previews.keySet()) {
@@ -71,7 +78,7 @@ public class BagitSipCreator extends SimpleSipCreator {
 
       currentAction = actionCopyingMetadata;
       String content = sip.getMetadataContent();
-      
+
       Map<String, String> metadata = getMetadata(content);
       for (String key : metadata.keySet()) {
         if (key.endsWith("title")) {

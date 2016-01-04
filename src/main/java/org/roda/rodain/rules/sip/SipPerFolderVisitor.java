@@ -1,14 +1,14 @@
 package org.roda.rodain.rules.sip;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
-
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.filters.ContentFilter;
 import org.roda.rodain.utils.TreeVisitor;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -34,8 +34,18 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipP
   private Path metadataPath;
   private TemplateType templateType;
 
+  /**
+   * Creates a new SipPreviewCreator where there's a new SIP created for each visited directory, until a max depth.
+   *
+   * @param id           The id of the SipPreviewCreator.
+   * @param maxLevel     The max depth of the SIP creation
+   * @param filters      The set of content filters
+   * @param metaType     The type of metadata to be applied to each SIP
+   * @param metadataPath The path of the metadata
+   * @param templateType The type of the metadata template
+   */
   public SipPerFolderVisitor(String id, int maxLevel, Set<ContentFilter> filters, MetadataTypes metaType,
-    Path metadataPath, TemplateType templateType) {
+                             Path metadataPath, TemplateType templateType) {
     this.maxLevel = maxLevel;
     this.filters = filters;
     this.metaType = metaType;
@@ -66,7 +76,7 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipP
   /**
    * The object keeps a list with the created SIPs and this method returns them
    * one at a time.
-   * 
+   *
    * @return The next SIP in the list.
    */
   @Override
@@ -76,7 +86,7 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipP
 
   /**
    * @return True if the number of SIPs returned is smaller than the count of
-   *         added SIPs.
+   * added SIPs.
    */
   @Override
   public boolean hasNext() {
@@ -94,9 +104,8 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipP
 
   /**
    * Sets the starting path of this TreeVisitor.
-   * 
-   * @param st
-   *          The starting path of the TreeVisitor.
+   *
+   * @param st The starting path of the TreeVisitor.
    */
   @Override
   public void setStartPath(String st) {
@@ -106,11 +115,9 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipP
   /**
    * Creates a new TreeNode and adds it to the nodes Deque if the path isn't
    * mapped or ignored.
-   * 
-   * @param path
-   *          The path of the directory.
-   * @param attrs
-   *          The attributes of the directory.
+   *
+   * @param path  The path of the directory.
+   * @param attrs The attributes of the directory.
    */
   @Override
   public void preVisitDirectory(Path path, BasicFileAttributes attrs) {
@@ -123,9 +130,8 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipP
   /**
    * Adds the current directory to its parent's node. Creates a SIP if the level
    * is smaller than the max level configured.
-   * 
-   * @param path
-   *          The path of the directory.
+   *
+   * @param path The path of the directory.
    */
   @Override
   public void postVisitDirectory(Path path) {
@@ -150,7 +156,7 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipP
       files.add(node);
 
       SipPreview sipPreview = new SipPreview(path.getFileName().toString(), files, metaType, metaPath,
- templateType);
+          templateType);
       node.addObserver(sipPreview);
 
       sips.add(sipPreview);
@@ -169,10 +175,8 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipP
   /**
    * Adds the visited file to its parent
    *
-   * @param path
-   *          The path of the visited file
-   * @param attrs
-   *          The attributes of the visited file
+   * @param path  The path of the visited file
+   * @param attrs The attributes of the visited file
    */
   @Override
   public void visitFile(Path path, BasicFileAttributes attrs) {
@@ -185,8 +189,7 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipP
    * This method is empty in this class, but it's defined because of the
    * TreeVisitor interface.
    *
-   * @param path
-   *          The path of the file.
+   * @param path The path of the file.
    */
   @Override
   public void visitFileFailed(Path path) {

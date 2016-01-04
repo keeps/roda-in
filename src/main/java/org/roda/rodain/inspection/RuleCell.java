@@ -1,7 +1,5 @@
 package org.roda.rodain.inspection;
 
-import java.util.*;
-
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -13,7 +11,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-
 import org.apache.commons.lang.StringUtils;
 import org.roda.rodain.core.Main;
 import org.roda.rodain.rules.Rule;
@@ -23,6 +20,8 @@ import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
+
+import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -36,6 +35,12 @@ public class RuleCell extends HBox implements Observer {
   private String titleFormat = "Created %d item";
   private Label lCreated;
 
+  /**
+   * Creates a new RuleCell, associating it to a Rule.
+   *
+   * @param node The SchemaNode being inspected
+   * @param rule The rule to be associated to the cell
+   */
   public RuleCell(SchemaNode node, Rule rule) {
     this.rule = rule;
     this.schemaNode = node;
@@ -67,6 +72,7 @@ public class RuleCell extends HBox implements Observer {
     id.getStyleClass().add("title");
 
     Button remove = new Button("Remove");
+    remove.setId("removeRule" + rule.getId());
     remove.setAlignment(Pos.CENTER);
 
     remove.setOnAction(new EventHandler<ActionEvent>() {
@@ -153,19 +159,22 @@ public class RuleCell extends HBox implements Observer {
 
   /**
    * Sets the Properties object of RuleCell.
-   * 
-   * @param prop
-   *          The new Properties object.
+   *
+   * @param prop The new Properties object.
    */
   public static void setProperties(Properties prop) {
     properties = prop;
   }
 
+  /**
+   * Updates the created SIPs count label
+   *
+   * @param o   The Observable object. Should be a Rule.
+   * @param arg The arguments of the update.
+   */
   @Override
   public void update(Observable o, Object arg) {
-    if (o instanceof Rule) {
-      Rule rule = (Rule) o;
-
+    if (o == rule) {
       Platform.runLater(new Runnable() {
         @Override
         public void run() {

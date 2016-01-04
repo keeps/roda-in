@@ -2,7 +2,6 @@ package org.roda.rodain.utils;
 
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Observable;
 
 /**
  * @author Andre Pereira apereira@keep.pt

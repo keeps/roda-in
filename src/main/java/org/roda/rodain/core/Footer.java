@@ -4,15 +4,9 @@ import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Separator;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * The Node used as the footer of the UI to show a status message.
@@ -23,6 +17,9 @@ import java.util.TimerTask;
 public class Footer extends VBox {
   private static Label status;
 
+  /**
+   * Creates a new Footer object
+   */
   public Footer() {
     super(5);
     getStyleClass().add("footer");
@@ -40,9 +37,8 @@ public class Footer extends VBox {
 
   /**
    * Sets the status label with the String received as parameter.
-   * 
-   * @param st
-   *          The String to be set as the status.
+   *
+   * @param st The String to be set as the status.
    */
   public static void setStatus(final String st) {
     Platform.runLater(new Runnable() {

@@ -1,13 +1,5 @@
 package org.roda.rodain.rules.ui;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
-
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -23,7 +15,6 @@ import javafx.scene.layout.*;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.RuleTypes;
 import org.roda.rodain.rules.sip.TemplateType;
@@ -33,6 +24,14 @@ import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.Utils;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -58,7 +57,9 @@ public class RuleModalPane extends BorderPane {
   // Metadata
   private VBox boxMetadata;
   private ListView<HBoxCell> metaList;
-  private HBoxCell cellSingleFile, cellSameFolder, cellDiffFolder, cellTemplate;
+  private HBoxCell cellSingleFile;
+  private HBoxCell cellSameFolder;
+  private HBoxCell cellDiffFolder;
   private Button chooseDir, chooseFile;
   private ComboBox<String> templateTypes;
 
@@ -69,6 +70,14 @@ public class RuleModalPane extends BorderPane {
 
   private int folderCount;
 
+
+  /**
+   * Creates a new RuleModalPane, used to create a new Rule.
+   *
+   * @param stage      The stage of the pane
+   * @param sourceSet  The set of selected SourceTreeItems
+   * @param schemaNode The destination SchemaNode, where the SIPs will be created
+   */
   public RuleModalPane(Stage stage, Set<SourceTreeItem> sourceSet, SchemaNode schemaNode) {
     super();
     schema = schemaNode;
@@ -85,9 +94,8 @@ public class RuleModalPane extends BorderPane {
 
   /**
    * Sets the properties object for this class.
-   * 
-   * @param prop
-   *          The properties object.
+   *
+   * @param prop The properties object.
    */
   public static void setProperties(Properties prop) {
     properties = prop;
@@ -107,12 +115,9 @@ public class RuleModalPane extends BorderPane {
     title.setId("title");
 
     ArrayList<String> dirs = new ArrayList<>();
-    ArrayList<String> fil = new ArrayList<>();
     for (SourceTreeItem it : sourceSet) {
       if (it instanceof SourceTreeDirectory)
         dirs.add(it.getValue());
-      else
-        fil.add(it.getValue());
     }
     folderCount = dirs.size();
 
@@ -160,26 +165,26 @@ public class RuleModalPane extends BorderPane {
     String icon = properties.getProperty("association.singleSip.icon");
     String title = properties.getProperty("association.singleSip.title");
     String description = properties.getProperty("association.singleSip.description");
-    HBoxCell cellSingleSip = new HBoxCell(icon, title, description, new HBox());
+    HBoxCell cellSingleSip = new HBoxCell("assoc1", icon, title, description, new HBox());
     cellSingleSip.setUserData(RuleTypes.SINGLE_SIP);
 
     icon = properties.getProperty("association.sipSelection.icon");
     title = properties.getProperty("association.sipSelection.title");
     description = properties.getProperty("association.sipSelection.description");
-    HBoxCell cellSelected = new HBoxCell(icon, title, description, new HBox());
+    HBoxCell cellSelected = new HBoxCell("assoc2", icon, title, description, new HBox());
     cellSelected.setUserData(RuleTypes.SIP_PER_SELECTION);
 
     icon = properties.getProperty("association.sipPerFile.icon");
     title = properties.getProperty("association.sipPerFile.title");
     description = properties.getProperty("association.sipPerFile.description");
-    HBoxCell cellSipPerFile = new HBoxCell(icon, title, description, new HBox());
+    HBoxCell cellSipPerFile = new HBoxCell("assoc3", icon, title, description, new HBox());
     cellSipPerFile.setUserData(RuleTypes.SIP_PER_FILE);
 
     icon = properties.getProperty("association.sipPerFolder.icon");
     title = properties.getProperty("association.sipPerFolder.title");
     description = properties.getProperty("association.sipPerFolder.description");
     HBox options = createPerFolderOptions();
-    HBoxCell cellSipPerFolder = new HBoxCell(icon, title, description, options);
+    HBoxCell cellSipPerFolder = new HBoxCell("assoc4", icon, title, description, options);
     cellSipPerFolder.setUserData(RuleTypes.SIP_PER_FOLDER);
 
     ObservableList<HBoxCell> hboxList = FXCollections.observableArrayList();
@@ -199,7 +204,7 @@ public class RuleModalPane extends BorderPane {
 
     int depth = 0;
     if (folderCount == sourceSet.size()) { // check if the selected items are
-                                           // all directories
+      // all directories
       // we only need to compute the depth if we'll be going to activate the
       // radio button
       for (SourceTreeItem std : sourceSet) {
@@ -256,26 +261,26 @@ public class RuleModalPane extends BorderPane {
     String icon = properties.getProperty("metadata.singleFile.icon");
     String title = properties.getProperty("metadata.singleFile.title");
     String description = properties.getProperty("metadata.singleFile.description");
-    cellSingleFile = new HBoxCell(icon, title, description, optionsSingleFile());
+    cellSingleFile = new HBoxCell("meta1", icon, title, description, optionsSingleFile());
     cellSingleFile.setUserData(MetadataTypes.SINGLE_FILE);
 
     icon = properties.getProperty("metadata.sameFolder.icon");
     String tempTitle = properties.getProperty("metadata.sameFolder.title");
     title = String.format("%s \"%s\"", tempTitle, pathSameFolder());
     description = properties.getProperty("metadata.sameFolder.description");
-    cellSameFolder = new HBoxCell(icon, title, description, new HBox());
+    cellSameFolder = new HBoxCell("meta2", icon, title, description, new HBox());
     cellSameFolder.setUserData(MetadataTypes.SAME_DIRECTORY);
 
     icon = properties.getProperty("metadata.diffFolder.icon");
     title = properties.getProperty("metadata.diffFolder.title");
     description = properties.getProperty("metadata.diffFolder.description");
-    cellDiffFolder = new HBoxCell(icon, title, description, optionsDiffFolder());
+    cellDiffFolder = new HBoxCell("meta3", icon, title, description, optionsDiffFolder());
     cellDiffFolder.setUserData(MetadataTypes.DIFF_DIRECTORY);
 
     icon = properties.getProperty("metadata.template.icon");
     title = properties.getProperty("metadata.template.title");
     description = properties.getProperty("metadata.template.description");
-    cellTemplate = new HBoxCell(icon, title, description, optionsTemplate());
+    HBoxCell cellTemplate = new HBoxCell("meta4", icon, title, description, optionsTemplate());
     cellTemplate.setUserData(MetadataTypes.TEMPLATE);
 
     ObservableList<HBoxCell> hboxList = FXCollections.observableArrayList();
@@ -492,9 +497,8 @@ public class RuleModalPane extends BorderPane {
   }
 
   /**
-   *
    * @return The association type of the item the user selected or null if there
-   *         was no selection.
+   * was no selection.
    * @throws UnexpectedDataTypeException
    */
   public RuleTypes getAssociationType() throws UnexpectedDataTypeException {
@@ -515,9 +519,8 @@ public class RuleModalPane extends BorderPane {
   }
 
   /**
-   *
    * @return The metadata type of the item the user selected or null if there
-   *         was no selection.
+   * was no selection.
    * @throws UnexpectedDataTypeException
    */
   public MetadataTypes getMetadataType() throws UnexpectedDataTypeException {
@@ -532,7 +535,7 @@ public class RuleModalPane extends BorderPane {
 
   /**
    * @return The path of the file selected by the user in the metadata option
-   *         SINGLE_FILE
+   * SINGLE_FILE
    */
   public Path getFromFile() {
     return Paths.get(fromFile);
@@ -540,7 +543,7 @@ public class RuleModalPane extends BorderPane {
 
   /**
    * @return The path of the directory selected by the user in the metadata
-   *         option DIFF_DIRECTORY
+   * option DIFF_DIRECTORY
    */
   public Path getDiffDir() {
     return Paths.get(diffDir);
@@ -548,7 +551,7 @@ public class RuleModalPane extends BorderPane {
 
   /**
    * @return The path of the directory that is an ancestor to all the selected
-   *         files
+   * files
    */
   public Path getSameDir() {
     return Paths.get(sameDir);

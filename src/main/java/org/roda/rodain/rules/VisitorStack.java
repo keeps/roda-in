@@ -1,21 +1,18 @@
 package org.roda.rodain.rules;
 
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
+import org.roda.rodain.utils.TreeVisitor;
+import org.roda.rodain.utils.WalkFileTree;
+import org.slf4j.LoggerFactory;
+
 import java.util.HashMap;
 import java.util.Observable;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
-import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
-
-import org.roda.rodain.core.Footer;
-import org.roda.rodain.source.ui.items.SourceTreeItem;
-import org.roda.rodain.utils.TreeVisitor;
-import org.roda.rodain.utils.WalkFileTree;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -27,6 +24,9 @@ public class VisitorStack extends Observable {
   private HashMap<String, Future> futures;
   private String runningTask;
 
+  /**
+   * Creates a new VisitorStack object.
+   */
   public VisitorStack() {
     visitors = Executors.newSingleThreadExecutor();
     futures = new HashMap<>();
@@ -34,19 +34,14 @@ public class VisitorStack extends Observable {
 
   /**
    * Adds a new TreeVisitor to the stack.
-   *
+   * <p/>
    * <p>
    * Creates a new WalkFileTree with the set of paths and TreeVisitor received
    * as parameter. Wraps it in a Task and adds the Task to an ExecutorService.
    * </p>
-   * 
-   * @param items
-   *          The set of items associated in the Rule
-   * @param paths
-   *          The set of paths associated in the Rule
-   * @param vis
-   *          The TreeVisitor created by the Rule
    *
+   * @param paths The set of paths associated in the Rule
+   * @param vis   The TreeVisitor created by the Rule
    * @see TreeVisitor
    * @see ExecutorService
    */
@@ -95,8 +90,7 @@ public class VisitorStack extends Observable {
   }
 
   /**
-   * @param visitorId
-   *          The id of the TreeVisitor we want to know the state of.
+   * @param visitorId The id of the TreeVisitor we want to know the state of.
    * @return The state of the TreeVisitor.
    * @see TreeVisitor
    */
@@ -114,9 +108,8 @@ public class VisitorStack extends Observable {
 
   /**
    * Cancels the execution of the TreeVisitor received as parameter.
-   * 
-   * @param vis
-   *          The TreeVisitor to be canceled
+   *
+   * @param vis The TreeVisitor to be canceled
    * @return True if the TreeVisitor has been canceled, false otherwise.
    * @see TreeVisitor
    */
@@ -129,7 +122,7 @@ public class VisitorStack extends Observable {
 
   /**
    * Shuts down all TreeVisitors.
-   * 
+   *
    * @see TreeVisitor
    */
   public static void end() {

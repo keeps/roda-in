@@ -1,13 +1,5 @@
 package org.roda.rodain.source.ui;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
-
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -23,7 +15,6 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-
 import org.roda.rodain.core.Footer;
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.source.representation.SourceDirectory;
@@ -33,6 +24,14 @@ import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.Utils;
 import org.roda.rodain.utils.WalkFileTree;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -48,9 +47,6 @@ public class FileExplorerPane extends BorderPane implements Observer {
   private VBox centerHelp;
 
   private ComputeDirectorySize computeSize;
-
-  private static Set<String> oldIgnored;
-  private static Set<String> oldMapped;
 
   // Filter control
   private static boolean showFiles = true;
@@ -102,6 +98,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     bottom.setPadding(new Insets(10, 10, 10, 10));
 
     Button ignore = new Button("Ignore");
+    ignore.setId("bt_ignore");
     ignore.setMinWidth(100);
     ignore.setOnAction(new EventHandler<ActionEvent>() {
       @Override
@@ -188,17 +185,13 @@ public class FileExplorerPane extends BorderPane implements Observer {
     setFileExplorerRoot(path);
   }
 
-  private void setFileExplorerRoot(Path rootPath) {
+  public void setFileExplorerRoot(Path rootPath) {
     this.setTop(top);
     this.setCenter(fileExplorer);
     this.setBottom(bottom);
-    if (treeView.getRoot() != null) {
-      oldIgnored = ((SourceTreeDirectory) treeView.getRoot()).getIgnored();
-      oldMapped = ((SourceTreeDirectory) treeView.getRoot()).getMapped();
-    }
 
     SourceTreeDirectory rootNode = new SourceTreeDirectory(rootPath, new SourceDirectory(rootPath, isShowFiles()),
-      null);
+        null);
     PathCollection.addItem(rootNode);
     rootNode.setExpanded(true);
     treeView.setRoot(rootNode);
@@ -310,22 +303,12 @@ public class FileExplorerPane extends BorderPane implements Observer {
     return result;
   }
 
-  public static boolean isIgnored(String item) {
-    if (oldIgnored == null)
-      return false;
-    return oldIgnored.contains(item);
-  }
-
-  public static boolean isMapped(String item) {
-    if (oldMapped == null)
-      return false;
-    return oldMapped.contains(item);
-  }
-
-  /*
-   * Ignores the selected items If an item is normal, this method ignores it.
+  /**
+   * Ignores the items received in parameter.
+   * If an item is normal, this method ignores it.
    * Depending on the state of the showIgnored flag, it shows or hides the
    * ignored items.
+   * @param items The set of items to be ignored
    */
   public void ignore(Set<SourceTreeItem> items) {
     for (SourceTreeItem item : items) {
@@ -334,7 +317,9 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
       SourceTreeDirectory parent = item.getParentDir();
       if (!isShowIgnored()) {
-        parent.hideIgnored();
+        if (parent != null) {
+          parent.hideIgnored();
+        }
         treeView.getSelectionModel().clearSelection();
       } else {// force update
         String value = item.getValue();
@@ -344,6 +329,9 @@ public class FileExplorerPane extends BorderPane implements Observer {
     }
   }
 
+  /**
+   * Ignores the selected items.
+   */
   public void ignore() {
     Set<SourceTreeItem> items = getSelectedItems();
     ignore(items);

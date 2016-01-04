@@ -1,4 +1,8 @@
 language: java
 sudo: false
+install: #ignore tests
+  - true
+script:
+  - mvn clean install -DskipTests
 jdk:
   - oraclejdk8

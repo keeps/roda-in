@@ -1,7 +1,5 @@
 package org.roda.rodain.rules.ui;
 
-import java.io.IOException;
-
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -11,9 +9,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -24,6 +23,11 @@ public class LoadingPane extends BorderPane {
   private static Image loadingGif;
   private SchemaNode schema;
 
+  /**
+   * Creates a new LoadingPane object
+   *
+   * @param schemaNode The SchemaNode to be used to set the title of the pane
+   */
   public LoadingPane(SchemaNode schemaNode) {
     super();
     this.schema = schemaNode;

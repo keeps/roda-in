@@ -1,5 +1,7 @@
 package org.roda.rodain.source.representation;
 
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.DirectoryStream;
@@ -8,8 +10,6 @@ import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -24,38 +24,78 @@ public class SourceDirectory implements SourceItem {
   private Iterator<Path> iterator;
   private boolean showFiles;
 
+  /**
+   * Creates a new SourceDirectory object.
+   *
+   * @param path      The path associated to the object
+   * @param showFiles Whether to show the files or not
+   */
   public SourceDirectory(Path path, boolean showFiles) {
     this.path = path;
     this.showFiles = showFiles;
     children = new TreeMap<>();
   }
 
+  /**
+   * Gets the associated path.
+   *
+   * @return The path
+   */
   public Path getPath() {
     return path;
   }
 
+  /**
+   * Gets the children of the directory
+   *
+   * @return The children of the directory
+   */
   public SortedMap<String, SourceItem> getChildren() {
     return children;
   }
 
+  /**
+   * Gets a single child
+   *
+   * @param p The path of the child
+   * @return The child
+   */
   public SourceItem getChild(Path p) {
     return children.get(p.toString());
   }
 
+  /**
+   * Only returns an object if the path is a directory, casting the result.
+   *
+   * @param p The path of the child
+   * @return The casted object of the child or null if the path isn't a directory.
+   */
   public SourceDirectory getChildDirectory(Path p) {
     if (Files.isDirectory(p))
       return (SourceDirectory) children.get(p.toString());
     return null;
   }
 
+  /**
+   * @return True if the iterator isn't closed, false otherwise.
+   */
   public boolean isStreamOpen() {
     return iterator.hasNext();
   }
 
+  /**
+   * Adds a new child to the map.
+   *
+   * @param p    The path of the child
+   * @param item The object of the child
+   */
   public void addChild(Path p, SourceItem item) {
     children.put(p.toString(), item);
   }
 
+  /**
+   * Closes the directory stream if it hasn't been closed yet.
+   */
   public void closeDirectoryStream() {
     try {
       if (directoryStream != null)
@@ -79,10 +119,18 @@ public class SourceDirectory implements SourceItem {
     }
   }
 
+  /**
+   * @return True if the diretory has been loaded at least once, false otherwise.
+   */
   public boolean isFirstLoaded() {
     return iterator != null;
   }
 
+  /**
+   * Loads more items to the children map.
+   *
+   * @return The map with the newly added items
+   */
   public SortedMap<String, SourceItem> loadMore() {
     startDirectoryStream();
     int loaded = 0, childrenSize = children.size();
