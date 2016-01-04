@@ -1,10 +1,15 @@
 package org.roda.rodain.core;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import javafx.application.Platform;
 import javafx.scene.control.TreeItem;
 import javafx.stage.Stage;
+
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,11 +19,6 @@ import org.roda.rodain.schema.ui.SipPreviewNode;
 import org.roda.rodain.source.ui.FileExplorerPane;
 import org.roda.rodain.testing.Utils;
 import org.testfx.framework.junit.ApplicationTest;
-
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  * Created by adrapereira on 17-12-2015.
@@ -50,13 +50,13 @@ public class MainTest extends ApplicationTest {
   public void schemePane() {
     sleep(1000); //wait for the classification scheme to load
 
-    clickOn("Unicamp");
+    clickOn("UCP");
     TreeItem selected = schemaPane.getTreeView().getSelectionModel().getSelectedItem();
     int selectedIndex = schemaPane.getTreeView().getSelectionModel().getSelectedIndex();
-    assert "Unicamp".equals(selected.getValue());
+    assert"UCP".equals(selected.getValue());
     assert selectedIndex == 7;
 
-    doubleClickOn("Unicamp");
+    doubleClickOn("UCP");
     assert selected.getChildren().size() == 1;
   }
 
@@ -72,7 +72,7 @@ public class MainTest extends ApplicationTest {
     sleep(2000); //wait for the tree to be created
     doubleClickOn("dir4");
     sleep(1000); //wait for the node to expand
-    drag("dirB").dropTo("Unicamp");
+    drag("dirB").dropTo("UCP");
     sleep(1000); //wait for the modal to open
     clickOn("#assoc3");
     clickOn("Continue");
@@ -86,7 +86,7 @@ public class MainTest extends ApplicationTest {
     assert selected instanceof SipPreviewNode;
     TreeItem parent = selected.getParent();
     assert parent instanceof SchemaNode;
-    assert "Unicamp".equals(((SchemaNode) parent).getDob().getTitle());
+    assert"UCP".equals(((SchemaNode) parent).getDob().getTitle());
 
     assert parent.getChildren().size() == 14;
 
