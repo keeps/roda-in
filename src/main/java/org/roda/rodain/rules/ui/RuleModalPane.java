@@ -1,5 +1,12 @@
 package org.roda.rodain.rules.ui;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -15,6 +22,7 @@ import javafx.scene.layout.*;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.RuleTypes;
@@ -25,14 +33,6 @@ import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.Utils;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -152,27 +152,27 @@ public class RuleModalPane extends BorderPane {
       }
     });
 
-    String icon = AppProperties.getConfig("association.singleSip.icon");
-    String title = AppProperties.getConfig("association.singleSip.title");
-    String description = AppProperties.getConfig("association.singleSip.description");
+    String icon = AppProperties.getStyle("association.singleSip.icon");
+    String title = AppProperties.getLocalizedString("association.singleSip.title");
+    String description = AppProperties.getLocalizedString("association.singleSip.description");
     HBoxCell cellSingleSip = new HBoxCell("assoc1", icon, title, description, new HBox());
     cellSingleSip.setUserData(RuleTypes.SINGLE_SIP);
 
-    icon = AppProperties.getConfig("association.sipSelection.icon");
-    title = AppProperties.getConfig("association.sipSelection.title");
-    description = AppProperties.getConfig("association.sipSelection.description");
+    icon = AppProperties.getStyle("association.sipSelection.icon");
+    title = AppProperties.getLocalizedString("association.sipSelection.title");
+    description = AppProperties.getLocalizedString("association.sipSelection.description");
     HBoxCell cellSelected = new HBoxCell("assoc2", icon, title, description, new HBox());
     cellSelected.setUserData(RuleTypes.SIP_PER_SELECTION);
 
-    icon = AppProperties.getConfig("association.sipPerFile.icon");
-    title = AppProperties.getConfig("association.sipPerFile.title");
-    description = AppProperties.getConfig("association.sipPerFile.description");
+    icon = AppProperties.getStyle("association.sipPerFile.icon");
+    title = AppProperties.getLocalizedString("association.sipPerFile.title");
+    description = AppProperties.getLocalizedString("association.sipPerFile.description");
     HBoxCell cellSipPerFile = new HBoxCell("assoc3", icon, title, description, new HBox());
     cellSipPerFile.setUserData(RuleTypes.SIP_PER_FILE);
 
-    icon = AppProperties.getConfig("association.sipPerFolder.icon");
-    title = AppProperties.getConfig("association.sipPerFolder.title");
-    description = AppProperties.getConfig("association.sipPerFolder.description");
+    icon = AppProperties.getStyle("association.sipPerFolder.icon");
+    title = AppProperties.getLocalizedString("association.sipPerFolder.title");
+    description = AppProperties.getLocalizedString("association.sipPerFolder.description");
     HBox options = createPerFolderOptions();
     HBoxCell cellSipPerFolder = new HBoxCell("assoc4", icon, title, description, options);
     cellSipPerFolder.setUserData(RuleTypes.SIP_PER_FOLDER);
@@ -248,28 +248,28 @@ public class RuleModalPane extends BorderPane {
       }
     });
 
-    String icon = AppProperties.getConfig("metadata.singleFile.icon");
-    String title = AppProperties.getConfig("metadata.singleFile.title");
-    String description = AppProperties.getConfig("metadata.singleFile.description");
+    String icon = AppProperties.getStyle("metadata.singleFile.icon");
+    String title = AppProperties.getLocalizedString("metadata.singleFile.title");
+    String description = AppProperties.getLocalizedString("metadata.singleFile.description");
     cellSingleFile = new HBoxCell("meta1", icon, title, description, optionsSingleFile());
     cellSingleFile.setUserData(MetadataTypes.SINGLE_FILE);
 
-    icon = AppProperties.getConfig("metadata.sameFolder.icon");
-    String tempTitle = AppProperties.getConfig("metadata.sameFolder.title");
+    icon = AppProperties.getStyle("metadata.sameFolder.icon");
+    String tempTitle = AppProperties.getLocalizedString("metadata.sameFolder.title");
     title = String.format("%s \"%s\"", tempTitle, pathSameFolder());
-    description = AppProperties.getConfig("metadata.sameFolder.description");
+    description = AppProperties.getLocalizedString("metadata.sameFolder.description");
     cellSameFolder = new HBoxCell("meta2", icon, title, description, new HBox());
     cellSameFolder.setUserData(MetadataTypes.SAME_DIRECTORY);
 
-    icon = AppProperties.getConfig("metadata.diffFolder.icon");
-    title = AppProperties.getConfig("metadata.diffFolder.title");
-    description = AppProperties.getConfig("metadata.diffFolder.description");
+    icon = AppProperties.getStyle("metadata.diffFolder.icon");
+    title = AppProperties.getLocalizedString("metadata.diffFolder.title");
+    description = AppProperties.getLocalizedString("metadata.diffFolder.description");
     cellDiffFolder = new HBoxCell("meta3", icon, title, description, optionsDiffFolder());
     cellDiffFolder.setUserData(MetadataTypes.DIFF_DIRECTORY);
 
-    icon = AppProperties.getConfig("metadata.template.icon");
-    title = AppProperties.getConfig("metadata.template.title");
-    description = AppProperties.getConfig("metadata.template.description");
+    icon = AppProperties.getStyle("metadata.template.icon");
+    title = AppProperties.getLocalizedString("metadata.template.title");
+    description = AppProperties.getLocalizedString("metadata.template.description");
     HBoxCell cellTemplate = new HBoxCell("meta4", icon, title, description, optionsTemplate());
     cellTemplate.setUserData(MetadataTypes.TEMPLATE);
 

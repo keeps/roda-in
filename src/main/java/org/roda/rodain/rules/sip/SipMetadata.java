@@ -1,15 +1,13 @@
 package org.roda.rodain.rules.sip;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Path;
+
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.utils.Utils;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.nio.file.Path;
-import java.util.Properties;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -47,15 +45,13 @@ public class SipMetadata {
     try {
       if (type == MetadataTypes.TEMPLATE) {
         if (templateType != null) {
-          String fileName;
-          if (templateType == TemplateType.EAD) {
-            fileName = AppProperties.getConfig("metadata.template.ead");
-          } else
-            fileName = AppProperties.getConfig("metadata.template.dcmes");
+          String key;
+          if (templateType == TemplateType.EAD)
+            key = "ead";
+          else
+            key = "dcmes";
 
-          InputStream contentStream = ClassLoader.getSystemResource(fileName).openStream();
-          content = Utils.convertStreamToString(contentStream);
-          contentStream.close();
+          content = AppProperties.getMetadataFile(key);
           loaded = true;
         }
       } else {

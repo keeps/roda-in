@@ -106,6 +106,8 @@ public class Main extends Application {
       log.error("Error reading logo file", e);
     }
 
+    AppProperties.initialize();
+
     // load the custom fonts
     Font.loadFont(ClassLoader.getSystemResource("fonts/Ubuntu-Regular.ttf").toExternalForm(), 10);
     Font.loadFont(ClassLoader.getSystemResource("fonts/Ubuntu-Medium.ttf").toExternalForm(), 10);
@@ -146,7 +148,7 @@ public class Main extends Application {
     schemaPane = new SchemaPane(stage);
     inspectionPane = new InspectionPane(stage);
 
-    split.setDividerPositions(0.33, 0.66);
+    split.setDividerPositions(0.33, 0.67);
     split.getItems().addAll(previewExplorer, schemaPane, inspectionPane);
 
     // Create Footer
