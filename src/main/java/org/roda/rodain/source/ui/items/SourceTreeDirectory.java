@@ -1,23 +1,23 @@
 package org.roda.rodain.source.ui.items;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
-
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.source.representation.SourceDirectory;
 import org.roda.rodain.source.representation.SourceItem;
 import org.roda.rodain.source.ui.ExpandedEventHandler;
 import org.roda.rodain.source.ui.FileExplorerPane;
+
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -26,7 +26,7 @@ import org.roda.rodain.source.ui.FileExplorerPane;
 public class SourceTreeDirectory extends SourceTreeItem {
   public static final Image folderCollapseImage = new Image(ClassLoader.getSystemResourceAsStream("icons/folder.png"));
   public static final Image folderExpandImage = new Image(
-    ClassLoader.getSystemResourceAsStream("icons/folder-open.png"));
+      ClassLoader.getSystemResourceAsStream("icons/folder-open.png"));
   public static final Comparator<? super TreeItem> comparator = createComparator();
 
   public boolean expanded = false;
@@ -36,8 +36,6 @@ public class SourceTreeDirectory extends SourceTreeItem {
   private HashSet<SourceTreeItem> ignored;
   private HashSet<SourceTreeItem> mapped;
   private HashSet<SourceTreeFile> files;
-
-  private Set<Rule> rules = new HashSet<>();
 
   public SourceTreeDirectory(Path file, SourceDirectory directory, SourceTreeItemState st, SourceTreeDirectory parent) {
     this(file, directory, parent);
@@ -83,7 +81,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
   /**
    * Creates a task to hide all this item's mapped items. The task is needed to
    * prevent the UI thread from hanging due to the computations.
-   *
+   * <p/>
    * First, it removes all the children with the MAPPED state and adds them to
    * the mapped set, so that they can be shown at a later date. If a child is a
    * directory, this method is called in that item. Finally, clears the children
@@ -123,7 +121,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
   /**
    * Creates a task to show all this item's mapped items. The task is needed to
    * prevent the UI thread from hanging due to the computations.
-   *
+   * <p/>
    * First, it adds all the items in the mapped set, which are the previously
    * hidden items, and clears the set. We need to be careful in this step
    * because if the hiddenFiles flag is true, then we must hide the mapped items
@@ -172,7 +170,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
   /**
    * Creates a task to hide all this item's ignored items. The task is needed to
    * prevent the UI thread from hanging due to the computations.
-   *
+   * <p/>
    * First, it removes all the children with the IGNORED state and adds them to
    * the ignored set, so that they can be shown at a later date. If a child is a
    * directory, this method is called in that item. Then, calls this method for
@@ -217,7 +215,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
   /**
    * Creates a task to show all this item's ignored items. The task is needed to
    * prevent the UI thread from hanging due to the computations.
-   *
+   * <p/>
    * First, it adds all the items in the ignored set, which are the previously
    * hidden items, and clears the set. We need to be careful in this step
    * because if the hiddenFiles flag is true, then we must hide the ignored
@@ -264,7 +262,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
   /**
    * Creates a task to hide all this item's file items. The task is needed to
    * prevent the UI thread from hanging due to the computations.
-   *
+   * <p/>
    * First, it removes all the children that are a file and adds them to the
    * files set, so that they can be shown at a later date. If a child is a
    * directory, this method is called in that item. Finally, clears the children
@@ -304,7 +302,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
   /**
    * Creates a task to show all this item's file items. The task is needed to
    * prevent the UI thread from hanging due to the computations.
-   *
+   * <p/>
    * First, it adds all the items in the files set, which are the previously
    * hidden items, and clears the set. Then makes a call to this method for all
    * its children and hidden ignored/mapped items. Finally, clears the children,
@@ -347,6 +345,9 @@ public class SourceTreeDirectory extends SourceTreeItem {
     new Thread(task).start();
   }
 
+  /**
+   * @return The set of the ignored items in the directory.
+   */
   public Set<String> getIgnored() {
     Set<String> result = new HashSet<>();
     // we need to include the items that are being shown and the hidden
@@ -364,6 +365,9 @@ public class SourceTreeDirectory extends SourceTreeItem {
     return result;
   }
 
+  /**
+   * @return The set of the mapped items in the directory.
+   */
   public Set<String> getMapped() {
     Set<String> result = new HashSet<>();
     // we need to include the items that are being shown and the hidden
@@ -386,10 +390,11 @@ public class SourceTreeDirectory extends SourceTreeItem {
       @Override
       public int compare(TreeItem o1, TreeItem o2) {
         if (o1.getClass() == o2.getClass()) { // sort items of the same class by
-                                              // value
+          // value
           String s1 = (String) o1.getValue();
           String s2 = (String) o2.getValue();
-          return s1.compareToIgnoreCase(s2);
+          if (s1 != null && s2 != null)
+            return s1.compareToIgnoreCase(s2);
         }
         // directories must appear first
         if (o1 instanceof SourceTreeDirectory)
@@ -402,17 +407,28 @@ public class SourceTreeDirectory extends SourceTreeItem {
     };
   }
 
+  /**
+   * Sorts the children array
+   */
   public void sortChildren() {
     ArrayList<TreeItem<String>> aux = new ArrayList<>(getChildren());
     Collections.sort(aux, comparator);
     getChildren().setAll(aux);
   }
 
+  /**
+   * @return The path of the directory
+   */
   @Override
   public String getPath() {
     return this.fullPath;
   }
 
+  /**
+   * Sets the state of the directory and forces an update of the item
+   *
+   * @param st The new state
+   */
   @Override
   public void setState(SourceTreeItemState st) {
     if (state != st) {
@@ -421,11 +437,9 @@ public class SourceTreeDirectory extends SourceTreeItem {
     forceUpdate();
   }
 
-  @Override
-  public SourceTreeItemState getState() {
-    return state;
-  }
-
+  /**
+   * Sets the directory as ignored and forces an update of the item
+   */
   @Override
   public void addIgnore() {
     if (state == SourceTreeItemState.NORMAL) {
@@ -435,14 +449,19 @@ public class SourceTreeDirectory extends SourceTreeItem {
     forceUpdate();
   }
 
+  /**
+   * Sets the directory as mapped
+   */
   @Override
   public void addMapping(Rule r) {
-    rules.add(r);
     if (state == SourceTreeItemState.NORMAL) {
       state = SourceTreeItemState.MAPPED;
     }
   }
 
+  /**
+   * Sets the directory as normal (if it was ignored)
+   */
   @Override
   public void removeIgnore() {
     if (state == SourceTreeItemState.IGNORED) {
@@ -451,16 +470,25 @@ public class SourceTreeDirectory extends SourceTreeItem {
     }
   }
 
+  /**
+   * @return The SourceDirectory object associated to the item
+   */
   public SourceDirectory getDirectory() {
     return directory;
   }
 
-  /*
-   * We need to create a task to load the items to a temporary collection,
-   * otherwise the UI will hang while we access the disk.
+  /**
+   * Creates a task to load the items to a temporary collection, otherwise the UI will hang while accessing the disk.
+   * Then, sets the new collection as the item's children.
    */
   public void loadMore() {
     final ArrayList<TreeItem<String>> children = new ArrayList<>(getChildren());
+
+    // Remove "loading" items
+    List<Object> toRemove = children.stream().
+        filter(p -> p instanceof SourceTreeLoading || p instanceof SourceTreeLoadMore).
+        collect(Collectors.toList());
+    children.removeAll(toRemove);
 
     // First we access the disk and save the loaded items to a temporary
     // collection
@@ -488,12 +516,6 @@ public class SourceTreeDirectory extends SourceTreeItem {
     task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
       @Override
       public void handle(WorkerStateEvent workerStateEvent) {
-        // Remove "loading" items
-        ArrayList<Object> toRemove = new ArrayList<>();
-        for (Object o : children)
-          if (o instanceof SourceTreeLoading)
-            toRemove.add(o);
-        children.removeAll(toRemove);
         // Set the children
         getChildren().setAll(children);
       }
@@ -553,6 +575,20 @@ public class SourceTreeDirectory extends SourceTreeItem {
       mapped.add(item);
   }
 
+  /**
+   * Moves the children with the wrong state to the correct collection.
+   *
+   * <p>
+   *   The normal items in the mapped collection are moved to the children collection.
+   * </p>
+   *
+   * <p>
+   *   If the mapped items are hidden, moves the mapped items in the children collection to the mapped collection.
+   * </p>
+   * <p>
+   *   If the ignored items are hidden, moves the ignored items in the children collection to the ignored collection.
+   * </p>
+   */
   public void moveChildrenWrongState() {
     Set<SourceTreeItem> toRemove = new HashSet<>();
     boolean modified = false;

@@ -1,14 +1,14 @@
 package org.roda.rodain.rules.sip;
 
-import java.nio.file.Path;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.Utils;
+
+import java.nio.file.Path;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -22,8 +22,17 @@ public class SipPreview extends Observable implements Observer {
   private boolean contentModified = false;
   private boolean removed = false;
 
+  /**
+   * Creates a new SipPreview object.
+   *
+   * @param name         The name of the SIP
+   * @param files        The set of files to be added to the SIP's content
+   * @param metaType     The type of metadata to be applied to the SIP
+   * @param metadataPath The path of the metadata
+   * @param templateType The type of the metadata template
+   */
   public SipPreview(String name, Set<TreeNode> files, MetadataTypes metaType, Path metadataPath,
-    TemplateType templateType) {
+                    TemplateType templateType) {
     this.name = name;
     this.files = files;
     metadata = new SipMetadata(metaType, metadataPath, templateType);
@@ -60,12 +69,12 @@ public class SipPreview extends Observable implements Observer {
    * @see SipMetadata#getMetadataContent()
    */
   public String getMetadataContent() {
-	  String content = metadata.getMetadataContent();
-	  if(content!=null){
-		  //TODO configurable tags...
-		  content = Utils.replaceTag(content,"#title#",getName());
-	      content = Utils.replaceTag(content,"#date#",new SimpleDateFormat("yyyy-MM-dd").format(new Date()));  
-	  }
+    String content = metadata.getMetadataContent();
+    if (content != null) {
+      //TODO configurable tags...
+      content = Utils.replaceTag(content, "#title#", getName());
+      content = Utils.replaceTag(content, "#date#", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+    }
     return content;
   }
 
@@ -78,9 +87,8 @@ public class SipPreview extends Observable implements Observer {
 
   /**
    * Updates the metadata content of the SIP.
-   * 
-   * @param meta
-   *          The new metadata content.
+   *
+   * @param meta The new metadata content.
    * @see SipMetadata#update(String)
    */
   public void updateMetadata(String meta) {
@@ -91,9 +99,8 @@ public class SipPreview extends Observable implements Observer {
 
   /**
    * Removes from the SIP's content the set of paths received as parameter.
-   * 
-   * @param paths
-   *          The set of paths to be removed
+   *
+   * @param paths The set of paths to be removed
    */
   public void ignoreContent(Set<Path> paths) {
     Set<String> ignored = new HashSet<>();
@@ -117,7 +124,7 @@ public class SipPreview extends Observable implements Observer {
 
   /**
    * @return True if the content has been modified (nodes removed, flattened or
-   *         skipped), false otherwise.
+   * skipped), false otherwise.
    */
   public boolean isContentModified() {
     return contentModified;
@@ -155,11 +162,9 @@ public class SipPreview extends Observable implements Observer {
   /**
    * Sets the content modified state as true if it receives a notification from
    * any TreeNode in the files Set.
-   * 
-   * @param o
-   *          The observable object that is modified.
-   * @param arg
-   *          The arguments sent by the observable object.
+   *
+   * @param o   The observable object that is modified.
+   * @param arg The arguments sent by the observable object.
    */
   @Override
   public void update(Observable o, Object arg) {

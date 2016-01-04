@@ -1,10 +1,10 @@
 package org.roda.rodain.creation;
 
-import java.nio.file.Path;
-import java.util.Map;
-
 import org.roda.rodain.core.Main;
 import org.roda.rodain.rules.sip.SipPreview;
+
+import java.nio.file.Path;
+import java.util.Map;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -19,8 +19,9 @@ public class CreateSips {
 
   /**
    * Creates a new object of the SIP exporter
+   *
    * @param outputPath The path of the output folder of the SIP exportation
-   * @param type The format of the SIP output
+   * @param type       The format of the SIP output
    */
   public CreateSips(Path outputPath, SipTypes type) {
     this.type = type;
@@ -65,7 +66,7 @@ public class CreateSips {
 
   /**
    * @return A double resulting of the division of the number of SIPs already
-   *         created by the total number of SIPs.
+   * created by the total number of SIPs.
    */
   public double getProgress() {
     return creator.getCreatedSipsCount() / (sipsCount * 1.0);

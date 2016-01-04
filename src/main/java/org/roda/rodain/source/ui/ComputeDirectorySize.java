@@ -1,11 +1,11 @@
 package org.roda.rodain.source.ui;
 
+import org.roda.rodain.core.PathCollection;
+import org.roda.rodain.utils.TreeVisitor;
+
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Observable;
-
-import org.roda.rodain.core.PathCollection;
-import org.roda.rodain.utils.TreeVisitor;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -20,7 +20,6 @@ public class ComputeDirectorySize extends Observable implements TreeVisitor {
   }
 
   @Override
-
   public void preVisitDirectory(Path path, BasicFileAttributes attrs) {
   }
 

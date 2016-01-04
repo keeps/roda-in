@@ -18,6 +18,11 @@ public class RuleModalStage extends Stage {
   private ColorAdjust colorAdjust;
   private Stage primaryStage;
 
+  /**
+   * Creates a new RuleModalStage to be used in the Rule creation and removal.
+   *
+   * @param primaryStage The primary stage of the application.
+   */
   public RuleModalStage(Stage primaryStage) {
     super(StageStyle.TRANSPARENT);
     this.primaryStage = primaryStage;
@@ -35,12 +40,20 @@ public class RuleModalStage extends Stage {
     setScene(scene);
   }
 
+  /**
+   * Removes the background color effect and closes the stage.
+   */
   @Override
   public void close() {
     getOwner().getScene().getRoot().setEffect(null);
     super.close();
   }
 
+  /**
+   * Sets the root pane of the stage.
+   *
+   * @param root The pane to be set as root.
+   */
   public void setRoot(Parent root) {
     this.getScene().setRoot(root);
 
@@ -49,7 +62,7 @@ public class RuleModalStage extends Stage {
     // allow the dialog to be dragged around.
     final Delta dragDelta = new Delta();
     final RuleModalStage thisDialog = this; // reference to be used in the
-                                            // handlers
+    // handlers
     root.setOnMousePressed(new EventHandler<MouseEvent>() {
       @Override
       public void handle(MouseEvent mouseEvent) {

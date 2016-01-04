@@ -1,7 +1,5 @@
 package org.roda.rodain.creation.ui;
 
-import java.nio.file.Path;
-
 import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -11,9 +9,10 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
 import org.roda.rodain.creation.CreateSips;
 import org.roda.rodain.creation.SipTypes;
+
+import java.nio.file.Path;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -25,6 +24,7 @@ public class CreationModalStage extends Stage {
 
   /**
    * The stage of the SIP exportation panels
+   *
    * @param primaryStage The primary stage of the application
    */
   public CreationModalStage(Stage primaryStage) {
@@ -46,8 +46,9 @@ public class CreationModalStage extends Stage {
 
   /**
    * Starts the CreateSips thread and changes the scene to CreationModalProcessing.
+   *
    * @param outputFolder The output folder for the SIP exportation
-   * @param type The format of the SIPs
+   * @param type         The format of the SIPs
    */
   public void startCreation(Path outputFolder, SipTypes type) {
     CreateSips creator = new CreateSips(outputFolder, type);
@@ -69,7 +70,7 @@ public class CreationModalStage extends Stage {
   /**
    * Sets the root Scene of this Stage, applies a color adjustment effect and
    * enables dragging of the window.
-   * 
+   *
    * @param root The pane to be set as root
    */
   public void setRoot(Parent root) {
@@ -80,7 +81,7 @@ public class CreationModalStage extends Stage {
     // allow the dialog to be dragged around.
     final Delta dragDelta = new Delta();
     final CreationModalStage thisDialog = this; // reference to be used in the
-                                                // handlers
+    // handlers
     root.setOnMousePressed(new EventHandler<MouseEvent>() {
       @Override
       public void handle(MouseEvent mouseEvent) {

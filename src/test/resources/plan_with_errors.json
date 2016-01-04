@@ -1,0 +1,529 @@
+{
+  "dos": [
+    {
+      "title": "<indefinido>",
+      "id": "roda:276",
+      "parentId": "roda:277",
+      "descriptionlevel": "class",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "Class ARR",
+      "id": "roda:664450",
+      "parentId": "roda:664449",
+      "descriptionlevel": "class",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "ARJC",
+      "id": "roda:664404",
+      "parentId": "roda:664394",
+      "descriptionlevel": "class",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "TFLF",
+      "id": "roda:3",
+      "parentId": "roda:2",
+      "descriptionlevel": "subfonds",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "TLC",
+      "id": "roda:466794",
+      "parentId": "roda:2",
+      "descriptionlevel": "subfonds",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "GRa",
+      "id": "roda:664449",
+      "parentId": "roda:664448",
+      "descriptionlevel": "subfonds",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "ANTTb",
+      "id": "roda:1046",
+      "parentId": "roda:1044",
+      "descriptionlevel": "subfonds",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "TTRC",
+      "id": "roda:277",
+      "parentId": "roda:2",
+      "descriptionlevel": "subfonds",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "TMSe",
+      "id": "roda:684071",
+      "parentId": "roda:2",
+      "descriptionlevel": "subfonds",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "FTP",
+      "id": "roda:158697",
+      "descriptionlevel": "fonds",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "FCGtA",
+      "id": "roda:596528",
+      "descriptionlevel": "fonds",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "ISS AE",
+      "id": "roda:664394",
+      "descriptionlevel": "fonds",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "LTDGA PE",
+      "id": "roda:1044",
+      "descriptionlevel": "fonds",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "IDEp",
+      "id": "roda:438158",
+      "descriptionlevel": "fonds",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "FBT",
+      "id": "roda:24747",
+      "descriptionlevel": "fonds",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "UCP",
+      "id": "roda:664448",
+      "descriptionlevel": "fonds",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "AACCe",
+      "id": "roda:1",
+      "descriptionlevel": "fonds",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "Órfãos",
+      "id": "dd0e5911-cbc1-4505-9f3e-3013f5a5093e",
+      "descriptionlevel": "fonds",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "type": "",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "CGpt",
+      "id": "roda:827",
+      "parentId": "roda:1",
+      "descriptionlevel": "series",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "testes diversos",
+      "id": "roda:24751",
+      "parentId": "roda:24747",
+      "descriptionlevel": "series",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "FMSATA",
+      "id": "roda:834",
+      "parentId": "roda:1",
+      "descriptionlevel": "series",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "SATC",
+      "id": "roda:833",
+      "parentId": "roda:1",
+      "descriptionlevel": "series",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "COPK",
+      "id": "roda:664405",
+      "parentId": "roda:664404",
+      "descriptionlevel": "series",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "<indefinido>",
+      "id": "roda:684070",
+      "parentId": "roda:466794",
+      "descriptionlevel": "series",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "II",
+      "id": "roda:689168",
+      "parentId": "roda:684071",
+      "descriptionlevel": "series",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "<indefinido>",
+      "id": "roda:278",
+      "parentId": "roda:276",
+      "descriptionlevel": "series",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "Relatórios",
+      "id": "roda:824",
+      "parentId": "roda:1",
+      "descriptionlevel": "series",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "DREDea",
+      "id": "roda:837",
+      "parentId": "roda:1",
+      "descriptionlevel": "series",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "IIlta",
+      "id": "roda:830",
+      "parentId": "roda:1",
+      "descriptionlevel": "series",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "MM DI",
+      "id": "roda:829",
+      "parentId": "roda:1",
+      "descriptionlevel": "series",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "ItTn",
+      "id": "roda:689169",
+      "parentId": "roda:684071",
+      "descriptionlevel": "series",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "CeGrr",
+      "id": "roda:832",
+      "parentId": "roda:1",
+      "descriptionlevel": "series",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "AEmne",
+      "id": "roda:835",
+      "parentId": "roda:1",
+      "descriptionlevel": "series",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "Ol",
+      "id": "roda:826",
+      "parentId": "roda:1",
+      "descriptionlevel": "series",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "BANt",
+      "id": "roda:664428",
+      "parentId": "roda:466794",
+      "descriptionlevel": "series",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "JSCF",
+      "id": "roda:828",
+      "parentId": "roda:1",
+      "descriptionlevel": "series",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "PAero",
+      "id": "roda:822",
+      "parentId": "roda:1",
+      "descriptionlevel": "series",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "IRp",
+      "id": "roda:831",
+      "parentId": "roda:1",
+      "descriptionlevel": "series",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "PRDq MR",
+      "id": "roda:1047",
+      "parentId": "roda:1046",
+      "descriptionlevel": "series",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "PDssl",
+      "id": "roda:836",
+      "parentId": "roda:1",
+      "descriptionlevel": "series",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    },
+    {
+      "title": "D TE",
+      "id": "roda:825",
+      "parentId": "roda:1",
+      "descriptionlevel": "series",
+      "metadata": [
+        {
+          "id": "ead-c.xml",
+          "content": "TWV0YWRhdGEgZXhhbXBsZS4NClNlY29uZCBsaW5lIG9mIHRoZSBtZXRhZGF0YSBleGFtcGxl",
+          "contentEncoding": "Base64"
+        }
+      ]
+    }
+  ]
+}

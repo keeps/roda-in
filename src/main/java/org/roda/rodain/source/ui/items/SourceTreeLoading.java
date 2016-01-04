@@ -9,11 +9,17 @@ public class SourceTreeLoading extends SourceTreeItem {
     super("Loading...", null);
   }
 
+  /**
+   * @return Nullm because this item has no path
+   */
   @Override
   public String getPath() {
     return null;
   }
 
+  /**
+   * @return The NORMAL state
+   */
   @Override
   public SourceTreeItemState getState() {
     return SourceTreeItemState.NORMAL;

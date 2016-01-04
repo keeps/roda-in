@@ -1,8 +1,5 @@
 package org.roda.rodain.creation.ui;
 
-import java.io.File;
-import java.nio.file.Path;
-
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -15,8 +12,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
-
 import org.roda.rodain.creation.SipTypes;
+
+import java.io.File;
+import java.nio.file.Path;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -30,11 +29,12 @@ public class CreationModalPreparation extends BorderPane {
 
   /**
    * Creates a modal to prepare for the SIP exportation.
-   *
+   * <p/>
    * <p>
-   *   This class creates a pane with a field to choose what the output directory for the SIP exportation should be
-   *   and the format of the SIPs.
+   * This class creates a pane with a field to choose what the output directory for the SIP exportation should be
+   * and the format of the SIPs.
    * </p>
+   *
    * @param stage The stage of the pane
    */
   public CreationModalPreparation(CreationModalStage stage) {
@@ -135,7 +135,7 @@ public class CreationModalPreparation extends BorderPane {
       public void handle(ActionEvent actionEvent) {
         String selectedType = sipTypes.getSelectionModel().getSelectedItem();
         SipTypes type;
-        if (selectedType.equals("BagIt"))
+        if ("BagIt".equals(selectedType))
           type = SipTypes.BAGIT;
         else
           type = SipTypes.EARK;

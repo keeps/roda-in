@@ -24,7 +24,11 @@ public class RuleModalRemoving extends BorderPane implements Observer {
   private ProgressBar progress;
   private int sipCount;
 
-
+  /**
+   * Creates a new RuleModalRemoving object.
+   *
+   * @param rule The Rule that is being removed.
+   */
   public RuleModalRemoving(Rule rule) {
     this.rule = rule;
     sipCount = rule.getSipCount();
@@ -63,6 +67,12 @@ public class RuleModalRemoving extends BorderPane implements Observer {
     setCenter(center);
   }
 
+  /**
+   * Updates the progress of the rule removal.
+   *
+   * @param o    The Observable object, should be a Rule.
+   * @param args The arguments of the update.
+   */
   public void update(Observable o, Object args) {
     if (o == rule) {
       Platform.runLater(new Runnable() {

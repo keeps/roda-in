@@ -1,26 +1,25 @@
 package org.roda.rodain.inspection;
 
+import javafx.event.EventHandler;
+import javafx.scene.control.TreeItem;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import org.roda.rodain.rules.TreeNode;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import javafx.event.EventHandler;
-import javafx.scene.control.TreeItem;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-
-import org.roda.rodain.rules.TreeNode;
-
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 17-09-2015.
  */
-public class SipContentDirectory extends TreeItem<Object>implements InspectionTreeItem {
+public class SipContentDirectory extends TreeItem<Object> implements InspectionTreeItem {
   public static final Image folderCollapseImage = new Image(ClassLoader.getSystemResourceAsStream("icons/folder.png"));
   public static final Image folderExpandImage = new Image(
-    ClassLoader.getSystemResourceAsStream("icons/folder-open.png"));
+      ClassLoader.getSystemResourceAsStream("icons/folder-open.png"));
   private static final Comparator comparator = createComparator();
   // this stores the full path to the file or directory
   private Path fullPath;
@@ -29,8 +28,9 @@ public class SipContentDirectory extends TreeItem<Object>implements InspectionTr
 
   /**
    * Creates a new TreeItem, representing a directory.
+   *
    * @param treeNode The TreeNode that will be associated to the item.
-   * @param parent The item's parent.
+   * @param parent   The item's parent.
    */
   public SipContentDirectory(TreeNode treeNode, TreeItem parent) {
     super(treeNode.getPath());
@@ -86,7 +86,7 @@ public class SipContentDirectory extends TreeItem<Object>implements InspectionTr
 
   /**
    * Skips the directory.
-   *
+   * <p/>
    * <p>
    * This method removes this node from its parent and adds all its children to
    * the parent, effectively skipping the directory.
@@ -96,16 +96,16 @@ public class SipContentDirectory extends TreeItem<Object>implements InspectionTr
     SipContentDirectory par = (SipContentDirectory) this.parent;
     TreeNode parentTreeNode = par.getTreeNode();
     parentTreeNode.remove(treeNode.getPath()); // remove this treeNode from the
-                                               // parent
+    // parent
     parentTreeNode.addAll(treeNode.getAllFiles()); // add this treeNode's
-                                                   // children to this node's
-                                                   // parent
+    // children to this node's
+    // parent
     par.sortChildren();
   }
 
   /**
    * Flattens the directory.
-   *
+   * <p/>
    * <p>
    * This method flattens the item's file tree, i.e., moves all it's child nodes
    * to one level.
@@ -123,7 +123,7 @@ public class SipContentDirectory extends TreeItem<Object>implements InspectionTr
 
   /**
    * Sorts the item's children.
-   *
+   * <p/>
    * <p>
    * The comparator used by this method forces the directories to appear before
    * the files. Between items of the same class the sorting is done comparing
@@ -146,7 +146,7 @@ public class SipContentDirectory extends TreeItem<Object>implements InspectionTr
       @Override
       public int compare(TreeItem o1, TreeItem o2) {
         if (o1.getClass() == o2.getClass()) { // sort items of the same class by
-                                              // value
+          // value
           String s1 = (String) o1.getValue();
           String s2 = (String) o2.getValue();
           return s1.compareToIgnoreCase(s2);

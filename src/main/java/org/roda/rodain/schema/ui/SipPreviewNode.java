@@ -1,29 +1,26 @@
 package org.roda.rodain.schema.ui;
 
-import java.util.Observable;
-import java.util.Observer;
-
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-
 import org.roda.rodain.rules.sip.SipPreview;
+
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 05-10-2015.
  */
-public class SipPreviewNode extends TreeItem<String>implements Observer {
+public class SipPreviewNode extends TreeItem<String> implements Observer {
   private SipPreview sip;
   private Image icon;
 
   /**
    * Creates a new SipPreviewNode
-   * 
-   * @param sip
-   *          The SipPreview object to be wrapped
-   * @param icon
-   *          The icon to be used in the SipPreviewNode
+   *
+   * @param sip  The SipPreview object to be wrapped
+   * @param icon The icon to be used in the SipPreviewNode
    */
   public SipPreviewNode(SipPreview sip, Image icon) {
     super(sip.getName());
@@ -48,7 +45,7 @@ public class SipPreviewNode extends TreeItem<String>implements Observer {
 
   /**
    * @return True if the SipPreview's metadata has been modified, false
-   *         otherwise
+   * otherwise
    * @see SipPreview#isMetadataModified()
    */
   public boolean isMetaModified() {
@@ -65,7 +62,7 @@ public class SipPreviewNode extends TreeItem<String>implements Observer {
 
   /**
    * Forces the redraw of the item
-   * 
+   *
    * @param o
    * @param arg
    */
