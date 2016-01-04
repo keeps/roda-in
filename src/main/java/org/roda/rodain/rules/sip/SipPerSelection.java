@@ -1,13 +1,13 @@
 package org.roda.rodain.rules.sip;
 
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.*;
+
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.filters.ContentFilter;
 import org.roda.rodain.utils.TreeVisitor;
-
-import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -30,7 +30,7 @@ public class SipPerSelection extends Observable implements TreeVisitor, SipPrevi
   private Set<ContentFilter> filters;
   private MetadataTypes metaType;
   private Path metadataPath;
-  private TemplateType templateType;
+  private String templateType;
 
   /**
    * Creates a new SipPreviewCreator where there's a new SIP created for each selected path.
@@ -43,7 +43,7 @@ public class SipPerSelection extends Observable implements TreeVisitor, SipPrevi
    * @param templateType  The type of the metadata template
    */
   public SipPerSelection(String id, Set<String> selectedPaths, Set<ContentFilter> filters, MetadataTypes metaType,
-                         Path metadataPath, TemplateType templateType) {
+    Path metadataPath, String templateType) {
     this.selectedPaths = selectedPaths;
     this.filters = filters;
     this.metaType = metaType;

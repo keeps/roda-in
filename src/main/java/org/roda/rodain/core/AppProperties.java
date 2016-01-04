@@ -56,7 +56,7 @@ public class AppProperties {
       String templatesRaw = config.getProperty("metadata.templates");
       String[] templates = templatesRaw.split(",");
       for (String templ : templates) {
-        String templateName = "metadata.template." + templ;
+        String templateName = "metadata.template." + templ.trim() + ".file";
         String fileName = config.getProperty(templateName);
         if (!Files.exists(rodainPath.resolve(fileName))) {
           Files.copy(ClassLoader.getSystemResourceAsStream(fileName), rodainPath.resolve(fileName));
@@ -84,7 +84,7 @@ public class AppProperties {
   }
 
   public static String getMetadataFile(String propertyName) {
-    String completeKey = "metadata.template." + propertyName;
+    String completeKey = "metadata.template." + propertyName + ".file";
     try {
       if (ext_config.containsKey(completeKey)) {
         Path filePath = rodainPath.resolve(ext_config.getProperty(completeKey));

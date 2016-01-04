@@ -1,14 +1,14 @@
 package org.roda.rodain.rules.sip;
 
-import org.roda.rodain.rules.MetadataTypes;
-import org.roda.rodain.rules.TreeNode;
-import org.roda.rodain.rules.filters.ContentFilter;
-import org.roda.rodain.utils.TreeVisitor;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
+
+import org.roda.rodain.rules.MetadataTypes;
+import org.roda.rodain.rules.TreeNode;
+import org.roda.rodain.rules.filters.ContentFilter;
+import org.roda.rodain.utils.TreeVisitor;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -30,7 +30,7 @@ public class SipSingle extends Observable implements TreeVisitor, SipPreviewCrea
   private Set<ContentFilter> filters;
   private MetadataTypes metaType;
   private Path metadataPath;
-  private TemplateType templateType;
+  private String templateType;
 
   /**
    * Creates a new SipPreviewCreator where there's a new SIP created with all the visited paths.
@@ -42,7 +42,7 @@ public class SipSingle extends Observable implements TreeVisitor, SipPreviewCrea
    * @param templateType The type of the metadata template
    */
   public SipSingle(String id, Set<ContentFilter> filters, MetadataTypes metaType, Path metadataPath,
-                   TemplateType templateType) {
+    String templateType) {
     this.filters = filters;
     sipsMap = new HashMap<>();
     sips = new ArrayList<>();

@@ -1,25 +1,25 @@
 package org.roda.rodain.rules.ui;
 
+import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.Set;
+
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.stage.Stage;
+
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.RuleTypes;
 import org.roda.rodain.rules.VisitorStack;
 import org.roda.rodain.rules.sip.SipPreviewCreator;
-import org.roda.rodain.rules.sip.TemplateType;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.utils.TreeVisitor;
 import org.roda.rodain.utils.WalkFileTree;
 import org.slf4j.LoggerFactory;
-
-import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -105,7 +105,7 @@ public class RuleModalController {
         level = pane.getLevel();
       MetadataTypes metaType = pane.getMetadataType();
       Path metadataPath = null;
-      TemplateType templateType = null;
+      String templateType = null;
       switch (metaType) {
         case SAME_DIRECTORY:
           metadataPath = pane.getSameDir();

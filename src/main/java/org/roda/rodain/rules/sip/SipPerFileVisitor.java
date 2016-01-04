@@ -1,5 +1,10 @@
 package org.roda.rodain.rules.sip;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.*;
+
 import org.apache.commons.io.FilenameUtils;
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.MetadataTypes;
@@ -7,11 +12,6 @@ import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.filters.ContentFilter;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.TreeVisitor;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -32,7 +32,7 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipPre
   private String id;
   private Set<ContentFilter> filters;
   private MetadataTypes metaType;
-  private TemplateType templateType;
+  private String templateType;
   private Path metadataPath;
 
 
@@ -46,7 +46,7 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipPre
    * @param templateType The type of the metadata template
    */
   public SipPerFileVisitor(String id, Set<ContentFilter> filters, MetadataTypes metaType, Path metadataPath,
-                           TemplateType templateType) {
+    String templateType) {
     sips = new ArrayList<>();
     sipsMap = new HashMap<>();
     this.id = id;

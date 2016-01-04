@@ -26,11 +26,11 @@ import javafx.stage.Stage;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.RuleTypes;
-import org.roda.rodain.rules.sip.TemplateType;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
+import org.roda.rodain.utils.UIPair;
 import org.roda.rodain.utils.Utils;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +60,7 @@ public class RuleModalPane extends BorderPane {
   private HBoxCell cellSameFolder;
   private HBoxCell cellDiffFolder;
   private Button chooseDir, chooseFile;
-  private ComboBox<String> templateTypes;
+  private ComboBox<UIPair> templateTypes;
 
   private Button btContinue, btCancel, btBack;
   private HBox space, buttons;
@@ -353,7 +353,14 @@ public class RuleModalPane extends BorderPane {
     box.setAlignment(Pos.CENTER_LEFT);
 
     templateTypes = new ComboBox<>();
-    templateTypes.getItems().addAll("Dublin Core", "EAD");
+    String templatesRaw = AppProperties.getConfig("metadata.templates");
+    String[] templates = templatesRaw.split(",");
+    for (String templ : templates) {
+      String trimmed = templ.trim();
+      String title = AppProperties.getConfig("metadata.template." + trimmed + ".title");
+      UIPair newPair = new UIPair(trimmed, title);
+      templateTypes.getItems().add(newPair);
+    }
     templateTypes.getSelectionModel().selectFirst();
 
     box.getChildren().add(templateTypes);
@@ -550,14 +557,8 @@ public class RuleModalPane extends BorderPane {
   /**
    * @return The template from the metadata option TEMPLATE
    */
-  public TemplateType getTemplate() {
-    String selected = templateTypes.getSelectionModel().getSelectedItem();
-    TemplateType result;
-    if (selected.startsWith("Dublin")) {
-      result = TemplateType.DUBLIN_CORE;
-    } else
-      result = TemplateType.EAD;
-
-    return result;
+  public String getTemplate() {
+    UIPair selected = templateTypes.getSelectionModel().getSelectedItem();
+    return (String) selected.getKey();
   }
 }

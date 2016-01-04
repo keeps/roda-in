@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 public class SipMetadata {
   private static final org.slf4j.Logger log = LoggerFactory.getLogger(SipMetadata.class.getName());
   private MetadataTypes type;
-  private TemplateType templateType;
+  private String templateType;
   private boolean loaded = false, modified = false;
   private String content;
   private Path path;
@@ -28,7 +28,7 @@ public class SipMetadata {
    * @param path         The path to the metadata file
    * @param templateType The type of the metadata template
    */
-  public SipMetadata(MetadataTypes type, Path path, TemplateType templateType) {
+  public SipMetadata(MetadataTypes type, Path path, String templateType) {
     this.type = type;
     this.path = path;
     this.templateType = templateType;
@@ -45,13 +45,7 @@ public class SipMetadata {
     try {
       if (type == MetadataTypes.TEMPLATE) {
         if (templateType != null) {
-          String key;
-          if (templateType == TemplateType.EAD)
-            key = "ead";
-          else
-            key = "dcmes";
-
-          content = AppProperties.getMetadataFile(key);
+          content = AppProperties.getMetadataFile(templateType);
           loaded = true;
         }
       } else {
@@ -81,7 +75,7 @@ public class SipMetadata {
   /**
    * @return The type of the metadata.
    */
-  public TemplateType getTemplateType() {
+  public String getTemplateType() {
     return templateType;
   }
 
