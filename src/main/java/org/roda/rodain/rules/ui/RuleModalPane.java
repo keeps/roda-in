@@ -392,8 +392,8 @@ public class RuleModalPane extends BorderPane {
 
   private void createContinueButton() {
     btContinue = new Button(AppProperties.getLocalizedString("continue"));
-    btContinue.setMaxWidth(100);
-    btContinue.setMinWidth(100);
+    btContinue.setMaxWidth(120);
+    btContinue.setMinWidth(120);
     btContinue.setGraphic(new ImageView(FontAwesomeImageCreator.im_w_chevron_right));
     btContinue.setGraphicTextGap(10);
     btContinue.setContentDisplay(ContentDisplay.RIGHT);
@@ -419,8 +419,8 @@ public class RuleModalPane extends BorderPane {
 
   private void createCancelButton() {
     btCancel = new Button(AppProperties.getLocalizedString("cancel"));
-    btCancel.setMaxWidth(100);
-    btCancel.setMinWidth(100);
+    btCancel.setMaxWidth(120);
+    btCancel.setMinWidth(120);
     btCancel.setGraphic(new ImageView(FontAwesomeImageCreator.im_w_times));
     btCancel.setGraphicTextGap(20);
     btCancel.setContentDisplay(ContentDisplay.RIGHT);
@@ -435,8 +435,8 @@ public class RuleModalPane extends BorderPane {
 
   private void createBackButton() {
     btBack = new Button(AppProperties.getLocalizedString("back"));
-    btBack.setMaxWidth(100);
-    btBack.setMinWidth(100);
+    btBack.setMaxWidth(120);
+    btBack.setMinWidth(120);
     btBack.setGraphic(new ImageView(FontAwesomeImageCreator.im_w_chevron_left));
     btBack.setGraphicTextGap(30);
 
