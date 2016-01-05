@@ -13,6 +13,7 @@ import java.util.ResourceBundle;
 
 import javax.swing.filechooser.FileSystemView;
 
+import org.roda.rodain.utils.FolderBasedUTF8Control;
 import org.roda.rodain.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +67,8 @@ public class AppProperties {
       // load config
       ext_config = new Properties();
       ext_config.load(new FileInputStream(configPath.toFile()));
-      resourceBundle = ResourceBundle.getBundle("properties/lang", Locale.forLanguageTag(getConfig("app.language")));
+      resourceBundle = ResourceBundle.getBundle("properties/lang", Locale.forLanguageTag(getConfig("app.language")),
+        new FolderBasedUTF8Control());
     } catch (IOException e) {
       log.error("Error copying config file", e);
     }

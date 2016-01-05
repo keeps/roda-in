@@ -1,5 +1,8 @@
 package org.roda.rodain.creation.ui;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -12,11 +15,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import org.roda.rodain.core.AppProperties;
-import org.roda.rodain.creation.CreateSips;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.core.Footer;
+import org.roda.rodain.creation.CreateSips;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -29,9 +31,10 @@ public class CreationModalProcessing extends BorderPane {
   // top
   private Label subtitleSuccess, subtitleError;
   private String subtitleFormat = "Created %d of %d (%d%%)";
+  private String etaFormatHour, etaFormatMinute, etaFormatSecond;
   // center
   private ProgressBar progress;
-  private Label sipName, sipAction;
+  private Label sipName, sipAction, eta;
   private Timer timer;
 
   private HBox finishedBox;
@@ -45,6 +48,19 @@ public class CreationModalProcessing extends BorderPane {
   public CreationModalProcessing(CreateSips creator, CreationModalStage stage) {
     this.creator = creator;
     this.stage = stage;
+
+    etaFormatHour = String.format("%%s %s %%s %s %%s %s",
+      AppProperties.getLocalizedString("CreationModalProcessing.hours"),
+      AppProperties.getLocalizedString("CreationModalProcessing.minutes"),
+      AppProperties.getLocalizedString("CreationModalProcessing.seconds"));
+
+    etaFormatMinute = String.format("%%s %s %%s %s",
+      AppProperties.getLocalizedString("CreationModalProcessing.minutes"),
+      AppProperties.getLocalizedString("CreationModalProcessing.seconds"));
+
+    etaFormatSecond = String.format("%%s %s", AppProperties.getLocalizedString("CreationModalProcessing.seconds"));
+
+    System.out.println(etaFormatHour);
 
     getStyleClass().add("sipcreator");
 
@@ -73,6 +89,11 @@ public class CreationModalProcessing extends BorderPane {
     center.setAlignment(Pos.CENTER_LEFT);
     center.setPadding(new Insets(0, 10, 10, 10));
 
+    HBox etaBox = new HBox(10);
+    Label etaLabel = new Label("Remaining time");
+    eta = new Label();
+    etaBox.getChildren().addAll(etaLabel, eta);
+
     HBox subtitles = new HBox(5);
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
@@ -89,20 +110,20 @@ public class CreationModalProcessing extends BorderPane {
     progress.setPadding(new Insets(5, 0, 10, 0));
     progress.setPrefSize(380, 25);
 
-    HBox sip = new HBox(10);
+    HBox sip = new HBox(20);
     sip.maxWidth(380);
     Label lName = new Label(AppProperties.getLocalizedString("CreationModalProcessing.currentSip"));
     lName.setMinWidth(80);
     sipName = new Label("");
     sip.getChildren().addAll(lName, sipName);
 
-    HBox action = new HBox(10);
+    HBox action = new HBox(20);
     Label lAction = new Label(AppProperties.getLocalizedString("CreationModalProcessing.action"));
     lAction.setMinWidth(80);
     sipAction = new Label("");
     action.getChildren().addAll(lAction, sipAction);
 
-    center.getChildren().addAll(subtitles, progress, sip, action);
+    center.getChildren().addAll(subtitles, progress, etaBox, sip, action);
     setCenter(center);
   }
 
@@ -148,6 +169,8 @@ public class CreationModalProcessing extends BorderPane {
             int created = creator.getCreatedSipsCount();
             int size = creator.getSipsCount();
             int errors = creator.getErrorCount();
+            double etaDouble = creator.getETA();
+            updateETA(etaDouble);
             double prog = creator.getProgress();
 
             if (errors > 0) {
@@ -169,7 +192,24 @@ public class CreationModalProcessing extends BorderPane {
     };
 
     timer = new Timer();
-    timer.schedule(updater, 0, 300);
+    timer.schedule(updater, 0, 500);
+  }
+
+  private void updateETA(double etaDouble) {
+    if (etaDouble != 0) {
+      int second = (int) ((etaDouble / 1000) % 60);
+      int minute = (int) ((etaDouble / (1000 * 60)) % 60);
+      int hour = (int) ((etaDouble / (1000 * 60 * 60)) % 24);
+      String result;
+      if (hour != 0) {
+        result = String.format(etaFormatHour, hour, minute, second);
+      } else if (minute != 0) {
+        result = String.format(etaFormatMinute, minute, second);
+      } else
+        result = String.format(etaFormatSecond, second);
+      Footer.setStatus(result);
+      eta.setText(result);
+    }
   }
 
   private void finished() {

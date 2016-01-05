@@ -1,19 +1,24 @@
 package org.roda.rodain.creation;
 
-import org.roda.rodain.core.Main;
-import org.roda.rodain.rules.sip.SipPreview;
-
 import java.nio.file.Path;
 import java.util.Map;
+
+import org.roda.rodain.core.Main;
+import org.roda.rodain.rules.sip.SipPreview;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 19/11/2015.
  */
 public class CreateSips {
+  private static final float SMOOTHING_FACTOR = 0.4f;
   private SipTypes type;
   private Path outputPath;
   private SimpleSipCreator creator;
+  private double averageTime;
+
+  private long lastMeasureTime;
+  private int lastMeasureCount;
 
   private int sipsCount;
 
@@ -70,6 +75,31 @@ public class CreateSips {
    */
   public double getProgress() {
     return creator.getCreatedSipsCount() / (sipsCount * 1.0);
+  }
+
+  /**
+   * Estimates the remaining time needed to finish exporting the SIPs.
+   *
+   * <p>
+   * Uses an exponential moving average that factors in the average export time
+   * and the last SIP's export time.
+   * </p>
+   * 
+   * @return The estimate in milliseconds
+   */
+  public double getETA() {
+    if (creator.getCreatedSipsCount() != lastMeasureCount) {
+      if (lastMeasureTime != 0) {
+        long deltaTime = System.currentTimeMillis() - lastMeasureTime;
+        int deltaCount = creator.getCreatedSipsCount() - lastMeasureCount;
+        float lastTime = deltaTime / deltaCount;
+        averageTime = SMOOTHING_FACTOR * lastTime + (1 - SMOOTHING_FACTOR) * averageTime;
+      }
+      lastMeasureTime = System.currentTimeMillis();
+      lastMeasureCount = creator.getCreatedSipsCount();
+    }
+    int remaining = sipsCount - lastMeasureCount;
+    return averageTime * remaining;
   }
 
   /**

@@ -326,6 +326,7 @@ public class SchemaPane extends BorderPane {
         if (selected != null) {
           TreeItem parent = selected.getParent();
           parent.getChildren().remove(selected);
+          schemaNodes.remove(selected);
         }
       }
     });
@@ -370,6 +371,7 @@ public class SchemaPane extends BorderPane {
       newNode.updateDescLevel("fonds");
       rootNode.getChildren().add(newNode);
     }
+    schemaNodes.add(newNode);
     // Edit the node's title as soon as it's created
     treeView.layout();
     treeView.edit(newNode);

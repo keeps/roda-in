@@ -7,6 +7,7 @@ package org.roda.rodain.core;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,7 @@ import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SchemaPane;
 import org.roda.rodain.source.ui.FileExplorerPane;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
+import org.roda.rodain.utils.LoggingOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,6 +73,8 @@ public class Main extends Application {
       log.error(String.format(format, javaVersion));
       return;
     }
+
+    System.setErr(new PrintStream(new LoggingOutputStream()));
 
     launch(args);
   }

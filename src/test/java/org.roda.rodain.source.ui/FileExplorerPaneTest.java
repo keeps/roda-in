@@ -147,6 +147,7 @@ public class FileExplorerPaneTest extends ApplicationTest {
     assert dir4 != null;
     assert "dir4".equals(dir4.getValue());
 
+    sleep(1000);
     doubleClickOn("dir4");
     assert dir4.getChildren().size() == 5;
 
