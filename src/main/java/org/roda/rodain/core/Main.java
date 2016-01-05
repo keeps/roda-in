@@ -182,6 +182,15 @@ public class Main extends Application {
       }
     });
 
+    final MenuItem createCS = new MenuItem(AppProperties.getLocalizedString("Main.createCS"));
+    createCS.setAccelerator(KeyCombination.keyCombination("Ctrl+R"));
+    createCS.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent t) {
+        schemaPane.createClassificationScheme();
+      }
+    });
+
     final MenuItem updateCS = new MenuItem(AppProperties.getLocalizedString("Main.loadCS"));
     updateCS.setAccelerator(KeyCombination.keyCombination("Ctrl+L"));
     updateCS.setOnAction(new EventHandler<ActionEvent>() {
@@ -238,7 +247,7 @@ public class Main extends Application {
       }
     });
 
-    menuFile.getItems().addAll(openFolder, updateCS, exportCS, createSIPs, quit);
+    menuFile.getItems().addAll(openFolder, createCS, updateCS, exportCS, createSIPs, quit);
 
     // Edit
     final MenuItem ignoreItems = new MenuItem(AppProperties.getLocalizedString("Main.ignoreItems"));

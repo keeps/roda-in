@@ -95,6 +95,7 @@ public class InspectionPane extends BorderPane {
     HBox.setHgrow(topSpace, Priority.ALWAYS);
 
     itemTypes = new ComboBox<>();
+    itemTypes.setId("itemLevels");
     ObservableList<UIPair> itemList = FXCollections.observableArrayList();
     String itemTypesRaw = AppProperties.getDescLevels("levels_ordered");
     String[] itemTypesArray = itemTypesRaw.split(",");

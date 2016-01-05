@@ -1,23 +1,25 @@
 package org.roda.rodain.source.ui;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Scene;
 import javafx.scene.control.TreeItem;
 import javafx.stage.Stage;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.Footer;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.testing.Utils;
 import org.testfx.framework.junit.ApplicationTest;
-
-import java.io.File;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -31,6 +33,7 @@ public class FileExplorerPaneTest extends ApplicationTest {
   @Override
   public void start(Stage stage) throws Exception {
     new Footer(); //footer needs to be initialized because of setStatus
+    AppProperties.initialize();
     fileExplorer = new FileExplorerPane(stage);
     fileExplorer.setFileExplorerRoot(testDir);
     Scene scene = new Scene(fileExplorer, 600, 600);

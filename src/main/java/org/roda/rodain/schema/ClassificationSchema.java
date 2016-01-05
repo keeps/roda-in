@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -16,6 +19,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  * @since 07-12-2015.
  */
 public class ClassificationSchema {
+  private static final Logger log = LoggerFactory.getLogger(ClassificationSchema.class.getName());
   private List<DescriptionObject> dos = new ArrayList<>();
   private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -65,7 +69,7 @@ public class ClassificationSchema {
       // convert object to json string
       objectMapper.writeValue(outputStream, this);
     } catch (IOException e) {
-      e.printStackTrace();
+      log.error("Error exporting classification scheme", e);
     }
   }
 

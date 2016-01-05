@@ -127,11 +127,7 @@ public class SchemaPane extends BorderPane {
     link.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent event) {
-        setTop(topBox);
-        setCenter(treeBox);
-        setBottom(bottom);
-        rootNode.getChildren().clear();
-        addNewLevel();
+        createClassificationScheme();
       }
     });
     TextFlow flow = new TextFlow(new Text(AppProperties.getLocalizedString("SchemaPane.or")), link);
@@ -348,6 +344,14 @@ public class SchemaPane extends BorderPane {
     HBox.setHgrow(space, Priority.ALWAYS);
 
     bottom.getChildren().addAll(associate, space, removeLevel, addLevel);
+  }
+
+  public void createClassificationScheme() {
+    setTop(topBox);
+    setCenter(treeBox);
+    setBottom(bottom);
+    rootNode.getChildren().clear();
+    addNewLevel();
   }
 
   private SchemaNode addNewLevel() {

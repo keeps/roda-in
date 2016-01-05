@@ -1,5 +1,9 @@
 package org.roda.rodain.creation.ui;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -12,11 +16,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
+
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.creation.SipTypes;
-
-import java.io.File;
-import java.nio.file.Path;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -25,7 +27,7 @@ import java.nio.file.Path;
 public class CreationModalPreparation extends BorderPane {
   private CreationModalStage stage;
 
-  private Path outputFolder;
+  private static Path outputFolder;
   private ComboBox<String> sipTypes;
 
   /**
@@ -98,6 +100,18 @@ public class CreationModalPreparation extends BorderPane {
     return outputFolderBox;
   }
 
+  /**
+   * Sets the output folder of the SIPs. Used for testing.
+   *
+   * @param out
+   *          The path of the output folder
+   */
+  public static void setOutputFolder(String out) {
+    if (out != null && !"".equals(out)) {
+      outputFolder = Paths.get(out);
+    }
+  }
+
   private HBox createSipTypes() {
     HBox sipTypesBox = new HBox(5);
     sipTypesBox.setAlignment(Pos.CENTER_LEFT);
@@ -107,6 +121,7 @@ public class CreationModalPreparation extends BorderPane {
     Label sipTypesLabel = new Label(AppProperties.getLocalizedString("CreationModalPreparation.sipFormat"));
 
     sipTypes = new ComboBox<>();
+    sipTypes.setId("sipTypes");
     sipTypes.getItems().addAll("BagIt", "EARK");
     sipTypes.getSelectionModel().selectFirst();
 

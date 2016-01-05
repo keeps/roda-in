@@ -96,7 +96,7 @@ public class AppProperties {
       InputStream contentStream = ClassLoader.getSystemResource(fileName).openStream();
       return Utils.convertStreamToString(contentStream);
     } catch (IOException e) {
-      e.printStackTrace();
+      log.error("Error reading metadata file", e);
     }
     return "";
   }

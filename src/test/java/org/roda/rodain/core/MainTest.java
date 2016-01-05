@@ -7,12 +7,14 @@ import java.nio.file.Paths;
 
 import javafx.application.Platform;
 import javafx.scene.control.TreeItem;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
+import org.roda.rodain.creation.ui.CreationModalPreparation;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SchemaPane;
 import org.roda.rodain.schema.ui.SipPreviewNode;
@@ -24,7 +26,7 @@ import org.testfx.framework.junit.ApplicationTest;
  * Created by adrapereira on 17-12-2015.
  */
 public class MainTest extends ApplicationTest {
-  private static Path testDir;
+  private static Path testDir, output;
   private SchemaPane schemaPane;
   private FileExplorerPane fileExplorer;
 
@@ -44,6 +46,39 @@ public class MainTest extends ApplicationTest {
   @Before
   public void setUpBeforeClass() throws Exception {
     testDir = Utils.createFolderStructure();
+  }
+
+  @Test
+  public void newSchemePane() {
+    sleep(1000);
+    clickOn("File").clickOn("Create classification scheme");
+    clickOn("New node").clickOn("New node");
+    write("Node1").push(KeyCode.ENTER);
+    sleep(500);
+
+    TreeItem<String> item = Main.getSchemaPane().getTreeView().getSelectionModel().getSelectedItem();
+    assert"Node1".equals(item.getValue());
+
+    clickOn("Add level");
+    write("Node2").push(KeyCode.ENTER);
+    sleep(500);
+
+    doubleClickOn(".tree-view");
+
+    clickOn("Node2");
+
+    TreeItem<String> newItem = Main.getSchemaPane().getTreeView().getSelectionModel().getSelectedItem();
+    assert newItem instanceof SchemaNode;
+    SchemaNode newNode = (SchemaNode) newItem;
+    assert"class".equals(newNode.getDob().getDescriptionlevel());
+
+    clickOn("#itemLevels").clickOn("Sub-fonds");
+    assert"subfonds".equals(newNode.getDob().getDescriptionlevel());
+
+    drag("Node2").dropTo(".tree-view");
+    assert Main.getSchemaPane().getTreeView().getRoot().getChildren().size() == 2;
+    clickOn("Node2").clickOn("Remove level");
+    assert Main.getSchemaPane().getTreeView().getRoot().getChildren().size() == 1;
   }
 
   @Test
@@ -103,11 +138,43 @@ public class MainTest extends ApplicationTest {
     sleep(1000); // wait for the rule to be removed
 
     assert parent.getChildren().size() == 1;
+
+    // create 2 SIPs
+    clickOn("fileA.txt");
+    press(KeyCode.CONTROL);
+    clickOn("fileB.txt");
+    release(KeyCode.CONTROL);
+
+    drag().dropTo("UCP");
+    sleep(1000); // wait for the modal to open
+    clickOn("#assoc2");
+    clickOn("Continue");
+    sleep(1000); // wait for the modal to update
+    clickOn("#meta4");
+    clickOn("Confirm");
+    sleep(2000); // wait for the SIPs creation
+
+    clickOn("File").clickOn("Export SIPs");
+    String home = System.getProperty("user.home");
+    output = Paths.get(home).resolve("SIPs output");
+    output.toFile().mkdir();
+    CreationModalPreparation.setOutputFolder(output.toString());
+    clickOn("Start");
+
+    sleep(2000);
+    clickOn("Close");
+
+    clickOn("File").clickOn("Export SIPs");
+    clickOn("#sipTypes").clickOn("EARK");
+    clickOn("Start");
+    sleep(2000);
+    clickOn("Close");
   }
 
   @AfterClass
   public static void tearDownAfterClass() throws Exception {
     FileUtils.deleteDirectory(testDir.toFile());
+    FileUtils.deleteDirectory(output.toFile());
   }
 
 }
