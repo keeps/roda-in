@@ -129,16 +129,16 @@ public class RuleCell extends HBox implements Observer {
     String type;
     switch (ruleType) {
       case SINGLE_SIP:
-        type = AppProperties.getConfig("association.singleSip.title");
+        type = AppProperties.getLocalizedString("association.singleSip.title");
         break;
       case SIP_PER_FILE:
-        type = AppProperties.getConfig("association.sipPerFile.title");
+        type = AppProperties.getLocalizedString("association.sipPerFile.title");
         break;
       case SIP_PER_FOLDER:
-        type = AppProperties.getConfig("association.sipPerFolder.title");
+        type = AppProperties.getLocalizedString("association.sipPerFolder.title");
         break;
       case SIP_PER_SELECTION:
-        type = AppProperties.getConfig("association.sipSelection.title");
+        type = AppProperties.getLocalizedString("association.sipSelection.title");
         break;
       default:
         type = "Unknown association type";
