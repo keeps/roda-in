@@ -2,6 +2,7 @@ package org.roda.rodain.core;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -51,15 +52,17 @@ public class MainTest extends ApplicationTest {
   @Test
   public void newSchemePane() {
     sleep(1000);
-    clickOn("File").clickOn("Create classification scheme");
-    clickOn("New node").clickOn("New node");
+    clickOn(AppProperties.getLocalizedString("Main.file"));
+    clickOn(AppProperties.getLocalizedString("Main.createCS"));
+    clickOn(AppProperties.getLocalizedString("SchemaPane.newNode"));
+    clickOn(AppProperties.getLocalizedString("SchemaPane.newNode"));
     write("Node1").push(KeyCode.ENTER);
     sleep(500);
 
     TreeItem<String> item = Main.getSchemaPane().getTreeView().getSelectionModel().getSelectedItem();
     assert"Node1".equals(item.getValue());
 
-    clickOn("Add level");
+    clickOn(AppProperties.getLocalizedString("SchemaPane.add"));
     write("Node2").push(KeyCode.ENTER);
     sleep(500);
 
@@ -77,7 +80,7 @@ public class MainTest extends ApplicationTest {
 
     drag("Node2").dropTo(".tree-view");
     assert Main.getSchemaPane().getTreeView().getRoot().getChildren().size() == 2;
-    clickOn("Node2").clickOn("Remove level");
+    clickOn("Node2").clickOn(AppProperties.getLocalizedString("SchemaPane.remove"));
     assert Main.getSchemaPane().getTreeView().getRoot().getChildren().size() == 1;
   }
 
@@ -113,10 +116,10 @@ public class MainTest extends ApplicationTest {
     drag("dirB").dropTo("UCP");
     sleep(1000); //wait for the modal to open
     clickOn("#assoc3");
-    clickOn("Continue");
+    clickOn(AppProperties.getLocalizedString("continue"));
     sleep(1000); //wait for the modal to update
     clickOn("#meta4");
-    clickOn("Confirm");
+    clickOn(AppProperties.getLocalizedString("confirm"));
     sleep(2000); //wait for the SIPs creation
 
     clickOn("file1.txt");
@@ -128,12 +131,13 @@ public class MainTest extends ApplicationTest {
 
     assert parent.getChildren().size() == 14;
 
-    clickOn("Remove");
+    clickOn(AppProperties.getLocalizedString("remove"));
     sleep(1000); //wait for the SIP removal
     assert parent.getChildren().size() == 13;
 
-
-    clickOn("12 items");
+    String format = AppProperties.getLocalizedString("SchemaNode.items.formatSimple");
+    String items12 = String.format(format, 12).trim().replace("(", "").replace(")", "");
+    clickOn(items12);
     clickOn("#removeRule1");
     sleep(1000); // wait for the rule to be removed
 
@@ -148,33 +152,37 @@ public class MainTest extends ApplicationTest {
     drag().dropTo("UCP");
     sleep(1000); // wait for the modal to open
     clickOn("#assoc2");
-    clickOn("Continue");
+    clickOn(AppProperties.getLocalizedString("continue"));
     sleep(1000); // wait for the modal to update
     clickOn("#meta4");
-    clickOn("Confirm");
+    clickOn(AppProperties.getLocalizedString("confirm"));
     sleep(2000); // wait for the SIPs creation
 
-    clickOn("File").clickOn("Export SIPs");
+    clickOn(AppProperties.getLocalizedString("Main.file"));
+    clickOn(AppProperties.getLocalizedString("Main.exportSips"));
     String home = System.getProperty("user.home");
     output = Paths.get(home).resolve("SIPs output");
     output.toFile().mkdir();
     CreationModalPreparation.setOutputFolder(output.toString());
-    clickOn("Start");
+    clickOn(AppProperties.getLocalizedString("start"));
 
     sleep(2000);
-    clickOn("Close");
+    clickOn(AppProperties.getLocalizedString("close"));
 
-    clickOn("File").clickOn("Export SIPs");
+    clickOn(AppProperties.getLocalizedString("Main.file"));
+    clickOn(AppProperties.getLocalizedString("Main.exportSips"));
     clickOn("#sipTypes").clickOn("EARK");
-    clickOn("Start");
+    clickOn(AppProperties.getLocalizedString("start"));
     sleep(2000);
-    clickOn("Close");
+    clickOn(AppProperties.getLocalizedString("close"));
   }
 
   @AfterClass
   public static void tearDownAfterClass() throws Exception {
-    FileUtils.deleteDirectory(testDir.toFile());
-    FileUtils.deleteDirectory(output.toFile());
+    if (testDir != null && Files.exists(testDir))
+      FileUtils.deleteDirectory(testDir.toFile());
+    if (output != null && Files.exists(output))
+      FileUtils.deleteDirectory(output.toFile());
   }
 
 }

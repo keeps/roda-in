@@ -87,6 +87,8 @@ public class CreateSips {
    * @return The estimate in milliseconds
    */
   public double getETA() {
+    if (creator.transferedTime == 0)
+      return 0;
     float allSpeed = creator.transferedSize / creator.transferedTime;
     long allSizeLeft = creator.allSipsSize - creator.transferedSize;
     long sizeLeft = creator.sipSize - creator.sipTransferedSize;

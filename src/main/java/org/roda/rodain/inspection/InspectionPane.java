@@ -388,7 +388,7 @@ public class InspectionPane extends BorderPane {
     HBox buttonBox = new HBox();
     buttonBox.setPadding(new Insets(0, 10, 0, 10));
 
-    remove = new Button("Remove");
+    remove = new Button(AppProperties.getLocalizedString("remove"));
     remove.setMinWidth(100);
     remove.setOnAction(new EventHandler<ActionEvent>() {
       @Override
