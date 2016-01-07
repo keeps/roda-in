@@ -1,6 +1,8 @@
 package org.roda.rodain.creation;
 
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Map;
 
 import org.roda.rodain.core.Main;
@@ -11,15 +13,11 @@ import org.roda.rodain.rules.sip.SipPreview;
  * @since 19/11/2015.
  */
 public class CreateSips {
-  private static final float SMOOTHING_FACTOR = 0.4f;
   private SipTypes type;
   private Path outputPath;
   private SimpleSipCreator creator;
-  private double averageTime;
 
-  private long lastMeasureTime;
-  private int lastMeasureCount;
-
+  private Instant startTime;
   private int sipsCount;
 
   /**
@@ -46,6 +44,7 @@ public class CreateSips {
       creator = new EarkSipCreator(outputPath, sips);
       creator.start();
     }
+    startTime = Instant.now();
   }
 
   /**
@@ -88,18 +87,26 @@ public class CreateSips {
    * @return The estimate in milliseconds
    */
   public double getETA() {
-    if (creator.getCreatedSipsCount() != lastMeasureCount) {
-      if (lastMeasureTime != 0) {
-        long deltaTime = System.currentTimeMillis() - lastMeasureTime;
-        int deltaCount = creator.getCreatedSipsCount() - lastMeasureCount;
-        float lastTime = deltaTime / deltaCount;
-        averageTime = SMOOTHING_FACTOR * lastTime + (1 - SMOOTHING_FACTOR) * averageTime;
-      }
-      lastMeasureTime = System.currentTimeMillis();
-      lastMeasureCount = creator.getCreatedSipsCount();
+    float allSpeed = creator.transferedSize / creator.transferedTime;
+    long allSizeLeft = creator.allSipsSize - creator.transferedSize;
+    long sizeLeft = creator.sipSize - creator.sipTransferedSize;
+    float sipRemaining = sizeLeft / allSpeed;
+
+    long timeSinceStart = Duration.between(startTime, Instant.now()).toMillis();
+    long allOtherTime = timeSinceStart - creator.transferedTime;
+    int createdSips = getCreatedSipsCount();
+    float eachOtherTime = 0;
+    if (createdSips != 0) {
+      eachOtherTime = allOtherTime / createdSips;
     }
-    int remaining = sipsCount - lastMeasureCount;
-    return averageTime * remaining;
+
+    int remaining = sipsCount - createdSips;
+    float dataTime = sipRemaining + (allSizeLeft / allSpeed);
+    long sipTime = Duration.between(creator.sipStartInstant, Instant.now()).toMillis();
+    float sipOtherTime = sipTime - creator.sipTransferedTime;
+    float otherTime = (eachOtherTime * remaining) - sipOtherTime;
+
+    return dataTime + otherTime;
   }
 
   /**

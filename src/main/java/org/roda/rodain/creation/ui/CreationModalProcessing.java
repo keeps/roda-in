@@ -17,7 +17,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 import org.roda.rodain.core.AppProperties;
-import org.roda.rodain.core.Footer;
 import org.roda.rodain.creation.CreateSips;
 
 /**
@@ -59,8 +58,6 @@ public class CreationModalProcessing extends BorderPane {
       AppProperties.getLocalizedString("CreationModalProcessing.seconds"));
 
     etaFormatSecond = String.format("%%s %s", AppProperties.getLocalizedString("CreationModalProcessing.seconds"));
-
-    System.out.println(etaFormatHour);
 
     getStyleClass().add("sipcreator");
 
@@ -184,6 +181,7 @@ public class CreationModalProcessing extends BorderPane {
 
             // stop the timer when all the SIPs have been created
             if ((created + errors) == size) {
+              eta.setText(String.format(etaFormatSecond, 0));
               finished();
             }
           }
@@ -192,11 +190,11 @@ public class CreationModalProcessing extends BorderPane {
     };
 
     timer = new Timer();
-    timer.schedule(updater, 0, 500);
+    timer.schedule(updater, 0, 600);
   }
 
   private void updateETA(double etaDouble) {
-    if (etaDouble != 0) {
+    if (etaDouble >= 0) {
       int second = (int) ((etaDouble / 1000) % 60);
       int minute = (int) ((etaDouble / (1000 * 60)) % 60);
       int hour = (int) ((etaDouble / (1000 * 60 * 60)) % 24);
@@ -207,7 +205,6 @@ public class CreationModalProcessing extends BorderPane {
         result = String.format(etaFormatMinute, minute, second);
       } else
         result = String.format(etaFormatSecond, second);
-      Footer.setStatus(result);
       eta.setText(result);
     }
   }
