@@ -54,10 +54,12 @@ public class MainTest extends ApplicationTest {
     sleep(1000);
     clickOn(AppProperties.getLocalizedString("Main.file"));
     clickOn(AppProperties.getLocalizedString("Main.createCS"));
+    sleep(1000);
     clickOn(AppProperties.getLocalizedString("SchemaPane.newNode"));
+    sleep(500);
     clickOn(AppProperties.getLocalizedString("SchemaPane.newNode"));
     write("Node1").push(KeyCode.ENTER);
-    sleep(500);
+    sleep(1000);
 
     TreeItem<String> item = Main.getSchemaPane().getTreeView().getSelectionModel().getSelectedItem();
     assert"Node1".equals(item.getValue());
@@ -175,6 +177,14 @@ public class MainTest extends ApplicationTest {
     clickOn(AppProperties.getLocalizedString("start"));
     sleep(2000);
     clickOn(AppProperties.getLocalizedString("close"));
+
+    clickOn("FTP");
+    sleep(1000);
+
+    String items2 = String.format(format, 2).trim().replace("(", "").replace(")", "");
+    clickOn(items2);
+    clickOn("#removeRule2");
+    sleep(1000); // wait for the rule to be removed
   }
 
   @AfterClass

@@ -166,7 +166,7 @@ public class CreationModalProcessing extends BorderPane {
             int created = creator.getCreatedSipsCount();
             int size = creator.getSipsCount();
             int errors = creator.getErrorCount();
-            double etaDouble = creator.getETA();
+            double etaDouble = creator.getTimeRemainingEstimate();
             updateETA(etaDouble);
             double prog = creator.getProgress();
 

@@ -72,11 +72,11 @@ public class FileExplorerPaneTest extends ApplicationTest {
     assert dir1.getChildren().get(0) instanceof SourceTreeFile;
 
     scroll(50, VerticalDirection.DOWN);
-    clickOn("Load More...");
+    clickOn(AppProperties.getLocalizedString("SourceTreeLoadMore.title"));
     assert dir1.getChildren().size() == (LOAD_MORE_SIZE * 2) + 1;
 
     scroll(50, VerticalDirection.DOWN);
-    clickOn("Load More...");
+    clickOn(AppProperties.getLocalizedString("SourceTreeLoadMore.title"));
     assert dir1.getChildren().size() == 120;
 
     SourceTreeFile file = (SourceTreeFile) dir1.getChildren().get(0);
@@ -101,11 +101,11 @@ public class FileExplorerPaneTest extends ApplicationTest {
     assert dir2.getChildren().get(0) instanceof SourceTreeDirectory;
 
     scroll(50, VerticalDirection.DOWN);
-    clickOn("Load More...");
+    clickOn(AppProperties.getLocalizedString("SourceTreeLoadMore.title"));
     assert dir2.getChildren().size() == (LOAD_MORE_SIZE * 2) + 1;
 
     scroll(50, VerticalDirection.DOWN);
-    clickOn("Load More...");
+    clickOn(AppProperties.getLocalizedString("SourceTreeLoadMore.title"));
     assert dir2.getChildren().size() == 120;
   }
 
@@ -121,11 +121,11 @@ public class FileExplorerPaneTest extends ApplicationTest {
     assert dir3.getChildren().size() == LOAD_MORE_SIZE + 1;
 
     scroll(50, VerticalDirection.DOWN);
-    clickOn("Load More...");
+    clickOn(AppProperties.getLocalizedString("SourceTreeLoadMore.title"));
     assert dir3.getChildren().size() == (LOAD_MORE_SIZE * 2) + 1;
 
     scroll(50, VerticalDirection.DOWN);
-    clickOn("Load More...");
+    clickOn(AppProperties.getLocalizedString("SourceTreeLoadMore.title"));
     assert dir3.getChildren().size() == 140;
 
     List<Object> files = dir3.getChildren().stream().
@@ -149,6 +149,7 @@ public class FileExplorerPaneTest extends ApplicationTest {
 
     sleep(1000);
     doubleClickOn("dir4");
+    sleep(1000);
     assert dir4.getChildren().size() == 5;
 
     TreeItem<String> dirA = dir4.getChildren().get(0);
