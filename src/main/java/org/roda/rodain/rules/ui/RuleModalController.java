@@ -141,7 +141,8 @@ public class RuleModalController {
       Platform.runLater(new Runnable() {
         @Override
         public void run() {
-          RuleModalProcessing processing = new RuleModalProcessing((SipPreviewCreator) visitor, visitor, visitors, fileWalker);
+          RuleModalProcessing processing = new RuleModalProcessing(rule, (SipPreviewCreator) visitor, visitor, visitors,
+            fileWalker);
           stage.setRoot(processing);
           stage.setHeight(180);
           stage.setWidth(400);

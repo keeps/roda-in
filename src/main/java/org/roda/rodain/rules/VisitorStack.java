@@ -1,18 +1,19 @@
 package org.roda.rodain.rules;
 
-import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
-import org.roda.rodain.utils.TreeVisitor;
-import org.roda.rodain.utils.WalkFileTree;
-import org.slf4j.LoggerFactory;
-
 import java.util.HashMap;
 import java.util.Observable;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
+
+import org.roda.rodain.utils.TreeVisitor;
+import org.roda.rodain.utils.WalkFileTree;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -78,6 +79,15 @@ public class VisitorStack extends Observable {
       }
     });
 
+    toRun.setOnCancelled(new EventHandler<WorkerStateEvent>() {
+      @Override
+      public void handle(WorkerStateEvent event) {
+        walker.interrupt();
+        System.out.println("VisitorStack on cancelled");
+        update();
+      }
+    });
+
     Future fut = visitors.submit(toRun);
     futures.put(vis.getId(), fut);
     update();
@@ -102,6 +112,8 @@ public class VisitorStack extends Observable {
       return VisitorState.VISITOR_RUNNING;
     if (fut.isDone())
       return VisitorState.VISITOR_DONE;
+    if (fut.isCancelled())
+      return VisitorState.VISITOR_CANCELLED;
     else
       return VisitorState.VISITOR_QUEUED;
   }
@@ -114,10 +126,11 @@ public class VisitorStack extends Observable {
    * @see TreeVisitor
    */
   public boolean cancel(TreeVisitor vis) {
-    if (vis != null && futures.containsKey(vis.getId()))
-      return futures.get(vis.getId()).cancel(true);
-    else
-      return false;
+    boolean result = false;
+    if (vis != null && futures.containsKey(vis.getId())) {
+      result = futures.get(vis.getId()).cancel(true);
+    }
+    return result;
   }
 
   /**

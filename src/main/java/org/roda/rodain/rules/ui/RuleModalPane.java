@@ -152,17 +152,17 @@ public class RuleModalPane extends BorderPane {
       }
     });
 
-    String icon = AppProperties.getStyle("association.singleSip.icon");
-    String title = AppProperties.getLocalizedString("association.singleSip.title");
-    String description = AppProperties.getLocalizedString("association.singleSip.description");
-    HBoxCell cellSingleSip = new HBoxCell("assoc1", icon, title, description, new HBox());
-    cellSingleSip.setUserData(RuleTypes.SINGLE_SIP);
-
-    icon = AppProperties.getStyle("association.sipSelection.icon");
-    title = AppProperties.getLocalizedString("association.sipSelection.title");
-    description = AppProperties.getLocalizedString("association.sipSelection.description");
+    String icon = AppProperties.getStyle("association.sipSelection.icon");
+    String title = AppProperties.getLocalizedString("association.sipSelection.title");
+    String description = AppProperties.getLocalizedString("association.sipSelection.description");
     HBoxCell cellSelected = new HBoxCell("assoc2", icon, title, description, new HBox());
     cellSelected.setUserData(RuleTypes.SIP_PER_SELECTION);
+
+    icon = AppProperties.getStyle("association.singleSip.icon");
+    title = AppProperties.getLocalizedString("association.singleSip.title");
+    description = AppProperties.getLocalizedString("association.singleSip.description");
+    HBoxCell cellSingleSip = new HBoxCell("assoc1", icon, title, description, new HBox());
+    cellSingleSip.setUserData(RuleTypes.SINGLE_SIP);
 
     icon = AppProperties.getStyle("association.sipPerFile.icon");
     title = AppProperties.getLocalizedString("association.sipPerFile.title");
@@ -178,8 +178,9 @@ public class RuleModalPane extends BorderPane {
     cellSipPerFolder.setUserData(RuleTypes.SIP_PER_FOLDER);
 
     ObservableList<HBoxCell> hboxList = FXCollections.observableArrayList();
-    hboxList.addAll(cellSingleSip, cellSelected, cellSipPerFile, cellSipPerFolder);
+    hboxList.addAll(cellSelected, cellSingleSip, cellSipPerFile, cellSipPerFolder);
     assocList.setItems(hboxList);
+    assocList.getSelectionModel().selectFirst();
 
     if (folderCount == 0 || level.getItems().isEmpty()) {
       cellSipPerFolder.setDisable(true);
@@ -248,9 +249,15 @@ public class RuleModalPane extends BorderPane {
       }
     });
 
-    String icon = AppProperties.getStyle("metadata.singleFile.icon");
-    String title = AppProperties.getLocalizedString("metadata.singleFile.title");
-    String description = AppProperties.getLocalizedString("metadata.singleFile.description");
+    String icon = AppProperties.getStyle("metadata.template.icon");
+    String title = AppProperties.getLocalizedString("metadata.template.title");
+    String description = AppProperties.getLocalizedString("metadata.template.description");
+    HBoxCell cellTemplate = new HBoxCell("meta4", icon, title, description, optionsTemplate());
+    cellTemplate.setUserData(MetadataTypes.TEMPLATE);
+
+    icon = AppProperties.getStyle("metadata.singleFile.icon");
+    title = AppProperties.getLocalizedString("metadata.singleFile.title");
+    description = AppProperties.getLocalizedString("metadata.singleFile.description");
     cellSingleFile = new HBoxCell("meta1", icon, title, description, optionsSingleFile());
     cellSingleFile.setUserData(MetadataTypes.SINGLE_FILE);
 
@@ -267,15 +274,11 @@ public class RuleModalPane extends BorderPane {
     cellDiffFolder = new HBoxCell("meta3", icon, title, description, optionsDiffFolder());
     cellDiffFolder.setUserData(MetadataTypes.DIFF_DIRECTORY);
 
-    icon = AppProperties.getStyle("metadata.template.icon");
-    title = AppProperties.getLocalizedString("metadata.template.title");
-    description = AppProperties.getLocalizedString("metadata.template.description");
-    HBoxCell cellTemplate = new HBoxCell("meta4", icon, title, description, optionsTemplate());
-    cellTemplate.setUserData(MetadataTypes.TEMPLATE);
-
     ObservableList<HBoxCell> hboxList = FXCollections.observableArrayList();
-    hboxList.addAll(cellSingleFile, cellSameFolder, cellDiffFolder, cellTemplate);
+    hboxList.addAll(cellTemplate, cellSingleFile, cellSameFolder, cellDiffFolder);
     metaList.setItems(hboxList);
+
+    metaList.getSelectionModel().selectFirst();
 
     boxMetadata.getChildren().addAll(subtitle, metaList);
   }

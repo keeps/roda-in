@@ -35,6 +35,8 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipPre
   private String templateType;
   private Path metadataPath;
 
+  private boolean cancelled = false;
+
 
   /**
    * Creates a new SipPreviewCreator where there's a new SIP created for each visited file.
@@ -143,7 +145,7 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipPre
    */
   @Override
   public void visitFile(Path path, BasicFileAttributes attrs) {
-    if (filter(path))
+    if (filter(path) || cancelled)
       return;
 
     Path metaPath = getMetadataPath(path);
@@ -220,5 +222,13 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipPre
   @Override
   public String getId() {
     return id;
+  }
+
+  /**
+   * Cancels the execution of the SipPreviewCreator
+   */
+  @Override
+  public void cancel() {
+    cancelled = true;
   }
 }

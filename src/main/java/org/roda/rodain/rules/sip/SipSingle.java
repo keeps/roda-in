@@ -32,6 +32,8 @@ public class SipSingle extends Observable implements TreeVisitor, SipPreviewCrea
   private Path metadataPath;
   private String templateType;
 
+  private boolean cancelled = false;
+
   /**
    * Creates a new SipPreviewCreator where there's a new SIP created with all the visited paths.
    *
@@ -118,7 +120,7 @@ public class SipSingle extends Observable implements TreeVisitor, SipPreviewCrea
    */
   @Override
   public void preVisitDirectory(Path path, BasicFileAttributes attrs) {
-    if (filter(path))
+    if (filter(path) || cancelled)
       return;
     TreeNode newNode = new TreeNode(path);
     nodes.add(newNode);
@@ -132,7 +134,7 @@ public class SipSingle extends Observable implements TreeVisitor, SipPreviewCrea
    */
   @Override
   public void postVisitDirectory(Path path) {
-    if (filter(path))
+    if (filter(path) || cancelled)
       return;
     // pop the node of this directory and add it to its parent (if it exists)
     TreeNode node = nodes.removeLast();
@@ -151,7 +153,7 @@ public class SipSingle extends Observable implements TreeVisitor, SipPreviewCrea
    */
   @Override
   public void visitFile(Path path, BasicFileAttributes attrs) {
-    if (filter(path)) {
+    if (filter(path) || cancelled) {
       return;
     }
     if (nodes.isEmpty())
@@ -206,5 +208,14 @@ public class SipSingle extends Observable implements TreeVisitor, SipPreviewCrea
   @Override
   public String getId() {
     return id;
+  }
+
+  /**
+   * Cancels the execution of the SipPreviewCreator
+   */
+  @Override
+  public void cancel() {
+    cancelled = true;
+    System.out.println("cancelled");
   }
 }

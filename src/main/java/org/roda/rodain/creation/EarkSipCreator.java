@@ -64,6 +64,7 @@ public class EarkSipCreator extends SimpleSipCreator {
       if (!Files.exists(Paths.get(home)))
         new File(home).mkdir();
 
+      currentSipName = sip.getName();
       currentAction = actionCopyingMetadata;
       String templateType = sip.getTemplateType();
       METSEnums.MetadataType metadataType = METSEnums.MetadataType.OTHER;
@@ -99,8 +100,8 @@ public class EarkSipCreator extends SimpleSipCreator {
 
       earkSip.addRepresentation(rep);
 
-      currentAction = actionFinalizingSip;
       Path result = earkSip.build();
+      currentAction = actionFinalizingSip;
       Files.move(result, outputPath.resolve(result.getFileName()));
       createdSipsCount++;
     } catch (SIPException e) {
