@@ -82,7 +82,7 @@ public class SimpleSipCreator extends Thread {
         try {
           allSipsSize += nodeSize(tn);
         } catch (IOException e) {
-          e.printStackTrace();
+          log.error("Can't access file: " + tn.getPath(), e);
         }
       }
     }
@@ -173,7 +173,7 @@ public class SimpleSipCreator extends Thread {
       in.close();
       out.close();
     } catch (IOException e) {
-      e.printStackTrace();
+      log.error("Error writing(copying) file. Source: " + path + "; Destination: " + dest, e);
     }
   }
 
