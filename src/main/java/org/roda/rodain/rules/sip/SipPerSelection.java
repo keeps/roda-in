@@ -103,7 +103,7 @@ public class SipPerSelection extends Observable implements TreeVisitor, SipPrevi
       if (cf.filter(pathString))
         return true;
     }
-    Pattern p = Pattern.compile("metadata\\..*");
+    Pattern p = Pattern.compile(templateType);
     Matcher m = p.matcher(path.getFileName().toString());
     return m.matches();
   }

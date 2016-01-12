@@ -65,6 +65,7 @@ public class RuleModalPane extends BorderPane {
   private HBox space, buttons;
   private States currentState;
   private String fromFile, diffDir;
+  private TextField sameFolderTxtField;
 
   private int folderCount;
 
@@ -263,7 +264,7 @@ public class RuleModalPane extends BorderPane {
     icon = AppProperties.getStyle("metadata.sameFolder.icon");
     title = AppProperties.getLocalizedString("metadata.sameFolder.title");
     description = AppProperties.getLocalizedString("metadata.sameFolder.description");
-    cellSameFolder = new HBoxCell("meta2", icon, title, description, new HBox());
+    cellSameFolder = new HBoxCell("meta2", icon, title, description, optionsSameFolder());
     cellSameFolder.setUserData(MetadataTypes.SAME_DIRECTORY);
 
     icon = AppProperties.getStyle("metadata.diffFolder.icon");
@@ -303,6 +304,17 @@ public class RuleModalPane extends BorderPane {
     });
 
     box.getChildren().add(chooseFile);
+    return box;
+  }
+
+  private HBox optionsSameFolder() {
+    HBox box = new HBox(5);
+    box.setAlignment(Pos.CENTER_LEFT);
+
+    Label lab = new Label(AppProperties.getLocalizedString("RuleModalPane.metadataPattern"));
+    sameFolderTxtField = new TextField("metadata.xml");
+
+    box.getChildren().addAll(lab, sameFolderTxtField);
     return box;
   }
 
@@ -533,6 +545,13 @@ public class RuleModalPane extends BorderPane {
    */
   public Path getDiffDir() {
     return Paths.get(diffDir);
+  }
+
+  /**
+   * @return The text pattern the user input
+   */
+  public String getSameFolderPattern() {
+    return sameFolderTxtField.getText();
   }
 
   /**

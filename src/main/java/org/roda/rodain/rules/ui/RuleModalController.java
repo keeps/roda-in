@@ -113,6 +113,9 @@ public class RuleModalController {
         case SINGLE_FILE:
           metadataPath = pane.getFromFile();
           break;
+        case SAME_DIRECTORY:
+          templateType = pane.getSameFolderPattern();
+          break;
         case TEMPLATE:
           templateType = pane.getTemplate();
           break;
