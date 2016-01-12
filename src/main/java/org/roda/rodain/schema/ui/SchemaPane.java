@@ -261,7 +261,7 @@ public class SchemaPane extends BorderPane {
         if (parents.size() != 1) {
           String format = "The node \"%s\" has %d parents";
           String message = String.format(format, descObj.getTitle(), parents.size());
-          log.error("Error creating the scheme tree", new MalformedSchemaException(message));
+          log.warn("Error creating the scheme tree", new MalformedSchemaException(message));
           continue;
         }
         DescriptionObject parent = parents.get(0);

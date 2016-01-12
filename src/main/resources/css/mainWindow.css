@@ -56,6 +56,21 @@
     -fx-background-color: lightgray;
 }
 
+.tree-cell:selected:hover {
+    -fx-background-color: #089de3;
+    -fx-text-fill: #444444;
+}
+
+.tree-cell:focused:selected:hover {
+    -fx-background-color: #089de3;
+    -fx-text-fill: #444444;
+}
+
+.tree-cell:selected {
+    -fx-background-color: #089de3;
+    -fx-text-fill: white;
+}
+
 .tree-cell:focused:selected {
     -fx-background-color: #089de3;
     -fx-text-fill: white;
@@ -65,6 +80,18 @@
     -fx-text-fill: white;
 }
 
+.tree-cell:selected .cellText {
+    -fx-text-fill: white;
+}
+
+.tree-cell:selected:hover .cellText {
+    -fx-text-fill: #444444;
+}
+
+.tree-cell:focused:selected:hover .cellText {
+    -fx-text-fill: #444444;
+}
+
 #ignored .text{
     -fx-strikethrough: true;
 }
@@ -72,10 +99,6 @@
 /* Schema */
 .schemaNode {
     -fx-text-fill: grey;
-}
-
-.schemaNode:filled:hover {
-    -fx-background-color: lightgray;
 }
 
 .schemaNode:focused:selected{

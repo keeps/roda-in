@@ -226,7 +226,7 @@ public class SipPerSelection extends Observable implements TreeVisitor, SipPrevi
       }
     });
 
-    if (foundFiles.length > 0) {
+    if (foundFiles != null && foundFiles.length > 0) {
       return foundFiles[0].toPath();
     }
     return null;

@@ -186,6 +186,10 @@ public class RuleModalPane extends BorderPane {
     cellSipPerFolder.setDisable(true);
     // }
 
+    if (sourceSet.size() == 1) {
+      cellSingleSip.setDisable(true);
+    }
+
     boxAssociation.getChildren().addAll(subtitle, assocList);
   }
 
