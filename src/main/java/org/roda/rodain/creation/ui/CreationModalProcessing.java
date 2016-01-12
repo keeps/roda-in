@@ -29,7 +29,7 @@ public class CreationModalProcessing extends BorderPane {
 
   // top
   private Label subtitleSuccess, subtitleError;
-  private String subtitleFormat = "Created %d of %d (%d%%)";
+  private String subtitleFormat;
   private String etaFormatHour, etaFormatMinute, etaFormatSecond;
   // center
   private ProgressBar progress;
@@ -59,6 +59,8 @@ public class CreationModalProcessing extends BorderPane {
 
     etaFormatSecond = String.format("%%s %s", AppProperties.getLocalizedString("CreationModalProcessing.seconds"));
 
+    subtitleFormat = AppProperties.getLocalizedString("CreationModalProcessing.subtitle");
+
     getStyleClass().add("sipcreator");
 
     createTop();
@@ -87,7 +89,7 @@ public class CreationModalProcessing extends BorderPane {
     center.setPadding(new Insets(0, 10, 10, 10));
 
     HBox etaBox = new HBox(10);
-    Label etaLabel = new Label("Remaining time");
+    Label etaLabel = new Label(AppProperties.getLocalizedString("CreationModalProcessing.remaining"));
     eta = new Label();
     etaBox.getChildren().addAll(etaLabel, eta);
 
