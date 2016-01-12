@@ -1,6 +1,7 @@
 package org.roda.rodain.rules.sip;
 
-import java.nio.file.Files;
+import java.io.File;
+import java.io.FilenameFilter;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
@@ -19,7 +20,6 @@ import org.roda.rodain.utils.TreeVisitor;
  */
 public class SipPerFileVisitor extends Observable implements TreeVisitor, SipPreviewCreator {
   private static final int UPDATEFREQUENCY = 500; // in milliseconds
-  private static final String METADATA_EXT = ".xml";
   // This map is returned, in full, to the SipPreviewNode when there's an update
   private Map<String, SipPreview> sipsMap;
   // This ArrayList is used to keep the SIPs ordered.
@@ -174,8 +174,7 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipPre
       case SINGLE_FILE:
         result = metadataPath;
         break;
-      case DIFF_DIRECTORY: // uses the same logic as the next case
-      case SAME_DIRECTORY:
+      case DIFF_DIRECTORY:
         result = getFileFromDir(path);
         break;
       default:
@@ -186,13 +185,15 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipPre
 
   private Path getFileFromDir(Path path) {
     String fileName = FilenameUtils.removeExtension(path.getFileName().toString());
-    Path newPath = metadataPath.resolve(fileName + METADATA_EXT);
-    if (Files.exists(newPath)) {
-      return newPath;
-    }
-    newPath = metadataPath.resolve(path.getFileName() + METADATA_EXT);
-    if (Files.exists(newPath)) {
-      return newPath;
+    File dir = new File(metadataPath.toString());
+    File[] foundFiles = dir.listFiles(new FilenameFilter() {
+      public boolean accept(File dir, String name) {
+        return name.startsWith(fileName + ".");
+      }
+    });
+
+    if (foundFiles.length > 0) {
+      return foundFiles[0].toPath();
     }
     return null;
   }

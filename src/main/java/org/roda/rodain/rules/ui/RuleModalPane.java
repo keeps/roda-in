@@ -4,7 +4,6 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import javafx.application.Platform;
@@ -65,7 +64,7 @@ public class RuleModalPane extends BorderPane {
   private Button btContinue, btCancel, btBack;
   private HBox space, buttons;
   private States currentState;
-  private String fromFile, diffDir, sameDir;
+  private String fromFile, diffDir;
 
   private int folderCount;
 
@@ -262,8 +261,7 @@ public class RuleModalPane extends BorderPane {
     cellSingleFile.setUserData(MetadataTypes.SINGLE_FILE);
 
     icon = AppProperties.getStyle("metadata.sameFolder.icon");
-    String tempTitle = AppProperties.getLocalizedString("metadata.sameFolder.title");
-    title = String.format("%s \"%s\"", tempTitle, pathSameFolder());
+    title = AppProperties.getLocalizedString("metadata.sameFolder.title");
     description = AppProperties.getLocalizedString("metadata.sameFolder.description");
     cellSameFolder = new HBoxCell("meta2", icon, title, description, new HBox());
     cellSameFolder.setUserData(MetadataTypes.SAME_DIRECTORY);
@@ -295,7 +293,6 @@ public class RuleModalPane extends BorderPane {
         metaList.getSelectionModel().select(cellSingleFile);
         FileChooser chooser = new FileChooser();
         chooser.setTitle(AppProperties.getLocalizedString("filechooser.title"));
-        chooser.setInitialDirectory(new File(sameDir));
         File selectedFile = chooser.showOpenDialog(stage);
         if (selectedFile == null)
           return;
@@ -307,22 +304,6 @@ public class RuleModalPane extends BorderPane {
 
     box.getChildren().add(chooseFile);
     return box;
-  }
-
-  private String pathSameFolder() {
-    // fill list with the directories in the source set
-    List<String> directories = new ArrayList<>();
-    for (SourceTreeItem sti : sourceSet) {
-      if (sti instanceof SourceTreeDirectory)
-        directories.add(sti.getPath());
-      else { // if the item isn't a directory, get its parent
-        Path path = Paths.get(sti.getPath());
-        directories.add(path.getParent().toString());
-      }
-    }
-    // get the common prefix of the directories
-    sameDir = Utils.longestCommonPrefix(directories);
-    return sameDir;
   }
 
   private HBox optionsDiffFolder() {
@@ -337,7 +318,6 @@ public class RuleModalPane extends BorderPane {
         metaList.getSelectionModel().select(cellDiffFolder);
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle(AppProperties.getLocalizedString("directorychooser.title"));
-        chooser.setInitialDirectory(new File(sameDir));
         File selectedDirectory = chooser.showDialog(stage);
         if (selectedDirectory == null)
           return;
@@ -408,7 +388,7 @@ public class RuleModalPane extends BorderPane {
           if (assocList.getSelectionModel().getSelectedIndex() != -1) {
             setCenter(boxMetadata);
             currentState = States.METADATA;
-            enableMetaRadioButtons();
+            enableMetaOptions();
             buttons.getChildren().clear();
             buttons.getChildren().addAll(btCancel, space, btBack, btContinue);
             btContinue.setText(AppProperties.getLocalizedString("confirm"));
@@ -449,7 +429,7 @@ public class RuleModalPane extends BorderPane {
         if (currentState == States.ASSOCIATION) {
           setCenter(boxMetadata);
           currentState = States.METADATA;
-          enableMetaRadioButtons();
+          enableMetaOptions();
         } else if (currentState == States.METADATA) {
           setCenter(boxAssociation);
           currentState = States.ASSOCIATION;
@@ -477,19 +457,25 @@ public class RuleModalPane extends BorderPane {
     return true;
   }
 
-  private void enableMetaRadioButtons() {
+  private void enableMetaOptions() {
     try {
       RuleTypes assocType = getAssociationType();
-      if (assocType == null)
-        return;
-      if (assocType == RuleTypes.SIP_PER_FILE) {
-        cellSameFolder.setDisable(false);
-        cellDiffFolder.setDisable(false);
-        chooseDir.setDisable(false);
-      } else {
-        cellSameFolder.setDisable(true);
-        cellDiffFolder.setDisable(true);
-        chooseDir.setDisable(true);
+      switch (assocType) {
+        case SIP_PER_FILE:
+          cellSameFolder.setDisable(false);
+          cellDiffFolder.setDisable(false);
+          chooseDir.setDisable(false);
+          break;
+        case SIP_PER_SELECTION:
+          cellSameFolder.setDisable(false);
+          cellDiffFolder.setDisable(true);
+          chooseDir.setDisable(true);
+          break;
+        default:
+          cellSameFolder.setDisable(true);
+          cellDiffFolder.setDisable(true);
+          chooseDir.setDisable(true);
+          break;
       }
     } catch (Exception e) {
       log.error("Error getting association type", e);
@@ -547,14 +533,6 @@ public class RuleModalPane extends BorderPane {
    */
   public Path getDiffDir() {
     return Paths.get(diffDir);
-  }
-
-  /**
-   * @return The path of the directory that is an ancestor to all the selected
-   * files
-   */
-  public Path getSameDir() {
-    return Paths.get(sameDir);
   }
 
   /**

@@ -17,7 +17,7 @@ public class LoggingOutputStream extends OutputStream {
   public final void write(int b) throws IOException {
     char c = (char) b;
     if (c == '\n' || c == '\r') {
-      // log.error(buffer.toString());
+      log.error(buffer.toString());
       buffer = new StringBuilder();
     } else
       buffer.append(c);

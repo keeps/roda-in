@@ -107,9 +107,6 @@ public class RuleModalController {
       Path metadataPath = null;
       String templateType = null;
       switch (metaType) {
-        case SAME_DIRECTORY:
-          metadataPath = pane.getSameDir();
-          break;
         case DIFF_DIRECTORY:
           metadataPath = pane.getDiffDir();
           break;

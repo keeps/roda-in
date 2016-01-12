@@ -1,8 +1,12 @@
 package org.roda.rodain.rules.sip;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.TreeNode;
@@ -99,7 +103,9 @@ public class SipPerSelection extends Observable implements TreeVisitor, SipPrevi
       if (cf.filter(pathString))
         return true;
     }
-    return false;
+    Pattern p = Pattern.compile("metadata\\..*");
+    Matcher m = p.matcher(path.getFileName().toString());
+    return m.matches();
   }
 
   /**
@@ -158,7 +164,7 @@ public class SipPerSelection extends Observable implements TreeVisitor, SipPrevi
   }
 
   private void createSip(Path path, TreeNode node) {
-    Path metaPath = getMetadataPath();
+    Path metaPath = getMetadataPath(path);
     // create a new Sip
     Set<TreeNode> files = new HashSet<>();
     files.add(node);
@@ -202,11 +208,28 @@ public class SipPerSelection extends Observable implements TreeVisitor, SipPrevi
   public void visitFileFailed(Path path) {
   }
 
-  private Path getMetadataPath() {
+  private Path getMetadataPath(Path sipPath) {
     Path result = null;
-    if (metaType == MetadataTypes.SINGLE_FILE)
+    if (metaType == MetadataTypes.SINGLE_FILE) {
       result = metadataPath;
+    } else if (metaType == MetadataTypes.SAME_DIRECTORY) {
+      result = searchMetadata(sipPath);
+    }
     return result;
+  }
+
+  private Path searchMetadata(Path sipPath) {
+    File dir = new File(sipPath.toString());
+    File[] foundFiles = dir.listFiles(new FilenameFilter() {
+      public boolean accept(File dir, String name) {
+        return name.startsWith("metadata.");
+      }
+    });
+
+    if (foundFiles.length > 0) {
+      return foundFiles[0].toPath();
+    }
+    return null;
   }
 
   /**
