@@ -182,9 +182,9 @@ public class RuleModalPane extends BorderPane {
     assocList.setItems(hboxList);
     assocList.getSelectionModel().selectFirst();
 
-    if (folderCount == 0 || level.getItems().isEmpty()) {
-      cellSipPerFolder.setDisable(true);
-    }
+    // if (folderCount == 0 || level.getItems().isEmpty()) {
+    cellSipPerFolder.setDisable(true);
+    // }
 
     boxAssociation.getChildren().addAll(subtitle, assocList);
   }
