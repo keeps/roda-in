@@ -58,12 +58,12 @@
 
 .tree-cell:selected:hover {
     -fx-background-color: #089de3;
-    -fx-text-fill: #444444;
+    -fx-font-weight: bold;
 }
 
 .tree-cell:focused:selected:hover {
     -fx-background-color: #089de3;
-    -fx-text-fill: #444444;
+    -fx-font-weight: bold;
 }
 
 .tree-cell:selected {
@@ -85,11 +85,11 @@
 }
 
 .tree-cell:selected:hover .cellText {
-    -fx-text-fill: #444444;
+    -fx-font-weight: bold;
 }
 
 .tree-cell:focused:selected:hover .cellText {
-    -fx-text-fill: #444444;
+    -fx-font-weight: bold;
 }
 
 #ignored .text{
