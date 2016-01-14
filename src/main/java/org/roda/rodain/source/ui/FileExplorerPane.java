@@ -254,19 +254,21 @@ public class FileExplorerPane extends BorderPane implements Observer {
     Platform.runLater(new Runnable() {
       @Override
       public void run() {
-        StringBuilder result = new StringBuilder(dirCount + " ");
-        if (dirCount == 1)
-          result.append("directory");
-        else
-          result.append("directories");
-
-        result.append(", ");
+        StringBuilder result = new StringBuilder();
+        if (dirCount != 0) {
+          result.append(dirCount + " ");
+          if (dirCount == 1)
+            result.append(AppProperties.getLocalizedString("directory"));
+          else
+            result.append(AppProperties.getLocalizedString("directories"));
+          result.append(", ");
+        }
 
         result.append(fileCount).append(" ");
         if (fileCount == 1)
-          result.append("file");
+          result.append(AppProperties.getLocalizedString("file"));
         else
-          result.append("files");
+          result.append(AppProperties.getLocalizedString("files"));
 
         result.append(", ");
         result.append(Utils.formatSize(size));

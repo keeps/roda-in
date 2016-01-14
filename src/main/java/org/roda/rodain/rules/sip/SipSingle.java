@@ -31,6 +31,7 @@ public class SipSingle extends Observable implements TreeVisitor, SipPreviewCrea
   private MetadataTypes metaType;
   private Path metadataPath;
   private String templateType;
+  private String templateVersion;
 
   private boolean cancelled = false;
 
@@ -44,7 +45,7 @@ public class SipSingle extends Observable implements TreeVisitor, SipPreviewCrea
    * @param templateType The type of the metadata template
    */
   public SipSingle(String id, Set<ContentFilter> filters, MetadataTypes metaType, Path metadataPath,
-    String templateType) {
+    String templateType, String templateVersion) {
     this.filters = filters;
     sipsMap = new HashMap<>();
     sips = new ArrayList<>();
@@ -53,6 +54,7 @@ public class SipSingle extends Observable implements TreeVisitor, SipPreviewCrea
     this.metaType = metaType;
     this.metadataPath = metadataPath;
     this.templateType = templateType;
+    this.templateVersion = templateVersion;
     files = new HashSet<>();
   }
 
@@ -181,7 +183,8 @@ public class SipSingle extends Observable implements TreeVisitor, SipPreviewCrea
     Path metaPath = getMetadata();
     // create a new Sip
     Path path = Paths.get(startPath);
-    SipPreview sipPreview = new SipPreview(path.getFileName().toString(), files, metaType, metaPath, templateType);
+    SipMetadata metadata = new SipMetadata(metaType, metaPath, templateType, templateVersion);
+    SipPreview sipPreview = new SipPreview(path.getFileName().toString(), files, metadata);
 
     for (TreeNode tn : files) {
       tn.addObserver(sipPreview);

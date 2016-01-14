@@ -28,6 +28,7 @@ public class Rule extends Observable implements Observer, Comparable {
 
   private Set<SourceTreeItem> source;
   private String templateType;
+  private String templateVersion;
   private Path metadataPath;
   private RuleTypes assocType;
   private MetadataTypes metaType;
@@ -52,12 +53,13 @@ public class Rule extends Observable implements Observer, Comparable {
    * @param metaType     The type of metadata to be applied to the SIPs.
    */
   public Rule(Set<SourceTreeItem> source, RuleTypes assocType, int level, Path metadataPath, String template,
-              MetadataTypes metaType) {
+    MetadataTypes metaType, String templateVersion) {
     ruleCount++;
     this.source = source;
     this.assocType = assocType;
     this.level = level;
     this.templateType = template;
+    this.templateVersion = templateVersion;
     this.metadataPath = metadataPath;
     this.metaType = metaType;
     filters = new HashSet<>();
@@ -168,7 +170,7 @@ public class Rule extends Observable implements Observer, Comparable {
     switch (assocType) {
       case SIP_PER_FOLDER:
         SipPerFolderVisitor visitorFolder = new SipPerFolderVisitor(id.toString(), level, filters, metaType,
-            metadataPath, templateType);
+          metadataPath, templateType, templateVersion);
         visitorFolder.addObserver(this);
         visitor = visitorFolder;
         break;
@@ -179,19 +181,20 @@ public class Rule extends Observable implements Observer, Comparable {
           selection.add(sti.getPath());
         }
         SipPerSelection visitorSelection = new SipPerSelection(id.toString(), selection, filters, metaType,
-            metadataPath, templateType);
+          metadataPath, templateType, templateVersion);
         visitorSelection.addObserver(this);
         visitor = visitorSelection;
         break;
       case SIP_PER_FILE:
         SipPerFileVisitor visitorFile = new SipPerFileVisitor(id.toString(), filters, metaType, metadataPath,
-            templateType);
+          templateType, templateVersion);
         visitorFile.addObserver(this);
         visitor = visitorFile;
         break;
       default:
       case SINGLE_SIP:
-        SipSingle visitorSingle = new SipSingle(id.toString(), filters, metaType, metadataPath, templateType);
+        SipSingle visitorSingle = new SipSingle(id.toString(), filters, metaType, metadataPath, templateType,
+          templateVersion);
         visitorSingle.addObserver(this);
         visitor = visitorSingle;
         break;

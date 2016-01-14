@@ -106,6 +106,7 @@ public class RuleModalController {
       MetadataTypes metaType = pane.getMetadataType();
       Path metadataPath = null;
       String templateType = null;
+      String templateVersion = null;
       switch (metaType) {
         case DIFF_DIRECTORY:
           metadataPath = pane.getDiffDir();
@@ -117,12 +118,16 @@ public class RuleModalController {
           templateType = pane.getSameFolderPattern();
           break;
         case TEMPLATE:
-          templateType = pane.getTemplate();
+          String template = pane.getTemplate();
+          String[] splitted = template.split("!###!");
+          templateType = splitted[0];
+          templateVersion = splitted[1];
           break;
         default:
           break;
       }
-      Rule rule = new Rule(sourceSet, assocType, level, metadataPath, templateType, metaType);
+
+      Rule rule = new Rule(sourceSet, assocType, level, metadataPath, templateType, metaType, templateVersion);
       rule.addObserver(schema);
 
       TreeVisitor visitor = rule.apply();
@@ -150,7 +155,7 @@ public class RuleModalController {
         }
       });
     } catch (Exception e) {
-      log.debug("Exception in confirm rule", e);
+      log.error("Exception in confirm rule", e);
     }
   }
 

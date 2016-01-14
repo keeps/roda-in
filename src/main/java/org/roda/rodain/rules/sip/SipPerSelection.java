@@ -35,6 +35,7 @@ public class SipPerSelection extends Observable implements TreeVisitor, SipPrevi
   private MetadataTypes metaType;
   private Path metadataPath;
   private String templateType;
+  private String templateVersion;
 
   private boolean cancelled = false;
 
@@ -49,12 +50,13 @@ public class SipPerSelection extends Observable implements TreeVisitor, SipPrevi
    * @param templateType  The type of the metadata template
    */
   public SipPerSelection(String id, Set<String> selectedPaths, Set<ContentFilter> filters, MetadataTypes metaType,
-    Path metadataPath, String templateType) {
+    Path metadataPath, String templateType, String templateVersion) {
     this.selectedPaths = selectedPaths;
     this.filters = filters;
     this.metaType = metaType;
     this.metadataPath = metadataPath;
     this.templateType = templateType;
+    this.templateVersion = templateVersion;
     sips = new ArrayList<>();
     sipsMap = new HashMap<>();
     nodes = new ArrayDeque<>();
@@ -169,7 +171,8 @@ public class SipPerSelection extends Observable implements TreeVisitor, SipPrevi
     Set<TreeNode> files = new HashSet<>();
     files.add(node);
 
-    SipPreview sipPreview = new SipPreview(path.getFileName().toString(), files, metaType, metaPath, templateType);
+    SipMetadata metadata = new SipMetadata(metaType, metaPath, templateType, templateVersion);
+    SipPreview sipPreview = new SipPreview(path.getFileName().toString(), files, metadata);
     node.addObserver(sipPreview);
 
     sips.add(sipPreview);
