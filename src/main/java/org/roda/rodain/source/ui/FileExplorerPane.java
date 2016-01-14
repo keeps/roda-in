@@ -1,5 +1,13 @@
 package org.roda.rodain.source.ui;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.*;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -15,6 +23,8 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+
+import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.Footer;
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.source.representation.SourceDirectory;
@@ -24,14 +34,6 @@ import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.Utils;
 import org.roda.rodain.utils.WalkFileTree;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -84,7 +86,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
   }
 
   private void createTop() {
-    Label title = new Label("Source File Explorer");
+    Label title = new Label(AppProperties.getLocalizedString("FileExplorerPane.title"));
     title.getStyleClass().add("title");
 
     top = new HBox();
@@ -97,7 +99,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     bottom = new HBox(10);
     bottom.setPadding(new Insets(10, 10, 10, 10));
 
-    Button ignore = new Button("Ignore");
+    Button ignore = new Button(AppProperties.getLocalizedString("ignore"));
     ignore.setId("bt_ignore");
     ignore.setMinWidth(100);
     ignore.setOnAction(new EventHandler<ActionEvent>() {
@@ -124,14 +126,14 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
     HBox titleBox = new HBox();
     titleBox.setAlignment(Pos.CENTER);
-    Label title = new Label("Choose your\nworking directory");
+    Label title = new Label(AppProperties.getLocalizedString("FileExplorerPane.help.title"));
     title.getStyleClass().add("helpTitle");
     title.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(title);
 
     HBox loadBox = new HBox();
     loadBox.setAlignment(Pos.CENTER);
-    Button load = new Button("Choose directory");
+    Button load = new Button(AppProperties.getLocalizedString("FileExplorerPane.chooseDir"));
     load.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent event) {
@@ -177,7 +179,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
   public void chooseNewRoot() {
     DirectoryChooser chooser = new DirectoryChooser();
-    chooser.setTitle("Please choose a directory");
+    chooser.setTitle(AppProperties.getLocalizedString("directorychooser.title"));
     File selectedDirectory = chooser.showDialog(stage);
     if (selectedDirectory == null)
       return;
@@ -282,7 +284,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
         if (item != null && item.getState() == SourceTreeItemState.NORMAL) {
           Dragboard db = cell.startDragAndDrop(TransferMode.COPY);
           ClipboardContent content = new ClipboardContent();
-          String s = item.getPath();
+          String s = "source node - " + item.getPath();
           if (s != null) {
             content.putString(s);
             db.setContent(content);

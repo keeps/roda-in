@@ -1,9 +1,11 @@
 package org.roda.rodain.schema;
 
-import org.apache.commons.net.util.Base64;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.commons.net.util.Base64;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -58,17 +60,37 @@ public class DescObjMetadata {
    * @return The content
    */
   public String getContent() {
-    return content;
+    return this.content;
+  }
+
+  /**
+   * Gets the decoded content of the description object metadata.
+   *
+   * @return The content decoded
+   */
+  @JsonIgnore
+  public String getContentDecoded() {
+    byte[] decoded = Base64.decodeBase64(content);
+    return new String(decoded);
   }
 
   /**
    * Sets the content of the description object metadata.
    *
-   * @param content The content
+   * @param content The content enconded in Base64
    */
   public void setContent(String content) {
-    byte[] decoded = Base64.decodeBase64(content);
-    this.content = new String(decoded);
+    this.content = content;
+  }
+
+  /**
+   * Sets the content of the description object metadata.
+   *
+   * @param content The decoded content
+   */
+  public void setContentDecoded(String content) {
+    byte[] encoded = Base64.encodeBase64(content.getBytes());
+    this.content = new String(encoded);
   }
 
   /**

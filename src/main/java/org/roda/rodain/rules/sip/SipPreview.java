@@ -1,14 +1,14 @@
 package org.roda.rodain.rules.sip;
 
+import java.nio.file.Path;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.Utils;
-
-import java.nio.file.Path;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -32,7 +32,7 @@ public class SipPreview extends Observable implements Observer {
    * @param templateType The type of the metadata template
    */
   public SipPreview(String name, Set<TreeNode> files, MetadataTypes metaType, Path metadataPath,
-                    TemplateType templateType) {
+ String templateType) {
     this.name = name;
     this.files = files;
     metadata = new SipMetadata(metaType, metadataPath, templateType);
@@ -81,7 +81,7 @@ public class SipPreview extends Observable implements Observer {
   /**
    * @return The type of the metadata.
    */
-  public TemplateType getTemplateType() {
+  public String getTemplateType() {
     return metadata.getTemplateType();
   }
 

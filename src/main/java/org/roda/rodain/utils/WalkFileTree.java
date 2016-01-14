@@ -1,11 +1,11 @@
 package org.roda.rodain.utils;
 
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Set;
+
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -15,6 +15,7 @@ public class WalkFileTree extends Thread {
   private static final org.slf4j.Logger log = LoggerFactory.getLogger(WalkFileTree.class.getName());
   private Set<String> paths;
   private TreeVisitor handler;
+  private boolean cancelled = false;
 
   private int processedFiles = 0, processedDirs = 0;
 
@@ -71,6 +72,10 @@ public class WalkFileTree extends Thread {
     handler.end();
   }
 
+  public void cancel() {
+    cancelled = true;
+  }
+
   public int getProcessedDirs() {
     return processedDirs;
   }
@@ -81,8 +86,7 @@ public class WalkFileTree extends Thread {
 
   private FileVisitResult isTerminated() {
     // terminate if the thread has been interrupted
-    if (Thread.interrupted()) {
-      handler.end();
+    if (Thread.interrupted() || cancelled) {
       return FileVisitResult.TERMINATE;
     }
     return FileVisitResult.CONTINUE;

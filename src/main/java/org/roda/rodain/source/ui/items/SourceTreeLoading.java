@@ -1,12 +1,14 @@
 package org.roda.rodain.source.ui.items;
 
+import org.roda.rodain.core.AppProperties;
+
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 17-09-2015.
  */
 public class SourceTreeLoading extends SourceTreeItem {
   public SourceTreeLoading() {
-    super("Loading...", null);
+    super(AppProperties.getLocalizedString("SourceTreeLoading.title"), null);
   }
 
   /**

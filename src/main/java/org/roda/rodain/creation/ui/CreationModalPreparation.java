@@ -1,5 +1,9 @@
 package org.roda.rodain.creation.ui;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -12,10 +16,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
-import org.roda.rodain.creation.SipTypes;
 
-import java.io.File;
-import java.nio.file.Path;
+import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.creation.SipTypes;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -24,8 +27,9 @@ import java.nio.file.Path;
 public class CreationModalPreparation extends BorderPane {
   private CreationModalStage stage;
 
-  private Path outputFolder;
+  private static Path outputFolder;
   private ComboBox<String> sipTypes;
+  private Button start;
 
   /**
    * Creates a modal to prepare for the SIP exportation.
@@ -53,7 +57,7 @@ public class CreationModalPreparation extends BorderPane {
     top.setPadding(new Insets(10, 10, 10, 0));
     top.setAlignment(Pos.CENTER);
 
-    Label title = new Label("Creating SIPs");
+    Label title = new Label(AppProperties.getLocalizedString("CreationModalPreparation.creatingSips"));
     title.setId("title");
 
     top.getChildren().add(title);
@@ -78,23 +82,36 @@ public class CreationModalPreparation extends BorderPane {
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
-    Label outputFolderLabel = new Label("Output directory");
-    Button chooseFile = new Button("Choose...");
+    Label outputFolderLabel = new Label(AppProperties.getLocalizedString("CreationModalPreparation.outputDirectory"));
+    Button chooseFile = new Button(AppProperties.getLocalizedString("CreationModalPreparation.choose"));
     chooseFile.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
         DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle("Please choose a directory");
+        chooser.setTitle(AppProperties.getLocalizedString("directorychooser.title"));
         File selectedFile = chooser.showDialog(stage);
         if (selectedFile == null)
           return;
         outputFolder = selectedFile.toPath();
         chooseFile.setText(selectedFile.toPath().getFileName().toString());
+        start.setDisable(false);
       }
     });
 
     outputFolderBox.getChildren().addAll(outputFolderLabel, space, chooseFile);
     return outputFolderBox;
+  }
+
+  /**
+   * Sets the output folder of the SIPs. Used for testing.
+   *
+   * @param out
+   *          The path of the output folder
+   */
+  public static void setOutputFolder(String out) {
+    if (out != null && !"".equals(out)) {
+      outputFolder = Paths.get(out);
+    }
   }
 
   private HBox createSipTypes() {
@@ -103,9 +120,10 @@ public class CreationModalPreparation extends BorderPane {
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
-    Label sipTypesLabel = new Label("SIP format");
+    Label sipTypesLabel = new Label(AppProperties.getLocalizedString("CreationModalPreparation.sipFormat"));
 
     sipTypes = new ComboBox<>();
+    sipTypes.setId("sipTypes");
     sipTypes.getItems().addAll("BagIt", "EARK");
     sipTypes.getSelectionModel().selectFirst();
 
@@ -121,7 +139,7 @@ public class CreationModalPreparation extends BorderPane {
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
-    Button cancel = new Button("Cancel");
+    Button cancel = new Button(AppProperties.getLocalizedString("cancel"));
     cancel.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent actionEvent) {
@@ -129,10 +147,12 @@ public class CreationModalPreparation extends BorderPane {
       }
     });
 
-    Button start = new Button("Start");
+    start = new Button(AppProperties.getLocalizedString("start"));
     start.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent actionEvent) {
+        if (outputFolder == null)
+          return;
         String selectedType = sipTypes.getSelectionModel().getSelectedItem();
         SipTypes type;
         if ("BagIt".equals(selectedType))
@@ -143,6 +163,8 @@ public class CreationModalPreparation extends BorderPane {
         stage.startCreation(outputFolder, type);
       }
     });
+
+    start.setDisable(true);
 
     bottom.getChildren().addAll(cancel, space, start);
     setBottom(bottom);

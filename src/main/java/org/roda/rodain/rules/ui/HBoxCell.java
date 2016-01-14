@@ -1,5 +1,6 @@
 package org.roda.rodain.rules.ui;
 
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -25,7 +26,7 @@ public class HBoxCell extends HBox {
    */
   public HBoxCell(String id, String icon, String title, String description, Node options) {
     super(20);
-
+    setPadding(new Insets(3, 3, 3, 3));
     setId(id);
 
     getStyleClass().add("cell");

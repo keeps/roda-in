@@ -1,9 +1,13 @@
 package org.roda.rodain.rules;
 
+import java.nio.file.Path;
+import java.util.*;
+
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.scene.image.Image;
+
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.filters.ContentFilter;
 import org.roda.rodain.rules.sip.*;
@@ -14,9 +18,6 @@ import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.TreeVisitor;
 
-import java.nio.file.Path;
-import java.util.*;
-
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 29-09-2015.
@@ -26,7 +27,7 @@ public class Rule extends Observable implements Observer, Comparable {
   private static int ruleCount = 0;
 
   private Set<SourceTreeItem> source;
-  private TemplateType templateType;
+  private String templateType;
   private Path metadataPath;
   private RuleTypes assocType;
   private MetadataTypes metaType;
@@ -50,7 +51,7 @@ public class Rule extends Observable implements Observer, Comparable {
    * @param template     The type of the chosen template
    * @param metaType     The type of metadata to be applied to the SIPs.
    */
-  public Rule(Set<SourceTreeItem> source, RuleTypes assocType, int level, Path metadataPath, TemplateType template,
+  public Rule(Set<SourceTreeItem> source, RuleTypes assocType, int level, Path metadataPath, String template,
               MetadataTypes metaType) {
     ruleCount++;
     this.source = source;

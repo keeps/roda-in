@@ -1,30 +1,36 @@
 package org.roda.rodain.inspection;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
-import javafx.scene.text.TextAlignment;
-import javafx.stage.Stage;
-import javafx.util.Callback;
-import org.roda.rodain.rules.Rule;
-import org.roda.rodain.rules.TreeNode;
-import org.roda.rodain.rules.sip.SipPreview;
-import org.roda.rodain.schema.DescObjMetadata;
-import org.roda.rodain.schema.ui.SchemaNode;
-import org.roda.rodain.schema.ui.SipPreviewNode;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.*;
+import javafx.scene.text.TextAlignment;
+import javafx.stage.Stage;
+import javafx.util.Callback;
+
+import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.rules.Rule;
+import org.roda.rodain.rules.TreeNode;
+import org.roda.rodain.rules.sip.SipPreview;
+import org.roda.rodain.schema.DescObjMetadata;
+import org.roda.rodain.schema.ui.SchemaNode;
+import org.roda.rodain.schema.ui.SipPreviewNode;
+import org.roda.rodain.utils.UIPair;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -33,25 +39,28 @@ import java.util.Set;
 public class InspectionPane extends BorderPane {
   private VBox topBox;
   private VBox center;
+  private HBox topSpace;
+  private ComboBox<UIPair> itemTypes;
 
-  private VBox metadata;
-  private TextArea metaText;
+  private SipPreview currentSIP;
+  private SchemaNode currentSchema;
+  private ImageView topIcon;
 
   private VBox centerHelp;
-
+  // Metadata
+  private VBox metadata;
+  private TextArea metaText;
+  // SIP Content
   private BorderPane content;
   private TreeView sipFiles;
   private SipContentDirectory sipRoot;
-
+  private Button remove, flatten, skip;
+  private VBox bottom;
+  // Rules
   private BorderPane rules;
   private ListView<RuleCell> ruleList;
   private VBox emptyRulesPane;
 
-  private Button remove, flatten, skip;
-  private VBox bottom;
-
-  private SipPreview currentSIP;
-  private SchemaNode currentSchema;
 
   /**
    * Creates a new inspection pane.
@@ -81,6 +90,30 @@ public class InspectionPane extends BorderPane {
     topBox.getChildren().add(top);
     topBox.setPadding(new Insets(10, 0, 10, 0));
     topBox.setAlignment(Pos.CENTER_LEFT);
+
+    topSpace = new HBox();
+    HBox.setHgrow(topSpace, Priority.ALWAYS);
+
+    itemTypes = new ComboBox<>();
+    itemTypes.setId("itemLevels");
+    ObservableList<UIPair> itemList = FXCollections.observableArrayList();
+    String itemTypesRaw = AppProperties.getDescLevels("levels_ordered");
+    String[] itemTypesArray = itemTypesRaw.split(",");
+    for (String item : itemTypesArray) {
+      UIPair pair = new UIPair(item, AppProperties.getDescLevels("label.en." + item));
+      itemList.add(pair);
+    }
+    itemTypes.setItems(itemList);
+    itemTypes.valueProperty().addListener(new ChangeListener<UIPair>() {
+      @Override
+      public void changed(ObservableValue ov, UIPair t, UIPair t1) {
+        if (currentSchema != null) {
+          currentSchema.updateDescLevel(t1.getKey().toString());
+          topIcon.setImage(currentSchema.getImage());
+        }
+      }
+    });
+
   }
 
   private void createMetadata() {
@@ -92,7 +125,7 @@ public class InspectionPane extends BorderPane {
     box.setPadding(new Insets(5, 10, 5, 10));
     box.setAlignment(Pos.CENTER_LEFT);
 
-    Label title = new Label("Metadata");
+    Label title = new Label(AppProperties.getLocalizedString("InspectionPane.metadata"));
 
     box.getChildren().add(title);
 
@@ -103,7 +136,7 @@ public class InspectionPane extends BorderPane {
 
     /*
      * We listen to the focused property and not the text property because we
-     * only need to update when the text area loses focus Using text property,
+     * only need to update when the text area loses focus. Using text property,
      * we would update after every single character modification, making the
      * application slower
      */
@@ -121,20 +154,41 @@ public class InspectionPane extends BorderPane {
    * Saves the metadata from the text area in the SIP.
    */
   public void saveMetadata() {
+    String oldMetadata = null, newMetadata = null;
     if (currentSIP != null) {
-      String oldMetadata = currentSIP.getMetadataContent();
-      String newMetadata = metaText.getText();
-      // only update if there's been modifications or there's no old
-      // metadata and the new isn't empty
-      boolean update = false;
-      if (newMetadata != null) {
-        if (oldMetadata == null)
-          update = true;
-        else if (!oldMetadata.equals(newMetadata))
-          update = true;
+      oldMetadata = currentSIP.getMetadataContent();
+      newMetadata = metaText.getText();
+
+    } else if (currentSchema != null) {
+      newMetadata = metaText.getText();
+      List<DescObjMetadata> metadatas = currentSchema.getDob().getMetadata();
+      if (!metadatas.isEmpty()) {
+        oldMetadata = metadatas.get(0).getContentDecoded();
       }
-      if (update)
+    }
+    // only update if there's been modifications or there's no old
+    // metadata and the new isn't empty
+    boolean update = false;
+    if (newMetadata != null) {
+      if (oldMetadata == null)
+        update = true;
+      else if (!oldMetadata.equals(newMetadata))
+        update = true;
+    }
+    if (update) {
+      if (currentSIP != null) {
         currentSIP.updateMetadata(metaText.getText());
+      } else if (currentSchema != null) {
+        List<DescObjMetadata> metadatas = currentSchema.getDob().getMetadata();
+        if (!metadatas.isEmpty()) {
+          metadatas.get(0).setContentDecoded(newMetadata);
+        } else {
+          DescObjMetadata newObjMetadata = new DescObjMetadata();
+          newObjMetadata.setContentEncoding("Base64");
+          newObjMetadata.setContentDecoded(newMetadata);
+          metadatas.add(newObjMetadata);
+        }
+      }
     }
   }
 
@@ -152,7 +206,7 @@ public class InspectionPane extends BorderPane {
 
     HBox titleBox = new HBox();
     titleBox.setAlignment(Pos.CENTER);
-    Label title = new Label("Select an item from \nthe classification scheme\nto inspect it");
+    Label title = new Label(AppProperties.getLocalizedString("InspectionPane.help.title"));
     title.getStyleClass().add("helpTitle");
     title.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(title);
@@ -170,7 +224,7 @@ public class InspectionPane extends BorderPane {
     top.getStyleClass().add("hbox");
     top.setPadding(new Insets(5, 10, 5, 10));
 
-    Label title = new Label("Content");
+    Label title = new Label(AppProperties.getLocalizedString("content"));
     top.getChildren().add(title);
     content.setTop(top);
 
@@ -206,7 +260,7 @@ public class InspectionPane extends BorderPane {
     box.setPadding(new Insets(10, 10, 10, 10));
     box.setAlignment(Pos.CENTER);
 
-    Button ignore = new Button("Ignore");
+    Button ignore = new Button(AppProperties.getLocalizedString("ignore"));
     ignore.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
@@ -223,7 +277,7 @@ public class InspectionPane extends BorderPane {
         }
       }
     });
-    flatten = new Button("Flatten directory");
+    flatten = new Button(AppProperties.getLocalizedString("InspectionPane.flatten"));
     flatten.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
@@ -234,7 +288,7 @@ public class InspectionPane extends BorderPane {
         }
       }
     });
-    skip = new Button("Skip Directory");
+    skip = new Button(AppProperties.getLocalizedString("InspectionPane.skip"));
     skip.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
@@ -299,7 +353,7 @@ public class InspectionPane extends BorderPane {
     top.getStyleClass().add("hbox");
     top.setPadding(new Insets(5, 10, 5, 10));
 
-    Label title = new Label("Rules");
+    Label title = new Label(AppProperties.getLocalizedString("InspectionPane.rules"));
     top.getChildren().add(title);
     rules.setTop(top);
     ruleList = new ListView<>();
@@ -314,7 +368,7 @@ public class InspectionPane extends BorderPane {
 
     HBox titleBox = new HBox();
     titleBox.setAlignment(Pos.CENTER);
-    Label emptyText = new Label("Associate files/directories \nto a description object \nto create a rule");
+    Label emptyText = new Label(AppProperties.getLocalizedString("InspectionPane.help.ruleList"));
     emptyText.getStyleClass().add("helpTitle");
     emptyText.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(emptyText);
@@ -334,7 +388,7 @@ public class InspectionPane extends BorderPane {
     HBox buttonBox = new HBox();
     buttonBox.setPadding(new Insets(0, 10, 0, 10));
 
-    remove = new Button("Remove");
+    remove = new Button(AppProperties.getLocalizedString("remove"));
     remove.setMinWidth(100);
     remove.setOnAction(new EventHandler<ActionEvent>() {
       @Override
@@ -470,11 +524,22 @@ public class InspectionPane extends BorderPane {
     // title
     Label title = new Label(node.getValue());
     title.getStyleClass().add("title");
+    title.textProperty().bindBidirectional(node.valueProperty());
 
     HBox top = new HBox(5);
     top.setPadding(new Insets(0, 10, 10, 10));
     top.setAlignment(Pos.CENTER_LEFT);
-    top.getChildren().addAll(node.getGraphic(), title);
+    topIcon = new ImageView(node.getImage());
+    top.getChildren().addAll(topIcon, title, topSpace, itemTypes);
+
+    // Select current description level
+    String currentDescLevel = node.getDob().getDescriptionlevel();
+    for (UIPair pair : itemTypes.getItems()) {
+      if (currentDescLevel.equals(pair.getKey())) {
+        itemTypes.getSelectionModel().select(pair);
+        break;
+      }
+    }
 
     Separator separatorTop = new Separator();
     topBox.getChildren().clear();
@@ -498,7 +563,7 @@ public class InspectionPane extends BorderPane {
     List<DescObjMetadata> metadatas = node.getDob().getMetadata();
     if (!metadatas.isEmpty()) {
       // For now we only get the first metadata object
-      metaText.setText(metadatas.get(0).getContent());
+      metaText.setText(metadatas.get(0).getContentDecoded());
     } else
       metaText.clear();
 

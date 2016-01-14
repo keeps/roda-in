@@ -5,6 +5,14 @@ package org.roda.rodain.core;
  * @since 16-09-2015.
  */
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -19,28 +27,26 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
+import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+
 import org.roda.rodain.creation.ui.CreationModalPreparation;
 import org.roda.rodain.creation.ui.CreationModalStage;
 import org.roda.rodain.inspection.InspectionPane;
-import org.roda.rodain.inspection.RuleCell;
 import org.roda.rodain.rules.VisitorStack;
-import org.roda.rodain.rules.sip.SipMetadata;
+import org.roda.rodain.rules.filters.IgnoredFilter;
 import org.roda.rodain.rules.sip.SipPreview;
-import org.roda.rodain.rules.ui.RuleModalPane;
+import org.roda.rodain.schema.ClassificationSchema;
+import org.roda.rodain.schema.DescriptionObject;
+import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SchemaPane;
 import org.roda.rodain.source.ui.FileExplorerPane;
-import org.roda.rodain.source.ui.SourceTreeCell;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
+import org.roda.rodain.utils.LoggingOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
 
 public class Main extends Application {
   private static final Logger log = LoggerFactory.getLogger(Main.class.getName());
@@ -63,9 +69,12 @@ public class Main extends Application {
     String javaString = Runtime.class.getPackage().getSpecificationVersion();
     double javaVersion = Double.parseDouble(javaString);
     if (javaVersion < 1.8) {
-      log.error("Java version is " + javaString + ". Please use at least \"Java 1.8\".");
+      String format = AppProperties.getLocalizedString("Main.useJava8");
+      log.error(String.format(format, javaVersion));
       return;
     }
+
+    System.setErr(new PrintStream(new LoggingOutputStream()));
 
     launch(args);
   }
@@ -102,12 +111,17 @@ public class Main extends Application {
       log.error("Error reading logo file", e);
     }
 
+    AppProperties.initialize();
+    String ignoredRaw = AppProperties.getConfig("app.ignoredFiles");
+    String[] ignored = ignoredRaw.split(",");
+    for (String s : ignored) {
+      IgnoredFilter.addIgnoreRule(s);
+    }
+
     // load the custom fonts
     Font.loadFont(ClassLoader.getSystemResource("fonts/Ubuntu-Regular.ttf").toExternalForm(), 10);
     Font.loadFont(ClassLoader.getSystemResource("fonts/Ubuntu-Medium.ttf").toExternalForm(), 10);
     Font.loadFont(ClassLoader.getSystemResource("fonts/Ubuntu-Light.ttf").toExternalForm(), 10);
-
-    loadProperties();
 
     createFrameStructure();
     createMenu();
@@ -144,7 +158,7 @@ public class Main extends Application {
     schemaPane = new SchemaPane(stage);
     inspectionPane = new InspectionPane(stage);
 
-    split.setDividerPositions(0.33, 0.66);
+    split.setDividerPositions(0.33, 0.67);
     split.getItems().addAll(previewExplorer, schemaPane, inspectionPane);
 
     // Create Footer
@@ -158,12 +172,12 @@ public class Main extends Application {
 
   private void createMenu() {
     MenuBar menu = new MenuBar();
-    Menu menuFile = new Menu("File");
-    Menu menuEdit = new Menu("Edit");
-    Menu menuView = new Menu("View");
+    Menu menuFile = new Menu(AppProperties.getLocalizedString("Main.file"));
+    Menu menuEdit = new Menu(AppProperties.getLocalizedString("Main.edit"));
+    Menu menuView = new Menu(AppProperties.getLocalizedString("Main.view"));
 
     // File
-    final MenuItem openFolder = new MenuItem("Open folder");
+    final MenuItem openFolder = new MenuItem(AppProperties.getLocalizedString("Main.openFolder"));
     openFolder.setAccelerator(KeyCombination.keyCombination("Ctrl+O"));
     openFolder.setOnAction(new EventHandler<ActionEvent>() {
       @Override
@@ -172,7 +186,16 @@ public class Main extends Application {
       }
     });
 
-    final MenuItem updateCS = new MenuItem("Load classification scheme");
+    final MenuItem createCS = new MenuItem(AppProperties.getLocalizedString("Main.createCS"));
+    createCS.setAccelerator(KeyCombination.keyCombination("Ctrl+R"));
+    createCS.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent t) {
+        schemaPane.createClassificationScheme();
+      }
+    });
+
+    final MenuItem updateCS = new MenuItem(AppProperties.getLocalizedString("Main.loadCS"));
     updateCS.setAccelerator(KeyCombination.keyCombination("Ctrl+L"));
     updateCS.setOnAction(new EventHandler<ActionEvent>() {
       @Override
@@ -181,8 +204,31 @@ public class Main extends Application {
       }
     });
 
-    final MenuItem createSIPs = new MenuItem("Create SIPs");
-    createSIPs.setAccelerator(KeyCombination.keyCombination("Ctrl+S"));
+    final MenuItem exportCS = new MenuItem(AppProperties.getLocalizedString("Main.exportCS"));
+    exportCS.setAccelerator(KeyCombination.keyCombination("Ctrl+E"));
+    exportCS.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent t) {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle(AppProperties.getLocalizedString("filechooser.title"));
+        File selectedFile = chooser.showSaveDialog(stage);
+        if (selectedFile == null)
+          return;
+        String outputFile = selectedFile.toPath().toString();
+
+        Set<SchemaNode> nodes = schemaPane.getSchemaNodes();
+        List<DescriptionObject> dobjs = new ArrayList<>();
+        for (SchemaNode sn : nodes) {
+          dobjs.add(sn.getDob());
+        }
+        ClassificationSchema cs = new ClassificationSchema();
+        cs.setDos(dobjs);
+        cs.export(outputFile);
+      }
+    });
+
+    final MenuItem createSIPs = new MenuItem(AppProperties.getLocalizedString("Main.exportSips"));
+    createSIPs.setAccelerator(KeyCombination.keyCombination("Ctrl+X"));
     createSIPs.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent t) {
@@ -195,7 +241,7 @@ public class Main extends Application {
       }
     });
 
-    final MenuItem quit = new MenuItem("Quit");
+    final MenuItem quit = new MenuItem(AppProperties.getLocalizedString("Main.quit"));
     quit.setAccelerator(KeyCombination.keyCombination("Ctrl+Q"));
     quit.setOnAction(new EventHandler<ActionEvent>() {
       @Override
@@ -205,10 +251,10 @@ public class Main extends Application {
       }
     });
 
-    menuFile.getItems().addAll(openFolder, updateCS, createSIPs, quit);
+    menuFile.getItems().addAll(openFolder, createCS, updateCS, exportCS, createSIPs, quit);
 
     // Edit
-    final MenuItem ignoreItems = new MenuItem("Ignore item(s)");
+    final MenuItem ignoreItems = new MenuItem(AppProperties.getLocalizedString("Main.ignoreItems"));
     ignoreItems.setAccelerator(KeyCombination.keyCombination("DELETE"));
     ignoreItems.setOnAction(new EventHandler<ActionEvent>() {
       @Override
@@ -219,40 +265,40 @@ public class Main extends Application {
     menuEdit.getItems().add(ignoreItems);
 
     // View
-    final MenuItem showFiles = new MenuItem("Hide Files");
+    final MenuItem showFiles = new MenuItem(AppProperties.getLocalizedString("Main.hideFiles"));
     showFiles.setAccelerator(KeyCombination.keyCombination("Ctrl+F"));
     showFiles.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent t) {
         previewExplorer.toggleFilesShowing();
         if (FileExplorerPane.isShowFiles())
-          showFiles.setText("Hide files");
+          showFiles.setText(AppProperties.getLocalizedString("Main.hideFiles"));
         else
-          showFiles.setText("Show files");
+          showFiles.setText(AppProperties.getLocalizedString("Main.showFiles"));
       }
     });
-    final MenuItem showIgnored = new MenuItem("Show Ignored");
+    final MenuItem showIgnored = new MenuItem(AppProperties.getLocalizedString("Main.showIgnored"));
     showIgnored.setAccelerator(KeyCombination.keyCombination("Ctrl+I"));
     showIgnored.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent t) {
         previewExplorer.toggleIgnoredShowing();
         if (FileExplorerPane.isShowIgnored())
-          showIgnored.setText("Hide ignored");
+          showIgnored.setText(AppProperties.getLocalizedString("Main.hideIgnored"));
         else
-          showIgnored.setText("Show ignored");
+          showIgnored.setText(AppProperties.getLocalizedString("Main.showIgnored"));
       }
     });
-    final MenuItem showMapped = new MenuItem("Show Mapped");
+    final MenuItem showMapped = new MenuItem(AppProperties.getLocalizedString("Main.showMapped"));
     showMapped.setAccelerator(KeyCombination.keyCombination("Ctrl+M"));
     showMapped.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent t) {
         previewExplorer.toggleMappedShowing();
         if (FileExplorerPane.isShowMapped())
-          showMapped.setText("Hide mapped");
+          showMapped.setText(AppProperties.getLocalizedString("Main.hideMapped"));
         else
-          showMapped.setText("Show mapped");
+          showMapped.setText(AppProperties.getLocalizedString("Main.showMapped"));
       }
     });
 
@@ -260,22 +306,6 @@ public class Main extends Application {
 
     menu.getMenus().addAll(menuFile, menuEdit, menuView);
     mainPane.setTop(menu);
-  }
-
-  private void loadProperties() {
-    try {
-      Properties style = new Properties();
-      style.load(ClassLoader.getSystemResource("properties/styles.properties").openStream());
-      SourceTreeCell.setStyleProperties(style);
-
-      Properties config = new Properties();
-      config.load(ClassLoader.getSystemResource("properties/config.properties").openStream());
-      RuleModalPane.setProperties(config);
-      RuleCell.setProperties(config);
-      SipMetadata.setProperties(config);
-    } catch (IOException e) {
-      log.error("Error while loading properties", e);
-    }
   }
 
   public static Set<SourceTreeItem> getSourceSelectedItems() {

@@ -1,20 +1,21 @@
 package org.roda.rodain.creation;
 
-import gov.loc.repository.bagit.Bag;
-import gov.loc.repository.bagit.BagFactory;
-import gov.loc.repository.bagit.PreBag;
-import gov.loc.repository.bagit.writer.impl.ZipWriter;
-import org.roda.rodain.rules.TreeNode;
-import org.roda.rodain.rules.sip.SipPreview;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
+
+import org.roda.rodain.rules.TreeNode;
+import org.roda.rodain.rules.sip.SipPreview;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import gov.loc.repository.bagit.Bag;
+import gov.loc.repository.bagit.BagFactory;
+import gov.loc.repository.bagit.PreBag;
+import gov.loc.repository.bagit.writer.impl.ZipWriter;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -53,7 +54,7 @@ public class BagitSipCreator extends SimpleSipCreator {
     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd kk'h'mm'm'ss's'SSS");
     String dateToString = format.format(new Date());
     String timestampedName = String.format("%s %s.zip", dateToString, sip.getName());
-    currentSipName = timestampedName;
+    currentSipName = sip.getName();
     currentAction = actionCreatingFolders;
     // make the directories
     Path name = outputPath.resolve(timestampedName);

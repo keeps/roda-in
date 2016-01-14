@@ -1,13 +1,17 @@
 package org.roda.rodain.rules.sip;
 
+import java.io.File;
+import java.io.FilenameFilter;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.filters.ContentFilter;
 import org.roda.rodain.utils.TreeVisitor;
-
-import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -30,7 +34,9 @@ public class SipPerSelection extends Observable implements TreeVisitor, SipPrevi
   private Set<ContentFilter> filters;
   private MetadataTypes metaType;
   private Path metadataPath;
-  private TemplateType templateType;
+  private String templateType;
+
+  private boolean cancelled = false;
 
   /**
    * Creates a new SipPreviewCreator where there's a new SIP created for each selected path.
@@ -43,7 +49,7 @@ public class SipPerSelection extends Observable implements TreeVisitor, SipPrevi
    * @param templateType  The type of the metadata template
    */
   public SipPerSelection(String id, Set<String> selectedPaths, Set<ContentFilter> filters, MetadataTypes metaType,
-                         Path metadataPath, TemplateType templateType) {
+    Path metadataPath, String templateType) {
     this.selectedPaths = selectedPaths;
     this.filters = filters;
     this.metaType = metaType;
@@ -97,7 +103,9 @@ public class SipPerSelection extends Observable implements TreeVisitor, SipPrevi
       if (cf.filter(pathString))
         return true;
     }
-    return false;
+    Pattern p = Pattern.compile(templateType);
+    Matcher m = p.matcher(path.getFileName().toString());
+    return m.matches();
   }
 
   /**
@@ -120,7 +128,7 @@ public class SipPerSelection extends Observable implements TreeVisitor, SipPrevi
    */
   @Override
   public void preVisitDirectory(Path path, BasicFileAttributes attrs) {
-    if (filter(path))
+    if (filter(path) || cancelled)
       return;
     TreeNode newNode = new TreeNode(path);
     nodes.add(newNode);
@@ -134,7 +142,7 @@ public class SipPerSelection extends Observable implements TreeVisitor, SipPrevi
    */
   @Override
   public void postVisitDirectory(Path path) {
-    if (filter(path))
+    if (filter(path) || cancelled)
       return;
 
     // pop the node of this directory and add it to its parent (if it exists)
@@ -156,7 +164,7 @@ public class SipPerSelection extends Observable implements TreeVisitor, SipPrevi
   }
 
   private void createSip(Path path, TreeNode node) {
-    Path metaPath = getMetadataPath();
+    Path metaPath = getMetadataPath(path);
     // create a new Sip
     Set<TreeNode> files = new HashSet<>();
     files.add(node);
@@ -178,7 +186,7 @@ public class SipPerSelection extends Observable implements TreeVisitor, SipPrevi
    */
   @Override
   public void visitFile(Path path, BasicFileAttributes attrs) {
-    if (filter(path))
+    if (filter(path) || cancelled)
       return;
     if (selectedPaths.contains(path.toString())) {
       createSip(path, new TreeNode(path));
@@ -200,11 +208,28 @@ public class SipPerSelection extends Observable implements TreeVisitor, SipPrevi
   public void visitFileFailed(Path path) {
   }
 
-  private Path getMetadataPath() {
+  private Path getMetadataPath(Path sipPath) {
     Path result = null;
-    if (metaType == MetadataTypes.SINGLE_FILE)
+    if (metaType == MetadataTypes.SINGLE_FILE) {
       result = metadataPath;
+    } else if (metaType == MetadataTypes.SAME_DIRECTORY) {
+      result = searchMetadata(sipPath);
+    }
     return result;
+  }
+
+  private Path searchMetadata(Path sipPath) {
+    File dir = new File(sipPath.toString());
+    File[] foundFiles = dir.listFiles(new FilenameFilter() {
+      public boolean accept(File dir, String name) {
+        return name.startsWith("metadata.");
+      }
+    });
+
+    if (foundFiles != null && foundFiles.length > 0) {
+      return foundFiles[0].toPath();
+    }
+    return null;
   }
 
   /**
@@ -222,5 +247,13 @@ public class SipPerSelection extends Observable implements TreeVisitor, SipPrevi
   @Override
   public String getId() {
     return id;
+  }
+
+  /**
+   * Cancels the execution of the SipPreviewCreator
+   */
+  @Override
+  public void cancel() {
+    cancelled = true;
   }
 }

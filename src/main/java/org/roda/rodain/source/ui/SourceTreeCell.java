@@ -6,6 +6,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.source.ui.items.*;
 
 import java.util.Properties;
@@ -16,10 +17,9 @@ import java.util.Properties;
  */
 public class SourceTreeCell extends TreeCell<String> {
   private ContextMenu menu = new ContextMenu();
-  private static Properties style;
 
   public SourceTreeCell() {
-    MenuItem removeIgnore = new MenuItem("Remove Ignore");
+    MenuItem removeIgnore = new MenuItem(AppProperties.getLocalizedString("SourceTreeCell.remove"));
     removeIgnore.setId("removeIgnore");
     menu.getItems().add(removeIgnore);
     removeIgnore.setOnAction(new EventHandler<ActionEvent>() {
@@ -71,7 +71,7 @@ public class SourceTreeCell extends TreeCell<String> {
         lab.setId("ignored");
       }
       if (sti.getState() == SourceTreeItemState.MAPPED) {
-        lab.setStyle(style.getProperty("source.cell.mapped"));
+        lab.setStyle(AppProperties.getStyle("source.cell.mapped"));
       }
 
       if (treeItem instanceof SourceTreeDirectory) {
@@ -87,7 +87,7 @@ public class SourceTreeCell extends TreeCell<String> {
       }
 
       if (treeItem instanceof SourceTreeLoadMore) {
-        lab.setText("Load More...");
+        lab.setText(AppProperties.getLocalizedString("SourceTreeLoadMore.title"));
       }
 
       hbox.getChildren().addAll(new ImageView(icon), lab);
@@ -99,9 +99,5 @@ public class SourceTreeCell extends TreeCell<String> {
   private void empty() {
     setText(null);
     setGraphic(null);
-  }
-
-  public static void setStyleProperties(Properties style) {
-    SourceTreeCell.style = style;
   }
 }

@@ -27,4 +27,9 @@ public interface SipPreviewCreator {
    * added SIPs.
    */
   boolean hasNext();
+
+  /**
+   * Cancels the execution of the SipPreviewCreator
+   */
+  void cancel();
 }

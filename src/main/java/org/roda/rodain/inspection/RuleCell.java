@@ -1,17 +1,29 @@
 package org.roda.rodain.inspection;
 
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Set;
+import java.util.TreeSet;
+
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import org.apache.commons.lang.StringUtils;
+import javafx.scene.text.TextAlignment;
+import javafx.util.Duration;
+
+import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.Main;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.RuleTypes;
@@ -21,18 +33,25 @@ import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 
-import java.util.*;
-
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 16-11-2015.
  */
 public class RuleCell extends HBox implements Observer {
-  private static Properties properties;
+  private static final int ANIMATION_DURATION = 150;
+  private static final int ITEM_HEIGHT = 21;
   private Rule rule;
   private SchemaNode schemaNode;
+  private VBox sourceBox;
+  // private Separator separator;
+  private VBox sourceBoxWrapper;
 
-  private String titleFormat = "Created %d item";
+  private HBox toggleBox;
+  private Hyperlink toggleLink;
+  private boolean expanded = false, expanding = false;
+  private int expandedHeight = 300, collapsedHeight = 115;
+
+  private String titleFormat = AppProperties.getLocalizedString("RuleCell.createdItem");
   private Label lCreated;
 
   /**
@@ -54,6 +73,10 @@ public class RuleCell extends HBox implements Observer {
 
     root.getChildren().addAll(top, center);
     getChildren().add(root);
+
+    setMinHeight(collapsedHeight);
+    setMaxHeight(collapsedHeight);
+    setPrefHeight(collapsedHeight);
   }
 
   private HBox createTop() {
@@ -71,7 +94,7 @@ public class RuleCell extends HBox implements Observer {
     Label id = new Label("#" + rule.getId());
     id.getStyleClass().add("title");
 
-    Button remove = new Button("Remove");
+    Button remove = new Button(AppProperties.getLocalizedString("remove"));
     remove.setId("removeRule" + rule.getId());
     remove.setAlignment(Pos.CENTER);
 
@@ -105,16 +128,16 @@ public class RuleCell extends HBox implements Observer {
     String type;
     switch (ruleType) {
       case SINGLE_SIP:
-        type = properties.getProperty("association.singleSip.title");
+        type = AppProperties.getLocalizedString("association.singleSip.title");
         break;
       case SIP_PER_FILE:
-        type = properties.getProperty("association.sipPerFile.title");
+        type = AppProperties.getLocalizedString("association.sipPerFile.title");
         break;
       case SIP_PER_FOLDER:
-        type = properties.getProperty("association.sipPerFolder.title");
+        type = AppProperties.getLocalizedString("association.sipPerFolder.title");
         break;
       case SIP_PER_SELECTION:
-        type = properties.getProperty("association.sipSelection.title");
+        type = AppProperties.getLocalizedString("association.sipSelection.title");
         break;
       default:
         type = "Unknown association type";
@@ -124,8 +147,8 @@ public class RuleCell extends HBox implements Observer {
 
     // source items
     Set<SourceTreeItem> source = rule.getSource();
-    ArrayList<String> dirs = new ArrayList<>();
-    ArrayList<String> fil = new ArrayList<>();
+    Set<String> dirs = new TreeSet<>();
+    Set<String> fil = new TreeSet<>();
     for (SourceTreeItem it : source) {
       if (it instanceof SourceTreeDirectory)
         dirs.add(it.getValue());
@@ -133,37 +156,115 @@ public class RuleCell extends HBox implements Observer {
         fil.add(it.getValue());
     }
 
-    VBox sourceBox = new VBox(5);
-    if (!dirs.isEmpty()) {
-      Label directories = new Label();
-      directories.maxWidthProperty().bind(widthProperty().subtract(20));
-      directories.setGraphic(new ImageView(SourceTreeDirectory.folderCollapseImage));
-      directories.setWrapText(true);
-      String directoriesString = StringUtils.join(dirs, ", ");
-      directories.setText(directoriesString);
-      sourceBox.getChildren().add(directories);
+    HBox contentSummary = buildContentSummary(dirs, fil);
+
+    toggleBox = new HBox();
+    toggleLink = new Hyperlink("Expand");
+    toggleLink.setTextAlignment(TextAlignment.CENTER);
+    toggleBox.getChildren().add(toggleLink);
+    HBox.setHgrow(toggleBox, Priority.ALWAYS);
+    toggleBox.setAlignment(Pos.CENTER);
+    toggleLink.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent event) {
+        if (!expanding) {
+          if (expanded) {
+            collapse();
+          } else {
+            expand();
+          }
+        }
+      }
+    });
+
+    sourceBox = new VBox(5);
+    for (String s : dirs) {
+      Label directory = new Label();
+      directory.maxWidthProperty().bind(widthProperty().subtract(20));
+      directory.setGraphic(new ImageView(SourceTreeDirectory.folderCollapseImage));
+      directory.setWrapText(true);
+      directory.setText(s);
+      sourceBox.getChildren().add(directory);
     }
-    if (!fil.isEmpty()) {
-      Label files = new Label();
-      files.maxWidthProperty().bind(widthProperty().subtract(20));
-      files.setGraphic(new ImageView(SourceTreeFile.fileImage));
-      files.setWrapText(true);
-      String filesString = StringUtils.join(fil, ", ");
-      files.setText(filesString);
-      sourceBox.getChildren().add(files);
+    for (String s : fil) {
+      Label file = new Label();
+      file.maxWidthProperty().bind(widthProperty().subtract(20));
+      file.setGraphic(new ImageView(SourceTreeFile.fileImage));
+      file.setWrapText(true);
+      file.setText(s);
+      sourceBox.getChildren().add(file);
     }
-    content.getChildren().addAll(lType, sourceBox);
+
+    // separator = new Separator();
+    sourceBoxWrapper = new VBox();
+    content.getChildren().addAll(lType, contentSummary, sourceBoxWrapper, toggleBox);
+
+    expandedHeight = collapsedHeight + dirs.size() * ITEM_HEIGHT + fil.size() * ITEM_HEIGHT;
 
     return content;
   }
 
-  /**
-   * Sets the Properties object of RuleCell.
-   *
-   * @param prop The new Properties object.
-   */
-  public static void setProperties(Properties prop) {
-    properties = prop;
+  private void expand() {
+    expanding = true;
+    sourceBoxWrapper.getChildren().add(sourceBox);
+    Timeline animation = new Timeline();
+    animation.getKeyFrames().add(new KeyFrame(Duration.millis(ANIMATION_DURATION),
+        new KeyValue(minHeightProperty(), expandedHeight),
+        new KeyValue(maxHeightProperty(), expandedHeight),
+        new KeyValue(prefHeightProperty(), expandedHeight)));
+    animation.setOnFinished(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent event) {
+        expanded = true;
+        expanding = false;
+        toggleLink.setText(AppProperties.getLocalizedString("collapse"));
+      }
+    });
+    animation.play();
+  }
+
+  private void collapse() {
+    expanding = true;
+    Timeline animation = new Timeline();
+    animation.getKeyFrames().add(new KeyFrame(Duration.millis(ANIMATION_DURATION),
+        new KeyValue(minHeightProperty(), collapsedHeight),
+        new KeyValue(maxHeightProperty(), collapsedHeight),
+        new KeyValue(prefHeightProperty(), collapsedHeight)));
+    animation.setOnFinished(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent event) {
+        expanded = false;
+        expanding = false;
+        sourceBoxWrapper.getChildren().remove(sourceBox);
+        toggleLink.setText(AppProperties.getLocalizedString("expand"));
+      }
+    });
+    animation.play();
+  }
+
+  private HBox buildContentSummary(Set<String> dirs, Set<String> fil) {
+    HBox result = new HBox();
+    StringBuilder sb = new StringBuilder();
+    if (!dirs.isEmpty()) {
+      sb.append(dirs.size());
+      if (dirs.size() == 1)
+        sb.append(AppProperties.getLocalizedString("directory"));
+      else sb.append(AppProperties.getLocalizedString("directories"));
+      Label dirsLabel = new Label(sb.toString());
+      dirsLabel.setGraphic(new ImageView(SourceTreeDirectory.folderCollapseImage));
+      result.getChildren().add(dirsLabel);
+    }
+    sb = new StringBuilder();
+    if (!fil.isEmpty()) {
+      sb.append(fil.size());
+      if (fil.size() == 1)
+        sb.append(AppProperties.getLocalizedString("file"));
+      else sb.append(AppProperties.getLocalizedString("files"));
+      Label filLabel = new Label(sb.toString());
+      filLabel.setGraphic(new ImageView(SourceTreeFile.fileImage));
+      result.getChildren().add(filLabel);
+    }
+    return result;
   }
 
   /**

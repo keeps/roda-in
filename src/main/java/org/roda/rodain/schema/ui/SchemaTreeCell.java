@@ -1,27 +1,70 @@
 package org.roda.rodain.schema.ui;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.util.StringConverter;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 12-10-2015.
  */
-public class SchemaTreeCell extends TreeCell<String> {
+public class SchemaTreeCell extends TextFieldTreeCell<String> {
+  private static final String pattern = "(.+)(  )\\((\\d+ ite[^)]*)\\)";
   /**
    * Creates a new SchemaTreeCell
    */
   public SchemaTreeCell() {
+    super(new StringConverter<String>() {
+      @Override
+      public String toString(String object) {
+        if (object == null || object.length() == 0)
+          return null;
+        Pattern pat = Pattern.compile(pattern);
+        Matcher mat = pat.matcher(object);
+        if (mat.find()) {
+          return mat.group(1);
+        }
+        return object;
+      }
+
+      @Override
+      public String fromString(String string) {
+        return string;
+      }
+    });
+  }
+
+  @Override
+  public void commitEdit(String newValue) {
+    super.commitEdit(newValue);
+    TreeItem<String> treeItem = getTreeItem();
+    if (treeItem != null && treeItem instanceof SchemaNode) {
+      SchemaNode node = (SchemaNode) treeItem;
+      node.getDob().setTitle(newValue);
+    }
+
+  }
+
+  @Override
+  public void cancelEdit() {
+    String item = super.getItem();
+    super.cancelEdit();
+    updateItem(item, false);
   }
 
   @Override
   public void updateItem(String item, boolean empty) {
     super.updateItem(item, empty);
+    if (getStyleClass().contains("schemaNodeEmpty"))
+      getStyleClass().remove("schemaNodeEmpty");
 
     if (empty || item == null) {
       setText(null);
@@ -48,25 +91,36 @@ public class SchemaTreeCell extends TreeCell<String> {
       if (treeItem == null)
         return;
 
+      boolean addHbox = false;
       if (treeItem instanceof SchemaNode) {
-        icon = ((SchemaNode) treeItem).getImage();
-        int begin = item.lastIndexOf("(");
-        int end = item.lastIndexOf("items)");
-        if (end > begin) {
-          // Example: from "Test ABC (145 items)" we get title="Test ABC" and
-          // numItems="145 "
-          String title = item.substring(0, begin - 1);
-          String numItems = item.substring(begin + 1, end);
-          lab = new Label(title);
-          int countItems = Integer.parseInt(numItems.trim());
-          String items = "item";
-          if (countItems != 1) {
-            items += "s";
+        setEditable(true);
+        SchemaNode itemNode = (SchemaNode) treeItem;
+        icon = itemNode.getImage();
+        Pattern pat = Pattern.compile(pattern);
+        Matcher mat = pat.matcher(item);
+        boolean schemaEmpty = true;
+        if (mat.find()) {
+          lab = new Label(mat.group(1));
+          setText(mat.group(3)); // group 2 is the spaces " "
+          addHbox = true;
+          schemaEmpty = false;
+        } else {
+          int sipCount = itemNode.getSipCount();
+          if (sipCount > 0) {
+            schemaEmpty = false;
+            itemNode.setValue(item + "  (" + sipCount + " items)");
           }
-          setText(numItems + items);
+        }
+        if (schemaEmpty) {
+          if (getStyleClass().contains("schemaNode")) {
+            getStyleClass().remove("schemaNode");
+          }
+          getStyleClass().add("schemaNodeEmpty");
         }
       } else {
         if (treeItem instanceof SipPreviewNode) {
+          setEditable(false);
+          addHbox = true;
           SipPreviewNode sipNode = (SipPreviewNode) treeItem;
           icon = sipNode.getIcon();
           if (sipNode.isMetaModified() || sipNode.isContentModified()) {
@@ -75,8 +129,10 @@ public class SchemaTreeCell extends TreeCell<String> {
             setText("");
         }
       }
-      hbox.getChildren().addAll(new ImageView(icon), lab);
-      setGraphic(hbox);
+      if (addHbox) {
+        hbox.getChildren().addAll(new ImageView(icon), lab);
+        setGraphic(hbox);
+      }
     }
   }
 }

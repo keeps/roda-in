@@ -7,6 +7,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.Rule;
 
 import java.util.Observable;
@@ -45,7 +46,7 @@ public class RuleModalRemoving extends BorderPane implements Observer {
     top.setPadding(new Insets(10, 10, 10, 0));
     top.getStyleClass().add("hbox");
 
-    Label title = new Label("Removing SIPs");
+    Label title = new Label(AppProperties.getLocalizedString("RuleModalRemoving.title"));
     title.setId("title");
 
     top.getChildren().add(title);
@@ -82,7 +83,7 @@ public class RuleModalRemoving extends BorderPane implements Observer {
             int removed = (int) args;
             double prog = (removed * 1.0) / sipCount;
             progress.setProgress(prog);
-            sipsRemovedLabel.setText(String.format("Removed %d SIPs (%d%%)", removed, (int) (prog * 100)));
+            sipsRemovedLabel.setText(String.format(AppProperties.getLocalizedString("RuleModalRemoving.removedFormat"), removed, (int) (prog * 100)));
           } else {
             close();
           }

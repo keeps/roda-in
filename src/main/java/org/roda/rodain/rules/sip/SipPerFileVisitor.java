@@ -1,5 +1,11 @@
 package org.roda.rodain.rules.sip;
 
+import java.io.File;
+import java.io.FilenameFilter;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.*;
+
 import org.apache.commons.io.FilenameUtils;
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.MetadataTypes;
@@ -8,18 +14,12 @@ import org.roda.rodain.rules.filters.ContentFilter;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.TreeVisitor;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
-
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 05-10-2015.
  */
 public class SipPerFileVisitor extends Observable implements TreeVisitor, SipPreviewCreator {
   private static final int UPDATEFREQUENCY = 500; // in milliseconds
-  private static final String METADATA_EXT = ".xml";
   // This map is returned, in full, to the SipPreviewNode when there's an update
   private Map<String, SipPreview> sipsMap;
   // This ArrayList is used to keep the SIPs ordered.
@@ -32,8 +32,10 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipPre
   private String id;
   private Set<ContentFilter> filters;
   private MetadataTypes metaType;
-  private TemplateType templateType;
+  private String templateType;
   private Path metadataPath;
+
+  private boolean cancelled = false;
 
 
   /**
@@ -46,7 +48,7 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipPre
    * @param templateType The type of the metadata template
    */
   public SipPerFileVisitor(String id, Set<ContentFilter> filters, MetadataTypes metaType, Path metadataPath,
-                           TemplateType templateType) {
+    String templateType) {
     sips = new ArrayList<>();
     sipsMap = new HashMap<>();
     this.id = id;
@@ -143,7 +145,7 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipPre
    */
   @Override
   public void visitFile(Path path, BasicFileAttributes attrs) {
-    if (filter(path))
+    if (filter(path) || cancelled)
       return;
 
     Path metaPath = getMetadataPath(path);
@@ -172,8 +174,7 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipPre
       case SINGLE_FILE:
         result = metadataPath;
         break;
-      case DIFF_DIRECTORY: // uses the same logic as the next case
-      case SAME_DIRECTORY:
+      case DIFF_DIRECTORY:
         result = getFileFromDir(path);
         break;
       default:
@@ -184,13 +185,15 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipPre
 
   private Path getFileFromDir(Path path) {
     String fileName = FilenameUtils.removeExtension(path.getFileName().toString());
-    Path newPath = metadataPath.resolve(fileName + METADATA_EXT);
-    if (Files.exists(newPath)) {
-      return newPath;
-    }
-    newPath = metadataPath.resolve(path.getFileName() + METADATA_EXT);
-    if (Files.exists(newPath)) {
-      return newPath;
+    File dir = new File(metadataPath.toString());
+    File[] foundFiles = dir.listFiles(new FilenameFilter() {
+      public boolean accept(File dir, String name) {
+        return name.startsWith(fileName + ".");
+      }
+    });
+
+    if (foundFiles.length > 0) {
+      return foundFiles[0].toPath();
     }
     return null;
   }
@@ -220,5 +223,13 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipPre
   @Override
   public String getId() {
     return id;
+  }
+
+  /**
+   * Cancels the execution of the SipPreviewCreator
+   */
+  @Override
+  public void cancel() {
+    cancelled = true;
   }
 }

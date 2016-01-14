@@ -1,14 +1,14 @@
 package org.roda.rodain.rules.sip;
 
-import org.roda.rodain.rules.MetadataTypes;
-import org.roda.rodain.rules.TreeNode;
-import org.roda.rodain.rules.filters.ContentFilter;
-import org.roda.rodain.utils.TreeVisitor;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
+
+import org.roda.rodain.rules.MetadataTypes;
+import org.roda.rodain.rules.TreeNode;
+import org.roda.rodain.rules.filters.ContentFilter;
+import org.roda.rodain.utils.TreeVisitor;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -32,7 +32,9 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipP
   private Set<ContentFilter> filters;
   private MetadataTypes metaType;
   private Path metadataPath;
-  private TemplateType templateType;
+  private String templateType;
+
+  private boolean cancelled = false;
 
   /**
    * Creates a new SipPreviewCreator where there's a new SIP created for each visited directory, until a max depth.
@@ -45,7 +47,7 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipP
    * @param templateType The type of the metadata template
    */
   public SipPerFolderVisitor(String id, int maxLevel, Set<ContentFilter> filters, MetadataTypes metaType,
-                             Path metadataPath, TemplateType templateType) {
+    Path metadataPath, String templateType) {
     this.maxLevel = maxLevel;
     this.filters = filters;
     this.metaType = metaType;
@@ -121,7 +123,7 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipP
    */
   @Override
   public void preVisitDirectory(Path path, BasicFileAttributes attrs) {
-    if (filter(path))
+    if (filter(path) || cancelled)
       return;
     TreeNode newNode = new TreeNode(path);
     nodes.add(newNode);
@@ -135,7 +137,7 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipP
    */
   @Override
   public void postVisitDirectory(Path path) {
-    if (filter(path))
+    if (filter(path) || cancelled)
       return;
     // pop the node of this directory and add it to its parent (if it exists)
     TreeNode node = nodes.removeLast();
@@ -180,7 +182,7 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipP
    */
   @Override
   public void visitFile(Path path, BasicFileAttributes attrs) {
-    if (filter(path))
+    if (filter(path) || cancelled)
       return;
     nodes.peekLast().add(path);
   }
@@ -217,5 +219,13 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipP
   @Override
   public String getId() {
     return id;
+  }
+
+  /**
+   * Cancels the execution of the SipPreviewCreator
+   */
+  @Override
+  public void cancel() {
+    cancelled = true;
   }
 }

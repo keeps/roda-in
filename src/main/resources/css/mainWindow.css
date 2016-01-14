@@ -56,6 +56,21 @@
     -fx-background-color: lightgray;
 }
 
+.tree-cell:selected:hover {
+    -fx-background-color: #089de3;
+    -fx-font-weight: bold;
+}
+
+.tree-cell:focused:selected:hover {
+    -fx-background-color: #089de3;
+    -fx-font-weight: bold;
+}
+
+.tree-cell:selected {
+    -fx-background-color: #089de3;
+    -fx-text-fill: white;
+}
+
 .tree-cell:focused:selected {
     -fx-background-color: #089de3;
     -fx-text-fill: white;
@@ -63,6 +78,18 @@
 
 .tree-cell:focused:selected .cellText {
     -fx-text-fill: white;
+}
+
+.tree-cell:selected .cellText {
+    -fx-text-fill: white;
+}
+
+.tree-cell:selected:hover .cellText {
+    -fx-font-weight: bold;
+}
+
+.tree-cell:focused:selected:hover .cellText {
+    -fx-font-weight: bold;
 }
 
 #ignored .text{
@@ -74,10 +101,6 @@
     -fx-text-fill: grey;
 }
 
-.schemaNode:filled:hover {
-    -fx-background-color: lightgray;
-}
-
 .schemaNode:focused:selected{
     -fx-background-color: #089de3;
     -fx-text-fill: white;
@@ -87,6 +110,18 @@
     -fx-background-color: lightgray;
 }
 
+.schemaNodeEmpty {
+    -fx-text-fill: black;
+}
+
+.schemaNodeEmpty:filled:hover {
+    -fx-background-color: lightgray;
+}
+
+.schemaNodeEmpty:focused:selected {
+    -fx-background-color: #089de3;
+    -fx-text-fill: white;
+}
 /* List-cell */
 
 .list-view {
@@ -120,6 +155,18 @@
 
 .ruleCell .top {
     -fx-background-color: lightgray;
+}
+
+.ruleCell .separator .line {
+    -fx-border-color: lightgray;
+}
+
+.ruleCell:focused:selected .separator .line {
+    -fx-border-color: lightgray;
+}
+
+.ruleCell .hyperlink {
+    -fx-text-fill: #089de3;
 }
 
 .list-cell:focused:selected .ruleCell {

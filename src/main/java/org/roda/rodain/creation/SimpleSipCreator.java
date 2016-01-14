@@ -1,14 +1,14 @@
 package org.roda.rodain.creation;
 
-import org.apache.commons.io.FileUtils;
-import org.roda.rodain.rules.TreeNode;
-import org.roda.rodain.rules.sip.SipPreview;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -18,15 +18,17 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
-import static java.nio.file.StandardCopyOption.COPY_ATTRIBUTES;
+import org.apache.commons.io.FileUtils;
+import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.rules.TreeNode;
+import org.roda.rodain.rules.sip.SipPreview;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -37,14 +39,24 @@ public class SimpleSipCreator extends Thread {
   protected final Path outputPath;
   protected final Map<SipPreview, String> previews;
   protected final int sipPreviewCount;
-  protected final static String actionCreatingFolders = "Creating the SIP's directory structure";
-  protected final static String actionCopyingData = "Copying the SIP's data";
-  protected final static String actionCopyingMetadata = "Copying the SIP's metadata";
-  protected final static String actionFinalizingSip = "Finalizing the SIP";
+  protected final static String actionCreatingFolders = AppProperties.getLocalizedString("SimpleSipCreator.creatingStructure");
+  protected final static String actionCopyingData = AppProperties.getLocalizedString("SimpleSipCreator.copyingData");
+  protected final static String actionCopyingMetadata = AppProperties.getLocalizedString("SimpleSipCreator.copyingMetadata");
+  protected final static String actionFinalizingSip = AppProperties.getLocalizedString("SimpleSipCreator.finalizingSip");
 
   protected int createdSipsCount = 0;
   protected String currentSipName;
   protected String currentAction;
+
+  // ETA
+  protected long sipSize;
+  protected long sipTransferedSize;
+  protected long sipTransferedTime;
+  protected long transferedSize;
+  protected long transferedTime;
+  protected long allSipsSize;
+  protected Instant lastInstant;
+  protected Instant sipStartInstant;
 
   protected boolean canceled = false;
 
@@ -64,6 +76,16 @@ public class SimpleSipCreator extends Thread {
     this.outputPath = outputPath;
     this.previews = previews;
     sipPreviewCount = previews.size();
+
+    for (SipPreview sip : previews.keySet()) {
+      for (TreeNode tn : sip.getFiles()) {
+        try {
+          allSipsSize += nodeSize(tn);
+        } catch (IOException e) {
+          log.error("Can't access file: " + tn.getPath(), e);
+        }
+      }
+    }
 
     unsuccessful = new HashSet<>();
   }
@@ -97,17 +119,75 @@ public class SimpleSipCreator extends Thread {
   }
 
   protected void createFiles(TreeNode node, Path dest) throws IOException {
+    sipSize = nodeSize(node);
+    sipTransferedSize = 0;
+    sipTransferedTime = 0;
+    sipStartInstant = Instant.now();
+    recCreateFiles(node, dest);
+  }
+
+  private void recCreateFiles(TreeNode node, Path dest) throws IOException {
     Path nodePath = node.getPath();
     if (Files.isDirectory(nodePath)) {
       Path directory = dest.resolve(nodePath.getFileName().toString());
       new File(directory.toString()).mkdir();
       for (TreeNode tn : node.getAllFiles().values()) {
-        createFiles(tn, directory);
+        recCreateFiles(tn, directory);
       }
     } else {
       Path destination = dest.resolve(nodePath.getFileName().toString());
-      Files.copy(nodePath, destination, COPY_ATTRIBUTES);
+      copyFile(nodePath, destination);
     }
+  }
+
+  private void copyFile(Path path, Path dest) {
+    final int progress_checkpoint = 1000;
+    long bytesCopied = 0, previousLen = 0;
+    File destFile = dest.toFile();
+
+    try {
+      long totalBytes = Files.size(path);
+      InputStream in = new FileInputStream(path.toFile());
+      OutputStream out = new FileOutputStream(destFile);
+      byte[] buf = new byte[1024];
+      int counter = 0;
+      int len;
+      lastInstant = Instant.now();
+
+      while ((len = in.read(buf)) > 0) {
+        out.write(buf, 0, len);
+        counter += len;
+        bytesCopied += (destFile.length() - previousLen);
+        previousLen = destFile.length();
+        if (counter > progress_checkpoint || bytesCopied == totalBytes) {
+          sipTransferedSize += counter;
+          transferedSize += counter;
+          Instant now = Instant.now();
+          Duration dur = Duration.between(lastInstant, now);
+          transferedTime += dur.toMillis();
+          sipTransferedTime += dur.toMillis();
+          lastInstant = now;
+          counter = 0;
+        }
+      }
+      in.close();
+      out.close();
+    } catch (IOException e) {
+      log.error("Error writing(copying) file. Source: " + path + "; Destination: " + dest, e);
+    }
+  }
+
+  private long nodeSize(TreeNode node) throws IOException {
+    Path nodePath = node.getPath();
+    long result = 0;
+    if (Files.isDirectory(nodePath)) {
+      for (TreeNode tn : node.getAllFiles().values()) {
+        result += nodeSize(tn);
+      }
+    } else {
+      result += Files.size(nodePath);
+    }
+    return result;
   }
 
   protected void deleteDirectory(Path dir) {

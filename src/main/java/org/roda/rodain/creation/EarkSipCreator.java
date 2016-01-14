@@ -1,9 +1,16 @@
 package org.roda.rodain.creation;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.io.FileUtils;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
-import org.roda.rodain.rules.sip.TemplateType;
 import org.roda_project.commons_ip.model.SIP;
 import org.roda_project.commons_ip.model.SIPDescriptiveMetadata;
 import org.roda_project.commons_ip.model.SIPRepresentation;
@@ -13,14 +20,6 @@ import org.roda_project.commons_ip.utils.METSEnums;
 import org.roda_project.commons_ip.utils.SIPException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -65,17 +64,21 @@ public class EarkSipCreator extends SimpleSipCreator {
       if (!Files.exists(Paths.get(home)))
         new File(home).mkdir();
 
+      currentSipName = sip.getName();
       currentAction = actionCopyingMetadata;
-      TemplateType templateType = sip.getTemplateType();
+      String templateType = sip.getTemplateType();
       METSEnums.MetadataType metadataType = METSEnums.MetadataType.OTHER;
 
       if (templateType != null) {
-        if (templateType == TemplateType.DUBLIN_CORE) {
+        if (templateType.equals("dc")) {
           metadataName = "dc.xml";
           metadataType = METSEnums.MetadataType.DC;
-        } else {
+        } else if (templateType.equals("ead")) {
           metadataName = "ead.xml";
           metadataType = METSEnums.MetadataType.EAD;
+        } else {
+          metadataName = "custom.xml";
+          metadataType = METSEnums.MetadataType.OTHER;
         }
       }
 
@@ -97,8 +100,8 @@ public class EarkSipCreator extends SimpleSipCreator {
 
       earkSip.addRepresentation(rep);
 
-      currentAction = actionFinalizingSip;
       Path result = earkSip.build();
+      currentAction = actionFinalizingSip;
       Files.move(result, outputPath.resolve(result.getFileName()));
       createdSipsCount++;
     } catch (SIPException e) {

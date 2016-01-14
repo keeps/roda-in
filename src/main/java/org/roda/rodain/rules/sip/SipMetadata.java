@@ -1,14 +1,13 @@
 package org.roda.rodain.rules.sip;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Path;
+
+import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.utils.Utils;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.nio.file.Path;
-import java.util.Properties;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -16,9 +15,8 @@ import java.util.Properties;
  */
 public class SipMetadata {
   private static final org.slf4j.Logger log = LoggerFactory.getLogger(SipMetadata.class.getName());
-  private static Properties properties;
   private MetadataTypes type;
-  private TemplateType templateType;
+  private String templateType;
   private boolean loaded = false, modified = false;
   private String content;
   private Path path;
@@ -30,7 +28,7 @@ public class SipMetadata {
    * @param path         The path to the metadata file
    * @param templateType The type of the metadata template
    */
-  public SipMetadata(MetadataTypes type, Path path, TemplateType templateType) {
+  public SipMetadata(MetadataTypes type, Path path, String templateType) {
     this.type = type;
     this.path = path;
     this.templateType = templateType;
@@ -47,15 +45,7 @@ public class SipMetadata {
     try {
       if (type == MetadataTypes.TEMPLATE) {
         if (templateType != null) {
-          String fileName;
-          if (templateType == TemplateType.EAD) {
-            fileName = properties.getProperty("metadata.template.ead");
-          } else
-            fileName = properties.getProperty("metadata.template.dcmes");
-
-          InputStream contentStream = ClassLoader.getSystemResource(fileName).openStream();
-          content = Utils.convertStreamToString(contentStream);
-          contentStream.close();
+          content = AppProperties.getMetadataFile(templateType);
           loaded = true;
         }
       } else {
@@ -85,7 +75,7 @@ public class SipMetadata {
   /**
    * @return The type of the metadata.
    */
-  public TemplateType getTemplateType() {
+  public String getTemplateType() {
     return templateType;
   }
 
@@ -97,14 +87,5 @@ public class SipMetadata {
   public void update(String meta) {
     modified = true;
     content = meta;
-  }
-
-  /**
-   * Sets the Properties object of SipMetadata.
-   *
-   * @param prop The new Properties object.
-   */
-  public static void setProperties(Properties prop) {
-    properties = prop;
   }
 }

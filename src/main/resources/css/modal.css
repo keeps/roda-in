@@ -120,28 +120,3 @@
 .list-cell:focused .combo-box .list-view .list-cell:hover{
     -fx-background-color: lightgray;
 }
-
-.combo-box-base .list-view .list-cell{
-    -fx-background-color: white;
-    -fx-text-fill: black;
-}
-
-.combo-box .list-view .list-cell:selected{
-    -fx-background-color: darkgray;
-    -fx-text-fill: black;
-}
-
-.combo-box {
-    -fx-background-color: white;
-    -fx-border-color: gray;
-    -fx-border-width: 1px;
-}
-
-.combo-box-base .list-cell {
-    -fx-background-color: white;
-    -fx-text-fill: black;
-}
-
-.combo-box .list-view .list-cell:hover {
-    -fx-background-color: lightgray;
-}

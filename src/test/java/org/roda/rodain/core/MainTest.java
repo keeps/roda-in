@@ -2,17 +2,20 @@ package org.roda.rodain.core;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import javafx.application.Platform;
 import javafx.scene.control.TreeItem;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
+import org.roda.rodain.creation.ui.CreationModalPreparation;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SchemaPane;
 import org.roda.rodain.schema.ui.SipPreviewNode;
@@ -24,7 +27,7 @@ import org.testfx.framework.junit.ApplicationTest;
  * Created by adrapereira on 17-12-2015.
  */
 public class MainTest extends ApplicationTest {
-  private static Path testDir;
+  private static Path testDir, output;
   private SchemaPane schemaPane;
   private FileExplorerPane fileExplorer;
 
@@ -47,6 +50,43 @@ public class MainTest extends ApplicationTest {
   }
 
   @Test
+  public void newSchemePane() {
+    sleep(1000);
+    clickOn(AppProperties.getLocalizedString("Main.file"));
+    clickOn(AppProperties.getLocalizedString("Main.createCS"));
+    sleep(1000);
+    clickOn(AppProperties.getLocalizedString("SchemaPane.newNode"));
+    sleep(500);
+    clickOn(AppProperties.getLocalizedString("SchemaPane.newNode"));
+    write("Node1").push(KeyCode.ENTER);
+    sleep(1000);
+
+    TreeItem<String> item = Main.getSchemaPane().getTreeView().getSelectionModel().getSelectedItem();
+    assert"Node1".equals(item.getValue());
+
+    clickOn(AppProperties.getLocalizedString("SchemaPane.add"));
+    write("Node2").push(KeyCode.ENTER);
+    sleep(500);
+
+    doubleClickOn(".tree-view");
+
+    clickOn("Node2");
+
+    TreeItem<String> newItem = Main.getSchemaPane().getTreeView().getSelectionModel().getSelectedItem();
+    assert newItem instanceof SchemaNode;
+    SchemaNode newNode = (SchemaNode) newItem;
+    assert"class".equals(newNode.getDob().getDescriptionlevel());
+
+    clickOn("#itemLevels").clickOn("Sub-fonds");
+    assert"subfonds".equals(newNode.getDob().getDescriptionlevel());
+
+    drag("Node2").dropTo(".tree-view");
+    assert Main.getSchemaPane().getTreeView().getRoot().getChildren().size() == 2;
+    clickOn("Node2").clickOn(AppProperties.getLocalizedString("SchemaPane.remove"));
+    assert Main.getSchemaPane().getTreeView().getRoot().getChildren().size() == 1;
+  }
+
+  @Test
   public void schemePane() {
     sleep(1000); //wait for the classification scheme to load
 
@@ -56,7 +96,10 @@ public class MainTest extends ApplicationTest {
     assert"UCP".equals(selected.getValue());
     assert selectedIndex == 7;
 
+    doubleClickOn(".tree-view");
+
     doubleClickOn("UCP");
+
     assert selected.getChildren().size() == 1;
   }
 
@@ -75,10 +118,10 @@ public class MainTest extends ApplicationTest {
     drag("dirB").dropTo("UCP");
     sleep(1000); //wait for the modal to open
     clickOn("#assoc3");
-    clickOn("Continue");
+    clickOn(AppProperties.getLocalizedString("continue"));
     sleep(1000); //wait for the modal to update
     clickOn("#meta4");
-    clickOn("Confirm");
+    clickOn(AppProperties.getLocalizedString("confirm"));
     sleep(2000); //wait for the SIPs creation
 
     clickOn("file1.txt");
@@ -90,21 +133,66 @@ public class MainTest extends ApplicationTest {
 
     assert parent.getChildren().size() == 14;
 
-    clickOn("Remove");
+    clickOn(AppProperties.getLocalizedString("remove"));
     sleep(1000); //wait for the SIP removal
     assert parent.getChildren().size() == 13;
 
-
-    clickOn("12 items");
+    String format = AppProperties.getLocalizedString("SchemaNode.items.formatSimple");
+    String items12 = String.format(format, 12).trim().replace("(", "").replace(")", "");
+    clickOn(items12);
     clickOn("#removeRule1");
     sleep(1000); // wait for the rule to be removed
 
     assert parent.getChildren().size() == 1;
+
+    // create 2 SIPs
+    clickOn("fileA.txt");
+    press(KeyCode.CONTROL);
+    clickOn("fileB.txt");
+    release(KeyCode.CONTROL);
+
+    drag().dropTo("UCP");
+    sleep(1000); // wait for the modal to open
+    clickOn("#assoc2");
+    clickOn(AppProperties.getLocalizedString("continue"));
+    sleep(1000); // wait for the modal to update
+    clickOn("#meta4");
+    clickOn(AppProperties.getLocalizedString("confirm"));
+    sleep(2000); // wait for the SIPs creation
+
+    clickOn(AppProperties.getLocalizedString("Main.file"));
+    clickOn(AppProperties.getLocalizedString("Main.exportSips"));
+    String home = System.getProperty("user.home");
+    output = Paths.get(home).resolve("SIPs output");
+    output.toFile().mkdir();
+    CreationModalPreparation.setOutputFolder(output.toString());
+    clickOn(AppProperties.getLocalizedString("start"));
+
+    sleep(2000);
+    clickOn(AppProperties.getLocalizedString("close"));
+
+    clickOn(AppProperties.getLocalizedString("Main.file"));
+    clickOn(AppProperties.getLocalizedString("Main.exportSips"));
+    clickOn("#sipTypes").clickOn("EARK");
+    clickOn(AppProperties.getLocalizedString("start"));
+    sleep(2000);
+    clickOn(AppProperties.getLocalizedString("close"));
+
+    clickOn("FTP");
+    sleep(1000);
+
+    String items2 = String.format(format, 2).trim().replace("(", "").replace(")", "");
+    clickOn(items2);
+    clickOn("#removeRule2");
+    sleep(1000); // wait for the rule to be removed
   }
 
   @AfterClass
   public static void tearDownAfterClass() throws Exception {
-    FileUtils.deleteDirectory(testDir.toFile());
+    if (testDir != null && Files.exists(testDir))
+      FileUtils.deleteDirectory(testDir.toFile());
+    if (output != null && Files.exists(output))
+      FileUtils.deleteDirectory(output.toFile());
   }
 
 }

@@ -8,6 +8,7 @@ import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -85,6 +86,7 @@ public class Utils {
   }
 
   public static String replaceTag(String content, String tag, String replacement) {
-    return content.replaceAll(tag, replacement);
+    String escapedString = replacement.replaceAll("\\$", "\\\\\\$");
+    return content.replaceAll(tag, escapedString);
   }
 }

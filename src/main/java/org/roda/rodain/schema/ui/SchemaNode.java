@@ -1,15 +1,17 @@
 package org.roda.rodain.schema.ui;
 
+import java.util.*;
+
 import javafx.application.Platform;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+
+import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
-
-import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -37,13 +39,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     ruleObjects = new HashMap<>();
     schemaNodes = new HashSet<>();
 
-    ResourceBundle hierarchyConfig = ResourceBundle.getBundle("properties/roda-description-levels-hierarchy");
-    String category = hierarchyConfig.getString("category." + dobject.getDescriptionlevel());
-    String unicode = hierarchyConfig.getString("icon." + category);
-
-    Image im = FontAwesomeImageCreator.generate(unicode);
-    icon = im;
-    this.setGraphic(new ImageView(im));
+    updateDescLevel(dob.getDescriptionlevel());
   }
 
   /**
@@ -66,13 +62,13 @@ public class SchemaNode extends TreeItem<String> implements Observer {
       Platform.runLater(new Runnable() {
         @Override
         public void run() {
-          // replace sips from this rule
+          // replace the SIPs
           if (sips.get(id) != null) {
             getChildren().removeAll(sips.get(id));
           }
           Set<SipPreviewNode> nodes = new HashSet<>(rule.getSipNodes());
           sips.put(id, nodes);
-          getChildren().addAll(rule.getSipNodes());
+          getChildren().addAll(nodes);
           sortChildren();
         }
       });
@@ -80,11 +76,17 @@ public class SchemaNode extends TreeItem<String> implements Observer {
   }
 
   private void updateValue() {
-    int sipCount = getSipCount();
-    if (sipCount > 0)
-      setValue(String.format("%s  (%d items)", dob.getTitle(), getSipCount()));
-    else
-      setValue(dob.getTitle());
+    Platform.runLater(new Runnable() {
+      @Override
+      public void run() {
+        int sipCount = getSipCount();
+        if (sipCount > 0)
+          setValue(
+            String.format(AppProperties.getLocalizedString("SchemaNode.items.format"), dob.getTitle(), getSipCount()));
+        else
+          setValue(dob.getTitle());
+      }
+    });
   }
 
   /**
@@ -102,7 +104,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     // update the value of the TreeItem
     int sipCount = getSipCount();
     if (sipCount > 0)
-      setValue(String.format("%s  (%d items)", dob.getTitle(), getSipCount()));
+      setValue(String.format(AppProperties.getLocalizedString("SchemaNode.items.format"), dob.getTitle(), getSipCount()));
     setExpanded(true);
   }
 
@@ -126,7 +128,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     String text = dob.getTitle();
     int count = getSipCount();
     if (count > 0)
-      text += String.format("  (%d items)", count);
+      text += String.format(AppProperties.getLocalizedString("SchemaNode.items.formatSimple"), count);
     setValue(text);
   }
 
@@ -158,6 +160,17 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     for (int i : rules.values())
       result += i;
     return result;
+  }
+
+  public void updateDescLevel(String descLevel) {
+    dob.setDescriptionlevel(descLevel);
+    ResourceBundle hierarchyConfig = ResourceBundle.getBundle("properties/roda-description-levels-hierarchy");
+    String category = hierarchyConfig.getString("category." + dob.getDescriptionlevel());
+    String unicode = hierarchyConfig.getString("icon." + category);
+
+    Image im = FontAwesomeImageCreator.generate(unicode);
+    icon = im;
+    this.setGraphic(new ImageView(im));
   }
 
   /**
