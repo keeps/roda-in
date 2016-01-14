@@ -1,8 +1,6 @@
 package org.roda.rodain.core;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -50,8 +48,24 @@ public class AppProperties {
         rodainPath.toFile().mkdir();
       }
       // copy config file
-      if (!Files.exists(rodainPath.resolve("config.properties"))) {
+      if (!Files.exists(configPath)) {
         Files.copy(ClassLoader.getSystemResourceAsStream("properties/config.properties"), configPath);
+      } else { // if the file already exists, we need to check if it's missing
+               // any properties
+        Properties internal = load("config");
+        Properties external = new Properties();
+        external.load(new FileInputStream(configPath.toFile()));
+        boolean store = false;
+        for (Object key : internal.keySet()) {
+          if (!external.containsKey(key)) {
+            external.put(key, internal.get(key));
+            store = true;
+          }
+        }
+        if (store) {
+          OutputStream out = new FileOutputStream(configPath.toFile());
+          external.store(out, "Stored missing properties");
+        }
       }
       // copy metadata templates
       String templatesRaw = config.getProperty("metadata.templates");
