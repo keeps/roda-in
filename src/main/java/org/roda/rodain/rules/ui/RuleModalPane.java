@@ -283,6 +283,11 @@ public class RuleModalPane extends BorderPane {
 
     metaList.getSelectionModel().selectFirst();
 
+    if (templateTypes.getItems().isEmpty()) {
+      cellTemplate.setDisable(true);
+      metaList.getSelectionModel().select(1);
+    }
+
     boxMetadata.getChildren().addAll(subtitle, metaList);
   }
 
@@ -357,7 +362,16 @@ public class RuleModalPane extends BorderPane {
     for (String templ : templates) {
       String trimmed = templ.trim();
       String title = AppProperties.getConfig("metadata.template." + trimmed + ".title");
-      UIPair newPair = new UIPair(trimmed, title);
+      String version = AppProperties.getConfig("metadata.template." + trimmed + ".version");
+      if (title == null)
+        continue;
+      String key = trimmed;
+      String value = title;
+      if (version != null) {
+        value += " (" + version + ")";
+        key += "!###!" + version;
+      }
+      UIPair newPair = new UIPair(key, value);
       templateTypes.getItems().add(newPair);
     }
     templateTypes.getSelectionModel().selectFirst();
@@ -410,8 +424,9 @@ public class RuleModalPane extends BorderPane {
             btContinue.setText(AppProperties.getLocalizedString("confirm"));
             btContinue.setGraphicTextGap(16);
           }
-        } else if (currentState == States.METADATA && metadataCheckContinue())
+        } else if (currentState == States.METADATA && metadataCheckContinue()) {
           RuleModalController.confirm();
+        }
       }
     });
   }
@@ -563,6 +578,9 @@ public class RuleModalPane extends BorderPane {
    */
   public String getTemplate() {
     UIPair selected = templateTypes.getSelectionModel().getSelectedItem();
+    if (selected == null) {
+      btContinue.setDisable(true);
+    }
     return (String) selected.getKey();
   }
 }

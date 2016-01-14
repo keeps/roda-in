@@ -29,7 +29,7 @@ public class CreationModalPreparation extends BorderPane {
 
   private static Path outputFolder;
   private ComboBox<String> sipTypes;
-  private Button start;
+  private static Button start;
 
   /**
    * Creates a modal to prepare for the SIP exportation.
@@ -111,6 +111,7 @@ public class CreationModalPreparation extends BorderPane {
   public static void setOutputFolder(String out) {
     if (out != null && !"".equals(out)) {
       outputFolder = Paths.get(out);
+      start.setDisable(false);
     }
   }
 
@@ -125,7 +126,7 @@ public class CreationModalPreparation extends BorderPane {
     sipTypes = new ComboBox<>();
     sipTypes.setId("sipTypes");
     sipTypes.getItems().addAll("BagIt", "EARK");
-    sipTypes.getSelectionModel().selectFirst();
+    sipTypes.getSelectionModel().select("EARK");
 
     sipTypesBox.getChildren().addAll(sipTypesLabel, space, sipTypes);
     return sipTypesBox;

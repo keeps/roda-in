@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.roda.rodain.core.PathCollection;
-import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.Utils;
@@ -25,17 +24,18 @@ public class SipPreview extends Observable implements Observer {
   /**
    * Creates a new SipPreview object.
    *
-   * @param name         The name of the SIP
-   * @param files        The set of files to be added to the SIP's content
-   * @param metaType     The type of metadata to be applied to the SIP
-   * @param metadataPath The path of the metadata
-   * @param templateType The type of the metadata template
+   * @param name
+   *          The name of the SIP
+   * @param files
+   *          The set of files to be added to the SIP's content
+   * @param metadata
+   *          The metadata of the SIP
    */
-  public SipPreview(String name, Set<TreeNode> files, MetadataTypes metaType, Path metadataPath,
- String templateType) {
+  public SipPreview(String name, Set<TreeNode> files, SipMetadata metadata) {
     this.name = name;
     this.files = files;
-    metadata = new SipMetadata(metaType, metadataPath, templateType);
+    this.metadata = metadata;
+    // metadata = new SipMetadata(metaType, metadataPath, templateType);
     id = UUID.randomUUID().toString();
 
     setPathsAsMapped();
@@ -112,6 +112,13 @@ public class SipPreview extends Observable implements Observer {
     }
     files.removeAll(toRemove);
     PathCollection.addPaths(ignored, SourceTreeItemState.NORMAL);
+  }
+
+  /**
+   * @return The version of the SIP's metadata
+   */
+  public String getMetadataVersion() {
+    return metadata.getVersion();
   }
 
   /**

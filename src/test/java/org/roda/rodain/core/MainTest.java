@@ -173,7 +173,8 @@ public class MainTest extends ApplicationTest {
 
     clickOn(AppProperties.getLocalizedString("Main.file"));
     clickOn(AppProperties.getLocalizedString("Main.exportSips"));
-    clickOn("#sipTypes").clickOn("EARK");
+    clickOn("#sipTypes").clickOn("BagIt");
+    CreationModalPreparation.setOutputFolder(output.toString());
     clickOn(AppProperties.getLocalizedString("start"));
     sleep(2000);
     clickOn(AppProperties.getLocalizedString("close"));

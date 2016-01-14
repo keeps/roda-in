@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 public class SipMetadata {
   private static final org.slf4j.Logger log = LoggerFactory.getLogger(SipMetadata.class.getName());
   private MetadataTypes type;
+  private String version;
   private String templateType;
   private boolean loaded = false, modified = false;
   private String content;
@@ -28,10 +29,11 @@ public class SipMetadata {
    * @param path         The path to the metadata file
    * @param templateType The type of the metadata template
    */
-  public SipMetadata(MetadataTypes type, Path path, String templateType) {
+  public SipMetadata(MetadataTypes type, Path path, String templateType, String version) {
     this.type = type;
     this.path = path;
     this.templateType = templateType;
+    this.version = version;
   }
 
   /**
@@ -77,6 +79,13 @@ public class SipMetadata {
    */
   public String getTemplateType() {
     return templateType;
+  }
+
+  /**
+   * @return The version of the metadata.
+   */
+  public String getVersion() {
+    return version;
   }
 
   /**

@@ -52,7 +52,9 @@ public class EarkSipCreator extends SimpleSipCreator {
   }
 
   private void createEarkSip(String schemaId, SipPreview sip) {
-    String home = System.getProperty("user.home") + "/.roda-in/";
+    String home = System.getProperty("user.home");
+    Path homePath = Paths.get(home);
+    Path rodainPath = homePath.resolve("roda-in");
     String metadataName = "metadata.xml";
     try {
       SIP earkSip = new EARKSIP(sip.getId(), EARKEnums.ContentType.mixed, "RODA-In");
@@ -84,8 +86,9 @@ public class EarkSipCreator extends SimpleSipCreator {
 
       String content = sip.getMetadataContent();
 
-      FileUtils.writeStringToFile(new File(home + metadataName), content);
-      SIPDescriptiveMetadata metadata = new SIPDescriptiveMetadata(Paths.get(home + metadataName), null, metadataType);
+      FileUtils.writeStringToFile(rodainPath.resolve(metadataName).toFile(), content);
+      SIPDescriptiveMetadata metadata = new SIPDescriptiveMetadata(rodainPath.resolve(metadataName), null, metadataType,
+        sip.getMetadataVersion());
       earkSip.addDescriptiveMetadata(metadata);
 
       currentAction = actionCopyingData;
