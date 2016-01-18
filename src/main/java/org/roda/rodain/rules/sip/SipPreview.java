@@ -65,6 +65,17 @@ public class SipPreview extends Observable implements Observer {
   }
 
   /**
+   * Sets the TreeNodes of the SIP
+   * 
+   * @param newFiles
+   *          A Set with the TreeNodes
+   */
+  public void setFiles(Set<TreeNode> newFiles) {
+    contentModified = true;
+    files = newFiles;
+  }
+
+  /**
    * @return The metadata content of the SIP.
    * @see SipMetadata#getMetadataContent()
    */

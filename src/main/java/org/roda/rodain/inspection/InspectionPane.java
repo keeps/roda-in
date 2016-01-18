@@ -295,11 +295,20 @@ public class InspectionPane extends BorderPane {
         Object selected = sipFiles.getSelectionModel().getSelectedItem();
         if (selected instanceof SipContentDirectory) {
           SipContentDirectory dir = (SipContentDirectory) selected;
+          SipContentDirectory parent = (SipContentDirectory) dir.getParent();
           dir.skip();
+          // update the SIP's internal content representation
+          Set<TreeNode> newFiles = new HashSet<>();
+          for (String s : sipRoot.getTreeNode().getKeys())
+            newFiles.add(sipRoot.getTreeNode().get(s));
+          currentSIP.setFiles(newFiles);
           // clear the parent and recreate the children based on the updated
           // tree nodes
-          SipContentDirectory parent = (SipContentDirectory) dir.getParent();
-          TreeItem newParent = recCreateSipContent(parent.getTreeNode(), parent.getParent());
+          TreeItem grandparent = parent.getParent();
+          if (grandparent == null) {
+            grandparent = parent;
+          }
+          TreeItem newParent = recCreateSipContent(parent.getTreeNode(), grandparent);
           parent.getChildren().clear();
           parent.getChildren().addAll(newParent.getChildren());
           parent.sortChildren();
@@ -319,6 +328,10 @@ public class InspectionPane extends BorderPane {
 
   private void createContent(SipPreviewNode node) {
     sipRoot.getChildren().clear();
+    Set<String> keysToRemove = new HashSet<>(sipRoot.getTreeNode().getKeys());
+    for (String f : keysToRemove) {
+      sipRoot.getTreeNode().remove(Paths.get(f));
+    }
     Set<TreeNode> files = node.getSip().getFiles();
     for (TreeNode treeNode : files) {
       TreeItem<Object> startingItem = recCreateSipContent(treeNode, sipRoot);
