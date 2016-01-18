@@ -7,7 +7,6 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.schema.DescriptionObject;
@@ -57,7 +56,6 @@ public class SchemaNode extends TreeItem<String> implements Observer {
       // set the title with the sip count
       int count = rule.getSipCount();
       rules.put(id, count);
-      updateValue();
 
       Platform.runLater(new Runnable() {
         @Override
@@ -75,20 +73,6 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     }
   }
 
-  private void updateValue() {
-    Platform.runLater(new Runnable() {
-      @Override
-      public void run() {
-        int sipCount = getSipCount();
-        if (sipCount > 0)
-          setValue(
-            String.format(AppProperties.getLocalizedString("SchemaNode.items.format"), dob.getTitle(), getSipCount()));
-        else
-          setValue(dob.getTitle());
-      }
-    });
-  }
-
   /**
    * Adds a new Rule to the SchemaNode.
    *
@@ -101,10 +85,6 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     // add the rule the maps
     rules.put(id, count);
     ruleObjects.put(id, r);
-    // update the value of the TreeItem
-    int sipCount = getSipCount();
-    if (sipCount > 0)
-      setValue(String.format(AppProperties.getLocalizedString("SchemaNode.items.format"), dob.getTitle(), getSipCount()));
     setExpanded(true);
   }
 
@@ -124,12 +104,6 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     ruleObjects.remove(id);
     sips.remove(id);
     r.remove();
-    // update the value of the TreeItem
-    String text = dob.getTitle();
-    int count = getSipCount();
-    if (count > 0)
-      text += String.format(AppProperties.getLocalizedString("SchemaNode.items.formatSimple"), count);
-    setValue(text);
   }
 
   /**

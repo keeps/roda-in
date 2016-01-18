@@ -30,7 +30,7 @@ public class CreationModalProcessing extends BorderPane {
   // top
   private Label subtitleSuccess, subtitleError;
   private String subtitleFormat;
-  private String etaFormatHour, etaFormatMinute, etaFormatLessMin, etaFormatLess30;
+  private String etaFormatHour, etaFormatHours, etaFormatMinute, etaFormatMinutes, etaFormatLessMin, etaFormatLess30;
   // center
   private ProgressBar progress;
   private Label sipName, sipAction, eta, etaLabel;
@@ -49,8 +49,10 @@ public class CreationModalProcessing extends BorderPane {
     this.creator = creator;
     this.stage = stage;
 
-    etaFormatHour = String.format("< %%d %s ", AppProperties.getLocalizedString("CreationModalProcessing.hours"));
-    etaFormatMinute = String.format("%%d %s", AppProperties.getLocalizedString("CreationModalProcessing.minutes"));
+    etaFormatHour = String.format("< %%d %s ", AppProperties.getLocalizedString("CreationModalProcessing.hour"));
+    etaFormatHours = String.format("< %%d %s ", AppProperties.getLocalizedString("CreationModalProcessing.hours"));
+    etaFormatMinute = String.format("%%d %s", AppProperties.getLocalizedString("CreationModalProcessing.minute"));
+    etaFormatMinutes = String.format("%%d %s", AppProperties.getLocalizedString("CreationModalProcessing.minutes"));
     etaFormatLessMin = AppProperties.getLocalizedString("CreationModalProcessing.lessMinute");
     etaFormatLess30 = AppProperties.getLocalizedString("CreationModalProcessing.lessSeconds");
 
@@ -182,6 +184,7 @@ public class CreationModalProcessing extends BorderPane {
             // stop the timer when all the SIPs have been created
             if ((created + errors) == size) {
               eta.setText(AppProperties.getLocalizedString("CreationModalProcessing.finished"));
+              progress.setProgress(100);
               finished();
             }
           }
@@ -203,9 +206,15 @@ public class CreationModalProcessing extends BorderPane {
       int hour = (int) ((etaDouble / (1000 * 60 * 60)) % 24);
       String result;
       if (hour > 0) {
-        result = String.format(etaFormatHour, hour);
+        if (hour == 1)
+          result = String.format(etaFormatHour, hour);
+        else
+          result = String.format(etaFormatHours, hour);
       } else if (minute > 0) {
-        result = String.format(etaFormatMinute, minute);
+        if (minute == 1)
+          result = String.format(etaFormatMinute, minute);
+        else
+          result = String.format(etaFormatMinutes, minute);
       } else if (second > 30) {
         result = etaFormatLessMin;
       } else

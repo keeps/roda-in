@@ -110,6 +110,10 @@ public class InspectionPane extends BorderPane {
         if (currentSchema != null) {
           currentSchema.updateDescLevel(t1.getKey().toString());
           topIcon.setImage(currentSchema.getImage());
+          // force update
+          String title = currentSchema.getValue();
+          currentSchema.setValue(null);
+          currentSchema.setValue(title);
         }
       }
     });
@@ -535,15 +539,16 @@ public class InspectionPane extends BorderPane {
 
     /* top */
     // title
-    Label title = new Label(node.getValue());
+    TextField title = new TextField(node.getValue());
     title.getStyleClass().add("title");
+    HBox.setHgrow(title, Priority.ALWAYS);
     title.textProperty().bindBidirectional(node.valueProperty());
 
     HBox top = new HBox(5);
     top.setPadding(new Insets(0, 10, 10, 10));
     top.setAlignment(Pos.CENTER_LEFT);
     topIcon = new ImageView(node.getImage());
-    top.getChildren().addAll(topIcon, title, topSpace, itemTypes);
+    top.getChildren().addAll(topIcon, title, itemTypes);
 
     // Select current description level
     String currentDescLevel = node.getDob().getDescriptionlevel();
