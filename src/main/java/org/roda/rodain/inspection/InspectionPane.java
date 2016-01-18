@@ -595,6 +595,7 @@ public class InspectionPane extends BorderPane {
 
     for (Rule rule : currentRules) {
       RuleCell cell = new RuleCell(currentSchema, rule);
+      cell.maxWidthProperty().bind(widthProperty().subtract(36));
       rule.addObserver(cell);
       ruleList.getItems().add(cell);
     }

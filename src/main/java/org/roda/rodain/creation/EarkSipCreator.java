@@ -31,8 +31,10 @@ public class EarkSipCreator extends SimpleSipCreator {
   /**
    * Creates a new EARK SIP exporter.
    *
-   * @param outputPath The path to the output folder of the SIP exportation
-   * @param previews   The map with the SIPs that will be exported
+   * @param outputPath
+   *          The path to the output folder of the SIP exportation
+   * @param previews
+   *          The map with the SIPs that will be exported
    */
   public EarkSipCreator(Path outputPath, Map<SipPreview, String> previews) {
     super(outputPath, previews);

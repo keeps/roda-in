@@ -144,6 +144,8 @@ public class RuleCell extends HBox implements Observer {
         break;
     }
     Label lType = new Label(type);
+    lType.maxWidthProperty().bind(widthProperty());
+    lType.setWrapText(true);
 
     // source items
     Set<SourceTreeItem> source = rule.getSource();
