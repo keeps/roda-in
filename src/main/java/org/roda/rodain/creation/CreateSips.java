@@ -19,7 +19,6 @@ public class CreateSips {
 
   private Instant startTime;
   private int sipsCount;
-
   /**
    * Creates a new object of the SIP exporter
    *
@@ -97,7 +96,7 @@ public class CreateSips {
   public double getTimeRemainingEstimate() {
     // prevent divide by zero
     if (creator.transferedTime == 0)
-      return 0;
+      return -1;
     // estimate the remaining data copy time for the current SIP
     float allSpeed = creator.transferedSize / creator.transferedTime;
     long allSizeLeft = creator.allSipsSize - creator.transferedSize;

@@ -14,7 +14,7 @@
         <file>debug.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <Pattern>
-                %d{yyyy-MM-dd HH:mm:ss} - %msg%n
+                %d{yyyy-MM-dd HH:mm:ss} %-5level - %msg%n
             </Pattern>
         </encoder>
 

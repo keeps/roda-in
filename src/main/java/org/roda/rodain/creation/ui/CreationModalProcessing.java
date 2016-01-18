@@ -30,10 +30,11 @@ public class CreationModalProcessing extends BorderPane {
   // top
   private Label subtitleSuccess, subtitleError;
   private String subtitleFormat;
-  private String etaFormatHour, etaFormatMinute, etaFormatSecond;
+  private String etaFormatHour, etaFormatMinute, etaFormatLessMin, etaFormatLess30;
   // center
   private ProgressBar progress;
-  private Label sipName, sipAction, eta;
+  private Label sipName, sipAction, eta, etaLabel;
+  private HBox etaBox;
   private Timer timer;
 
   private HBox finishedBox;
@@ -48,16 +49,10 @@ public class CreationModalProcessing extends BorderPane {
     this.creator = creator;
     this.stage = stage;
 
-    etaFormatHour = String.format("%%s %s %%s %s %%s %s",
-      AppProperties.getLocalizedString("CreationModalProcessing.hours"),
-      AppProperties.getLocalizedString("CreationModalProcessing.minutes"),
-      AppProperties.getLocalizedString("CreationModalProcessing.seconds"));
-
-    etaFormatMinute = String.format("%%s %s %%s %s",
-      AppProperties.getLocalizedString("CreationModalProcessing.minutes"),
-      AppProperties.getLocalizedString("CreationModalProcessing.seconds"));
-
-    etaFormatSecond = String.format("%%s %s", AppProperties.getLocalizedString("CreationModalProcessing.seconds"));
+    etaFormatHour = String.format("< %%d %s ", AppProperties.getLocalizedString("CreationModalProcessing.hours"));
+    etaFormatMinute = String.format("%%d %s", AppProperties.getLocalizedString("CreationModalProcessing.minutes"));
+    etaFormatLessMin = AppProperties.getLocalizedString("CreationModalProcessing.lessMinute");
+    etaFormatLess30 = AppProperties.getLocalizedString("CreationModalProcessing.lessSeconds");
 
     subtitleFormat = AppProperties.getLocalizedString("CreationModalProcessing.subtitle");
 
@@ -88,8 +83,9 @@ public class CreationModalProcessing extends BorderPane {
     center.setAlignment(Pos.CENTER_LEFT);
     center.setPadding(new Insets(0, 10, 10, 10));
 
-    HBox etaBox = new HBox(10);
-    Label etaLabel = new Label(AppProperties.getLocalizedString("CreationModalProcessing.remaining"));
+    etaBox = new HBox(10);
+    etaLabel = new Label(AppProperties.getLocalizedString("CreationModalProcessing.remaining"));
+    etaLabel.getStyleClass().add("boldText");
     eta = new Label();
     etaBox.getChildren().addAll(etaLabel, eta);
 
@@ -112,12 +108,14 @@ public class CreationModalProcessing extends BorderPane {
     HBox sip = new HBox(20);
     sip.maxWidth(380);
     Label lName = new Label(AppProperties.getLocalizedString("CreationModalProcessing.currentSip"));
+    lName.getStyleClass().add("boldText");
     lName.setMinWidth(80);
     sipName = new Label("");
     sip.getChildren().addAll(lName, sipName);
 
     HBox action = new HBox(20);
     Label lAction = new Label(AppProperties.getLocalizedString("CreationModalProcessing.action"));
+    lAction.getStyleClass().add("boldText");
     lAction.setMinWidth(80);
     sipAction = new Label("");
     action.getChildren().addAll(lAction, sipAction);
@@ -183,7 +181,7 @@ public class CreationModalProcessing extends BorderPane {
 
             // stop the timer when all the SIPs have been created
             if ((created + errors) == size) {
-              eta.setText(String.format(etaFormatSecond, 0));
+              eta.setText(AppProperties.getLocalizedString("CreationModalProcessing.finished"));
               finished();
             }
           }
@@ -197,17 +195,25 @@ public class CreationModalProcessing extends BorderPane {
 
   private void updateETA(double etaDouble) {
     if (etaDouble >= 0) {
+      if (etaBox.getChildren().isEmpty()) {
+        etaBox.getChildren().addAll(etaLabel, eta);
+      }
       int second = (int) ((etaDouble / 1000) % 60);
       int minute = (int) ((etaDouble / (1000 * 60)) % 60);
       int hour = (int) ((etaDouble / (1000 * 60 * 60)) % 24);
       String result;
-      if (hour != 0) {
-        result = String.format(etaFormatHour, hour, minute, second);
-      } else if (minute != 0) {
-        result = String.format(etaFormatMinute, minute, second);
+      if (hour > 0) {
+        result = String.format(etaFormatHour, hour);
+      } else if (minute > 0) {
+        result = String.format(etaFormatMinute, minute);
+      } else if (second > 30) {
+        result = etaFormatLessMin;
       } else
-        result = String.format(etaFormatSecond, second);
+        result = etaFormatLess30;
       eta.setText(result);
+    } else {
+      etaBox.getChildren().clear();
+      eta.setText(AppProperties.getLocalizedString("CreationModalProcessing.impossibleEstimate"));
     }
   }
 

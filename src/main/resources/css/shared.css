@@ -10,6 +10,10 @@
     -fx-background-color: white;
 }
 
+.boldText {
+    -fx-font-weight: bold;
+}
+
 /* Buttons */
 .button {
     -fx-background-color: #089de3;
