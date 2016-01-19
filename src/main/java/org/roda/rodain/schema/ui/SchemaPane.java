@@ -167,6 +167,7 @@ public class SchemaPane extends BorderPane {
     treeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem>() {
       @Override
       public void changed(ObservableValue observable, TreeItem oldValue, TreeItem newValue) {
+        RodaIn.getInspectionPane().saveMetadata();
         if (newValue instanceof SipPreviewNode) {
           RodaIn.getInspectionPane().update((SipPreviewNode) newValue);
         }
