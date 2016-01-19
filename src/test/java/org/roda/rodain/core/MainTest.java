@@ -57,15 +57,21 @@ public class MainTest extends ApplicationTest {
     sleep(1000);
     clickOn(AppProperties.getLocalizedString("SchemaPane.newNode"));
     sleep(500);
-    clickOn(AppProperties.getLocalizedString("SchemaPane.newNode"));
-    write("Node1").push(KeyCode.ENTER);
+    clickOn("#schemeNodeTitle");
+    eraseText(50);
+    write("Node1");
     sleep(1000);
 
     TreeItem<String> item = RodaIn.getSchemaPane().getTreeView().getSelectionModel().getSelectedItem();
     assert"Node1".equals(item.getValue());
 
     clickOn(AppProperties.getLocalizedString("SchemaPane.add"));
-    write("Node2").push(KeyCode.ENTER);
+    sleep(500);
+    clickOn(AppProperties.getLocalizedString("SchemaPane.newNode"));
+    sleep(500);
+    clickOn("#schemeNodeTitle");
+    eraseText(50);
+    write("Node2");
     sleep(500);
 
     doubleClickOn(".tree-view");
@@ -137,9 +143,7 @@ public class MainTest extends ApplicationTest {
     sleep(1000); //wait for the SIP removal
     assert parent.getChildren().size() == 13;
 
-    String format = AppProperties.getLocalizedString("SchemaNode.items.formatSimple");
-    String items12 = String.format(format, 12).trim().replace("(", "").replace(")", "");
-    clickOn(items12);
+    clickOn("UCP");
     clickOn("#removeRule1");
     sleep(1000); // wait for the rule to be removed
 
@@ -182,8 +186,7 @@ public class MainTest extends ApplicationTest {
     clickOn("FTP");
     sleep(1000);
 
-    String items2 = String.format(format, 2).trim().replace("(", "").replace(")", "");
-    clickOn(items2);
+    clickOn("UCP");
     clickOn("#removeRule2");
     sleep(1000); // wait for the rule to be removed
   }

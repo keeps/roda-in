@@ -17,7 +17,9 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.*;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
@@ -572,6 +574,7 @@ public class InspectionPane extends BorderPane {
     /* top */
     // title
     TextField title = new TextField(node.getValue());
+    title.setId("schemeNodeTitle");
     title.getStyleClass().add("title");
     HBox.setHgrow(title, Priority.ALWAYS);
     title.textProperty().bindBidirectional(node.valueProperty());
