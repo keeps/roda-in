@@ -134,6 +134,7 @@ public class InspectionPane extends BorderPane {
     box.getChildren().add(title);
 
     metaText = new TextArea();
+    metaText.setPromptText(AppProperties.getLocalizedString("InspectionPane.metadata.placeholder"));
     metaText.setWrapText(true);
     VBox.setVgrow(metaText, Priority.ALWAYS);
     metadata.getChildren().addAll(box, metaText);
@@ -489,6 +490,7 @@ public class InspectionPane extends BorderPane {
     top.getChildren().addAll(sip.getGraphic(), title);
     Separator separatorTop = new Separator();
 
+    topBox.setPadding(new Insets(10, 0, 10, 0));
     topBox.getChildren().clear();
     topBox.getChildren().addAll(top, separatorTop);
 
@@ -545,7 +547,7 @@ public class InspectionPane extends BorderPane {
     title.textProperty().bindBidirectional(node.valueProperty());
 
     HBox top = new HBox(5);
-    top.setPadding(new Insets(0, 10, 10, 10));
+    top.setPadding(new Insets(1, 10, 6, 10));
     top.setAlignment(Pos.CENTER_LEFT);
     topIcon = new ImageView(node.getImage());
     top.getChildren().addAll(topIcon, title, itemTypes);
@@ -560,6 +562,7 @@ public class InspectionPane extends BorderPane {
     }
 
     Separator separatorTop = new Separator();
+    topBox.setPadding(new Insets(5, 0, 5, 0));
     topBox.getChildren().clear();
     topBox.getChildren().addAll(top, separatorTop);
 
