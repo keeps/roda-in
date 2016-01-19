@@ -24,7 +24,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 
 import org.roda.rodain.core.AppProperties;
-import org.roda.rodain.core.Main;
+import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.RuleTypes;
 import org.roda.rodain.rules.ui.RuleModalController;
@@ -103,7 +103,7 @@ public class RuleCell extends HBox implements Observer {
       public void handle(ActionEvent e) {
         RuleModalController.removeRule(rule);
         schemaNode.removeRule(rule);
-        Main.getInspectionPane().notifyChange();
+        RodaIn.getInspectionPane().notifyChange();
       }
     });
 

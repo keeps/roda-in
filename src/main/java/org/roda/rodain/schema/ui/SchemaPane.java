@@ -27,7 +27,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import org.roda.rodain.core.AppProperties;
-import org.roda.rodain.core.Main;
+import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.rules.ui.RuleModalController;
 import org.roda.rodain.schema.ClassificationSchema;
@@ -168,10 +168,10 @@ public class SchemaPane extends BorderPane {
       @Override
       public void changed(ObservableValue observable, TreeItem oldValue, TreeItem newValue) {
         if (newValue instanceof SipPreviewNode) {
-          Main.getInspectionPane().update((SipPreviewNode) newValue);
+          RodaIn.getInspectionPane().update((SipPreviewNode) newValue);
         }
         if (newValue instanceof SchemaNode) {
-          Main.getInspectionPane().update((SchemaNode) newValue);
+          RodaIn.getInspectionPane().update((SchemaNode) newValue);
         }
       }
     });
@@ -379,7 +379,7 @@ public class SchemaPane extends BorderPane {
   }
 
   public void startAssociation(SchemaNode descObj) {
-    Set<SourceTreeItem> sourceSet = Main.getSourceSelectedItems();
+    Set<SourceTreeItem> sourceSet = RodaIn.getSourceSelectedItems();
     boolean valid = true;
     // both trees need to have 1 element selected
     if (sourceSet != null && !sourceSet.isEmpty() && descObj != null) {

@@ -33,11 +33,11 @@ public class MainTest extends ApplicationTest {
 
   @Override
   public void start(Stage stage) throws Exception {
-    Main main = new Main();
+    RodaIn main = new RodaIn();
     main.start(stage);
 
-    schemaPane = Main.getSchemaPane();
-    fileExplorer = Main.getPreviewExplorer();
+    schemaPane = RodaIn.getSchemaPane();
+    fileExplorer = RodaIn.getPreviewExplorer();
 
     Path path = Paths.get("src/test/resources/plan_with_errors.json");
     InputStream stream = new FileInputStream(path.toFile());
@@ -61,7 +61,7 @@ public class MainTest extends ApplicationTest {
     write("Node1").push(KeyCode.ENTER);
     sleep(1000);
 
-    TreeItem<String> item = Main.getSchemaPane().getTreeView().getSelectionModel().getSelectedItem();
+    TreeItem<String> item = RodaIn.getSchemaPane().getTreeView().getSelectionModel().getSelectedItem();
     assert"Node1".equals(item.getValue());
 
     clickOn(AppProperties.getLocalizedString("SchemaPane.add"));
@@ -72,7 +72,7 @@ public class MainTest extends ApplicationTest {
 
     clickOn("Node2");
 
-    TreeItem<String> newItem = Main.getSchemaPane().getTreeView().getSelectionModel().getSelectedItem();
+    TreeItem<String> newItem = RodaIn.getSchemaPane().getTreeView().getSelectionModel().getSelectedItem();
     assert newItem instanceof SchemaNode;
     SchemaNode newNode = (SchemaNode) newItem;
     assert"class".equals(newNode.getDob().getDescriptionlevel());
@@ -81,9 +81,9 @@ public class MainTest extends ApplicationTest {
     assert"subfonds".equals(newNode.getDob().getDescriptionlevel());
 
     drag("Node2").dropTo(".tree-view");
-    assert Main.getSchemaPane().getTreeView().getRoot().getChildren().size() == 2;
+    assert RodaIn.getSchemaPane().getTreeView().getRoot().getChildren().size() == 2;
     clickOn("Node2").clickOn(AppProperties.getLocalizedString("SchemaPane.remove"));
-    assert Main.getSchemaPane().getTreeView().getRoot().getChildren().size() == 1;
+    assert RodaIn.getSchemaPane().getTreeView().getRoot().getChildren().size() == 1;
   }
 
   @Test

@@ -5,7 +5,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
 
-import org.roda.rodain.core.Main;
+import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.sip.SipPreview;
 
 /**
@@ -35,7 +35,7 @@ public class CreateSips {
    * Starts the exportation process.
    */
   public void start() {
-    Map<SipPreview, String> sips = Main.getSipPreviews();
+    Map<SipPreview, String> sips = RodaIn.getSipPreviews();
     sipsCount = sips.size();
     if (type == SipTypes.BAGIT) {
       creator = new BagitSipCreator(outputPath, sips);

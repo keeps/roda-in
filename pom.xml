@@ -57,7 +57,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>org.roda.rodain.core.Main</mainClass>
+                            <mainClass>org.roda.rodain.core.RodaIn</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

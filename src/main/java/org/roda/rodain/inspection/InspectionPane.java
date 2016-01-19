@@ -24,17 +24,14 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import org.roda.rodain.core.AppProperties;
-import org.roda.rodain.core.Footer;
-import org.roda.rodain.core.Main;
+import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.ui.SchemaNode;
-import org.roda.rodain.schema.ui.SchemaPane;
 import org.roda.rodain.schema.ui.SipPreviewNode;
 import org.roda.rodain.source.ui.SourceTreeCell;
-import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.utils.UIPair;
 
 /**
@@ -410,7 +407,7 @@ public class InspectionPane extends BorderPane {
     emptyRulesPane.setOnDragDropped(new EventHandler<DragEvent>() {
       @Override
       public void handle(DragEvent event) {
-        Main.getSchemaPane().startAssociation(currentSchema);
+        RodaIn.getSchemaPane().startAssociation(currentSchema);
         event.consume();
       }
     });

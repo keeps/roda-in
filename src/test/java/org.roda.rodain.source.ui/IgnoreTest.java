@@ -13,7 +13,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.roda.rodain.core.AppProperties;
-import org.roda.rodain.core.Main;
+import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
@@ -30,10 +30,10 @@ public class IgnoreTest extends ApplicationTest {
 
   @Override
   public void start(Stage stage) throws Exception {
-    Main main = new Main();
+    RodaIn main = new RodaIn();
     main.start(stage);
 
-    fileExplorer = Main.getPreviewExplorer();
+    fileExplorer = RodaIn.getPreviewExplorer();
     fileExplorer.setFileExplorerRoot(testDir);
   }
 
