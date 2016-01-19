@@ -57,7 +57,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>org.roda.rodain.core.RodaIn</mainClass>
+                            <mainClass>org.roda.rodain.core.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -77,6 +77,67 @@
                        </goals>
                    </execution>
                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.akathist.maven.plugins.launch4j</groupId>
+                <artifactId>launch4j-maven-plugin</artifactId>
+                <version>1.7.8</version>
+                <executions>
+                    <!-- GUI exe -->
+                    <execution>
+                        <id>l4j-gui</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>launch4j</goal>
+                        </goals>
+                        <configuration>
+                            <headerType>gui</headerType>
+                            <outfile>target/roda-in.exe</outfile>
+                            <jar>target/rodain-app-${project.version}.jar</jar>
+                            <errTitle>Error opening RODA-in</errTitle>
+                            <classPath>
+                                <mainClass>org.roda.rodain.core.Main</mainClass>
+                            </classPath>
+                            <icon>src/main/resources/roda2-logo.ico</icon>
+                            <jre>
+                                <minVersion>1.8.0</minVersion>
+                            </jre>
+                            <versionInfo>
+                                <fileVersion>1.0.0.0</fileVersion>
+                                <txtFileVersion>1.0.0.0</txtFileVersion>
+                                <fileDescription>Desc</fileDescription>
+                                <copyright>C</copyright>
+                                <productVersion>0.2.1.3</productVersion>
+                                <txtProductVersion>0.2.1.3</txtProductVersion>
+                                <productName>RODA-in</productName>
+                                <internalName>RODA-in</internalName>
+                                <originalFilename>roda-in.exe</originalFilename>
+                            </versionInfo>
+                        </configuration>
+                    </execution>
+
+                    <!--Command-line exe-->
+                    <execution>
+                        <id>l4j-cli</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>launch4j</goal>
+                        </goals>
+                        <configuration>
+                            <headerType>console</headerType>
+                            <outfile>target/roda-in-cmd.exe</outfile>
+                            <jar>target/rodain-app-${project.version}.jar</jar>
+                            <errTitle>Error opening RODA-in</errTitle>
+                            <classPath>
+                                <mainClass>org.roda.rodain.core.Main</mainClass>
+                            </classPath>
+                            <icon>src/main/resources/roda2-logo.ico</icon>
+                            <jre>
+                                <minVersion>1.8.0</minVersion>
+                            </jre>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
