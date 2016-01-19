@@ -16,7 +16,7 @@ public class Utils {
     /*
       Create a directory structure to test the file explorer
      */
-    String home = System.getProperty("user.home");
+    String home = System.getProperty("java.io.tmpdir");
     Path homePath = Paths.get(home);
 
     Path testDir = homePath.resolve("RODA-In Test Dir");

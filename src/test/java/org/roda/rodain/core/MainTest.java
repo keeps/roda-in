@@ -166,7 +166,7 @@ public class MainTest extends ApplicationTest {
 
     clickOn(AppProperties.getLocalizedString("Main.file"));
     clickOn(AppProperties.getLocalizedString("Main.exportSips"));
-    String home = System.getProperty("user.home");
+    String home = System.getProperty("java.io.tmpdir");
     output = Paths.get(home).resolve("SIPs output");
     output.toFile().mkdir();
     CreationModalPreparation.setOutputFolder(output.toString());
