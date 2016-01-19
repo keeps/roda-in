@@ -51,7 +51,7 @@ public class SchemaPane extends BorderPane {
   private TreeItem<String> rootNode;
   private HBox topBox;
   private HBox bottom;
-  private Stage primaryStage;
+  private static Stage primaryStage;
 
   private ArrayList<SchemaNode> schemaNodes;
 
@@ -378,7 +378,7 @@ public class SchemaPane extends BorderPane {
     return newNode;
   }
 
-  private void startAssociation(SchemaNode descObj) {
+  public void startAssociation(SchemaNode descObj) {
     Set<SourceTreeItem> sourceSet = Main.getSourceSelectedItems();
     boolean valid = true;
     // both trees need to have 1 element selected

@@ -16,6 +16,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.core.Main;
+import org.roda.rodain.inspection.InspectionPane;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.VisitorStack;
 import org.roda.rodain.rules.VisitorState;
@@ -149,5 +151,6 @@ public class RuleModalProcessing extends BorderPane {
   private void close() {
     timer.cancel();
     RuleModalController.cancel();
+    Main.getInspectionPane().updateRuleList();
   }
 }

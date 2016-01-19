@@ -17,19 +17,24 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.core.Footer;
+import org.roda.rodain.core.Main;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.ui.SchemaNode;
+import org.roda.rodain.schema.ui.SchemaPane;
 import org.roda.rodain.schema.ui.SipPreviewNode;
+import org.roda.rodain.source.ui.SourceTreeCell;
+import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.utils.UIPair;
 
 /**
@@ -391,6 +396,34 @@ public class InspectionPane extends BorderPane {
     emptyText.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(emptyText);
 
+    emptyRulesPane.setOnDragOver(new EventHandler<DragEvent>() {
+      @Override
+      public void handle(DragEvent event) {
+        if (currentSchema != null && event.getGestureSource() instanceof SourceTreeCell) {
+          event.acceptTransferModes(TransferMode.COPY);
+          emptyText.setText(AppProperties.getLocalizedString("InspectionPane.onDrop"));
+        }
+        event.consume();
+      }
+    });
+
+    emptyRulesPane.setOnDragDropped(new EventHandler<DragEvent>() {
+      @Override
+      public void handle(DragEvent event) {
+        Main.getSchemaPane().startAssociation(currentSchema);
+        event.consume();
+      }
+    });
+
+    emptyRulesPane.setOnDragExited(new EventHandler<DragEvent>() {
+      @Override
+      public void handle(DragEvent event) {
+        emptyText.setText(AppProperties.getLocalizedString("InspectionPane.help.ruleList"));
+        event.consume();
+      }
+    });
+
+
     box.getChildren().addAll(titleBox);
     emptyRulesPane.getChildren().add(box);
     rules.setCenter(emptyRulesPane);
@@ -597,20 +630,25 @@ public class InspectionPane extends BorderPane {
     remove.setDisable(true);
   }
 
-  private void updateRuleList() {
-    ruleList.getItems().clear();
-    Set<Rule> currentRules = currentSchema.getRules();
+  /**
+   * Updates the rule list of the currently selected scheme node.
+   */
+  public void updateRuleList() {
+    if(currentSchema != null) {
+      ruleList.getItems().clear();
+      Set<Rule> currentRules = currentSchema.getRules();
 
-    for (Rule rule : currentRules) {
-      RuleCell cell = new RuleCell(currentSchema, rule);
-      cell.maxWidthProperty().bind(widthProperty().subtract(36));
-      rule.addObserver(cell);
-      ruleList.getItems().add(cell);
+      for (Rule rule : currentRules) {
+        RuleCell cell = new RuleCell(currentSchema, rule);
+        cell.maxWidthProperty().bind(widthProperty().subtract(36));
+        rule.addObserver(cell);
+        ruleList.getItems().add(cell);
+      }
+      if (currentRules.isEmpty()) {
+        rules.setCenter(emptyRulesPane);
+      } else
+        rules.setCenter(ruleList);
     }
-    if (currentRules.isEmpty()) {
-      rules.setCenter(emptyRulesPane);
-    } else
-      rules.setCenter(ruleList);
   }
 
   /**
