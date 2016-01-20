@@ -81,8 +81,16 @@ public class AppProperties {
       // load config
       ext_config = new Properties();
       ext_config.load(new FileInputStream(configPath.toFile()));
-      resourceBundle = ResourceBundle.getBundle("properties/lang", Locale.forLanguageTag(getConfig("app.language")),
-        new FolderBasedUTF8Control());
+
+      String appLanguage = getConfig("app.language");
+      Locale locale;
+      if (appLanguage != null) {
+        locale = Locale.forLanguageTag(appLanguage);
+      } else {
+        locale = Locale.getDefault();
+      }
+
+      resourceBundle = ResourceBundle.getBundle("properties/lang", locale, new FolderBasedUTF8Control());
     } catch (IOException e) {
       log.error("Error copying config file", e);
     }
@@ -118,7 +126,8 @@ public class AppProperties {
   }
 
   /**
-   * @param key The name of the property (style)
+   * @param key
+   *          The name of the property (style)
    * @return The value of the property (style)
    */
   public static String getStyle(String key) {
@@ -126,7 +135,8 @@ public class AppProperties {
   }
 
   /**
-   * @param key The name of the property (config)
+   * @param key
+   *          The name of the property (config)
    * @return The value of the property (config)
    */
   public static String getConfig(String key) {
@@ -136,7 +146,8 @@ public class AppProperties {
   }
 
   /**
-   * @param key The name of the property (description levels hierarchy)
+   * @param key
+   *          The name of the property (description levels hierarchy)
    * @return The value of the property (description levels hierarchy)
    */
   public static String getDescLevels(String key) {
@@ -146,7 +157,8 @@ public class AppProperties {
   /**
    * Uses ResourceBundle to get the language specific string
    *
-   * @param key The name of the property
+   * @param key
+   *          The name of the property
    * @return The value of the property using
    */
   public static String getLocalizedString(String key) {
