@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -73,9 +74,9 @@ public class AppProperties {
       for (String templ : templates) {
         String templateName = "metadata.template." + templ.trim() + ".file";
         String fileName = config.getProperty(templateName);
-        if (!Files.exists(rodainPath.resolve(fileName))) {
-          Files.copy(ClassLoader.getSystemResourceAsStream(fileName), rodainPath.resolve(fileName));
-        }
+        // if (!Files.exists(rodainPath.resolve(fileName)))
+        Files.copy(ClassLoader.getSystemResourceAsStream(fileName), rodainPath.resolve(fileName),
+          StandardCopyOption.REPLACE_EXISTING);
       }
 
       // load config

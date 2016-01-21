@@ -6,7 +6,7 @@
 
     <groupId>org.roda</groupId>
     <artifactId>rodain</artifactId>
-    <version>1.0.0-beta.1.3</version>
+    <version>1.0.0-beta.2</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -92,7 +92,7 @@
                         </goals>
                         <configuration>
                             <headerType>gui</headerType>
-                            <outfile>target/roda-in.exe</outfile>
+                            <outfile>target/rodain-app-${project.version}.exe</outfile>
                             <jar>target/rodain-app-${project.version}.jar</jar>
                             <errTitle>Error opening RODA-in</errTitle>
                             <classPath>
@@ -111,7 +111,7 @@
                                 <txtProductVersion>0.2.1.3</txtProductVersion>
                                 <productName>RODA-in</productName>
                                 <internalName>RODA-in</internalName>
-                                <originalFilename>roda-in.exe</originalFilename>
+                                <originalFilename>rodain-app-${project.version}.exe</originalFilename>
                             </versionInfo>
                         </configuration>
                     </execution>
@@ -125,7 +125,7 @@
                         </goals>
                         <configuration>
                             <headerType>console</headerType>
-                            <outfile>target/roda-in-cmd.exe</outfile>
+                            <outfile>target/rodain-cmd-${project.version}.exe</outfile>
                             <jar>target/rodain-app-${project.version}.jar</jar>
                             <errTitle>Error opening RODA-in</errTitle>
                             <classPath>

@@ -11,7 +11,7 @@
         </ead:filedesc>
         <ead:profiledesc>
             <ead:creation>
-                <ead:date normal="#date#">#date#</ead:date>
+                <ead:date normal="{{date}}">{{date}}</ead:date>
             </ead:creation>
             <ead:langusage>
                 <ead:language encodinganalog="Language" langcode="eng">English</ead:language>
@@ -21,8 +21,8 @@
     <ead:archdesc level="item">
         <ead:did>
             <ead:unitid repositorycode="PT-RODA"></ead:unitid>
-            <ead:unittitle>#title#</ead:unittitle>
-            <ead:unitdate normal="#date#">#date#</ead:unitdate>
+            <ead:unittitle>{{title}}</ead:unittitle>
+            <ead:unitdate normal="{{date}}">{{date}}</ead:unitdate>
         </ead:did>
     </ead:archdesc>
 </ead:ead>
