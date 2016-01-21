@@ -11,7 +11,8 @@ import java.nio.file.Paths;
 import org.apache.commons.io.FileUtils;
 
 /**
- * Created by adrapereira on 17-12-2015.
+ * @author Andre Pereira apereira@keep.pt
+ * @since 17-12-2015.
  */
 public class Utils {
   public static final Path homeDir = getHomeDir();

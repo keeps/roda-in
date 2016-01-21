@@ -126,7 +126,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
     HBox titleBox = new HBox();
     titleBox.setAlignment(Pos.CENTER);
-    Label title = new Label(AppProperties.getLocalizedString("FileExplorerPane.help.title"));
+    Label title = new Label("1. " + AppProperties.getLocalizedString("FileExplorerPane.help.title"));
     title.getStyleClass().add("helpTitle");
     title.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(title);

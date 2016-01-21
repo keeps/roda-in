@@ -24,7 +24,8 @@ import org.roda.rodain.testing.Utils;
 import org.testfx.framework.junit.ApplicationTest;
 
 /**
- * Created by adrapereira on 17-12-2015.
+ * @author Andre Pereira apereira@keep.pt
+ * @since 17-12-2015.
  */
 public class MainTest extends ApplicationTest {
   private static Path testDir, output;
