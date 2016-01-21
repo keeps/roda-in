@@ -166,8 +166,7 @@ public class MainTest extends ApplicationTest {
 
     clickOn(AppProperties.getLocalizedString("Main.file"));
     clickOn(AppProperties.getLocalizedString("Main.exportSips"));
-    String home = System.getProperty("java.io.tmpdir");
-    output = Paths.get(home).resolve("SIPs output");
+    output = Utils.homeDir.resolve("SIPs output");
     output.toFile().mkdir();
     CreationModalPreparation.setOutputFolder(output.toString());
     clickOn(AppProperties.getLocalizedString("start"));
@@ -193,8 +192,7 @@ public class MainTest extends ApplicationTest {
 
   @AfterClass
   public static void tearDownAfterClass() throws Exception {
-    if (testDir != null && Files.exists(testDir))
-      FileUtils.deleteDirectory(testDir.toFile());
+    Utils.removeTestDir();
     if (output != null && Files.exists(output))
       FileUtils.deleteDirectory(output.toFile());
   }

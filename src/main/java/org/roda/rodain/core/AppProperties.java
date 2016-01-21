@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
  * @since 28/12/2015.
  */
 public class AppProperties {
+  private static final String ENV_VARIABLE = "RODAIN_HOME";
   private static final String CONFIGFOLDER = "roda-in";
   private static Path rodainPath;
   private static final Logger log = LoggerFactory.getLogger(AppProperties.class.getName());
@@ -38,9 +39,7 @@ public class AppProperties {
    * external properties files.
    */
   public static void initialize() {
-    String documentsString = FileSystemView.getFileSystemView().getDefaultDirectory().getPath();
-    Path documentsPath = Paths.get(documentsString);
-    rodainPath = documentsPath.resolve(CONFIGFOLDER);
+    rodainPath = getRodainPath();
     Path configPath = rodainPath.resolve("config.properties");
 
     try {
@@ -95,6 +94,19 @@ public class AppProperties {
     } catch (IOException e) {
       log.error("Error copying config file", e);
     }
+  }
+
+  private static Path getRodainPath() {
+    String envString = System.getenv(ENV_VARIABLE);
+    if (envString != null) {
+      Path envPath = Paths.get(envString);
+      if (Files.exists(envPath) && Files.isDirectory(envPath)) {
+        return envPath.resolve(CONFIGFOLDER);
+      }
+    }
+    String documentsString = FileSystemView.getFileSystemView().getDefaultDirectory().getPath();
+    Path documentsPath = Paths.get(documentsString);
+    return documentsPath.resolve(CONFIGFOLDER);
   }
 
   private static Properties load(String fileName) {

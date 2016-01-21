@@ -8,7 +8,6 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -108,6 +107,6 @@ public class IgnoreTest extends ApplicationTest {
 
   @AfterClass
   public static void tearDownAfterClass() throws Exception {
-    FileUtils.deleteDirectory(testDir.toFile());
+    Utils.removeTestDir();
   }
 }
