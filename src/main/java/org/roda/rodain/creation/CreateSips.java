@@ -110,7 +110,6 @@ public class CreateSips {
     // progress of 1 SIP
     currentSipProgress = (creator.sipTransferedSize / (float) creator.sipSize) * 0.8f;
     currentSipProgress /= sipsCount;
-    System.out.println(currentSipProgress);
 
     // estimate the time remaining for the other SIPs, except the data copy time
     long timeSinceStart = Duration.between(startTime, Instant.now()).toMillis();

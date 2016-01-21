@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 public class AppProperties {
   private static final String ENV_VARIABLE = "RODAIN_HOME";
   private static final String CONFIGFOLDER = "roda-in";
-  private static Path rodainPath;
+  public static Path rodainPath;
   private static final Logger log = LoggerFactory.getLogger(AppProperties.class.getName());
   private static Properties style = load("styles"), config = load("config"), ext_config,
     descLevels = load("roda-description-levels-hierarchy");

@@ -1,6 +1,5 @@
 package org.roda.rodain.creation;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -9,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda_project.commons_ip.model.SIP;
@@ -54,19 +54,12 @@ public class EarkSipCreator extends SimpleSipCreator {
   }
 
   private void createEarkSip(String schemaId, SipPreview sip) {
-    String home = System.getProperty("user.home");
-    Path homePath = Paths.get(home);
-    Path rodainPath = homePath.resolve("roda-in");
+    Path rodainPath = AppProperties.rodainPath;
     String metadataName = "metadata.xml";
     try {
       SIP earkSip = new EARKSIP(sip.getId(), EARKEnums.ContentType.mixed, "RODA-In");
       earkSip.setParent(schemaId);
       SIPRepresentation rep = new SIPRepresentation("rep1");
-
-      // for now, we need to create a temporary folder to create the metadata
-      // files, since the commons-ip library only accepts Paths
-      if (!Files.exists(Paths.get(home)))
-        new File(home).mkdir();
 
       currentSipName = sip.getName();
       currentAction = actionCopyingMetadata;
@@ -115,10 +108,6 @@ public class EarkSipCreator extends SimpleSipCreator {
     } catch (IOException e) {
       log.error("Error accessing the files", e);
       unsuccessful.add(sip);
-    } finally {
-      if (Files.exists(Paths.get(home + metadataName))) {
-        new File(home + metadataName).delete();
-      }
     }
   }
 }
