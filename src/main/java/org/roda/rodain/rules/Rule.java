@@ -244,7 +244,10 @@ public class Rule extends Observable implements Observer, Comparable {
           PathCollection.addPaths(tn.getFullTreePaths(), SourceTreeItemState.NORMAL);
         }
         setChanged();
-        notifyObservers("Removed SIP");
+        if (sips.isEmpty()) {
+          notifyObservers("Removed rule");
+        } else
+          notifyObservers("Removed SIP");
       }
     }
   }

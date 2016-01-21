@@ -281,13 +281,19 @@ public class RuleCell extends HBox implements Observer {
       Platform.runLater(new Runnable() {
         @Override
         public void run() {
-          int sipCount = rule.getSipCount();
-          String format = titleFormat;
-          if (sipCount != 1) {
-            format += "s";
+          if (arg instanceof String && arg.equals("Removed rule")) {
+            RuleModalController.removeRule(rule);
+            schemaNode.removeRule(rule);
+            RodaIn.getInspectionPane().notifyChange();
+          } else {
+            int sipCount = rule.getSipCount();
+            String format = titleFormat;
+            if (sipCount != 1) {
+              format += "s";
+            }
+            String created = String.format(format, rule.getSipCount());
+            lCreated.setText(created);
           }
-          String created = String.format(format, rule.getSipCount());
-          lCreated.setText(created);
         }
       });
     }
