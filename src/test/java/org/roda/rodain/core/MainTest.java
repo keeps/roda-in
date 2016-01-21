@@ -55,7 +55,7 @@ public class MainTest extends ApplicationTest {
     sleep(1000);
     clickOn(AppProperties.getLocalizedString("Main.file"));
     clickOn(AppProperties.getLocalizedString("Main.createCS"));
-    sleep(1000);
+    sleep(2000);
     clickOn(AppProperties.getLocalizedString("SchemaPane.newNode"));
     sleep(500);
     clickOn("#schemeNodeTitle");
@@ -126,7 +126,7 @@ public class MainTest extends ApplicationTest {
     sleep(1000); //wait for the modal to open
     clickOn("#assoc3");
     clickOn(AppProperties.getLocalizedString("continue"));
-    sleep(1000); //wait for the modal to update
+    sleep(2000); // wait for the modal to update
     clickOn("#meta4");
     clickOn(AppProperties.getLocalizedString("confirm"));
     sleep(2000); //wait for the SIPs creation

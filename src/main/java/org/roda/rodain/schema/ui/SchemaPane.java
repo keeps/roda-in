@@ -103,7 +103,7 @@ public class SchemaPane extends BorderPane {
 
     HBox titleBox = new HBox();
     titleBox.setAlignment(Pos.CENTER);
-    Label title = new Label("2. " + AppProperties.getLocalizedString("SchemaPane.help.title"));
+    Label title = new Label("2 . " + AppProperties.getLocalizedString("SchemaPane.help.title"));
     title.getStyleClass().add("helpTitle");
     title.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(title);
