@@ -178,12 +178,12 @@ public class RuleModalPane extends BorderPane {
     cellSipPerFolder.setUserData(RuleTypes.SIP_PER_FOLDER);
 
     ObservableList<HBoxCell> hboxList = FXCollections.observableArrayList();
-    hboxList.addAll(cellSelected, cellSingleSip, cellSipPerFile, cellSipPerFolder);
+    hboxList.addAll(cellSelected, cellSingleSip, cellSipPerFile);
     assocList.setItems(hboxList);
     assocList.getSelectionModel().selectFirst();
 
     // if (folderCount == 0 || level.getItems().isEmpty()) {
-    cellSipPerFolder.setDisable(true);
+    // cellSipPerFolder.setDisable(true);
     // }
 
     if (sourceSet.size() == 1) {

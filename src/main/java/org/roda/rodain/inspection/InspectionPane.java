@@ -580,7 +580,7 @@ public class InspectionPane extends BorderPane {
     title.textProperty().bindBidirectional(node.valueProperty());
 
     HBox top = new HBox(5);
-    top.setPadding(new Insets(1, 10, 6, 10));
+    top.setPadding(new Insets(0, 10, 5, 10));
     top.setAlignment(Pos.CENTER_LEFT);
     topIcon = new ImageView(node.getImage());
     top.getChildren().addAll(topIcon, title, itemTypes);

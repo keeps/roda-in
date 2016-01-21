@@ -366,11 +366,13 @@ public class SchemaPane extends BorderPane {
     if (selected != null) {
       dobj.setParentId(selected.getDob().getId());
       selected.getChildren().add(newNode);
+      selected.sortChildren();
       if (!selected.isExpanded())
         selected.setExpanded(true);
     } else {
       newNode.updateDescLevel("fonds");
       rootNode.getChildren().add(newNode);
+      sortRootChildren();
     }
     schemaNodes.add(newNode);
     // Edit the node's title as soon as it's created

@@ -4,7 +4,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 
@@ -37,14 +36,12 @@ public class SchemaTreeCell extends TreeCell<String> {
     } else {
       if (!getStyleClass().contains("tree-cell"))
         getStyleClass().add("tree-cell");
-      if (!getStyleClass().contains("schemaNode"))
-        getStyleClass().add("schemaNode");
 
       HBox hbox = new HBox();
       hbox.setAlignment(Pos.BOTTOM_LEFT);
       Label lab = new Label(item);
       lab.getStyleClass().add("cellText");
-      Image icon = null;
+      ImageView icon = null;
 
       // Get the correct item
       TreeItem<String> treeItem = getTreeItem();
@@ -53,17 +50,18 @@ public class SchemaTreeCell extends TreeCell<String> {
 
       boolean addHbox = false;
       if (treeItem instanceof SchemaNode) {
-        setEditable(true);
+        if (!getStyleClass().contains("schemaNode"))
+          getStyleClass().add("schemaNode");
         SchemaNode itemNode = (SchemaNode) treeItem;
-        icon = itemNode.getImage();
+        icon = new ImageView(itemNode.getImage());
+        icon.setOpacity(0.7);
         updateDObj(item);
         addHbox = true;
       } else {
         if (treeItem instanceof SipPreviewNode) {
-          setEditable(false);
           addHbox = true;
           SipPreviewNode sipNode = (SipPreviewNode) treeItem;
-          icon = sipNode.getIcon();
+          icon = new ImageView(sipNode.getIcon());
           if (sipNode.isMetaModified() || sipNode.isContentModified()) {
             setText("*");
           } else
@@ -71,7 +69,7 @@ public class SchemaTreeCell extends TreeCell<String> {
         }
       }
       if (addHbox) {
-        hbox.getChildren().addAll(new ImageView(icon), lab);
+        hbox.getChildren().addAll(icon, lab);
         setGraphic(hbox);
       }
     }

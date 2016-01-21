@@ -97,8 +97,8 @@
 }
 
 /* Schema */
-.schemaNode {
-    -fx-text-fill: grey;
+.schemaNode .cellText {
+    -fx-opacity: 70%;
 }
 
 .schemaNode:focused:selected{
