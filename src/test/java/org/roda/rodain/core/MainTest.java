@@ -54,8 +54,9 @@ public class MainTest extends ApplicationTest {
   public void newSchemePane() {
     sleep(1000);
     clickOn(AppProperties.getLocalizedString("Main.file"));
+    sleep(1000);
     clickOn(AppProperties.getLocalizedString("Main.createCS"));
-    sleep(2000);
+    sleep(3000);
     clickOn(AppProperties.getLocalizedString("SchemaPane.newNode"));
     sleep(500);
     clickOn("#schemeNodeTitle");
