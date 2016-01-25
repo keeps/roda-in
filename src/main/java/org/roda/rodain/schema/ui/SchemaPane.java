@@ -113,11 +113,23 @@ public class SchemaPane extends BorderPane {
     Button btCreate = new Button("2B. " + AppProperties.getLocalizedString("SchemaPane.create"));
     btCreate.getStyleClass().add("helpButtonSmall");
     btCreate.setTextAlignment(TextAlignment.CENTER);
+    btCreate.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent event) {
+        createClassificationScheme();
+      }
+    });
     btCreate.setMinWidth(200);
     Button btLoad = new Button("2C. " + AppProperties.getLocalizedString("SchemaPane.load"));
     btLoad.getStyleClass().add("helpButtonSmall");
     btLoad.setTextAlignment(TextAlignment.CENTER);
     btLoad.setMinWidth(200);
+    btLoad.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent event) {
+        loadClassificationSchema();
+      }
+    });
 
     optionsBox.getChildren().addAll(btCreate, space, btLoad);
 
