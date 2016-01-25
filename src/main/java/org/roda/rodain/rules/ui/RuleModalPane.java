@@ -16,8 +16,11 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -407,7 +410,14 @@ public class RuleModalPane extends BorderPane {
     btContinue = new Button(AppProperties.getLocalizedString("continue"));
     btContinue.setMaxWidth(120);
     btContinue.setMinWidth(120);
-    btContinue.setGraphic(new ImageView(FontAwesomeImageCreator.im_w_chevron_right));
+    Platform.runLater(new Runnable() {
+      @Override
+      public void run() {
+        Image im = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.chevron_right, Color.WHITE);
+        ImageView imv = new ImageView(im);
+        btContinue.setGraphic(imv);
+      }
+    });
     btContinue.setGraphicTextGap(10);
     btContinue.setContentDisplay(ContentDisplay.RIGHT);
 
@@ -435,7 +445,14 @@ public class RuleModalPane extends BorderPane {
     btCancel = new Button(AppProperties.getLocalizedString("cancel"));
     btCancel.setMaxWidth(120);
     btCancel.setMinWidth(120);
-    btCancel.setGraphic(new ImageView(FontAwesomeImageCreator.im_w_times));
+    Platform.runLater(new Runnable() {
+      @Override
+      public void run() {
+        Image im = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.times, Color.WHITE);
+        ImageView imv = new ImageView(im);
+        btCancel.setGraphic(imv);
+      }
+    });
     btCancel.setGraphicTextGap(20);
     btCancel.setContentDisplay(ContentDisplay.RIGHT);
 
@@ -451,7 +468,14 @@ public class RuleModalPane extends BorderPane {
     btBack = new Button(AppProperties.getLocalizedString("back"));
     btBack.setMaxWidth(120);
     btBack.setMinWidth(120);
-    btBack.setGraphic(new ImageView(FontAwesomeImageCreator.im_w_chevron_left));
+    Platform.runLater(new Runnable() {
+      @Override
+      public void run() {
+        Image im = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.chevron_left, Color.WHITE);
+        ImageView imv = new ImageView(im);
+        btBack.setGraphic(imv);
+      }
+    });
     btBack.setGraphicTextGap(30);
 
     btBack.setOnAction(new EventHandler<ActionEvent>() {

@@ -1,5 +1,6 @@
 package org.roda.rodain.utils;
 
+import javafx.application.Platform;
 import javafx.geometry.VPos;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
@@ -22,17 +23,7 @@ public class FontAwesomeImageCreator {
   public static final String chevron_left = "\uf053";
   public static final String times = "\uf00d";
 
-  public static final Font font = loadFont();
-  // pre-generate these images because we can't snapshot when in a modal window
-  // white
-  public static final Image im_w_chevron_right = generate(chevron_right, Color.WHITE);
-  public static final Image im_w_chevron_left = generate(chevron_left, Color.WHITE);
-  public static final Image im_w_times = generate(times, Color.WHITE);
-  // black
-  public static final Image im_b_chevron_right = generate(chevron_right, Color.BLACK);
-  public static final Image im_b_chevron_left = generate(chevron_left, Color.BLACK);
-  public static final Image im_b_times = generate(times, Color.BLACK);
-
+  public static Font font = loadFont();
   private FontAwesomeImageCreator() {
 
   }
@@ -68,6 +59,9 @@ public class FontAwesomeImageCreator {
    * @return An Image with the unicode char converted to an image.
    */
   public static Image generate(String unicode, Paint color) {
+    if(font == null){
+      font = loadFont();
+    }
     final Canvas canvas = new Canvas(SIZE, SIZE);
     final GraphicsContext gc = canvas.getGraphicsContext2D();
     gc.setFill(color);

@@ -10,6 +10,7 @@ import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.stage.Stage;
 
+import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.RuleTypes;
@@ -152,6 +153,7 @@ public class RuleModalController {
           stage.setHeight(180);
           stage.setWidth(400);
           stage.centerOnScreen();
+          RodaIn.getSchemaPane().showTree();
         }
       });
     } catch (Exception e) {

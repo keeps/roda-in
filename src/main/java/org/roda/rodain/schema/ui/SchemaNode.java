@@ -38,7 +38,8 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     ruleObjects = new HashMap<>();
     schemaNodes = new HashSet<>();
 
-    updateDescLevel(dob.getDescriptionlevel());
+    if(dob.getDescriptionlevel() != null)
+      updateDescLevel(dob.getDescriptionlevel());
   }
 
   /**

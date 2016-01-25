@@ -32,6 +32,7 @@ import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.rules.ui.RuleModalController;
 import org.roda.rodain.schema.ClassificationSchema;
 import org.roda.rodain.schema.DescriptionObject;
+import org.roda.rodain.source.ui.SourceTreeCell;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
@@ -48,15 +49,16 @@ public class SchemaPane extends BorderPane {
   private static final org.slf4j.Logger log = LoggerFactory.getLogger(SchemaPane.class.getName());
   private TreeView<String> treeView;
   private VBox treeBox;
-  private TreeItem<String> rootNode;
-  private HBox topBox;
-  private HBox bottom;
+  private SchemaNode rootNode;
+  private HBox topBox, bottom;
+  private HBox dropBox;
   private static Stage primaryStage;
 
   private ArrayList<SchemaNode> schemaNodes;
 
   // center help
   private VBox centerHelp;
+  private boolean hasClassificationScheme = false;
 
   /**
    * Creates a new SchemaPane object.
@@ -68,10 +70,11 @@ public class SchemaPane extends BorderPane {
     primaryStage = stage;
     schemaNodes = new ArrayList<>();
 
-    createCenterHelp();
     createTreeView();
     createTop();
     createBottom();
+
+    createCenterHelp();
 
     this.setCenter(centerHelp);
 
@@ -97,44 +100,79 @@ public class SchemaPane extends BorderPane {
 
     VBox box = new VBox(40);
     box.setPadding(new Insets(22, 10, 10, 10));
-    box.setMaxWidth(355);
-    box.setMaxHeight(200);
-    box.setMinHeight(200);
+    //box.setMaxWidth(355);
+    box.setMaxHeight(250);
+    box.setMinHeight(250);
 
-    HBox titleBox = new HBox();
-    titleBox.setAlignment(Pos.CENTER);
-    Label title = new Label("2 . " + AppProperties.getLocalizedString("SchemaPane.help.title"));
-    title.getStyleClass().add("helpTitle");
-    title.setTextAlignment(TextAlignment.CENTER);
-    titleBox.getChildren().add(title);
+    createDropBox();
 
-    HBox loadBox = new HBox();
-    loadBox.setAlignment(Pos.CENTER);
-    Button load = new Button(AppProperties.getLocalizedString("load"));
-    load.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        loadClassificationSchema();
-      }
-    });
-    load.setMinHeight(65);
-    load.setMinWidth(130);
-    load.setMaxWidth(130);
-    load.getStyleClass().add("helpButton");
-    loadBox.getChildren().add(load);
-
-    Hyperlink link = new Hyperlink(AppProperties.getLocalizedString("SchemaPane.create"));
-    link.setOnAction(new EventHandler<ActionEvent>() {
+    Hyperlink linkCreate = new Hyperlink(AppProperties.getLocalizedString("SchemaPane.create"));
+    linkCreate.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent event) {
         createClassificationScheme();
       }
     });
-    TextFlow flow = new TextFlow(new Text(AppProperties.getLocalizedString("SchemaPane.or")), link);
-    flow.setTextAlignment(TextAlignment.CENTER);
+    TextFlow flowCreate = new TextFlow(new Text("2B. "), linkCreate);
+    flowCreate.setTextAlignment(TextAlignment.CENTER);
 
-    box.getChildren().addAll(titleBox, loadBox);
-    centerHelp.getChildren().addAll(box, flow);
+    Hyperlink linkLoad = new Hyperlink(AppProperties.getLocalizedString("SchemaPane.load"));
+    linkLoad.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent event) {
+        loadClassificationSchema();
+      }
+    });
+    TextFlow flowLoad = new TextFlow(new Text("2C. "), linkLoad);
+    flowLoad.setTextAlignment(TextAlignment.CENTER);
+
+    box.getChildren().add(dropBox);
+    centerHelp.getChildren().addAll(box, flowCreate, flowLoad);
+  }
+
+  private void createDropBox(){
+    dropBox = new HBox();
+    dropBox.setAlignment(Pos.CENTER);
+    dropBox.getStyleClass().add("dropBox");
+    dropBox.setMinHeight(200);
+
+    Label title = new Label("2A. " + AppProperties.getLocalizedString("SchemaPane.help.title"));
+    title.getStyleClass().add("helpTitle");
+    title.setTextAlignment(TextAlignment.CENTER);
+    dropBox.getChildren().add(title);
+
+    dropBox.setOnDragOver(new EventHandler<DragEvent>() {
+      @Override
+      public void handle(DragEvent event) {
+        if (rootNode != null && event.getGestureSource() instanceof SourceTreeCell) {
+          event.acceptTransferModes(TransferMode.COPY);
+          if(!dropBox.getStyleClass().contains("dropBoxHovered"))
+            dropBox.getStyleClass().add("dropBoxHovered");
+          title.setText(AppProperties.getLocalizedString("InspectionPane.onDrop"));
+        }
+        event.consume();
+      }
+    });
+
+    dropBox.setOnDragDropped(new EventHandler<DragEvent>() {
+      @Override
+      public void handle(DragEvent event) {
+        RodaIn.getSchemaPane().startAssociation(rootNode);
+        if(dropBox.getStyleClass().contains("dropBoxHovered"))
+          dropBox.getStyleClass().remove("dropBoxHovered");
+        event.consume();
+      }
+    });
+
+    dropBox.setOnDragExited(new EventHandler<DragEvent>() {
+      @Override
+      public void handle(DragEvent event) {
+        title.setText("2A. " + AppProperties.getLocalizedString("SchemaPane.help.title"));
+        if(dropBox.getStyleClass().contains("dropBoxHovered"))
+          dropBox.getStyleClass().remove("dropBoxHovered");
+        event.consume();
+      }
+    });
   }
 
   private void createTreeView() {
@@ -142,7 +180,8 @@ public class SchemaPane extends BorderPane {
     treeBox = new VBox();
     VBox.setVgrow(treeBox, Priority.ALWAYS);
 
-    rootNode = new TreeItem<>();
+    DescriptionObject dobj = new DescriptionObject();
+    rootNode = new SchemaNode(dobj);
     rootNode.setExpanded(true);
 
     // create the tree view
@@ -294,6 +333,7 @@ public class SchemaPane extends BorderPane {
       schemaNodes.add(sn);
     }
     sortRootChildren();
+    hasClassificationScheme = true;
   }
 
   private void sortRootChildren() {
@@ -538,6 +578,15 @@ public class SchemaPane extends BorderPane {
       result.addAll(recursiveGetSchemaNodes(t));
     }
     return result;
+  }
+
+  public void showTree(){
+    if(!hasClassificationScheme && getCenter() == centerHelp){
+      VBox box = new VBox(10);
+      box.getChildren().addAll(treeBox, dropBox);
+      setCenter(box);
+      setTop(topBox);
+    }
   }
 
   /**

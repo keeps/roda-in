@@ -90,6 +90,9 @@ public class SipPreview extends Observable implements Observer {
       data.put("title", getName());
       data.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
       content = tmpl.execute(data);
+      //we need to clean the '\r' character in windows,
+      // otherwise the strings are different even if no modification has been made
+      content = content.replace("\r", "");
     }
     return content;
   }
@@ -108,9 +111,11 @@ public class SipPreview extends Observable implements Observer {
    * @see SipMetadata#update(String)
    */
   public void updateMetadata(String meta) {
-    metadata.update(meta);
-    setChanged();
-    notifyObservers();
+    if(!meta.equals(metadata.getMetadataContent())) {
+      metadata.update(meta);
+      setChanged();
+      notifyObservers();
+    }
   }
 
   /**
