@@ -6,10 +6,9 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.source.ui.items.*;
-
-import java.util.Properties;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -88,6 +87,9 @@ public class SourceTreeCell extends TreeCell<String> {
 
       if (treeItem instanceof SourceTreeLoadMore) {
         lab.setText(AppProperties.getLocalizedString("SourceTreeLoadMore.title"));
+      }
+      if (treeItem instanceof SourceTreeLoading) {
+        lab.setText(AppProperties.getLocalizedString("SourceTreeLoading.title"));
       }
 
       hbox.getChildren().addAll(new ImageView(icon), lab);
