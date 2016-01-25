@@ -59,6 +59,20 @@
     -fx-text-fill: white;
 }
 
+.helpButtonSmall {
+    -fx-border-color: black;
+    -fx-border-radius: 2px;
+    -fx-border-width: 1px;
+    -fx-background-color: #eaeaea;
+    -fx-text-fill: black;
+    -fx-font-size: large;
+}
+
+.helpButtonSmall:hover {
+    -fx-background-color: #089de3;
+    -fx-text-fill: white;
+}
+
 /* Combo-Box */
 .combo-box-base .list-view .list-cell {
     -fx-background-color: white;

@@ -100,34 +100,29 @@ public class SchemaPane extends BorderPane {
 
     VBox box = new VBox(40);
     box.setPadding(new Insets(22, 10, 10, 10));
-    //box.setMaxWidth(355);
     box.setMaxHeight(250);
     box.setMinHeight(250);
 
     createDropBox();
 
-    Hyperlink linkCreate = new Hyperlink(AppProperties.getLocalizedString("SchemaPane.create"));
-    linkCreate.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        createClassificationScheme();
-      }
-    });
-    TextFlow flowCreate = new TextFlow(new Text("2B. "), linkCreate);
-    flowCreate.setTextAlignment(TextAlignment.CENTER);
+    HBox optionsBox = new HBox();
+    optionsBox.setPadding(new Insets(0,10,0,10));
+    HBox space = new HBox();
+    HBox.setHgrow(space, Priority.ALWAYS);
 
-    Hyperlink linkLoad = new Hyperlink(AppProperties.getLocalizedString("SchemaPane.load"));
-    linkLoad.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        loadClassificationSchema();
-      }
-    });
-    TextFlow flowLoad = new TextFlow(new Text("2C. "), linkLoad);
-    flowLoad.setTextAlignment(TextAlignment.CENTER);
+    Button btCreate = new Button("2B. " + AppProperties.getLocalizedString("SchemaPane.create"));
+    btCreate.getStyleClass().add("helpButtonSmall");
+    btCreate.setTextAlignment(TextAlignment.CENTER);
+    btCreate.setMinWidth(200);
+    Button btLoad = new Button("2C. " + AppProperties.getLocalizedString("SchemaPane.load"));
+    btLoad.getStyleClass().add("helpButtonSmall");
+    btLoad.setTextAlignment(TextAlignment.CENTER);
+    btLoad.setMinWidth(200);
+
+    optionsBox.getChildren().addAll(btCreate, space, btLoad);
 
     box.getChildren().add(dropBox);
-    centerHelp.getChildren().addAll(box, flowCreate, flowLoad);
+    centerHelp.getChildren().addAll(box, optionsBox);
   }
 
   private void createDropBox(){
