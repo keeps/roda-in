@@ -101,10 +101,4 @@ public class IgnoreTest extends ApplicationTest {
     assert dir4.getState() == SourceTreeItemState.NORMAL;
     assert fileA.getState() == SourceTreeItemState.NORMAL;
   }
-
-
-  @AfterClass
-  public static void tearDownAfterClass() throws Exception {
-    Utils.removeTestDir();
-  }
 }

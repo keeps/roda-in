@@ -171,9 +171,4 @@ public class FileExplorerPaneTest extends ApplicationTest {
     assert "file0.txt".equals(file.getValue());
 
   }
-
-  @AfterClass
-  public static void tearDownAfterClass() throws Exception {
-    Utils.removeTestDir();
-  }
 }

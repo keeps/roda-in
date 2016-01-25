@@ -191,12 +191,4 @@ public class MainTest extends ApplicationTest {
     clickOn("#removeRule2");
     sleep(1000); // wait for the rule to be removed
   }
-
-  @AfterClass
-  public static void tearDownAfterClass() throws Exception {
-    Utils.removeTestDir();
-    if (output != null && Files.exists(output))
-      FileUtils.deleteDirectory(output.toFile());
-  }
-
 }
