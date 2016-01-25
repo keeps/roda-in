@@ -20,6 +20,7 @@ public class SourceTreeItem extends TreeItem<String> implements Observer {
     this.path = path;
     this.parent = parent;
     state = SourceTreeItemState.IGNORED;
+    setValue(path);
   }
 
   public String getPath() {
