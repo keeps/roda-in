@@ -50,7 +50,7 @@ public class MainTest extends ApplicationTest {
 
   @Test
   public void newSchemePane() {
-    sleep(1000);
+    sleep(5000);
     clickOn(AppProperties.getLocalizedString("Main.file"));
     sleep(1000);
     clickOn(AppProperties.getLocalizedString("Main.createCS"));
@@ -97,7 +97,7 @@ public class MainTest extends ApplicationTest {
 
   @Test
   public void schemePane() {
-    sleep(1000); //wait for the classification scheme to load
+    sleep(5000); // wait for the classification scheme to load
 
     clickOn("UCP");
     TreeItem selected = schemaPane.getTreeView().getSelectionModel().getSelectedItem();
@@ -121,7 +121,7 @@ public class MainTest extends ApplicationTest {
       }
     });
 
-    sleep(2000); //wait for the tree to be created
+    sleep(5000); // wait for the tree to be created
     doubleClickOn("dir4");
     sleep(1000); //wait for the node to expand
     drag("dirB").dropTo("UCP");

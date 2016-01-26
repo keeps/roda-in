@@ -9,6 +9,6 @@ before_script:
 install:
   - true
 script:
-  - mvn clean install #-DskipTests
+  - mvn clean install -DskipTests
 jdk:
   - oraclejdk8
