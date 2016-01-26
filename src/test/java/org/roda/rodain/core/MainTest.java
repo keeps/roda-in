@@ -2,7 +2,6 @@ package org.roda.rodain.core;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -11,11 +10,10 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.roda.rodain.creation.ui.CreationModalPreparation;
+import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SchemaPane;
 import org.roda.rodain.schema.ui.SipPreviewNode;
@@ -83,10 +81,13 @@ public class MainTest extends ApplicationTest {
     TreeItem<String> newItem = RodaIn.getSchemaPane().getTreeView().getSelectionModel().getSelectedItem();
     assert newItem instanceof SchemaNode;
     SchemaNode newNode = (SchemaNode) newItem;
-    assert"class".equals(newNode.getDob().getDescriptionlevel());
+    DescriptionObject dobj = newNode.getDob();
+    assert dobj != null;
+    assert"class".equals(dobj.getDescriptionlevel());
 
     clickOn("#itemLevels").clickOn("Sub-fonds");
-    assert"subfonds".equals(newNode.getDob().getDescriptionlevel());
+    assert dobj != null;
+    assert"subfonds".equals(dobj.getDescriptionlevel());
 
     drag("Node2").dropTo(".tree-view");
     assert RodaIn.getSchemaPane().getTreeView().getRoot().getChildren().size() == 2;
@@ -128,7 +129,6 @@ public class MainTest extends ApplicationTest {
     clickOn("#assoc3");
     clickOn(AppProperties.getLocalizedString("continue"));
     sleep(2000); // wait for the modal to update
-    clickOn("#meta4");
     clickOn(AppProperties.getLocalizedString("confirm"));
     sleep(2000); //wait for the SIPs creation
 
