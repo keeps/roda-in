@@ -1,6 +1,7 @@
 package org.roda.rodain.utils;
 
-import javafx.application.Platform;
+import java.io.InputStream;
+
 import javafx.geometry.VPos;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
@@ -10,8 +11,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
-
-import java.io.InputStream;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -23,7 +22,7 @@ public class FontAwesomeImageCreator {
   public static final String chevron_left = "\uf053";
   public static final String times = "\uf00d";
 
-  public static Font font = loadFont();
+  public static final Font font = loadFont();
   private FontAwesomeImageCreator() {
 
   }
@@ -59,9 +58,6 @@ public class FontAwesomeImageCreator {
    * @return An Image with the unicode char converted to an image.
    */
   public static Image generate(String unicode, Paint color) {
-    if(font == null){
-      font = loadFont();
-    }
     final Canvas canvas = new Canvas(SIZE, SIZE);
     final GraphicsContext gc = canvas.getGraphicsContext2D();
     gc.setFill(color);
