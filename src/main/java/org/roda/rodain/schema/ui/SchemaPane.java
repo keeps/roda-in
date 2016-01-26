@@ -19,9 +19,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -591,6 +589,7 @@ public class SchemaPane extends BorderPane {
     if(!hasClassificationScheme && getCenter() == centerHelp){
       VBox box = new VBox(10);
       box.getChildren().addAll(treeBox, dropBox);
+      schemaNodes.add(rootNode);
       setCenter(box);
       setTop(topBox);
     }

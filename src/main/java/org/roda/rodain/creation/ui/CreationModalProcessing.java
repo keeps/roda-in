@@ -87,6 +87,7 @@ public class CreationModalProcessing extends BorderPane {
 
     etaBox = new HBox(10);
     etaLabel = new Label(AppProperties.getLocalizedString("CreationModalProcessing.remaining"));
+    etaLabel.setMinWidth(70);
     etaLabel.getStyleClass().add("boldText");
     eta = new Label();
     etaBox.getChildren().addAll(etaLabel, eta);
@@ -107,18 +108,18 @@ public class CreationModalProcessing extends BorderPane {
     progress.setPadding(new Insets(5, 0, 10, 0));
     progress.setPrefSize(380, 25);
 
-    HBox sip = new HBox(20);
+    HBox sip = new HBox(10);
     sip.maxWidth(380);
     Label lName = new Label(AppProperties.getLocalizedString("CreationModalProcessing.currentSip"));
     lName.getStyleClass().add("boldText");
-    lName.setMinWidth(80);
+    lName.setMinWidth(70);
     sipName = new Label("");
     sip.getChildren().addAll(lName, sipName);
 
-    HBox action = new HBox(20);
+    HBox action = new HBox(10);
     Label lAction = new Label(AppProperties.getLocalizedString("CreationModalProcessing.action"));
     lAction.getStyleClass().add("boldText");
-    lAction.setMinWidth(80);
+    lAction.setMinWidth(70);
     sipAction = new Label("");
     action.getChildren().addAll(lAction, sipAction);
 
