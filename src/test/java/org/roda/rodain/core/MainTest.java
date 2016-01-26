@@ -127,9 +127,9 @@ public class MainTest extends ApplicationTest {
     drag("dirB").dropTo("UCP");
     sleep(1000); //wait for the modal to open
     clickOn("#assoc3");
-    clickOn(AppProperties.getLocalizedString("continue"));
+    clickOn("#btConfirm");
     sleep(2000); // wait for the modal to update
-    clickOn(AppProperties.getLocalizedString("confirm"));
+    clickOn("#btConfirm");
     sleep(2000); //wait for the SIPs creation
 
     clickOn("file1.txt");

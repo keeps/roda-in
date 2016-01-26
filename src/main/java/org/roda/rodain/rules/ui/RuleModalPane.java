@@ -20,7 +20,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -408,6 +407,7 @@ public class RuleModalPane extends BorderPane {
 
   private void createContinueButton() {
     btContinue = new Button(AppProperties.getLocalizedString("continue"));
+    btContinue.setId("btConfirm");
     btContinue.setMaxWidth(120);
     btContinue.setMinWidth(120);
     Platform.runLater(new Runnable() {
