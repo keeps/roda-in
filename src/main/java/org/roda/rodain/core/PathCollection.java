@@ -64,6 +64,9 @@ public class PathCollection {
     if (st == SourceTreeItemState.IGNORED) {
       applySameStateAllChildren(path, SourceTreeItemState.NORMAL, st);
     }
+    if (st == SourceTreeItemState.MAPPED) {
+      applySameStateAllChildren(path, SourceTreeItemState.NORMAL, st);
+    }
     if (st == SourceTreeItemState.NORMAL && states.get(path) == SourceTreeItemState.IGNORED) {
       applySameStateAllChildren(path, SourceTreeItemState.IGNORED, st);
       verifyStateAncestors(path);

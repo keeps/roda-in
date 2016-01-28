@@ -40,15 +40,9 @@ public class SipPreview extends Observable implements Observer {
     // metadata = new SipMetadata(metaType, metadataPath, templateType);
     id = UUID.randomUUID().toString();
 
-    setPathsAsMapped();
-  }
-
-  private void setPathsAsMapped() {
+    // set paths as mapped
     for (TreeNode tn : files) {
-      Set<String> paths = tn.getFullTreePaths();
-      for (String path : paths) {
-        PathCollection.addPath(path, SourceTreeItemState.MAPPED);
-      }
+      PathCollection.addPath(tn.getPath().toString(), SourceTreeItemState.MAPPED);
     }
   }
 
