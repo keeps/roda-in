@@ -170,7 +170,27 @@ public class SipPreview extends Observable implements Observer {
    * Sets the removed state of the SIP as true.
    */
   public void setRemoved() {
+    float paths = 0, removedPaths = 0;
+    // prepare
+    for (TreeNode tn : getFiles()) {
+      paths += tn.getFullTreePaths().size();
+    }
+    // remove
+    int update = 0;
+    for (TreeNode tn : getFiles()) {
+      for (String path : tn.getFullTreePaths()) {
+        PathCollection.addPath(path, SourceTreeItemState.NORMAL);
+        removedPaths++;
+        update++;
+        if (update >= 10) {
+          update = 0;
+          setChanged();
+          notifyObservers(removedPaths / paths);
+        }
+      }
+    }
     removed = true;
+    changedAndNotify();
   }
 
   /**

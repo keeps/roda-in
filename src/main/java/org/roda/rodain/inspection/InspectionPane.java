@@ -11,6 +11,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -30,6 +31,7 @@ import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
+import org.roda.rodain.rules.ui.RuleModalController;
 import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SipPreviewNode;
@@ -443,8 +445,16 @@ public class InspectionPane extends BorderPane {
     remove.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
-        currentSIP.setRemoved();
-        currentSIP.changedAndNotify();
+        RuleModalController.removeSipPreview(currentSIP);
+        Task removeTask = new Task() {
+          @Override
+          protected Object call() throws Exception {
+            currentSIP.setRemoved();
+            return null;
+          }
+        };
+        new Thread(removeTask).start();
+
         setCenter(centerHelp);
         setTop(new HBox());
         setBottom(new HBox());

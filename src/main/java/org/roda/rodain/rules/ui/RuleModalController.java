@@ -15,6 +15,7 @@ import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.RuleTypes;
 import org.roda.rodain.rules.VisitorStack;
+import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.rules.sip.SipPreviewCreator;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
@@ -170,6 +171,15 @@ public class RuleModalController {
   public static void removeRule(Rule r) {
     RuleModalRemoving removing = new RuleModalRemoving(r);
     r.addObserver(removing);
+    stage.setRoot(removing);
+    stage.setHeight(120);
+    stage.setWidth(400);
+    stage.centerOnScreen();
+  }
+
+  public static void removeSipPreview(SipPreview sip) {
+    RuleModalRemoving removing = new RuleModalRemoving(null);
+    sip.addObserver(removing);
     stage.setRoot(removing);
     stage.setHeight(120);
     stage.setWidth(400);

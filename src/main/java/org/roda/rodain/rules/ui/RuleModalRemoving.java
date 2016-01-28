@@ -1,5 +1,8 @@
 package org.roda.rodain.rules.ui;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -7,11 +10,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.Rule;
-
-import java.util.Observable;
-import java.util.Observer;
+import org.roda.rodain.rules.sip.SipPreview;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -23,7 +25,6 @@ public class RuleModalRemoving extends BorderPane implements Observer {
   private Label sipsRemovedLabel;
   // center
   private ProgressBar progress;
-  private int sipCount;
 
   /**
    * Creates a new RuleModalRemoving object.
@@ -32,7 +33,6 @@ public class RuleModalRemoving extends BorderPane implements Observer {
    */
   public RuleModalRemoving(Rule rule) {
     this.rule = rule;
-    sipCount = rule.getSipCount();
 
     getStyleClass().add("sipcreator");
 
@@ -75,22 +75,20 @@ public class RuleModalRemoving extends BorderPane implements Observer {
    * @param args The arguments of the update.
    */
   public void update(Observable o, Object args) {
-    if (o == rule) {
+    if (o == rule || o instanceof SipPreview) {
       Platform.runLater(new Runnable() {
         @Override
         public void run() {
-          if (args instanceof Integer) {
-            int removed = (int) args;
-            double prog = (removed * 1.0) / sipCount;
-            progress.setProgress(prog);
-            sipsRemovedLabel.setText(String.format(AppProperties.getLocalizedString("RuleModalRemoving.removedFormat"), removed, (int) (prog * 100)));
+          if (args instanceof Float) {
+            progress.setProgress((float) args);
+            sipsRemovedLabel.setText(String.format(AppProperties.getLocalizedString("RuleModalRemoving.removedFormat"),
+              (int) ((float) args * 100)));
           } else {
             close();
           }
         }
       });
     }
-
   }
 
   private void close() {
