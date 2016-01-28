@@ -449,7 +449,7 @@ public class InspectionPane extends BorderPane {
         Task removeTask = new Task() {
           @Override
           protected Object call() throws Exception {
-            currentSIP.setRemoved();
+            currentSIP.removeSIP();
             return null;
           }
         };

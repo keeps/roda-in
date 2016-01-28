@@ -170,6 +170,13 @@ public class SipPreview extends Observable implements Observer {
    * Sets the removed state of the SIP as true.
    */
   public void setRemoved() {
+    removed = true;
+  }
+
+  /**
+   * Removes the SIP, setting its content as NORMAL.
+   */
+  public void removeSIP() {
     float paths = 0, removedPaths = 0;
     // prepare
     for (TreeNode tn : getFiles()) {
