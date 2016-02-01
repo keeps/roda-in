@@ -7,7 +7,6 @@ package org.roda.rodain.core;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +43,6 @@ import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SchemaPane;
 import org.roda.rodain.source.ui.FileExplorerPane;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
-import org.roda.rodain.utils.LoggingOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -221,12 +219,7 @@ public class RodaIn extends Application {
     createSIPs.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent t) {
-        // force the edits to the metadata text area to be saved
-        inspectionPane.saveMetadata();
-
-        CreationModalStage creationStage = new CreationModalStage(stage);
-        CreationModalPreparation pane = new CreationModalPreparation(creationStage);
-        creationStage.setRoot(pane);
+        exportSIPs();
       }
     });
 
@@ -316,5 +309,14 @@ public class RodaIn extends Application {
 
   public static Map<SipPreview, String> getSipPreviews() {
     return schemaPane.getSipPreviews();
+  }
+
+  public static void exportSIPs() {
+    // force the edits to the metadata text area to be saved
+    inspectionPane.saveMetadata();
+
+    CreationModalStage creationStage = new CreationModalStage(stage);
+    CreationModalPreparation pane = new CreationModalPreparation(creationStage);
+    creationStage.setRoot(pane);
   }
 }

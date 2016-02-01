@@ -381,7 +381,19 @@ public class SchemaPane extends BorderPane {
       }
     });
 
-    bottom.getChildren().addAll(removeLevel, addLevel);
+    HBox space = new HBox();
+    HBox.setHgrow(space, Priority.ALWAYS);
+
+    Button export = new Button(AppProperties.getLocalizedString("export"));
+    export.setMinWidth(100);
+    export.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent event) {
+        RodaIn.exportSIPs();
+      }
+    });
+
+    bottom.getChildren().addAll(removeLevel, addLevel, space, export);
   }
 
   public void createClassificationScheme() {
