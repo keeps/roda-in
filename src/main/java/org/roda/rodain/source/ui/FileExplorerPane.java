@@ -27,6 +27,7 @@ import javafx.util.Callback;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.Footer;
 import org.roda.rodain.core.PathCollection;
+import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.source.representation.SourceDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
@@ -109,7 +110,19 @@ public class FileExplorerPane extends BorderPane implements Observer {
       }
     });
 
-    bottom.getChildren().add(ignore);
+    HBox space = new HBox();
+    HBox.setHgrow(space, Priority.ALWAYS);
+
+    Button associate = new Button(AppProperties.getLocalizedString("associate"));
+    associate.setMinWidth(100);
+    associate.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent actionEvent) {
+        RodaIn.getSchemaPane().startAssociation();
+      }
+    });
+
+    bottom.getChildren().addAll(ignore, space, associate);
   }
 
   private void createCenterHelp() {

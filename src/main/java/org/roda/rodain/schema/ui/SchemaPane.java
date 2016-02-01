@@ -357,18 +357,6 @@ public class SchemaPane extends BorderPane {
     bottom = new HBox(10);
     bottom.setPadding(new Insets(10, 10, 10, 10));
 
-    Button associate = new Button(AppProperties.getLocalizedString("associate"));
-    associate.setMinWidth(100);
-    associate.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent actionEvent) {
-        SchemaNode selected = getSelectedItem();
-        if (selected != null) {
-          startAssociation(selected);
-        }
-      }
-    });
-
     Button removeLevel = new Button(AppProperties.getLocalizedString("SchemaPane.remove"));
     removeLevel.setMinWidth(100);
     removeLevel.setOnAction(new EventHandler<ActionEvent>() {
@@ -393,10 +381,7 @@ public class SchemaPane extends BorderPane {
       }
     });
 
-    HBox space = new HBox();
-    HBox.setHgrow(space, Priority.ALWAYS);
-
-    bottom.getChildren().addAll(associate, space, removeLevel, addLevel);
+    bottom.getChildren().addAll(removeLevel, addLevel);
   }
 
   public void createClassificationScheme() {
@@ -404,6 +389,7 @@ public class SchemaPane extends BorderPane {
     setCenter(treeBox);
     setBottom(bottom);
     rootNode.getChildren().clear();
+    hasClassificationScheme = true;
   }
 
   private SchemaNode addNewLevel() {
@@ -429,6 +415,15 @@ public class SchemaPane extends BorderPane {
     treeView.layout();
     treeView.edit(newNode);
     return newNode;
+  }
+
+  public void startAssociation() {
+    if (hasClassificationScheme) {
+      if (getSelectedItem() != null)
+        startAssociation(getSelectedItem());
+      else
+        startAssociation(rootNode);
+    }
   }
 
   public void startAssociation(SchemaNode descObj) {
