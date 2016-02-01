@@ -104,6 +104,8 @@ public class SchemaPane extends BorderPane {
     box.setMaxHeight(200);
     box.setMinHeight(200);
 
+    createDropBox();
+
     HBox titleBox = new HBox();
     titleBox.setAlignment(Pos.CENTER);
     Label title = new Label("2 . " + AppProperties.getLocalizedString("SchemaPane.help.title"));
@@ -144,21 +146,20 @@ public class SchemaPane extends BorderPane {
   private void createDropBox(){
     dropBox = new HBox();
     dropBox.setAlignment(Pos.CENTER);
-    dropBox.getStyleClass().add("dropBox");
     dropBox.setMinHeight(200);
 
-    Label title = new Label("2A. " + AppProperties.getLocalizedString("SchemaPane.help.title"));
+    Separator separatorTop = new Separator();
+
+    Label title = new Label(AppProperties.getLocalizedString("SchemaPane.dragHelp"));
     title.getStyleClass().add("helpTitle");
     title.setTextAlignment(TextAlignment.CENTER);
-    dropBox.getChildren().add(title);
+    dropBox.getChildren().addAll(separatorTop, title);
 
     dropBox.setOnDragOver(new EventHandler<DragEvent>() {
       @Override
       public void handle(DragEvent event) {
         if (rootNode != null && event.getGestureSource() instanceof SourceTreeCell) {
           event.acceptTransferModes(TransferMode.COPY);
-          if(!dropBox.getStyleClass().contains("dropBoxHovered"))
-            dropBox.getStyleClass().add("dropBoxHovered");
           title.setText(AppProperties.getLocalizedString("InspectionPane.onDrop"));
         }
         event.consume();
@@ -169,8 +170,7 @@ public class SchemaPane extends BorderPane {
       @Override
       public void handle(DragEvent event) {
         RodaIn.getSchemaPane().startAssociation(rootNode);
-        if(dropBox.getStyleClass().contains("dropBoxHovered"))
-          dropBox.getStyleClass().remove("dropBoxHovered");
+        setCenter(treeBox);
         event.consume();
       }
     });
@@ -178,9 +178,7 @@ public class SchemaPane extends BorderPane {
     dropBox.setOnDragExited(new EventHandler<DragEvent>() {
       @Override
       public void handle(DragEvent event) {
-        title.setText("2A. " + AppProperties.getLocalizedString("SchemaPane.help.title"));
-        if(dropBox.getStyleClass().contains("dropBoxHovered"))
-          dropBox.getStyleClass().remove("dropBoxHovered");
+        title.setText(AppProperties.getLocalizedString("SchemaPane.dragHelp"));
         event.consume();
       }
     });
@@ -398,7 +396,8 @@ public class SchemaPane extends BorderPane {
 
   public void createClassificationScheme() {
     setTop(topBox);
-    setCenter(treeBox);
+    // setCenter(treeBox);
+    setCenter(dropBox);
     setBottom(bottom);
     rootNode.getChildren().clear();
     hasClassificationScheme = true;
@@ -504,13 +503,19 @@ public class SchemaPane extends BorderPane {
       public void handle(DragEvent event) {
         TreeItem<String> treeItem = cell.getTreeItem();
         if (treeItem == null) {
-          event.acceptTransferModes(TransferMode.MOVE);
+          if (event.getGestureSource() instanceof SchemaNode)
+            event.acceptTransferModes(TransferMode.MOVE);
+          else
+            event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
         }
         if (treeItem instanceof SchemaNode) {
           SchemaNode item = (SchemaNode) cell.getTreeItem();
           if (item != null && event.getGestureSource() != cell && event.getDragboard().hasString()) {
             event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
           }
+        }
+        if (treeItem instanceof SipPreviewNode) {
+          event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
         }
         event.consume();
       }
@@ -551,14 +556,16 @@ public class SchemaPane extends BorderPane {
     cell.setOnDragDropped(new EventHandler<DragEvent>() {
       @Override
       public void handle(DragEvent event) {
-        SchemaNode node = (SchemaNode) cell.getTreeItem();
+        TreeItem treeItem = cell.getTreeItem();
         Dragboard db = event.getDragboard();
         boolean success = false;
         if (db.hasString()) {
+          // edit the classification scheme
           if (db.getString().startsWith("scheme")) {
             TreeItem selected = treeView.getSelectionModel().getSelectedItem();
             TreeItem parent = selected.getParent();
             parent.getChildren().remove(selected);
+            SchemaNode node = (SchemaNode) treeItem;
             if (node == null) {
               rootNode.getChildren().add(selected);
               sortRootChildren();
@@ -567,7 +574,19 @@ public class SchemaPane extends BorderPane {
               node.sortChildren();
             }
           } else {
-            startAssociation(node);
+            if (treeItem != null) {
+              // dropped on a SIP, associate to the parent of the SIP
+              if (treeItem instanceof SipPreviewNode) {
+                SipPreviewNode sipPreviewNode = (SipPreviewNode) treeItem;
+                startAssociation((SchemaNode) sipPreviewNode.getParent());
+              } else {
+                // normal association
+                startAssociation((SchemaNode) treeItem);
+              }
+            } else {
+              // association to the empty tree view
+              startAssociation();
+            }
           }
           success = true;
         }
