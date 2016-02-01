@@ -19,7 +19,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -98,41 +100,45 @@ public class SchemaPane extends BorderPane {
 
     VBox box = new VBox(40);
     box.setPadding(new Insets(22, 10, 10, 10));
-    box.setMaxHeight(250);
-    box.setMinHeight(250);
+    box.setMaxWidth(355);
+    box.setMaxHeight(200);
+    box.setMinHeight(200);
 
-    createDropBox();
+    HBox titleBox = new HBox();
+    titleBox.setAlignment(Pos.CENTER);
+    Label title = new Label("2 . " + AppProperties.getLocalizedString("SchemaPane.help.title"));
+    title.getStyleClass().add("helpTitle");
+    title.setTextAlignment(TextAlignment.CENTER);
+    titleBox.getChildren().add(title);
 
-    HBox optionsBox = new HBox();
-    optionsBox.setPadding(new Insets(0,10,0,10));
-    HBox space = new HBox();
-    HBox.setHgrow(space, Priority.ALWAYS);
-
-    Button btCreate = new Button("2B. " + AppProperties.getLocalizedString("SchemaPane.create"));
-    btCreate.getStyleClass().add("helpButtonSmall");
-    btCreate.setTextAlignment(TextAlignment.CENTER);
-    btCreate.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        createClassificationScheme();
-      }
-    });
-    btCreate.setMinWidth(200);
-    Button btLoad = new Button("2C. " + AppProperties.getLocalizedString("SchemaPane.load"));
-    btLoad.getStyleClass().add("helpButtonSmall");
-    btLoad.setTextAlignment(TextAlignment.CENTER);
-    btLoad.setMinWidth(200);
-    btLoad.setOnAction(new EventHandler<ActionEvent>() {
+    HBox loadBox = new HBox();
+    loadBox.setAlignment(Pos.CENTER);
+    Button load = new Button(AppProperties.getLocalizedString("load"));
+    load.setMinHeight(65);
+    load.setMinWidth(130);
+    load.setMaxWidth(130);
+    load.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent event) {
         loadClassificationSchema();
       }
     });
+    load.getStyleClass().add("helpButton");
+    loadBox.getChildren().add(load);
 
-    optionsBox.getChildren().addAll(btCreate, space, btLoad);
+    Hyperlink link = new Hyperlink(AppProperties.getLocalizedString("SchemaPane.create"));
+    link.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent event) {
+        createClassificationScheme();
+      }
+    });
 
-    box.getChildren().add(dropBox);
-    centerHelp.getChildren().addAll(box, optionsBox);
+    TextFlow flow = new TextFlow(new Text(AppProperties.getLocalizedString("SchemaPane.or")), link);
+    flow.setTextAlignment(TextAlignment.CENTER);
+
+    box.getChildren().addAll(titleBox, loadBox);
+    centerHelp.getChildren().addAll(box, flow);
   }
 
   private void createDropBox(){
@@ -398,7 +404,6 @@ public class SchemaPane extends BorderPane {
     setCenter(treeBox);
     setBottom(bottom);
     rootNode.getChildren().clear();
-    addNewLevel();
   }
 
   private SchemaNode addNewLevel() {
