@@ -1,5 +1,7 @@
 package org.roda.rodain.rules.ui;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -20,7 +22,8 @@ import org.roda.rodain.rules.sip.SipPreview;
  * @since 19/11/2015.
  */
 public class RuleModalRemoving extends BorderPane implements Observer {
-  private Rule rule;
+  // rule ID -> progress
+  private Map<Integer, Float> rules;
   // top
   private Label sipsRemovedLabel;
   // center
@@ -28,11 +31,9 @@ public class RuleModalRemoving extends BorderPane implements Observer {
 
   /**
    * Creates a new RuleModalRemoving object.
-   *
-   * @param rule The Rule that is being removed.
    */
-  public RuleModalRemoving(Rule rule) {
-    this.rule = rule;
+  public RuleModalRemoving() {
+    rules = new HashMap<>();
 
     getStyleClass().add("sipcreator");
 
@@ -75,20 +76,45 @@ public class RuleModalRemoving extends BorderPane implements Observer {
    * @param args The arguments of the update.
    */
   public void update(Observable o, Object args) {
-    if (o == rule || o instanceof SipPreview) {
-      Platform.runLater(new Runnable() {
-        @Override
-        public void run() {
-          if (args instanceof Float) {
-            progress.setProgress((float) args);
-            sipsRemovedLabel.setText(String.format(AppProperties.getLocalizedString("RuleModalRemoving.removedFormat"),
-              (int) ((float) args * 100)));
-          } else {
-            close();
-          }
-        }
-      });
+    if (!(args instanceof Float)) {
+      if (o instanceof Rule) {
+        Rule r = (Rule) o;
+        rules.remove(r.getId());
+      }
+      if (rules.isEmpty()) {
+        updateProgress(1f);
+        close();
+      }
+      return;
     }
+    float progressValue = 0;
+    if (o instanceof Rule) {
+      Rule rule = (Rule) o;
+      rules.put(rule.getId(), (float) args);
+      for (float f : rules.values()) {
+        progressValue += f;
+      }
+      progressValue /= rules.size();
+    }
+    if (o instanceof SipPreview) {
+      progressValue = (float) args;
+    }
+    updateProgress(progressValue);
+  }
+
+  public void addRule(Rule r) {
+    rules.put(r.getId(), 0f);
+  }
+
+  private void updateProgress(float progressValue) {
+    Platform.runLater(new Runnable() {
+      @Override
+      public void run() {
+        progress.setProgress(progressValue);
+        sipsRemovedLabel.setText(String.format(AppProperties.getLocalizedString("RuleModalRemoving.removedFormat"),
+          (int) (progressValue * 100)));
+      }
+    });
   }
 
   private void close() {

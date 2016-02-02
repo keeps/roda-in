@@ -9,6 +9,7 @@ import javafx.scene.image.ImageView;
 
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.sip.SipPreview;
+import org.roda.rodain.rules.ui.RuleModalController;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
 
@@ -146,6 +147,37 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     Image im = FontAwesomeImageCreator.generate(unicode);
     icon = im;
     this.setGraphic(new ImageView(im));
+  }
+
+  public int fullSipCount() {
+    int result = 0;
+    for (int r : rules.values()) {
+      result += r;
+    }
+    for (SchemaNode sn : schemaNodes) {
+      result += sn.fullSipCount();
+    }
+    return result;
+  }
+
+  private Set<Rule> getAllRules() {
+    Set<Rule> result = new HashSet<>(ruleObjects.values());
+    for (SchemaNode sn : schemaNodes) {
+      result.addAll(sn.getAllRules());
+    }
+    return result;
+  }
+
+  public void remove() {
+    Set<Rule> allRules = getAllRules();
+    // first start the modal to give feedback to the user
+    for (Rule r : allRules) {
+      RuleModalController.removeRule(r);
+    }
+    // then we start the remove process
+    for (Rule r : allRules) {
+      removeRule(r);
+    }
   }
 
   /**

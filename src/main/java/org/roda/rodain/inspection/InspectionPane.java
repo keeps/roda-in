@@ -58,8 +58,7 @@ public class InspectionPane extends BorderPane {
   private BorderPane content;
   private TreeView sipFiles;
   private SipContentDirectory sipRoot;
-  private Button remove, flatten, skip;
-  private VBox bottom;
+  private Button flatten, skip;
   // Rules
   private BorderPane rules;
   private ListView<RuleCell> ruleList;
@@ -478,7 +477,6 @@ public class InspectionPane extends BorderPane {
    * @see SipContentFile
    */
   public void update(SipPreviewNode sip) {
-    setBottom(bottom);
     setTop(topBox);
     setCenter(center);
     currentSIP = sip.getSip();
@@ -522,8 +520,6 @@ public class InspectionPane extends BorderPane {
 
     center.getChildren().addAll(idBox, metadata, content);
     setCenter(center);
-
-    remove.setDisable(false);
   }
 
   /**
@@ -539,7 +535,6 @@ public class InspectionPane extends BorderPane {
    * @see SchemaNode
    */
   public void update(SchemaNode node) {
-    setBottom(bottom);
     setTop(topBox);
     currentSIP = null;
     currentSchema = node;
@@ -599,8 +594,6 @@ public class InspectionPane extends BorderPane {
 
     center.getChildren().addAll(idBox, metadata, rules);
     setCenter(center);
-
-    remove.setDisable(true);
   }
 
   /**

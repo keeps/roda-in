@@ -24,6 +24,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
@@ -366,15 +367,26 @@ public class SchemaPane extends BorderPane {
         TreeItem<String> selected = getSelectedItem();
         if (selected != null) {
           if (selected instanceof SchemaNode) {
-            TreeItem parent = selected.getParent();
-            parent.getChildren().remove(selected);
-            schemaNodes.remove(selected);
+            SchemaNode node = (SchemaNode) selected;
+            int fullSipCount = node.fullSipCount();
+            if (fullSipCount != 0) {
+              String content = String.format(AppProperties.getLocalizedString("SchemaPane.confirmRemove.content"),
+                fullSipCount);
+              Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
+              dlg.setHeaderText(AppProperties.getLocalizedString("SchemaPane.confirmRemove.header"));
+              dlg.setContentText(content);
+              dlg.initModality(Modality.APPLICATION_MODAL);
+              dlg.initOwner(primaryStage);
+              dlg.show();
+              dlg.resultProperty().addListener(o -> confirmRemove(selected, dlg.getResult()));
+            } else
+              removeNode(selected);
           } else if (selected instanceof SipPreviewNode) {
             SipPreview currentSIP = ((SipPreviewNode) selected).getSip();
             RuleModalController.removeSipPreview(currentSIP);
-            Task removeTask = new Task() {
+            Task<Void> removeTask = new Task<Void>() {
               @Override
-              protected Object call() throws Exception {
+              protected Void call() throws Exception {
                 currentSIP.removeSIP();
                 return null;
               }
@@ -410,6 +422,21 @@ public class SchemaPane extends BorderPane {
     bottom.getChildren().addAll(removeLevel, addLevel, space, export);
   }
 
+  private void confirmRemove(TreeItem<String> selected, ButtonType type) {
+    if (type.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+      // remove all the rules under this SchemaNode
+      ((SchemaNode) selected).remove();
+      // remove the node from the tree
+      removeNode(selected);
+    }
+  }
+
+  private void removeNode(TreeItem<String> selected) {
+    TreeItem parent = selected.getParent();
+    parent.getChildren().remove(selected);
+    schemaNodes.remove(selected);
+  }
+
   public void createClassificationScheme() {
     setTop(topBox);
     // setCenter(treeBox);
@@ -434,12 +461,14 @@ public class SchemaPane extends BorderPane {
     if (selected != null) {
       dobj.setParentId(selected.getDob().getId());
       selected.getChildren().add(newNode);
+      selected.addChildrenNode(newNode);
       selected.sortChildren();
       if (!selected.isExpanded())
         selected.setExpanded(true);
     } else {
       newNode.updateDescLevel("fonds");
       rootNode.getChildren().add(newNode);
+      rootNode.addChildrenNode(newNode);
       sortRootChildren();
     }
     setCenter(treeBox);

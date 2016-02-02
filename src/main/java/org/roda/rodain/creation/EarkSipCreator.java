@@ -98,9 +98,8 @@ public class EarkSipCreator extends SimpleSipCreator {
 
       earkSip.addRepresentation(rep);
 
-      Path result = earkSip.build();
+      earkSip.build(outputPath);
       currentAction = actionFinalizingSip;
-      Files.move(result, outputPath.resolve(result.getFileName()));
       createdSipsCount++;
     } catch (SIPException e) {
       log.error("Commons IP exception", e);

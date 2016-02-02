@@ -197,13 +197,6 @@ public class SipPreview extends Observable implements Observer {
       }
     }
     removed = true;
-    changedAndNotify();
-  }
-
-  /**
-   * Notifies the observers of the SIP that it has been modified.
-   */
-  public void changedAndNotify() {
     setChanged();
     notifyObservers();
   }
