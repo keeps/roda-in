@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -198,6 +199,14 @@ public class SchemaPane extends BorderPane {
     DescriptionObject dobj = new DescriptionObject();
     rootNode = new SchemaNode(dobj);
     rootNode.setExpanded(true);
+    rootNode.getChildren().addListener(new ListChangeListener<TreeItem<String>>() {
+      @Override
+      public void onChanged(Change<? extends TreeItem<String>> c) {
+        if (rootNode.getChildren().isEmpty()) {
+          setCenter(dropBox);
+        }
+      }
+    });
 
     // create the tree view
     treeView = new TreeView<>(rootNode);
@@ -693,6 +702,7 @@ public class SchemaPane extends BorderPane {
    * @return The Map with the SIPs of all the SchemaNodes in the TreeView
    */
   public Map<SipPreview, String> getSipPreviews() {
+    schemaNodes.add(rootNode);
     Map<SipPreview, String> result = new HashMap<>();
     for (SchemaNode sn : schemaNodes) {
       result.putAll(sn.getSipPreviews());
