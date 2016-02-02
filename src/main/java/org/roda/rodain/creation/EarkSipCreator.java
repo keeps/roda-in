@@ -3,9 +3,9 @@ package org.roda.rodain.creation;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.roda.rodain.core.AppProperties;
@@ -88,12 +88,7 @@ public class EarkSipCreator extends SimpleSipCreator {
 
       currentAction = actionCopyingData;
       for (TreeNode tn : sip.getFiles()) {
-        Set<String> paths = tn.getFullTreePaths();
-        for (String pat : paths) {
-          Path path = Paths.get(pat);
-          if (!Files.isDirectory(path))
-            rep.addData(path);
-        }
+        addFileToRepresentation(tn, new ArrayList<>(), rep);
       }
 
       earkSip.addRepresentation(rep);
@@ -107,6 +102,21 @@ public class EarkSipCreator extends SimpleSipCreator {
     } catch (IOException e) {
       log.error("Error accessing the files", e);
       unsuccessful.add(sip);
+    }
+  }
+
+  private void addFileToRepresentation(TreeNode tn, List<String> relativePath, SIPRepresentation rep) {
+    if (Files.isDirectory(tn.getPath())) {
+      // add this directory to the path list
+      List<String> newRelativePath = new ArrayList<>(relativePath);
+      newRelativePath.add(tn.getPath().getFileName().toString());
+      // recursive call to all the node's children
+      for (TreeNode node : tn.getAllFiles().values()) {
+        addFileToRepresentation(node, newRelativePath, rep);
+      }
+    } else {
+      // if it's a file, add it to the representation
+      rep.addData(tn.getPath(), relativePath);
     }
   }
 }
