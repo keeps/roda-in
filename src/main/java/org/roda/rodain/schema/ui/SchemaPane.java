@@ -51,7 +51,7 @@ public class SchemaPane extends BorderPane {
   private VBox treeBox;
   private SchemaNode rootNode;
   private HBox topBox, bottom;
-  private HBox dropBox;
+  private VBox dropBox;
   private static Stage primaryStage;
 
   private ArrayList<SchemaNode> schemaNodes;
@@ -144,16 +144,21 @@ public class SchemaPane extends BorderPane {
   }
 
   private void createDropBox(){
-    dropBox = new HBox();
-    dropBox.setAlignment(Pos.CENTER);
-    dropBox.setMinHeight(200);
+    dropBox = new VBox();
+
+    HBox innerBox = new HBox();
+    VBox.setVgrow(innerBox, Priority.ALWAYS);
+    innerBox.setAlignment(Pos.CENTER);
+    innerBox.setMinHeight(200);
 
     Separator separatorTop = new Separator();
+    Separator separatorBottom = new Separator();
 
     Label title = new Label(AppProperties.getLocalizedString("SchemaPane.dragHelp"));
     title.getStyleClass().add("helpTitle");
     title.setTextAlignment(TextAlignment.CENTER);
-    dropBox.getChildren().addAll(separatorTop, title);
+    innerBox.getChildren().add(title);
+    dropBox.getChildren().addAll(separatorTop, innerBox, separatorBottom);
 
     dropBox.setOnDragOver(new EventHandler<DragEvent>() {
       @Override
@@ -170,7 +175,6 @@ public class SchemaPane extends BorderPane {
       @Override
       public void handle(DragEvent event) {
         RodaIn.getSchemaPane().startAssociation(rootNode);
-        setCenter(treeBox);
         event.consume();
       }
     });
@@ -421,10 +425,14 @@ public class SchemaPane extends BorderPane {
       rootNode.getChildren().add(newNode);
       sortRootChildren();
     }
+    setCenter(treeBox);
     schemaNodes.add(newNode);
     // Edit the node's title as soon as it's created
     treeView.layout();
     treeView.edit(newNode);
+    treeView.getSelectionModel().select(newNode);
+    treeView.scrollTo(treeView.getSelectionModel().getSelectedIndex());
+
     return newNode;
   }
 
@@ -585,7 +593,7 @@ public class SchemaPane extends BorderPane {
               }
             } else {
               // association to the empty tree view
-              startAssociation();
+              startAssociation(rootNode);
             }
           }
           success = true;
@@ -617,13 +625,7 @@ public class SchemaPane extends BorderPane {
   }
 
   public void showTree(){
-    if(!hasClassificationScheme && getCenter() == centerHelp){
-      VBox box = new VBox(10);
-      box.getChildren().addAll(treeBox, dropBox);
-      schemaNodes.add(rootNode);
-      setCenter(box);
-      setTop(topBox);
-    }
+    setCenter(treeBox);
   }
 
   /**
