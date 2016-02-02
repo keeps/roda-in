@@ -55,6 +55,8 @@ public class MainTest extends ApplicationTest {
     sleep(1000);
     clickOn(AppProperties.getLocalizedString("Main.createCS"));
     sleep(3000);
+    clickOn(AppProperties.getLocalizedString("SchemaPane.add"));
+    sleep(1000);
     clickOn(".schemaNode");
     sleep(500);
     clickOn("#schemeNodeTitle");
@@ -91,7 +93,7 @@ public class MainTest extends ApplicationTest {
 
     drag("Node2").dropTo(".tree-view");
     assert RodaIn.getSchemaPane().getTreeView().getRoot().getChildren().size() == 2;
-    clickOn("Node2").clickOn(AppProperties.getLocalizedString("SchemaPane.remove"));
+    clickOn("Node2").clickOn("#removeLevel");
     assert RodaIn.getSchemaPane().getTreeView().getRoot().getChildren().size() == 1;
   }
 

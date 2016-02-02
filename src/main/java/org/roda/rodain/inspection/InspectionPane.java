@@ -11,7 +11,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -31,7 +30,6 @@ import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
-import org.roda.rodain.rules.ui.RuleModalController;
 import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SipPreviewNode;
@@ -79,7 +77,6 @@ public class InspectionPane extends BorderPane {
     createMetadata();
     createContent();
     createRulesList();
-    createBottom();
 
     center = new VBox(10);
     center.setPadding(new Insets(0, 10, 10, 10));
@@ -428,40 +425,6 @@ public class InspectionPane extends BorderPane {
     box.getChildren().addAll(titleBox);
     emptyRulesPane.getChildren().add(box);
     rules.setCenter(emptyRulesPane);
-  }
-
-  private void createBottom() {
-    bottom = new VBox(10);
-    bottom.setPadding(new Insets(0, 0, 10, 0));
-    bottom.setAlignment(Pos.CENTER_LEFT);
-
-    Separator separatorBottom = new Separator();
-
-    HBox buttonBox = new HBox();
-    buttonBox.setPadding(new Insets(0, 10, 0, 10));
-
-    remove = new Button(AppProperties.getLocalizedString("remove"));
-    remove.setMinWidth(100);
-    remove.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent e) {
-        RuleModalController.removeSipPreview(currentSIP);
-        Task removeTask = new Task() {
-          @Override
-          protected Object call() throws Exception {
-            currentSIP.removeSIP();
-            return null;
-          }
-        };
-        new Thread(removeTask).start();
-
-        setCenter(centerHelp);
-        setTop(new HBox());
-        setBottom(new HBox());
-      }
-    });
-    buttonBox.getChildren().add(remove);
-    bottom.getChildren().addAll(separatorBottom, buttonBox);
   }
 
   /**

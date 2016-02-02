@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -230,14 +231,11 @@ public class SchemaPane extends BorderPane {
     });
   }
 
-  private SchemaNode getSelectedItem() {
-    SchemaNode result = null;
+  private TreeItem<String> getSelectedItem() {
+    TreeItem<String> result = null;
     int selIndex = treeView.getSelectionModel().getSelectedIndex();
     if (selIndex != -1) {
-      TreeItem selected = treeView.getTreeItem(selIndex);
-      if (selected instanceof SchemaNode) {
-        result = (SchemaNode) selected;
-      }
+      result = treeView.getTreeItem(selIndex);
     }
     return result;
   }
@@ -360,15 +358,29 @@ public class SchemaPane extends BorderPane {
     bottom.setPadding(new Insets(10, 10, 10, 10));
 
     Button removeLevel = new Button(AppProperties.getLocalizedString("SchemaPane.remove"));
+    removeLevel.setId("removeLevel");
     removeLevel.setMinWidth(100);
     removeLevel.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent event) {
-        SchemaNode selected = getSelectedItem();
+        TreeItem<String> selected = getSelectedItem();
         if (selected != null) {
-          TreeItem parent = selected.getParent();
-          parent.getChildren().remove(selected);
-          schemaNodes.remove(selected);
+          if (selected instanceof SchemaNode) {
+            TreeItem parent = selected.getParent();
+            parent.getChildren().remove(selected);
+            schemaNodes.remove(selected);
+          } else if (selected instanceof SipPreviewNode) {
+            SipPreview currentSIP = ((SipPreviewNode) selected).getSip();
+            RuleModalController.removeSipPreview(currentSIP);
+            Task removeTask = new Task() {
+              @Override
+              protected Object call() throws Exception {
+                currentSIP.removeSIP();
+                return null;
+              }
+            };
+            new Thread(removeTask).start();
+          }
         }
       }
     });
@@ -408,7 +420,12 @@ public class SchemaPane extends BorderPane {
   }
 
   private SchemaNode addNewLevel() {
-    SchemaNode selected = getSelectedItem();
+    TreeItem<String> selectedItem = getSelectedItem();
+    SchemaNode selected = null;
+    if (selectedItem instanceof SchemaNode) {
+      selected = (SchemaNode) selectedItem;
+    }
+
     DescriptionObject dobj = new DescriptionObject();
     dobj.setId(UUID.randomUUID().toString());
     dobj.setTitle(AppProperties.getLocalizedString("SchemaPane.newNode"));
@@ -438,8 +455,9 @@ public class SchemaPane extends BorderPane {
 
   public void startAssociation() {
     if (hasClassificationScheme) {
-      if (getSelectedItem() != null)
-        startAssociation(getSelectedItem());
+      TreeItem<String> selected = getSelectedItem();
+      if (selected != null && selected instanceof SchemaNode)
+        startAssociation((SchemaNode) selected);
       else
         startAssociation(rootNode);
     }
