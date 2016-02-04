@@ -143,7 +143,7 @@ public class MainTest extends ApplicationTest {
 
     assert parent.getChildren().size() == 14;
 
-    clickOn(AppProperties.getLocalizedString("remove"));
+    clickOn("#removeLevel");
     sleep(1000); //wait for the SIP removal
     assert parent.getChildren().size() == 13;
 
