@@ -66,7 +66,8 @@ public class SchemaPane extends BorderPane {
   /**
    * Creates a new SchemaPane object.
    *
-   * @param stage The primary stage of the application.
+   * @param stage
+   *          The primary stage of the application.
    */
   public SchemaPane(Stage stage) {
     super();
@@ -146,7 +147,7 @@ public class SchemaPane extends BorderPane {
     centerHelp.getChildren().addAll(box, flow);
   }
 
-  private void createDropBox(){
+  private void createDropBox() {
     dropBox = new VBox();
 
     HBox innerBox = new HBox();
@@ -202,7 +203,6 @@ public class SchemaPane extends BorderPane {
     rootNode.getChildren().addListener(new ListChangeListener<TreeItem<String>>() {
       @Override
       public void onChanged(Change<? extends TreeItem<String>> c) {
-        System.out.println(rootNode.getChildren().size());
         if (rootNode.getChildren().isEmpty()) {
           setCenter(dropBox);
         } else {
@@ -272,8 +272,9 @@ public class SchemaPane extends BorderPane {
   }
 
   /**
-   * Creates a file chooser dialog so that the user can choose the classification scheme file to be loaded.
-   * Then, loads the file and creates the tree.
+   * Creates a file chooser dialog so that the user can choose the
+   * classification scheme file to be loaded. Then, loads the file and creates
+   * the tree.
    */
   public void loadClassificationSchema() {
     FileChooser chooser = new FileChooser();
@@ -291,10 +292,14 @@ public class SchemaPane extends BorderPane {
   }
 
   /**
-   * Creates a ClassificationSchema object from the InputStream and builds a tree using it.
-   * @param stream The stream with the JSON file used to create the ClassificationSchema
+   * Creates a ClassificationSchema object from the InputStream and builds a
+   * tree using it.
+   * 
+   * @param stream
+   *          The stream with the JSON file used to create the
+   *          ClassificationSchema
    */
-  public void loadClassificationSchemeFromStream(InputStream stream){
+  public void loadClassificationSchemeFromStream(InputStream stream) {
     try {
       // create ObjectMapper instance
       ObjectMapper objectMapper = new ObjectMapper();
@@ -340,7 +345,7 @@ public class SchemaPane extends BorderPane {
       } else {
         // Get a list with the items where the id equals the node's parent's id
         List<DescriptionObject> parents = dos.stream().filter(p -> p.getId().equals(descObj.getParentId()))
-            .collect(Collectors.toList());
+          .collect(Collectors.toList());
         // If the input file is well formed, there should be one item in the
         // list, no more and no less
         if (parents.size() != 1) {
@@ -386,8 +391,10 @@ public class SchemaPane extends BorderPane {
       return true;
     }
     String content = AppProperties.getLocalizedString("SchemaPane.confirmNewScheme.content");
+    // Localization.setLocale(Locale.forLanguageTag("pt"));
     Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
     dlg.setHeaderText(AppProperties.getLocalizedString("SchemaPane.confirmNewScheme.header"));
+    dlg.setTitle(AppProperties.getLocalizedString("SchemaPane.confirmNewScheme.title"));
     dlg.setContentText(content);
     dlg.initModality(Modality.APPLICATION_MODAL);
     dlg.initOwner(primaryStage);
@@ -426,6 +433,7 @@ public class SchemaPane extends BorderPane {
                 fullSipCount);
               Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
               dlg.setHeaderText(AppProperties.getLocalizedString("SchemaPane.confirmRemove.header"));
+              dlg.setTitle(AppProperties.getLocalizedString("SchemaPane.confirmRemove.title"));
               dlg.setContentText(content);
               dlg.initModality(Modality.APPLICATION_MODAL);
               dlg.initOwner(primaryStage);
@@ -726,7 +734,7 @@ public class SchemaPane extends BorderPane {
     return result;
   }
 
-  public void showTree(){
+  public void showTree() {
     setCenter(treeBox);
   }
 
