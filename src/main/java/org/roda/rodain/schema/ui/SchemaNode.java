@@ -6,6 +6,7 @@ import javafx.application.Platform;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.sip.SipPreview;
@@ -22,7 +23,8 @@ public class SchemaNode extends TreeItem<String> implements Observer {
   private Map<String, Integer> rules;
   private Map<String, Rule> ruleObjects;
   private Map<String, Set<SipPreviewNode>> sips;
-  private Image icon;
+  private Image iconBlack, iconWhite;
+  private boolean blackIconSelected = true;
 
   private Set<SchemaNode> schemaNodes;
 
@@ -144,9 +146,9 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     String category = hierarchyConfig.getString("category." + dob.getDescriptionlevel());
     String unicode = hierarchyConfig.getString("icon." + category);
 
-    Image im = FontAwesomeImageCreator.generate(unicode);
-    icon = im;
-    this.setGraphic(new ImageView(im));
+    iconBlack = FontAwesomeImageCreator.generate(unicode);
+    iconWhite = FontAwesomeImageCreator.generate(unicode, Color.WHITE);
+    this.setGraphic(new ImageView(iconBlack));
   }
 
   public int fullSipCount() {
@@ -184,7 +186,20 @@ public class SchemaNode extends TreeItem<String> implements Observer {
    * @return The icon of the SchemaNode
    */
   public Image getImage() {
-    return icon;
+    if (blackIconSelected) {
+      return iconBlack;
+    } else
+      return iconWhite;
+  }
+
+  public void toggleIcon() {
+    if (blackIconSelected) {
+      setGraphic(new ImageView(iconWhite));
+      blackIconSelected = false;
+    } else {
+      setGraphic(new ImageView(iconBlack));
+      blackIconSelected = true;
+    }
   }
 
   /**
