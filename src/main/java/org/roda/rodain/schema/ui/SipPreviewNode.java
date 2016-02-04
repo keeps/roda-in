@@ -1,12 +1,13 @@
 package org.roda.rodain.schema.ui;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import org.roda.rodain.rules.sip.SipPreview;
 
-import java.util.Observable;
-import java.util.Observer;
+import org.roda.rodain.rules.sip.SipPreview;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -14,19 +15,26 @@ import java.util.Observer;
  */
 public class SipPreviewNode extends TreeItem<String> implements Observer {
   private SipPreview sip;
-  private Image icon;
+  private Image iconBlack, iconWhite;
+
+  private boolean blackIconSelected = true;
 
   /**
    * Creates a new SipPreviewNode
    *
-   * @param sip  The SipPreview object to be wrapped
-   * @param icon The icon to be used in the SipPreviewNode
+   * @param sip
+   *          The SipPreview object to be wrapped
+   * @param iconBlack
+   *          The icon to be used in the SipPreviewNode, with the color black
+   * @param iconWhite
+   *          The icon to be used in the SipPreviewNode, with the color white
    */
-  public SipPreviewNode(SipPreview sip, Image icon) {
+  public SipPreviewNode(SipPreview sip, Image iconBlack, Image iconWhite) {
     super(sip.getName());
     this.sip = sip;
-    this.icon = icon;
-    setGraphic(new ImageView(icon));
+    this.iconBlack = iconBlack;
+    this.iconWhite = iconWhite;
+    setGraphic(new ImageView(iconBlack));
   }
 
   /**
@@ -40,7 +48,20 @@ public class SipPreviewNode extends TreeItem<String> implements Observer {
    * @return The SipPreviewNode's icon
    */
   public Image getIcon() {
-    return icon;
+    if (blackIconSelected) {
+      return iconBlack;
+    } else
+      return iconWhite;
+  }
+
+  public void toggleIcon() {
+    if (blackIconSelected) {
+      setGraphic(new ImageView(iconWhite));
+      blackIconSelected = false;
+    } else {
+      setGraphic(new ImageView(iconBlack));
+      blackIconSelected = true;
+    }
   }
 
   /**

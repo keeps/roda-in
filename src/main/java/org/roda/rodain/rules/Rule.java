@@ -7,6 +7,7 @@ import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.filters.ContentFilter;
@@ -38,7 +39,7 @@ public class Rule extends Observable implements Observer, Comparable {
   private Map<String, SipPreview> sips;
   // map of SipPreview id -> SipPreviewNode
   private HashMap<String, SipPreviewNode> sipNodes = new HashMap<>();
-  private Image icon;
+  private Image iconBlack, iconWhite;
   private int added = 0;
   private int level;
   private Integer id;
@@ -74,7 +75,8 @@ public class Rule extends Observable implements Observer, Comparable {
     String category = hierarchyConfig.getString("category.item");
     String unicode = hierarchyConfig.getString("icon." + category);
 
-    icon = FontAwesomeImageCreator.generate(unicode);
+    iconBlack = FontAwesomeImageCreator.generate(unicode);
+    iconWhite = FontAwesomeImageCreator.generate(unicode, Color.WHITE);
   }
 
   private void createFilters() {
@@ -228,7 +230,7 @@ public class Rule extends Observable implements Observer, Comparable {
       while (visit.hasNext() && added < 100) {
         added++;
         SipPreview sipPreview = visit.getNext();
-        SipPreviewNode sipNode = new SipPreviewNode(sipPreview, icon);
+        SipPreviewNode sipNode = new SipPreviewNode(sipPreview, iconBlack, iconWhite);
         sipPreview.addObserver(sipNode);
         sipPreview.addObserver(this);
         sipNodes.put(sipPreview.getId(), sipNode);

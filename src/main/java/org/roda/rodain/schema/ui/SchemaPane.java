@@ -233,12 +233,30 @@ public class SchemaPane extends BorderPane {
         RodaIn.getInspectionPane().saveMetadata();
         if (newValue instanceof SipPreviewNode) {
           RodaIn.getInspectionPane().update((SipPreviewNode) newValue);
+          ((SipPreviewNode) newValue).toggleIcon();
+          forceUpdate(newValue);
         }
         if (newValue instanceof SchemaNode) {
           RodaIn.getInspectionPane().update((SchemaNode) newValue);
+          ((SchemaNode) newValue).toggleIcon();
+          forceUpdate(newValue);
+        }
+        if (oldValue instanceof SipPreviewNode) {
+          ((SipPreviewNode) oldValue).toggleIcon();
+          forceUpdate(oldValue);
+        }
+        if (oldValue instanceof SchemaNode) {
+          ((SchemaNode) oldValue).toggleIcon();
+          forceUpdate(oldValue);
         }
       }
     });
+  }
+
+  private void forceUpdate(TreeItem item) {
+    Object value = item.getValue();
+    item.setValue(null);
+    item.setValue(value);
   }
 
   private TreeItem<String> getSelectedItem() {
