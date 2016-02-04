@@ -15,17 +15,22 @@
     </properties>
 
     <repositories>
+        <!--<repository>-->
+        <!--<id>vendorDependencies</id>-->
+        <!--<name>Vendor dependencies</name>-->
+        <!--<releases>-->
+        <!--<enabled>true</enabled>-->
+        <!--<checksumPolicy>ignore</checksumPolicy>-->
+        <!--</releases>-->
+        <!--<snapshots>-->
+        <!--<enabled>true</enabled>-->
+        <!--</snapshots>-->
+        <!--<url>file://${projectLocalRepository}/</url>-->
+        <!--</repository>-->
         <repository>
-            <id>vendorDependencies</id>
-            <name>Vendor dependencies</name>
-            <releases>
-                <enabled>true</enabled>
-                <checksumPolicy>ignore</checksumPolicy>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <url>file://${projectLocalRepository}/</url>
+            <id>KEEPS-Artifacts</id>
+            <name>KEEP Artifacts-releases (fits, etc.)</name>
+            <url>http://artifactory.keep.pt/keep</url>
         </repository>
         <repository>
             <id>maven-central-repo</id>
