@@ -202,8 +202,11 @@ public class SchemaPane extends BorderPane {
     rootNode.getChildren().addListener(new ListChangeListener<TreeItem<String>>() {
       @Override
       public void onChanged(Change<? extends TreeItem<String>> c) {
+        System.out.println(rootNode.getChildren().size());
         if (rootNode.getChildren().isEmpty()) {
           setCenter(dropBox);
+        } else {
+          setCenter(treeBox);
         }
       }
     });
@@ -314,6 +317,9 @@ public class SchemaPane extends BorderPane {
   }
 
   private void updateClassificationSchema(ClassificationSchema cs) {
+    if (!confirmUpdate()) {
+      return;
+    }
     setTop(topBox);
     setCenter(treeBox);
     setBottom(bottom);
@@ -373,6 +379,25 @@ public class SchemaPane extends BorderPane {
     }
     sortRootChildren();
     hasClassificationScheme = true;
+  }
+
+  private boolean confirmUpdate() {
+    if (rootNode.getChildren().isEmpty()) {
+      return true;
+    }
+    String content = AppProperties.getLocalizedString("SchemaPane.confirmNewScheme.content");
+    Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
+    dlg.setHeaderText(AppProperties.getLocalizedString("SchemaPane.confirmNewScheme.header"));
+    dlg.setContentText(content);
+    dlg.initModality(Modality.APPLICATION_MODAL);
+    dlg.initOwner(primaryStage);
+    dlg.showAndWait();
+
+    if (dlg.getResult().getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+      rootNode.remove();
+      return true;
+    } else
+      return false;
   }
 
   private void sortRootChildren() {
@@ -465,6 +490,9 @@ public class SchemaPane extends BorderPane {
   }
 
   public void createClassificationScheme() {
+    if (!confirmUpdate()) {
+      return;
+    }
     setTop(topBox);
     // setCenter(treeBox);
     setCenter(dropBox);
