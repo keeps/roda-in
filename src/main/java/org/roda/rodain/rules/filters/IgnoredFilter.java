@@ -33,6 +33,13 @@ public class IgnoredFilter {
     return result;
   }
 
+  /**
+   * Checks if the file matches one of the configured filters
+   * 
+   * @param path
+   *          The path to be filtered
+   * @return True if the path matches one filter, false otherwise
+   */
   public static boolean isIgnored(Path path) {
     int i = path.getNameCount() - 1;
     boolean result = false;

@@ -1,9 +1,8 @@
 <?xml version="1.0"?>
 
-<simpledc
->
+<simpledc>
     <title>
-        #title#
+        {{title}}
     </title>
     <description>
 

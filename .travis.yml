@@ -1,6 +1,12 @@
 language: java
-sudo: false
-install: #ignore tests
+sudo: required
+before_script:
+  - sudo apt-get update
+  - sudo apt-get install libc6:i386 libstdc++6:i386
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - sleep 3 # give xvfb some time to start
+install:
   - true
 script:
   - mvn clean install -DskipTests

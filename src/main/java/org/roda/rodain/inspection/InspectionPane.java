@@ -17,19 +17,23 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SipPreviewNode;
+import org.roda.rodain.source.ui.SourceTreeCell;
 import org.roda.rodain.utils.UIPair;
 
 /**
@@ -54,8 +58,7 @@ public class InspectionPane extends BorderPane {
   private BorderPane content;
   private TreeView sipFiles;
   private SipContentDirectory sipRoot;
-  private Button remove, flatten, skip;
-  private VBox bottom;
+  private Button flatten, skip;
   // Rules
   private BorderPane rules;
   private ListView<RuleCell> ruleList;
@@ -73,7 +76,6 @@ public class InspectionPane extends BorderPane {
     createMetadata();
     createContent();
     createRulesList();
-    createBottom();
 
     center = new VBox(10);
     center.setPadding(new Insets(0, 10, 10, 10));
@@ -110,6 +112,10 @@ public class InspectionPane extends BorderPane {
         if (currentSchema != null) {
           currentSchema.updateDescLevel(t1.getKey().toString());
           topIcon.setImage(currentSchema.getImage());
+          // force update
+          String title = currentSchema.getValue();
+          currentSchema.setValue(null);
+          currentSchema.setValue(title);
         }
       }
     });
@@ -130,6 +136,7 @@ public class InspectionPane extends BorderPane {
     box.getChildren().add(title);
 
     metaText = new TextArea();
+    metaText.setPromptText(AppProperties.getLocalizedString("InspectionPane.metadata.placeholder"));
     metaText.setWrapText(true);
     VBox.setVgrow(metaText, Priority.ALWAYS);
     metadata.getChildren().addAll(box, metaText);
@@ -295,11 +302,20 @@ public class InspectionPane extends BorderPane {
         Object selected = sipFiles.getSelectionModel().getSelectedItem();
         if (selected instanceof SipContentDirectory) {
           SipContentDirectory dir = (SipContentDirectory) selected;
+          SipContentDirectory parent = (SipContentDirectory) dir.getParent();
           dir.skip();
+          // update the SIP's internal content representation
+          Set<TreeNode> newFiles = new HashSet<>();
+          for (String s : sipRoot.getTreeNode().getKeys())
+            newFiles.add(sipRoot.getTreeNode().get(s));
+          currentSIP.setFiles(newFiles);
           // clear the parent and recreate the children based on the updated
           // tree nodes
-          SipContentDirectory parent = (SipContentDirectory) dir.getParent();
-          TreeItem newParent = recCreateSipContent(parent.getTreeNode(), parent.getParent());
+          TreeItem grandparent = parent.getParent();
+          if (grandparent == null) {
+            grandparent = parent;
+          }
+          TreeItem newParent = recCreateSipContent(parent.getTreeNode(), grandparent);
           parent.getChildren().clear();
           parent.getChildren().addAll(newParent.getChildren());
           parent.sortChildren();
@@ -319,6 +335,10 @@ public class InspectionPane extends BorderPane {
 
   private void createContent(SipPreviewNode node) {
     sipRoot.getChildren().clear();
+    Set<String> keysToRemove = new HashSet<>(sipRoot.getTreeNode().getKeys());
+    for (String f : keysToRemove) {
+      sipRoot.getTreeNode().remove(Paths.get(f));
+    }
     Set<TreeNode> files = node.getSip().getFiles();
     for (TreeNode treeNode : files) {
       TreeItem<Object> startingItem = recCreateSipContent(treeNode, sipRoot);
@@ -373,35 +393,37 @@ public class InspectionPane extends BorderPane {
     emptyText.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(emptyText);
 
+    emptyRulesPane.setOnDragOver(new EventHandler<DragEvent>() {
+      @Override
+      public void handle(DragEvent event) {
+        if (currentSchema != null && event.getGestureSource() instanceof SourceTreeCell) {
+          event.acceptTransferModes(TransferMode.COPY);
+          emptyText.setText(AppProperties.getLocalizedString("InspectionPane.onDrop"));
+        }
+        event.consume();
+      }
+    });
+
+    emptyRulesPane.setOnDragDropped(new EventHandler<DragEvent>() {
+      @Override
+      public void handle(DragEvent event) {
+        RodaIn.getSchemaPane().startAssociation(currentSchema);
+        event.consume();
+      }
+    });
+
+    emptyRulesPane.setOnDragExited(new EventHandler<DragEvent>() {
+      @Override
+      public void handle(DragEvent event) {
+        emptyText.setText(AppProperties.getLocalizedString("InspectionPane.help.ruleList"));
+        event.consume();
+      }
+    });
+
+
     box.getChildren().addAll(titleBox);
     emptyRulesPane.getChildren().add(box);
     rules.setCenter(emptyRulesPane);
-  }
-
-  private void createBottom() {
-    bottom = new VBox(10);
-    bottom.setPadding(new Insets(0, 0, 10, 0));
-    bottom.setAlignment(Pos.CENTER_LEFT);
-
-    Separator separatorBottom = new Separator();
-
-    HBox buttonBox = new HBox();
-    buttonBox.setPadding(new Insets(0, 10, 0, 10));
-
-    remove = new Button(AppProperties.getLocalizedString("remove"));
-    remove.setMinWidth(100);
-    remove.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent e) {
-        currentSIP.setRemoved();
-        currentSIP.changedAndNotify();
-        setCenter(centerHelp);
-        setTop(new HBox());
-        setBottom(new HBox());
-      }
-    });
-    buttonBox.getChildren().add(remove);
-    bottom.getChildren().addAll(separatorBottom, buttonBox);
   }
 
   /**
@@ -455,7 +477,6 @@ public class InspectionPane extends BorderPane {
    * @see SipContentFile
    */
   public void update(SipPreviewNode sip) {
-    setBottom(bottom);
     setTop(topBox);
     setCenter(center);
     currentSIP = sip.getSip();
@@ -472,6 +493,7 @@ public class InspectionPane extends BorderPane {
     top.getChildren().addAll(sip.getGraphic(), title);
     Separator separatorTop = new Separator();
 
+    topBox.setPadding(new Insets(10, 0, 10, 0));
     topBox.getChildren().clear();
     topBox.getChildren().addAll(top, separatorTop);
 
@@ -498,8 +520,6 @@ public class InspectionPane extends BorderPane {
 
     center.getChildren().addAll(idBox, metadata, content);
     setCenter(center);
-
-    remove.setDisable(false);
   }
 
   /**
@@ -515,22 +535,23 @@ public class InspectionPane extends BorderPane {
    * @see SchemaNode
    */
   public void update(SchemaNode node) {
-    setBottom(bottom);
     setTop(topBox);
     currentSIP = null;
     currentSchema = node;
 
     /* top */
     // title
-    Label title = new Label(node.getValue());
+    TextField title = new TextField(node.getValue());
+    title.setId("schemeNodeTitle");
     title.getStyleClass().add("title");
+    HBox.setHgrow(title, Priority.ALWAYS);
     title.textProperty().bindBidirectional(node.valueProperty());
 
     HBox top = new HBox(5);
-    top.setPadding(new Insets(0, 10, 10, 10));
+    top.setPadding(new Insets(0, 10, 5, 10));
     top.setAlignment(Pos.CENTER_LEFT);
     topIcon = new ImageView(node.getImage());
-    top.getChildren().addAll(topIcon, title, topSpace, itemTypes);
+    top.getChildren().addAll(topIcon, title, itemTypes);
 
     // Select current description level
     String currentDescLevel = node.getDob().getDescriptionlevel();
@@ -542,6 +563,7 @@ public class InspectionPane extends BorderPane {
     }
 
     Separator separatorTop = new Separator();
+    topBox.setPadding(new Insets(5, 0, 5, 0));
     topBox.getChildren().clear();
     topBox.getChildren().addAll(top, separatorTop);
 
@@ -572,23 +594,27 @@ public class InspectionPane extends BorderPane {
 
     center.getChildren().addAll(idBox, metadata, rules);
     setCenter(center);
-
-    remove.setDisable(true);
   }
 
-  private void updateRuleList() {
-    ruleList.getItems().clear();
-    Set<Rule> currentRules = currentSchema.getRules();
+  /**
+   * Updates the rule list of the currently selected scheme node.
+   */
+  public void updateRuleList() {
+    if(currentSchema != null) {
+      ruleList.getItems().clear();
+      Set<Rule> currentRules = currentSchema.getRules();
 
-    for (Rule rule : currentRules) {
-      RuleCell cell = new RuleCell(currentSchema, rule);
-      rule.addObserver(cell);
-      ruleList.getItems().add(cell);
+      for (Rule rule : currentRules) {
+        RuleCell cell = new RuleCell(currentSchema, rule);
+        cell.maxWidthProperty().bind(widthProperty().subtract(36));
+        rule.addObserver(cell);
+        ruleList.getItems().add(cell);
+      }
+      if (currentRules.isEmpty()) {
+        rules.setCenter(emptyRulesPane);
+      } else
+        rules.setCenter(ruleList);
     }
-    if (currentRules.isEmpty()) {
-      rules.setCenter(emptyRulesPane);
-    } else
-      rules.setCenter(ruleList);
   }
 
   /**

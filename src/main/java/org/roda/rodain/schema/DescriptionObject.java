@@ -1,5 +1,7 @@
 package org.roda.rodain.schema;
 
+import org.roda.rodain.core.AppProperties;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +18,10 @@ public class DescriptionObject {
   private String descriptionlevel;
   private List<DescObjMetadata> metadata = new ArrayList<>();
   private Map<String, Object> additionalProperties = new HashMap<>();
+
+  public DescriptionObject(){
+    title = AppProperties.getLocalizedString("root");
+  }
 
   /**
    * Gets the title of the description object

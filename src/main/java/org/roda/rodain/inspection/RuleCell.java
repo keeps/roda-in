@@ -24,7 +24,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 
 import org.roda.rodain.core.AppProperties;
-import org.roda.rodain.core.Main;
+import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.RuleTypes;
 import org.roda.rodain.rules.ui.RuleModalController;
@@ -103,7 +103,7 @@ public class RuleCell extends HBox implements Observer {
       public void handle(ActionEvent e) {
         RuleModalController.removeRule(rule);
         schemaNode.removeRule(rule);
-        Main.getInspectionPane().notifyChange();
+        RodaIn.getInspectionPane().notifyChange();
       }
     });
 
@@ -144,6 +144,8 @@ public class RuleCell extends HBox implements Observer {
         break;
     }
     Label lType = new Label(type);
+    lType.maxWidthProperty().bind(widthProperty());
+    lType.setWrapText(true);
 
     // source items
     Set<SourceTreeItem> source = rule.getSource();
@@ -279,13 +281,19 @@ public class RuleCell extends HBox implements Observer {
       Platform.runLater(new Runnable() {
         @Override
         public void run() {
-          int sipCount = rule.getSipCount();
-          String format = titleFormat;
-          if (sipCount != 1) {
-            format += "s";
+          if (arg instanceof String && arg.equals("Removed rule")) {
+            RuleModalController.removeRule(rule);
+            schemaNode.removeRule(rule);
+            RodaIn.getInspectionPane().notifyChange();
+          } else {
+            int sipCount = rule.getSipCount();
+            String format = titleFormat;
+            if (sipCount != 1) {
+              format += "s";
+            }
+            String created = String.format(format, rule.getSipCount());
+            lCreated.setText(created);
           }
-          String created = String.format(format, rule.getSipCount());
-          lCreated.setText(created);
         }
       });
     }

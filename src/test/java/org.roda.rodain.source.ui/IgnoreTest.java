@@ -8,12 +8,11 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.roda.rodain.core.AppProperties;
-import org.roda.rodain.core.Main;
+import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
@@ -30,10 +29,10 @@ public class IgnoreTest extends ApplicationTest {
 
   @Override
   public void start(Stage stage) throws Exception {
-    Main main = new Main();
+    RodaIn main = new RodaIn();
     main.start(stage);
 
-    fileExplorer = Main.getPreviewExplorer();
+    fileExplorer = RodaIn.getPreviewExplorer();
     fileExplorer.setFileExplorerRoot(testDir);
   }
 
@@ -67,16 +66,14 @@ public class IgnoreTest extends ApplicationTest {
 
     doubleClickOn("dirA");
     sleep(1000);
-    rightClickOn("dirAA");
-    sleep(1000);
-    clickOn("#removeIgnore");
     SourceTreeDirectory dirAA = (SourceTreeDirectory) dirA.getChildren().get(0);
+    dirAA.removeIgnore();
+    sleep(1000);
     assert dirAA.getState() == SourceTreeItemState.NORMAL;
 
-    rightClickOn("dirAB");
-    sleep(1000);
-    clickOn("#removeIgnore");
     SourceTreeDirectory dirAB = (SourceTreeDirectory) dirA.getChildren().get(1);
+    dirAB.removeIgnore();
+    sleep(1000);
     assert dirAB.getState() == SourceTreeItemState.NORMAL;
 
     doubleClickOn("dirAB");
@@ -99,15 +96,9 @@ public class IgnoreTest extends ApplicationTest {
     assert dirA.getState() == SourceTreeItemState.IGNORED;
     assert dirAB.getState() == SourceTreeItemState.IGNORED;
 
-    rightClickOn("dir4");
-    clickOn("#removeIgnore");
+    dir4.removeIgnore();
+    sleep(1000);
     assert dir4.getState() == SourceTreeItemState.NORMAL;
     assert fileA.getState() == SourceTreeItemState.NORMAL;
-  }
-
-
-  @AfterClass
-  public static void tearDownAfterClass() throws Exception {
-    FileUtils.deleteDirectory(testDir.toFile());
   }
 }

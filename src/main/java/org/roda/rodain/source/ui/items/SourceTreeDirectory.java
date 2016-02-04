@@ -237,7 +237,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
           if (sti instanceof SourceTreeFile && !FileExplorerPane.isShowFiles()) {
             files.add((SourceTreeFile) sti);
           } else
-            newChildren.add((TreeItem) sti);
+            newChildren.add(sti);
         }
         ignored.clear();
         for (TreeItem sti : newChildren) {

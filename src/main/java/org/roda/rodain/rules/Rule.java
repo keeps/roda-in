@@ -240,11 +240,11 @@ public class Rule extends Observable implements Observer, Comparable {
       if (sip.isRemoved()) {
         sipNodes.remove(sip.getId());
         sips.remove(sip.getId());
-        for (TreeNode tn : sip.getFiles()) {
-          PathCollection.addPaths(tn.getFullTreePaths(), SourceTreeItemState.NORMAL);
-        }
         setChanged();
-        notifyObservers("Removed SIP");
+        if (sips.isEmpty()) {
+          notifyObservers("Removed rule");
+        } else
+          notifyObservers("Removed SIP");
       }
     }
   }
@@ -257,19 +257,25 @@ public class Rule extends Observable implements Observer, Comparable {
     Task<Void> task = new Task<Void>() {
       @Override
       protected Void call() throws Exception {
+        int paths = 0, removedPaths = 0;
         for (SipPreview sip : sips.values()) {
           sip.setRemoved();
+          for (TreeNode tn : sip.getFiles()) {
+            paths += tn.getFullTreePaths().size();
+          }
         }
 
-        int removedSips = 0;
         sipNodes.clear();
         for (SipPreview sip : sips.values()) {
           for (TreeNode tn : sip.getFiles()) {
-            PathCollection.addPaths(tn.getFullTreePaths(), SourceTreeItemState.NORMAL);
+            for (String path : tn.getFullTreePaths()) {
+              PathCollection.addPath(path, SourceTreeItemState.NORMAL);
+              removedPaths++;
+              float result = (float) removedPaths / paths;
+              setChanged();
+              notifyObservers(result);
+            }
           }
-          removedSips++;
-          setChanged();
-          notifyObservers(removedSips);
         }
         sips.clear();
         return null;

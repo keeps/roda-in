@@ -12,7 +12,7 @@ public class SourceTreeLoading extends SourceTreeItem {
   }
 
   /**
-   * @return Nullm because this item has no path
+   * @return Null because this item has no path
    */
   @Override
   public String getPath() {

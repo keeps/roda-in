@@ -1,5 +1,7 @@
 package org.roda.rodain.utils;
 
+import java.io.InputStream;
+
 import javafx.geometry.VPos;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
@@ -9,8 +11,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
-
-import java.io.InputStream;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -23,16 +23,6 @@ public class FontAwesomeImageCreator {
   public static final String times = "\uf00d";
 
   public static final Font font = loadFont();
-  // pre-generate these images because we can't snapshot when in a modal window
-  // white
-  public static final Image im_w_chevron_right = generate(chevron_right, Color.WHITE);
-  public static final Image im_w_chevron_left = generate(chevron_left, Color.WHITE);
-  public static final Image im_w_times = generate(times, Color.WHITE);
-  // black
-  public static final Image im_b_chevron_right = generate(chevron_right, Color.BLACK);
-  public static final Image im_b_chevron_left = generate(chevron_left, Color.BLACK);
-  public static final Image im_b_times = generate(times, Color.BLACK);
-
   private FontAwesomeImageCreator() {
 
   }

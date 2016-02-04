@@ -7,9 +7,9 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.sip.SipPreview;
+import org.roda.rodain.rules.ui.RuleModalController;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
 
@@ -39,7 +39,8 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     ruleObjects = new HashMap<>();
     schemaNodes = new HashSet<>();
 
-    updateDescLevel(dob.getDescriptionlevel());
+    if(dob.getDescriptionlevel() != null)
+      updateDescLevel(dob.getDescriptionlevel());
   }
 
   /**
@@ -57,7 +58,6 @@ public class SchemaNode extends TreeItem<String> implements Observer {
       // set the title with the sip count
       int count = rule.getSipCount();
       rules.put(id, count);
-      updateValue();
 
       Platform.runLater(new Runnable() {
         @Override
@@ -75,20 +75,6 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     }
   }
 
-  private void updateValue() {
-    Platform.runLater(new Runnable() {
-      @Override
-      public void run() {
-        int sipCount = getSipCount();
-        if (sipCount > 0)
-          setValue(
-            String.format(AppProperties.getLocalizedString("SchemaNode.items.format"), dob.getTitle(), getSipCount()));
-        else
-          setValue(dob.getTitle());
-      }
-    });
-  }
-
   /**
    * Adds a new Rule to the SchemaNode.
    *
@@ -101,10 +87,6 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     // add the rule the maps
     rules.put(id, count);
     ruleObjects.put(id, r);
-    // update the value of the TreeItem
-    int sipCount = getSipCount();
-    if (sipCount > 0)
-      setValue(String.format(AppProperties.getLocalizedString("SchemaNode.items.format"), dob.getTitle(), getSipCount()));
     setExpanded(true);
   }
 
@@ -124,12 +106,6 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     ruleObjects.remove(id);
     sips.remove(id);
     r.remove();
-    // update the value of the TreeItem
-    String text = dob.getTitle();
-    int count = getSipCount();
-    if (count > 0)
-      text += String.format(AppProperties.getLocalizedString("SchemaNode.items.formatSimple"), count);
-    setValue(text);
   }
 
   /**
@@ -171,6 +147,37 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     Image im = FontAwesomeImageCreator.generate(unicode);
     icon = im;
     this.setGraphic(new ImageView(im));
+  }
+
+  public int fullSipCount() {
+    int result = 0;
+    for (int r : rules.values()) {
+      result += r;
+    }
+    for (SchemaNode sn : schemaNodes) {
+      result += sn.fullSipCount();
+    }
+    return result;
+  }
+
+  private Set<Rule> getAllRules() {
+    Set<Rule> result = new HashSet<>(ruleObjects.values());
+    for (SchemaNode sn : schemaNodes) {
+      result.addAll(sn.getAllRules());
+    }
+    return result;
+  }
+
+  public void remove() {
+    Set<Rule> allRules = getAllRules();
+    // first start the modal to give feedback to the user
+    for (Rule r : allRules) {
+      RuleModalController.removeRule(r);
+    }
+    // then we start the remove process
+    for (Rule r : allRules) {
+      removeRule(r);
+    }
   }
 
   /**

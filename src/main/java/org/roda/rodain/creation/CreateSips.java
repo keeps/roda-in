@@ -5,7 +5,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
 
-import org.roda.rodain.core.Main;
+import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.sip.SipPreview;
 
 /**
@@ -19,7 +19,7 @@ public class CreateSips {
 
   private Instant startTime;
   private int sipsCount;
-
+  private float currentSipProgress;
   /**
    * Creates a new object of the SIP exporter
    *
@@ -35,7 +35,7 @@ public class CreateSips {
    * Starts the exportation process.
    */
   public void start() {
-    Map<SipPreview, String> sips = Main.getSipPreviews();
+    Map<SipPreview, String> sips = RodaIn.getSipPreviews();
     sipsCount = sips.size();
     if (type == SipTypes.BAGIT) {
       creator = new BagitSipCreator(outputPath, sips);
@@ -73,7 +73,7 @@ public class CreateSips {
    * created by the total number of SIPs.
    */
   public double getProgress() {
-    return creator.getCreatedSipsCount() / (sipsCount * 1.0);
+    return (creator.getCreatedSipsCount() / (sipsCount * 1.0)) + currentSipProgress;
   }
 
   /**
@@ -97,20 +97,30 @@ public class CreateSips {
   public double getTimeRemainingEstimate() {
     // prevent divide by zero
     if (creator.transferedTime == 0)
-      return 0;
+      return -1;
     // estimate the remaining data copy time for the current SIP
     float allSpeed = creator.transferedSize / creator.transferedTime;
     long allSizeLeft = creator.allSipsSize - creator.transferedSize;
     long sizeLeft = creator.sipSize - creator.sipTransferedSize;
     float sipRemaining = sizeLeft / allSpeed;
 
+    // 80% is the progress of the data copy of current SIP
+    // the other 20% are for the SIP finalization
+    // divide the result by the number of SIPs because this should be the
+    // progress of 1 SIP
+    currentSipProgress = (creator.sipTransferedSize / (float) creator.sipSize) * 0.8f;
+    currentSipProgress /= sipsCount;
+
     // estimate the time remaining for the other SIPs, except the data copy time
     long timeSinceStart = Duration.between(startTime, Instant.now()).toMillis();
     long allOtherTime = timeSinceStart - creator.transferedTime;
     int createdSips = getCreatedSipsCount();
-    float eachOtherTime = 0;
+    float eachOtherTime;
     if (createdSips != 0) {
       eachOtherTime = allOtherTime / createdSips;
+    } else { // if the finishing time is very small, set it to 70% of the
+             // estimated time
+      eachOtherTime = (creator.sipSize / allSpeed) * 0.7f;
     }
 
     // time = data copy estimate + other SIP's estimate (without copy time)

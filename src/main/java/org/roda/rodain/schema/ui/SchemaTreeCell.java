@@ -1,63 +1,22 @@
 package org.roda.rodain.schema.ui;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
-import javafx.scene.control.cell.TextFieldTreeCell;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.util.StringConverter;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 12-10-2015.
  */
-public class SchemaTreeCell extends TextFieldTreeCell<String> {
-  private static final String pattern = "(.+)(  )\\((\\d+ ite[^)]*)\\)";
+public class SchemaTreeCell extends TreeCell<String> {
   /**
    * Creates a new SchemaTreeCell
    */
   public SchemaTreeCell() {
-    super(new StringConverter<String>() {
-      @Override
-      public String toString(String object) {
-        if (object == null || object.length() == 0)
-          return null;
-        Pattern pat = Pattern.compile(pattern);
-        Matcher mat = pat.matcher(object);
-        if (mat.find()) {
-          return mat.group(1);
-        }
-        return object;
-      }
-
-      @Override
-      public String fromString(String string) {
-        return string;
-      }
-    });
-  }
-
-  @Override
-  public void commitEdit(String newValue) {
-    super.commitEdit(newValue);
-    TreeItem<String> treeItem = getTreeItem();
-    if (treeItem != null && treeItem instanceof SchemaNode) {
-      SchemaNode node = (SchemaNode) treeItem;
-      node.getDob().setTitle(newValue);
-    }
-
-  }
-
-  @Override
-  public void cancelEdit() {
-    String item = super.getItem();
-    super.cancelEdit();
-    updateItem(item, false);
+    super();
   }
 
   @Override
@@ -77,14 +36,12 @@ public class SchemaTreeCell extends TextFieldTreeCell<String> {
     } else {
       if (!getStyleClass().contains("tree-cell"))
         getStyleClass().add("tree-cell");
-      if (!getStyleClass().contains("schemaNode"))
-        getStyleClass().add("schemaNode");
 
       HBox hbox = new HBox();
       hbox.setAlignment(Pos.BOTTOM_LEFT);
       Label lab = new Label(item);
       lab.getStyleClass().add("cellText");
-      Image icon = null;
+      ImageView icon = null;
 
       // Get the correct item
       TreeItem<String> treeItem = getTreeItem();
@@ -93,36 +50,18 @@ public class SchemaTreeCell extends TextFieldTreeCell<String> {
 
       boolean addHbox = false;
       if (treeItem instanceof SchemaNode) {
-        setEditable(true);
+        if (!getStyleClass().contains("schemaNode"))
+          getStyleClass().add("schemaNode");
         SchemaNode itemNode = (SchemaNode) treeItem;
-        icon = itemNode.getImage();
-        Pattern pat = Pattern.compile(pattern);
-        Matcher mat = pat.matcher(item);
-        boolean schemaEmpty = true;
-        if (mat.find()) {
-          lab = new Label(mat.group(1));
-          setText(mat.group(3)); // group 2 is the spaces " "
-          addHbox = true;
-          schemaEmpty = false;
-        } else {
-          int sipCount = itemNode.getSipCount();
-          if (sipCount > 0) {
-            schemaEmpty = false;
-            itemNode.setValue(item + "  (" + sipCount + " items)");
-          }
-        }
-        if (schemaEmpty) {
-          if (getStyleClass().contains("schemaNode")) {
-            getStyleClass().remove("schemaNode");
-          }
-          getStyleClass().add("schemaNodeEmpty");
-        }
+        icon = new ImageView(itemNode.getImage());
+        icon.setOpacity(0.7);
+        updateDObj(item);
+        addHbox = true;
       } else {
         if (treeItem instanceof SipPreviewNode) {
-          setEditable(false);
           addHbox = true;
           SipPreviewNode sipNode = (SipPreviewNode) treeItem;
-          icon = sipNode.getIcon();
+          icon = new ImageView(sipNode.getIcon());
           if (sipNode.isMetaModified() || sipNode.isContentModified()) {
             setText("*");
           } else
@@ -130,9 +69,17 @@ public class SchemaTreeCell extends TextFieldTreeCell<String> {
         }
       }
       if (addHbox) {
-        hbox.getChildren().addAll(new ImageView(icon), lab);
+        hbox.getChildren().addAll(icon, lab);
         setGraphic(hbox);
       }
+    }
+  }
+
+  private void updateDObj(String title) {
+    TreeItem<String> item = getTreeItem();
+    if (item instanceof SchemaNode) {
+      SchemaNode node = (SchemaNode) item;
+      node.getDob().setTitle(title);
     }
   }
 }

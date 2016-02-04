@@ -10,10 +10,12 @@ import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.stage.Stage;
 
+import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.RuleTypes;
 import org.roda.rodain.rules.VisitorStack;
+import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.rules.sip.SipPreviewCreator;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
@@ -152,6 +154,7 @@ public class RuleModalController {
           stage.setHeight(180);
           stage.setWidth(400);
           stage.centerOnScreen();
+          RodaIn.getSchemaPane().showTree();
         }
       });
     } catch (Exception e) {
@@ -166,8 +169,24 @@ public class RuleModalController {
    * @see RuleModalRemoving
    */
   public static void removeRule(Rule r) {
-    RuleModalRemoving removing = new RuleModalRemoving(r);
-    r.addObserver(removing);
+    RuleModalRemoving removing;
+    if (stage.isShowing() && stage.getScene().getRoot() instanceof RuleModalRemoving) {
+      removing = (RuleModalRemoving) stage.getScene().getRoot();
+      r.addObserver(removing);
+    } else {
+      removing = new RuleModalRemoving();
+      r.addObserver(removing);
+      stage.setRoot(removing);
+      stage.setHeight(120);
+      stage.setWidth(400);
+      stage.centerOnScreen();
+    }
+    removing.addRule(r);
+  }
+
+  public static void removeSipPreview(SipPreview sip) {
+    RuleModalRemoving removing = new RuleModalRemoving();
+    sip.addObserver(removing);
     stage.setRoot(removing);
     stage.setHeight(120);
     stage.setWidth(400);
@@ -178,6 +197,11 @@ public class RuleModalController {
    * Closes the stage of the modal window.
    */
   public static void cancel() {
-    stage.close();
+    Platform.runLater(new Runnable() {
+      @Override
+      public void run() {
+        stage.close();
+      }
+    });
   }
 }

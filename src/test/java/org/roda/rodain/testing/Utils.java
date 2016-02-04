@@ -4,22 +4,35 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.apache.commons.io.FileUtils;
+
 /**
- * Created by adrapereira on 17-12-2015.
+ * @author Andre Pereira apereira@keep.pt
+ * @since 17-12-2015.
  */
 public class Utils {
+  public static final Path homeDir = getHomeDir();
+  public static final Path testDir = getTestDir();
+
+  private static Path getHomeDir() {
+    String home = System.getProperty("java.io.tmpdir");
+    return Paths.get(home);
+  }
+
+  private static Path getTestDir() {
+    String home = System.getProperty("java.io.tmpdir");
+    Path homePath = Paths.get(home);
+    return homePath.resolve("RODA-In Test Dir");
+  }
 
   public static Path createFolderStructure() {
     /*
       Create a directory structure to test the file explorer
      */
-    String home = System.getProperty("user.home");
-    Path homePath = Paths.get(home);
-
-    Path testDir = homePath.resolve("RODA-In Test Dir");
     createDir(testDir);
     /*
       Dir 1
@@ -103,6 +116,10 @@ public class Utils {
     } catch (UnsupportedEncodingException e) {
       e.printStackTrace();
     }
+  }
 
+  public static void removeTestDir() throws Exception {
+    if (testDir != null && Files.exists(testDir))
+      FileUtils.deleteDirectory(testDir.toFile());
   }
 }

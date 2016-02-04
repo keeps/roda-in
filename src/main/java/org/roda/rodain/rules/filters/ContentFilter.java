@@ -1,6 +1,7 @@
 package org.roda.rodain.rules.filters;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -74,7 +75,8 @@ public class ContentFilter {
    */
   public boolean filter(String st) {
     boolean result = false;
-    if (ignored.contains(st) || mapped.contains(st) || PathCollection.getState(st) != SourceTreeItemState.NORMAL) {
+    if (ignored.contains(st) || mapped.contains(st) || PathCollection.getState(st) != SourceTreeItemState.NORMAL
+      || IgnoredFilter.isIgnored(Paths.get(st))) {
       result = true;
     } else {
       int index = 0, end = st.length(), fromIndex = 0;
@@ -90,7 +92,7 @@ public class ContentFilter {
           String sub = st.substring(0, index);
           fromIndex = index + 1; // move the starting index for the next
           // iteration so it's after the slash
-          if (ignored.contains(sub) || mapped.contains(sub)) {
+          if (ignored.contains(sub) || mapped.contains(sub) || IgnoredFilter.isIgnored(Paths.get(sub))) {
             result = true;
           }
         }

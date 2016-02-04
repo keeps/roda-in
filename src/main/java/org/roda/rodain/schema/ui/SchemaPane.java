@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -23,15 +25,17 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import org.roda.rodain.core.AppProperties;
-import org.roda.rodain.core.Main;
+import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.rules.ui.RuleModalController;
 import org.roda.rodain.schema.ClassificationSchema;
 import org.roda.rodain.schema.DescriptionObject;
+import org.roda.rodain.source.ui.SourceTreeCell;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
@@ -48,15 +52,16 @@ public class SchemaPane extends BorderPane {
   private static final org.slf4j.Logger log = LoggerFactory.getLogger(SchemaPane.class.getName());
   private TreeView<String> treeView;
   private VBox treeBox;
-  private TreeItem<String> rootNode;
-  private HBox topBox;
-  private HBox bottom;
-  private Stage primaryStage;
+  private SchemaNode rootNode;
+  private HBox topBox, bottom;
+  private VBox dropBox;
+  private static Stage primaryStage;
 
   private ArrayList<SchemaNode> schemaNodes;
 
   // center help
   private VBox centerHelp;
+  private boolean hasClassificationScheme = false;
 
   /**
    * Creates a new SchemaPane object.
@@ -68,10 +73,11 @@ public class SchemaPane extends BorderPane {
     primaryStage = stage;
     schemaNodes = new ArrayList<>();
 
-    createCenterHelp();
     createTreeView();
     createTop();
     createBottom();
+
+    createCenterHelp();
 
     this.setCenter(centerHelp);
 
@@ -101,9 +107,11 @@ public class SchemaPane extends BorderPane {
     box.setMaxHeight(200);
     box.setMinHeight(200);
 
+    createDropBox();
+
     HBox titleBox = new HBox();
     titleBox.setAlignment(Pos.CENTER);
-    Label title = new Label(AppProperties.getLocalizedString("SchemaPane.help.title"));
+    Label title = new Label("2 . " + AppProperties.getLocalizedString("SchemaPane.help.title"));
     title.getStyleClass().add("helpTitle");
     title.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(title);
@@ -111,15 +119,15 @@ public class SchemaPane extends BorderPane {
     HBox loadBox = new HBox();
     loadBox.setAlignment(Pos.CENTER);
     Button load = new Button(AppProperties.getLocalizedString("load"));
+    load.setMinHeight(65);
+    load.setMinWidth(130);
+    load.setMaxWidth(130);
     load.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent event) {
         loadClassificationSchema();
       }
     });
-    load.setMinHeight(65);
-    load.setMinWidth(130);
-    load.setMaxWidth(130);
     load.getStyleClass().add("helpButton");
     loadBox.getChildren().add(load);
 
@@ -130,6 +138,7 @@ public class SchemaPane extends BorderPane {
         createClassificationScheme();
       }
     });
+
     TextFlow flow = new TextFlow(new Text(AppProperties.getLocalizedString("SchemaPane.or")), link);
     flow.setTextAlignment(TextAlignment.CENTER);
 
@@ -137,13 +146,67 @@ public class SchemaPane extends BorderPane {
     centerHelp.getChildren().addAll(box, flow);
   }
 
+  private void createDropBox(){
+    dropBox = new VBox();
+
+    HBox innerBox = new HBox();
+    VBox.setVgrow(innerBox, Priority.ALWAYS);
+    innerBox.setAlignment(Pos.CENTER);
+    innerBox.setMinHeight(200);
+
+    Separator separatorTop = new Separator();
+    Separator separatorBottom = new Separator();
+
+    Label title = new Label(AppProperties.getLocalizedString("SchemaPane.dragHelp"));
+    title.getStyleClass().add("helpTitle");
+    title.setTextAlignment(TextAlignment.CENTER);
+    innerBox.getChildren().add(title);
+    dropBox.getChildren().addAll(separatorTop, innerBox, separatorBottom);
+
+    dropBox.setOnDragOver(new EventHandler<DragEvent>() {
+      @Override
+      public void handle(DragEvent event) {
+        if (rootNode != null && event.getGestureSource() instanceof SourceTreeCell) {
+          event.acceptTransferModes(TransferMode.COPY);
+          title.setText(AppProperties.getLocalizedString("InspectionPane.onDrop"));
+        }
+        event.consume();
+      }
+    });
+
+    dropBox.setOnDragDropped(new EventHandler<DragEvent>() {
+      @Override
+      public void handle(DragEvent event) {
+        RodaIn.getSchemaPane().startAssociation(rootNode);
+        event.consume();
+      }
+    });
+
+    dropBox.setOnDragExited(new EventHandler<DragEvent>() {
+      @Override
+      public void handle(DragEvent event) {
+        title.setText(AppProperties.getLocalizedString("SchemaPane.dragHelp"));
+        event.consume();
+      }
+    });
+  }
+
   private void createTreeView() {
     // create tree pane
     treeBox = new VBox();
     VBox.setVgrow(treeBox, Priority.ALWAYS);
 
-    rootNode = new TreeItem<>();
+    DescriptionObject dobj = new DescriptionObject();
+    rootNode = new SchemaNode(dobj);
     rootNode.setExpanded(true);
+    rootNode.getChildren().addListener(new ListChangeListener<TreeItem<String>>() {
+      @Override
+      public void onChanged(Change<? extends TreeItem<String>> c) {
+        if (rootNode.getChildren().isEmpty()) {
+          setCenter(dropBox);
+        }
+      }
+    });
 
     // create the tree view
     treeView = new TreeView<>(rootNode);
@@ -167,24 +230,22 @@ public class SchemaPane extends BorderPane {
     treeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem>() {
       @Override
       public void changed(ObservableValue observable, TreeItem oldValue, TreeItem newValue) {
+        RodaIn.getInspectionPane().saveMetadata();
         if (newValue instanceof SipPreviewNode) {
-          Main.getInspectionPane().update((SipPreviewNode) newValue);
+          RodaIn.getInspectionPane().update((SipPreviewNode) newValue);
         }
         if (newValue instanceof SchemaNode) {
-          Main.getInspectionPane().update((SchemaNode) newValue);
+          RodaIn.getInspectionPane().update((SchemaNode) newValue);
         }
       }
     });
   }
 
-  private SchemaNode getSelectedItem() {
-    SchemaNode result = null;
+  private TreeItem<String> getSelectedItem() {
+    TreeItem<String> result = null;
     int selIndex = treeView.getSelectionModel().getSelectedIndex();
     if (selIndex != -1) {
-      TreeItem selected = treeView.getTreeItem(selIndex);
-      if (selected instanceof SchemaNode) {
-        result = (SchemaNode) selected;
-      }
+      result = treeView.getTreeItem(selIndex);
     }
     return result;
   }
@@ -293,6 +354,7 @@ public class SchemaPane extends BorderPane {
       schemaNodes.add(sn);
     }
     sortRootChildren();
+    hasClassificationScheme = true;
   }
 
   private void sortRootChildren() {
@@ -305,28 +367,41 @@ public class SchemaPane extends BorderPane {
     bottom = new HBox(10);
     bottom.setPadding(new Insets(10, 10, 10, 10));
 
-    Button associate = new Button(AppProperties.getLocalizedString("associate"));
-    associate.setMinWidth(100);
-    associate.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent actionEvent) {
-        SchemaNode selected = getSelectedItem();
-        if (selected != null) {
-          startAssociation(selected);
-        }
-      }
-    });
-
     Button removeLevel = new Button(AppProperties.getLocalizedString("SchemaPane.remove"));
+    removeLevel.setId("removeLevel");
     removeLevel.setMinWidth(100);
     removeLevel.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent event) {
-        SchemaNode selected = getSelectedItem();
+        TreeItem<String> selected = getSelectedItem();
         if (selected != null) {
-          TreeItem parent = selected.getParent();
-          parent.getChildren().remove(selected);
-          schemaNodes.remove(selected);
+          if (selected instanceof SchemaNode) {
+            SchemaNode node = (SchemaNode) selected;
+            int fullSipCount = node.fullSipCount();
+            if (fullSipCount != 0) {
+              String content = String.format(AppProperties.getLocalizedString("SchemaPane.confirmRemove.content"),
+                fullSipCount);
+              Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
+              dlg.setHeaderText(AppProperties.getLocalizedString("SchemaPane.confirmRemove.header"));
+              dlg.setContentText(content);
+              dlg.initModality(Modality.APPLICATION_MODAL);
+              dlg.initOwner(primaryStage);
+              dlg.show();
+              dlg.resultProperty().addListener(o -> confirmRemove(selected, dlg.getResult()));
+            } else
+              removeNode(selected);
+          } else if (selected instanceof SipPreviewNode) {
+            SipPreview currentSIP = ((SipPreviewNode) selected).getSip();
+            RuleModalController.removeSipPreview(currentSIP);
+            Task<Void> removeTask = new Task<Void>() {
+              @Override
+              protected Void call() throws Exception {
+                currentSIP.removeSIP();
+                return null;
+              }
+            };
+            new Thread(removeTask).start();
+          }
         }
       }
     });
@@ -344,19 +419,49 @@ public class SchemaPane extends BorderPane {
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
-    bottom.getChildren().addAll(associate, space, removeLevel, addLevel);
+    Button export = new Button(AppProperties.getLocalizedString("export"));
+    export.setMinWidth(100);
+    export.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent event) {
+        RodaIn.exportSIPs();
+      }
+    });
+
+    bottom.getChildren().addAll(removeLevel, addLevel, space, export);
+  }
+
+  private void confirmRemove(TreeItem<String> selected, ButtonType type) {
+    if (type.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+      // remove all the rules under this SchemaNode
+      ((SchemaNode) selected).remove();
+      // remove the node from the tree
+      removeNode(selected);
+    }
+  }
+
+  private void removeNode(TreeItem<String> selected) {
+    TreeItem parent = selected.getParent();
+    parent.getChildren().remove(selected);
+    schemaNodes.remove(selected);
   }
 
   public void createClassificationScheme() {
     setTop(topBox);
-    setCenter(treeBox);
+    // setCenter(treeBox);
+    setCenter(dropBox);
     setBottom(bottom);
     rootNode.getChildren().clear();
-    addNewLevel();
+    hasClassificationScheme = true;
   }
 
   private SchemaNode addNewLevel() {
-    SchemaNode selected = getSelectedItem();
+    TreeItem<String> selectedItem = getSelectedItem();
+    SchemaNode selected = null;
+    if (selectedItem instanceof SchemaNode) {
+      selected = (SchemaNode) selectedItem;
+    }
+
     DescriptionObject dobj = new DescriptionObject();
     dobj.setId(UUID.randomUUID().toString());
     dobj.setTitle(AppProperties.getLocalizedString("SchemaPane.newNode"));
@@ -365,21 +470,39 @@ public class SchemaPane extends BorderPane {
     if (selected != null) {
       dobj.setParentId(selected.getDob().getId());
       selected.getChildren().add(newNode);
+      selected.addChildrenNode(newNode);
+      selected.sortChildren();
       if (!selected.isExpanded())
         selected.setExpanded(true);
     } else {
       newNode.updateDescLevel("fonds");
       rootNode.getChildren().add(newNode);
+      rootNode.addChildrenNode(newNode);
+      sortRootChildren();
     }
+    setCenter(treeBox);
     schemaNodes.add(newNode);
     // Edit the node's title as soon as it's created
     treeView.layout();
     treeView.edit(newNode);
+    treeView.getSelectionModel().select(newNode);
+    treeView.scrollTo(treeView.getSelectionModel().getSelectedIndex());
+
     return newNode;
   }
 
-  private void startAssociation(SchemaNode descObj) {
-    Set<SourceTreeItem> sourceSet = Main.getSourceSelectedItems();
+  public void startAssociation() {
+    if (hasClassificationScheme) {
+      TreeItem<String> selected = getSelectedItem();
+      if (selected != null && selected instanceof SchemaNode)
+        startAssociation((SchemaNode) selected);
+      else
+        startAssociation(rootNode);
+    }
+  }
+
+  public void startAssociation(SchemaNode descObj) {
+    Set<SourceTreeItem> sourceSet = RodaIn.getSourceSelectedItems();
     boolean valid = true;
     // both trees need to have 1 element selected
     if (sourceSet != null && !sourceSet.isEmpty() && descObj != null) {
@@ -444,13 +567,19 @@ public class SchemaPane extends BorderPane {
       public void handle(DragEvent event) {
         TreeItem<String> treeItem = cell.getTreeItem();
         if (treeItem == null) {
-          event.acceptTransferModes(TransferMode.MOVE);
+          if (event.getGestureSource() instanceof SchemaNode)
+            event.acceptTransferModes(TransferMode.MOVE);
+          else
+            event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
         }
         if (treeItem instanceof SchemaNode) {
           SchemaNode item = (SchemaNode) cell.getTreeItem();
           if (item != null && event.getGestureSource() != cell && event.getDragboard().hasString()) {
             event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
           }
+        }
+        if (treeItem instanceof SipPreviewNode) {
+          event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
         }
         event.consume();
       }
@@ -491,14 +620,16 @@ public class SchemaPane extends BorderPane {
     cell.setOnDragDropped(new EventHandler<DragEvent>() {
       @Override
       public void handle(DragEvent event) {
-        SchemaNode node = (SchemaNode) cell.getTreeItem();
+        TreeItem treeItem = cell.getTreeItem();
         Dragboard db = event.getDragboard();
         boolean success = false;
         if (db.hasString()) {
+          // edit the classification scheme
           if (db.getString().startsWith("scheme")) {
             TreeItem selected = treeView.getSelectionModel().getSelectedItem();
             TreeItem parent = selected.getParent();
             parent.getChildren().remove(selected);
+            SchemaNode node = (SchemaNode) treeItem;
             if (node == null) {
               rootNode.getChildren().add(selected);
               sortRootChildren();
@@ -507,7 +638,19 @@ public class SchemaPane extends BorderPane {
               node.sortChildren();
             }
           } else {
-            startAssociation(node);
+            if (treeItem != null) {
+              // dropped on a SIP, associate to the parent of the SIP
+              if (treeItem instanceof SipPreviewNode) {
+                SipPreviewNode sipPreviewNode = (SipPreviewNode) treeItem;
+                startAssociation((SchemaNode) sipPreviewNode.getParent());
+              } else {
+                // normal association
+                startAssociation((SchemaNode) treeItem);
+              }
+            } else {
+              // association to the empty tree view
+              startAssociation(rootNode);
+            }
           }
           success = true;
         }
@@ -537,6 +680,10 @@ public class SchemaPane extends BorderPane {
     return result;
   }
 
+  public void showTree(){
+    setCenter(treeBox);
+  }
+
   /**
    * @return A set with all the SchemaNodes in the tree
    */
@@ -555,6 +702,7 @@ public class SchemaPane extends BorderPane {
    * @return The Map with the SIPs of all the SchemaNodes in the TreeView
    */
   public Map<SipPreview, String> getSipPreviews() {
+    schemaNodes.add(rootNode);
     Map<SipPreview, String> result = new HashMap<>();
     for (SchemaNode sn : schemaNodes) {
       result.putAll(sn.getSipPreviews());

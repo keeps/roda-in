@@ -7,7 +7,9 @@ import java.util.*;
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
-import org.roda.rodain.utils.Utils;
+
+import com.samskivert.mustache.Mustache;
+import com.samskivert.mustache.Template;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -38,15 +40,9 @@ public class SipPreview extends Observable implements Observer {
     // metadata = new SipMetadata(metaType, metadataPath, templateType);
     id = UUID.randomUUID().toString();
 
-    setPathsAsMapped();
-  }
-
-  private void setPathsAsMapped() {
+    // set paths as mapped
     for (TreeNode tn : files) {
-      Set<String> paths = tn.getFullTreePaths();
-      for (String path : paths) {
-        PathCollection.addPath(path, SourceTreeItemState.MAPPED);
-      }
+      PathCollection.addPath(tn.getPath().toString(), SourceTreeItemState.MAPPED);
     }
   }
 
@@ -65,6 +61,17 @@ public class SipPreview extends Observable implements Observer {
   }
 
   /**
+   * Sets the TreeNodes of the SIP
+   * 
+   * @param newFiles
+   *          A Set with the TreeNodes
+   */
+  public void setFiles(Set<TreeNode> newFiles) {
+    contentModified = true;
+    files = newFiles;
+  }
+
+  /**
    * @return The metadata content of the SIP.
    * @see SipMetadata#getMetadataContent()
    */
@@ -72,8 +79,14 @@ public class SipPreview extends Observable implements Observer {
     String content = metadata.getMetadataContent();
     if (content != null) {
       //TODO configurable tags...
-      content = Utils.replaceTag(content, "#title#", getName());
-      content = Utils.replaceTag(content, "#date#", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+      Template tmpl = Mustache.compiler().compile(content);
+      Map<String, String> data = new HashMap<>();
+      data.put("title", getName());
+      data.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+      content = tmpl.execute(data);
+      //we need to clean the '\r' character in windows,
+      // otherwise the strings are different even if no modification has been made
+      content = content.replace("\r", "");
     }
     return content;
   }
@@ -92,9 +105,11 @@ public class SipPreview extends Observable implements Observer {
    * @see SipMetadata#update(String)
    */
   public void updateMetadata(String meta) {
-    metadata.update(meta);
-    setChanged();
-    notifyObservers();
+    if(!meta.equals(metadata.getMetadataContent())) {
+      metadata.update(meta);
+      setChanged();
+      notifyObservers();
+    }
   }
 
   /**
@@ -159,9 +174,29 @@ public class SipPreview extends Observable implements Observer {
   }
 
   /**
-   * Notifies the observers of the SIP that it has been modified.
+   * Removes the SIP, setting its content as NORMAL.
    */
-  public void changedAndNotify() {
+  public void removeSIP() {
+    float paths = 0, removedPaths = 0;
+    // prepare
+    for (TreeNode tn : getFiles()) {
+      paths += tn.getFullTreePaths().size();
+    }
+    // remove
+    int update = 0;
+    for (TreeNode tn : getFiles()) {
+      for (String path : tn.getFullTreePaths()) {
+        PathCollection.addPath(path, SourceTreeItemState.NORMAL);
+        removedPaths++;
+        update++;
+        if (update >= 10) {
+          update = 0;
+          setChanged();
+          notifyObservers(removedPaths / paths);
+        }
+      }
+    }
+    removed = true;
     setChanged();
     notifyObservers();
   }

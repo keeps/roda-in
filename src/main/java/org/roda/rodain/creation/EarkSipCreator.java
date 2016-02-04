@@ -1,14 +1,14 @@
 package org.roda.rodain.creation;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda_project.commons_ip.model.SIP;
@@ -31,8 +31,10 @@ public class EarkSipCreator extends SimpleSipCreator {
   /**
    * Creates a new EARK SIP exporter.
    *
-   * @param outputPath The path to the output folder of the SIP exportation
-   * @param previews   The map with the SIPs that will be exported
+   * @param outputPath
+   *          The path to the output folder of the SIP exportation
+   * @param previews
+   *          The map with the SIPs that will be exported
    */
   public EarkSipCreator(Path outputPath, Map<SipPreview, String> previews) {
     super(outputPath, previews);
@@ -52,19 +54,12 @@ public class EarkSipCreator extends SimpleSipCreator {
   }
 
   private void createEarkSip(String schemaId, SipPreview sip) {
-    String home = System.getProperty("user.home");
-    Path homePath = Paths.get(home);
-    Path rodainPath = homePath.resolve("roda-in");
+    Path rodainPath = AppProperties.rodainPath;
     String metadataName = "metadata.xml";
     try {
       SIP earkSip = new EARKSIP(sip.getId(), EARKEnums.ContentType.mixed, "RODA-In");
       earkSip.setParent(schemaId);
       SIPRepresentation rep = new SIPRepresentation("rep1");
-
-      // for now, we need to create a temporary folder to create the metadata
-      // files, since the commons-ip library only accepts Paths
-      if (!Files.exists(Paths.get(home)))
-        new File(home).mkdir();
 
       currentSipName = sip.getName();
       currentAction = actionCopyingMetadata;
@@ -93,19 +88,13 @@ public class EarkSipCreator extends SimpleSipCreator {
 
       currentAction = actionCopyingData;
       for (TreeNode tn : sip.getFiles()) {
-        Set<String> paths = tn.getFullTreePaths();
-        for (String pat : paths) {
-          Path path = Paths.get(pat);
-          if (!Files.isDirectory(path))
-            rep.addData(path);
-        }
+        addFileToRepresentation(tn, new ArrayList<>(), rep);
       }
 
       earkSip.addRepresentation(rep);
 
-      Path result = earkSip.build();
+      earkSip.build(outputPath);
       currentAction = actionFinalizingSip;
-      Files.move(result, outputPath.resolve(result.getFileName()));
       createdSipsCount++;
     } catch (SIPException e) {
       log.error("Commons IP exception", e);
@@ -113,10 +102,21 @@ public class EarkSipCreator extends SimpleSipCreator {
     } catch (IOException e) {
       log.error("Error accessing the files", e);
       unsuccessful.add(sip);
-    } finally {
-      if (Files.exists(Paths.get(home + metadataName))) {
-        new File(home + metadataName).delete();
+    }
+  }
+
+  private void addFileToRepresentation(TreeNode tn, List<String> relativePath, SIPRepresentation rep) {
+    if (Files.isDirectory(tn.getPath())) {
+      // add this directory to the path list
+      List<String> newRelativePath = new ArrayList<>(relativePath);
+      newRelativePath.add(tn.getPath().getFileName().toString());
+      // recursive call to all the node's children
+      for (TreeNode node : tn.getAllFiles().values()) {
+        addFileToRepresentation(node, newRelativePath, rep);
       }
+    } else {
+      // if it's a file, add it to the representation
+      rep.addData(tn.getPath(), relativePath);
     }
   }
 }

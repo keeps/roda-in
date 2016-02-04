@@ -10,7 +10,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.TreeItem;
 import javafx.stage.Stage;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -171,10 +170,5 @@ public class FileExplorerPaneTest extends ApplicationTest {
     SourceTreeFile file = (SourceTreeFile) dirAAC.getChildren().get(0);
     assert "file0.txt".equals(file.getValue());
 
-  }
-
-  @AfterClass
-  public static void tearDownAfterClass() throws Exception {
-    FileUtils.deleteDirectory(testDir.toFile());
   }
 }

@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -21,8 +22,9 @@ import org.slf4j.LoggerFactory;
  * @since 28/12/2015.
  */
 public class AppProperties {
+  private static final String ENV_VARIABLE = "RODAIN_HOME";
   private static final String CONFIGFOLDER = "roda-in";
-  private static Path rodainPath;
+  public static final Path rodainPath = getRodainPath();
   private static final Logger log = LoggerFactory.getLogger(AppProperties.class.getName());
   private static Properties style = load("styles"), config = load("config"), ext_config,
     descLevels = load("roda-description-levels-hierarchy");
@@ -37,9 +39,6 @@ public class AppProperties {
    * external properties files.
    */
   public static void initialize() {
-    String documentsString = FileSystemView.getFileSystemView().getDefaultDirectory().getPath();
-    Path documentsPath = Paths.get(documentsString);
-    rodainPath = documentsPath.resolve(CONFIGFOLDER);
     Path configPath = rodainPath.resolve("config.properties");
 
     try {
@@ -73,19 +72,40 @@ public class AppProperties {
       for (String templ : templates) {
         String templateName = "metadata.template." + templ.trim() + ".file";
         String fileName = config.getProperty(templateName);
-        if (!Files.exists(rodainPath.resolve(fileName))) {
-          Files.copy(ClassLoader.getSystemResourceAsStream(fileName), rodainPath.resolve(fileName));
-        }
+        // if (!Files.exists(rodainPath.resolve(fileName)))
+        Files.copy(ClassLoader.getSystemResourceAsStream(fileName), rodainPath.resolve(fileName),
+          StandardCopyOption.REPLACE_EXISTING);
       }
 
       // load config
       ext_config = new Properties();
       ext_config.load(new FileInputStream(configPath.toFile()));
-      resourceBundle = ResourceBundle.getBundle("properties/lang", Locale.forLanguageTag(getConfig("app.language")),
-        new FolderBasedUTF8Control());
+
+      String appLanguage = getConfig("app.language");
+      Locale locale;
+      if (appLanguage != null) {
+        locale = Locale.forLanguageTag(appLanguage);
+      } else {
+        locale = Locale.getDefault();
+      }
+
+      resourceBundle = ResourceBundle.getBundle("properties/lang", locale, new FolderBasedUTF8Control());
     } catch (IOException e) {
       log.error("Error copying config file", e);
     }
+  }
+
+  private static Path getRodainPath() {
+    String envString = System.getenv(ENV_VARIABLE);
+    if (envString != null) {
+      Path envPath = Paths.get(envString);
+      if (Files.exists(envPath) && Files.isDirectory(envPath)) {
+        return envPath.resolve(CONFIGFOLDER);
+      }
+    }
+    String documentsString = FileSystemView.getFileSystemView().getDefaultDirectory().getPath();
+    Path documentsPath = Paths.get(documentsString);
+    return documentsPath.resolve(CONFIGFOLDER);
   }
 
   private static Properties load(String fileName) {
@@ -118,7 +138,8 @@ public class AppProperties {
   }
 
   /**
-   * @param key The name of the property (style)
+   * @param key
+   *          The name of the property (style)
    * @return The value of the property (style)
    */
   public static String getStyle(String key) {
@@ -126,7 +147,8 @@ public class AppProperties {
   }
 
   /**
-   * @param key The name of the property (config)
+   * @param key
+   *          The name of the property (config)
    * @return The value of the property (config)
    */
   public static String getConfig(String key) {
@@ -136,7 +158,8 @@ public class AppProperties {
   }
 
   /**
-   * @param key The name of the property (description levels hierarchy)
+   * @param key
+   *          The name of the property (description levels hierarchy)
    * @return The value of the property (description levels hierarchy)
    */
   public static String getDescLevels(String key) {
@@ -146,7 +169,8 @@ public class AppProperties {
   /**
    * Uses ResourceBundle to get the language specific string
    *
-   * @param key The name of the property
+   * @param key
+   *          The name of the property
    * @return The value of the property using
    */
   public static String getLocalizedString(String key) {
