@@ -133,7 +133,7 @@ public class MainTest extends ApplicationTest {
     clickOn("#btConfirm");
     sleep(2000); // wait for the modal to update
     clickOn("#btConfirm");
-    sleep(2000); //wait for the SIPs creation
+    sleep(3000); // wait for the SIPs creation
 
     clickOn("file1.txt");
     TreeItem selected = schemaPane.getTreeView().getSelectionModel().getSelectedItem();
