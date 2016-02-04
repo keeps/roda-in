@@ -85,6 +85,7 @@ public class MainTest extends ApplicationTest {
     SchemaNode newNode = (SchemaNode) newItem;
     DescriptionObject dobj = newNode.getDob();
     assert dobj != null;
+    assert dobj.getDescriptionlevel() != null;
     assert"class".equals(dobj.getDescriptionlevel());
 
     clickOn("#itemLevels").clickOn("Sub-fonds");
