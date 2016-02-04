@@ -27,4 +27,4 @@ https://www.iconfinder.com/iconsets/flat-color-icons
 
 ## License
 
-TODO: Write license
+LGPLv3
