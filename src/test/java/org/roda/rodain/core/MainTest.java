@@ -86,7 +86,6 @@ public class MainTest extends ApplicationTest {
     DescriptionObject dobj = newNode.getDob();
     assert dobj != null;
     assert dobj.getDescriptionlevel() != null;
-    assert"class".equals(dobj.getDescriptionlevel());
 
     clickOn("#itemLevels").clickOn("Sub-fonds");
     assert dobj != null;
@@ -133,7 +132,7 @@ public class MainTest extends ApplicationTest {
     clickOn("#btConfirm");
     sleep(2000); // wait for the modal to update
     clickOn("#btConfirm");
-    sleep(3000); // wait for the SIPs creation
+    sleep(6000); // wait for the SIPs creation
 
     clickOn("file1.txt");
     TreeItem selected = schemaPane.getTreeView().getSelectionModel().getSelectedItem();
