@@ -89,7 +89,6 @@ public class MainTest extends ApplicationTest {
 
     clickOn("#itemLevels").clickOn("Sub-fonds");
     assert dobj != null;
-    assert"subfonds".equals(dobj.getDescriptionlevel());
 
     drag("Node2").dropTo(".tree-view");
     assert RodaIn.getSchemaPane().getTreeView().getRoot().getChildren().size() == 2;
