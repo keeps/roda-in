@@ -209,7 +209,7 @@
         <dependency>
             <groupId>org.roda-project</groupId>
             <artifactId>commons-ip</artifactId>
-            <version>1.0.0-alpha2</version>
+            <version>1.0.0-alpha3</version>
         </dependency>
         <dependency>
             <groupId>com.samskivert</groupId>

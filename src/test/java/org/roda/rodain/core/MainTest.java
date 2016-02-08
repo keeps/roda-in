@@ -55,6 +55,8 @@ public class MainTest extends ApplicationTest {
     sleep(1000);
     clickOn(AppProperties.getLocalizedString("Main.createCS"));
     sleep(3000);
+    clickOn("OK");
+    sleep(1000);
     clickOn(AppProperties.getLocalizedString("SchemaPane.add"));
     sleep(1000);
     clickOn(".schemaNode");

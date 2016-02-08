@@ -11,9 +11,10 @@ import org.apache.commons.io.FileUtils;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
+import org.roda_project.commons_ip.model.IPDescriptiveMetadata;
+import org.roda_project.commons_ip.model.IPFile;
+import org.roda_project.commons_ip.model.IPRepresentation;
 import org.roda_project.commons_ip.model.SIP;
-import org.roda_project.commons_ip.model.SIPDescriptiveMetadata;
-import org.roda_project.commons_ip.model.SIPRepresentation;
 import org.roda_project.commons_ip.model.impl.eark.EARKSIP;
 import org.roda_project.commons_ip.utils.EARKEnums;
 import org.roda_project.commons_ip.utils.METSEnums;
@@ -59,7 +60,7 @@ public class EarkSipCreator extends SimpleSipCreator {
     try {
       SIP earkSip = new EARKSIP(sip.getId(), EARKEnums.ContentType.mixed, "RODA-In");
       earkSip.setParent(schemaId);
-      SIPRepresentation rep = new SIPRepresentation("rep1");
+      IPRepresentation rep = new IPRepresentation("rep1");
 
       currentSipName = sip.getName();
       currentAction = actionCopyingMetadata;
@@ -82,7 +83,8 @@ public class EarkSipCreator extends SimpleSipCreator {
       String content = sip.getMetadataContent();
 
       FileUtils.writeStringToFile(rodainPath.resolve(metadataName).toFile(), content);
-      SIPDescriptiveMetadata metadata = new SIPDescriptiveMetadata(rodainPath.resolve(metadataName), null, metadataType,
+      IPFile metadataFile = new IPFile(rodainPath.resolve(metadataName));
+      IPDescriptiveMetadata metadata = new IPDescriptiveMetadata(metadataFile, null, metadataType,
         sip.getMetadataVersion());
       earkSip.addDescriptiveMetadata(metadata);
 
@@ -105,7 +107,7 @@ public class EarkSipCreator extends SimpleSipCreator {
     }
   }
 
-  private void addFileToRepresentation(TreeNode tn, List<String> relativePath, SIPRepresentation rep) {
+  private void addFileToRepresentation(TreeNode tn, List<String> relativePath, IPRepresentation rep) {
     if (Files.isDirectory(tn.getPath())) {
       // add this directory to the path list
       List<String> newRelativePath = new ArrayList<>(relativePath);
@@ -116,7 +118,7 @@ public class EarkSipCreator extends SimpleSipCreator {
       }
     } else {
       // if it's a file, add it to the representation
-      rep.addData(tn.getPath(), relativePath);
+      rep.addFile(tn.getPath(), relativePath);
     }
   }
 }
