@@ -17,19 +17,14 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SplitPane;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
-import javafx.stage.FileChooser;
-import javafx.stage.Screen;
-import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
+import javafx.stage.*;
 
 import org.roda.rodain.creation.ui.CreationModalPreparation;
 import org.roda.rodain.creation.ui.CreationModalStage;
@@ -122,7 +117,6 @@ public class RodaIn extends Application {
     stage.setScene(scene);
 
     stage.setMaximized(true);
-
     stage.show();
   }
 
@@ -139,6 +133,16 @@ public class RodaIn extends Application {
     initialHeight = bounds.getHeight();
     initialWidth = bounds.getWidth();
 
+    // Create Footer
+    Footer footer = new Footer();
+
+    mainPane = new BorderPane();
+    mainPane.getStyleClass().add("border-pane");
+    mainPane.setCenter(createSplitPane());
+    mainPane.setBottom(footer);
+  }
+
+  private SplitPane createSplitPane() {
     // Divide center pane in 3
     SplitPane split = new SplitPane();
     previewExplorer = new FileExplorerPane(stage);
@@ -148,13 +152,7 @@ public class RodaIn extends Application {
     split.setDividerPositions(0.33, 0.67);
     split.getItems().addAll(previewExplorer, schemaPane, inspectionPane);
 
-    // Create Footer
-    Footer footer = new Footer();
-
-    mainPane = new BorderPane();
-    mainPane.getStyleClass().add("border-pane");
-    mainPane.setCenter(split);
-    mainPane.setBottom(footer);
+    return split;
   }
 
   private void createMenu() {
@@ -244,7 +242,30 @@ public class RodaIn extends Application {
         previewExplorer.ignore();
       }
     });
-    menuEdit.getItems().add(ignoreItems);
+
+    final MenuItem reset = new MenuItem(AppProperties.getLocalizedString("Main.reset"));
+    reset.setAccelerator(KeyCombination.keyCombination("Ctrl+Alt+R"));
+    reset.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent t) {
+        Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
+        dlg.setHeaderText(AppProperties.getLocalizedString("Main.confirmReset.header"));
+        dlg.setTitle(AppProperties.getLocalizedString("Main.reset"));
+        dlg.setContentText(AppProperties.getLocalizedString("Main.confirmReset.content"));
+        dlg.initModality(Modality.APPLICATION_MODAL);
+        dlg.initOwner(stage);
+        dlg.showAndWait();
+
+        if (dlg.getResult().getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+          PathCollection.reset();
+          inspectionPane = new InspectionPane(stage);
+          previewExplorer = new FileExplorerPane(stage);
+          schemaPane = new SchemaPane(stage);
+          mainPane.setCenter(createSplitPane());
+        }
+      }
+    });
+    menuEdit.getItems().addAll(reset, ignoreItems);
 
     // View
     final MenuItem showFiles = new MenuItem(AppProperties.getLocalizedString("Main.hideFiles"));

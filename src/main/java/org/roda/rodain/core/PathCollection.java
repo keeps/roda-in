@@ -249,4 +249,9 @@ public class PathCollection {
     return states.entrySet().stream().parallel().filter(p -> p.getKey().startsWith(path))
         .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
   }
+
+  protected static void reset() {
+    states = new HashMap<>();
+    items = new HashMap<>();
+  }
 }

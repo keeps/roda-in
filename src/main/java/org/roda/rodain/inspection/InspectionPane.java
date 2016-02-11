@@ -34,7 +34,6 @@ import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
-import org.roda.rodain.rules.ui.LoadingPane;
 import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SipPreviewNode;
@@ -47,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * @since 26-10-2015.
  */
 public class InspectionPane extends BorderPane {
-  private static final org.slf4j.Logger log = LoggerFactory.getLogger(LoadingPane.class.getName());
+  private static final org.slf4j.Logger log = LoggerFactory.getLogger(InspectionPane.class.getName());
   private VBox topBox;
   private VBox center;
   private HBox topSpace;

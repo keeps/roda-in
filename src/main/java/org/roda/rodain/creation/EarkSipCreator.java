@@ -50,6 +50,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
       }
       createEarkSip(previews.get(preview), preview);
     }
+    currentAction = AppProperties.getLocalizedString("done");
   }
 
   private void createEarkSip(String schemaId, SipPreview sip) {

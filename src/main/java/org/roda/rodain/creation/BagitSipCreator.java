@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
+import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.slf4j.Logger;
@@ -51,6 +52,7 @@ public class BagitSipCreator extends SimpleSipCreator {
       }
       createBagit(previews.get(preview), preview);
     }
+    currentAction = AppProperties.getLocalizedString("done");
   }
 
   private void createBagit(String schemaId, SipPreview sip) {
