@@ -71,7 +71,7 @@ public class EarkSipCreator extends SimpleSipCreator {
         if (templateType.equals("dc")) {
           metadataName = "dc.xml";
           metadataType = METSEnums.MetadataType.DC;
-        } else if (templateType.equals("ead")) {
+        } else if (templateType.startsWith("ead")) {
           metadataName = "ead.xml";
           metadataType = METSEnums.MetadataType.EAD;
         } else {
@@ -84,8 +84,7 @@ public class EarkSipCreator extends SimpleSipCreator {
 
       FileUtils.writeStringToFile(rodainPath.resolve(metadataName).toFile(), content);
       IPFile metadataFile = new IPFile(rodainPath.resolve(metadataName));
-      IPDescriptiveMetadata metadata = new IPDescriptiveMetadata(metadataFile, null, metadataType,
-        sip.getMetadataVersion());
+      IPDescriptiveMetadata metadata = new IPDescriptiveMetadata(metadataFile, metadataType, sip.getMetadataVersion());
       earkSip.addDescriptiveMetadata(metadata);
 
       currentAction = actionCopyingData;
