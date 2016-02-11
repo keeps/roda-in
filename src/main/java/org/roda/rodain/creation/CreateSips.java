@@ -70,8 +70,6 @@ public class CreateSips {
    * created by the total number of SIPs.
    */
   public double getProgress() {
-    System.out.println(
-      "geral: " + (creator.getCreatedSipsCount() / (sipsCount * 1.0)) + "; current: " + creator.currentSipProgress);
     return (creator.getCreatedSipsCount() / (sipsCount * 1.0)) + creator.currentSipProgress;
   }
 

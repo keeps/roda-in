@@ -1,5 +1,6 @@
 package org.roda.rodain.inspection;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -11,11 +12,14 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
@@ -30,17 +34,20 @@ import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
+import org.roda.rodain.rules.ui.LoadingPane;
 import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SipPreviewNode;
 import org.roda.rodain.source.ui.SourceTreeCell;
 import org.roda.rodain.utils.UIPair;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 26-10-2015.
  */
 public class InspectionPane extends BorderPane {
+  private static final org.slf4j.Logger log = LoggerFactory.getLogger(LoadingPane.class.getName());
   private VBox topBox;
   private VBox center;
   private HBox topSpace;
@@ -56,9 +63,12 @@ public class InspectionPane extends BorderPane {
   private TextArea metaText;
   // SIP Content
   private BorderPane content;
+  private VBox treeBox;
   private TreeView sipFiles;
   private SipContentDirectory sipRoot;
   private Button flatten, skip;
+  private HBox loadingPane, contentBottom;
+  private static Image loadingGif;
   // Rules
   private BorderPane rules;
   private ListView<RuleCell> ruleList;
@@ -76,6 +86,7 @@ public class InspectionPane extends BorderPane {
     createMetadata();
     createContent();
     createRulesList();
+    createLoadingPane();
 
     center = new VBox(10);
     center.setPadding(new Insets(0, 10, 10, 10));
@@ -236,7 +247,7 @@ public class InspectionPane extends BorderPane {
     content.setTop(top);
 
     // create tree pane
-    VBox treeBox = new VBox();
+    treeBox = new VBox();
     treeBox.setPadding(new Insets(5, 5, 5, 5));
     treeBox.setSpacing(10);
 
@@ -262,10 +273,22 @@ public class InspectionPane extends BorderPane {
     createContentBottom();
   }
 
+  private void createLoadingPane() {
+    loadingPane = new HBox();
+    loadingPane.setAlignment(Pos.CENTER);
+    try {
+      if (loadingGif == null)
+        loadingGif = new Image(ClassLoader.getSystemResource("loading.GIF").openStream());
+      loadingPane.getChildren().add(new ImageView(loadingGif));
+    } catch (IOException e) {
+      log.error("Error reading loading GIF", e);
+    }
+  }
+
   private void createContentBottom() {
-    HBox box = new HBox(10);
-    box.setPadding(new Insets(10, 10, 10, 10));
-    box.setAlignment(Pos.CENTER);
+    contentBottom = new HBox(10);
+    contentBottom.setPadding(new Insets(10, 10, 10, 10));
+    contentBottom.setAlignment(Pos.CENTER);
 
     Button ignore = new Button(AppProperties.getLocalizedString("ignore"));
     ignore.setOnAction(new EventHandler<ActionEvent>() {
@@ -329,23 +352,39 @@ public class InspectionPane extends BorderPane {
 
     setStateContentButtons(true);
 
-    box.getChildren().addAll(ignore, flatten, skip);
-    content.setBottom(box);
+    contentBottom.getChildren().addAll(ignore, flatten, skip);
+    content.setBottom(contentBottom);
   }
 
   private void createContent(SipPreviewNode node) {
-    sipRoot.getChildren().clear();
-    Set<String> keysToRemove = new HashSet<>(sipRoot.getTreeNode().getKeys());
-    for (String f : keysToRemove) {
-      sipRoot.getTreeNode().remove(Paths.get(f));
-    }
-    Set<TreeNode> files = node.getSip().getFiles();
-    for (TreeNode treeNode : files) {
-      TreeItem<Object> startingItem = recCreateSipContent(treeNode, sipRoot);
-      startingItem.setExpanded(true);
-      sipRoot.getChildren().add(startingItem);
-    }
-    sipRoot.sortChildren();
+    SipContentDirectory newRoot = new SipContentDirectory(new TreeNode(Paths.get("")), null);
+    content.setCenter(loadingPane);
+    content.setBottom(new HBox());
+
+    Task<Void> task = new Task<Void>() {
+      @Override
+      protected Void call() throws Exception {
+        Set<TreeNode> files = node.getSip().getFiles();
+        for (TreeNode treeNode : files) {
+          TreeItem<Object> startingItem = recCreateSipContent(treeNode, newRoot);
+          startingItem.setExpanded(true);
+          newRoot.getChildren().add(startingItem);
+        }
+        newRoot.sortChildren();
+        return null;
+      }
+    };
+    task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+      @Override
+      public void handle(WorkerStateEvent workerStateEvent) {
+        sipRoot = newRoot;
+        sipFiles.setRoot(sipRoot);
+        content.setCenter(treeBox);
+        content.setBottom(contentBottom);
+      }
+    });
+    new Thread(task).start();
+
   }
 
   private TreeItem<Object> recCreateSipContent(TreeNode node, TreeItem parent) {

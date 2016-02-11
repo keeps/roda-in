@@ -71,7 +71,6 @@ public class RuleModalPane extends BorderPane {
 
   private int folderCount;
 
-
   /**
    * Creates a new RuleModalPane, used to create a new Rule.
    *
@@ -172,12 +171,15 @@ public class RuleModalPane extends BorderPane {
     HBoxCell cellSipPerFile = new HBoxCell("assoc3", icon, title, description, new HBox());
     cellSipPerFile.setUserData(RuleTypes.SIP_PER_FILE);
 
-    icon = AppProperties.getStyle("association.sipPerFolder.icon");
-    title = AppProperties.getLocalizedString("association.sipPerFolder.title");
-    description = AppProperties.getLocalizedString("association.sipPerFolder.description");
-    HBox options = createPerFolderOptions();
-    HBoxCell cellSipPerFolder = new HBoxCell("assoc4", icon, title, description, options);
-    cellSipPerFolder.setUserData(RuleTypes.SIP_PER_FOLDER);
+    // icon = AppProperties.getStyle("association.sipPerFolder.icon");
+    // title =
+    // AppProperties.getLocalizedString("association.sipPerFolder.title");
+    // description =
+    // AppProperties.getLocalizedString("association.sipPerFolder.description");
+    // HBox options = createPerFolderOptions();
+    // HBoxCell cellSipPerFolder = new HBoxCell("assoc4", icon, title,
+    // description, options);
+    // cellSipPerFolder.setUserData(RuleTypes.SIP_PER_FOLDER);
 
     ObservableList<HBoxCell> hboxList = FXCollections.observableArrayList();
     hboxList.addAll(cellSelected, cellSingleSip, cellSipPerFile);

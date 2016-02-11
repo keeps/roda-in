@@ -138,5 +138,6 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
   @Override
   public void sipBuildEnded() {
     currentAction = actionFinalizingSip;
+    currentSipProgress = 0;
   }
 }
