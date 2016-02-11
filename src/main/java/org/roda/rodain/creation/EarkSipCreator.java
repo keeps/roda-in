@@ -11,10 +11,7 @@ import org.apache.commons.io.FileUtils;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
-import org.roda_project.commons_ip.model.IPDescriptiveMetadata;
-import org.roda_project.commons_ip.model.IPFile;
-import org.roda_project.commons_ip.model.IPRepresentation;
-import org.roda_project.commons_ip.model.SIP;
+import org.roda_project.commons_ip.model.*;
 import org.roda_project.commons_ip.model.impl.eark.EARKSIP;
 import org.roda_project.commons_ip.utils.EARKEnums;
 import org.roda_project.commons_ip.utils.METSEnums;
@@ -26,8 +23,9 @@ import org.slf4j.LoggerFactory;
  * @author Andre Pereira apereira@keep.pt
  * @since 19/11/2015.
  */
-public class EarkSipCreator extends SimpleSipCreator {
+public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
   private static final Logger log = LoggerFactory.getLogger(EarkSipCreator.class.getName());
+  private int countFilesOfZip;
 
   /**
    * Creates a new EARK SIP exporter.
@@ -59,9 +57,11 @@ public class EarkSipCreator extends SimpleSipCreator {
     String metadataName = "metadata.xml";
     try {
       SIP earkSip = new EARKSIP(sip.getId(), EARKEnums.ContentType.mixed, "RODA-In");
+      earkSip.addObserver(this);
       earkSip.setParent(schemaId);
       IPRepresentation rep = new IPRepresentation("rep1");
 
+      currentSipProgress = 0;
       currentSipName = sip.getName();
       currentAction = actionCopyingMetadata;
       String templateType = sip.getTemplateType();
@@ -95,7 +95,7 @@ public class EarkSipCreator extends SimpleSipCreator {
       earkSip.addRepresentation(rep);
 
       earkSip.build(outputPath);
-      currentAction = actionFinalizingSip;
+
       createdSipsCount++;
     } catch (SIPException e) {
       log.error("Commons IP exception", e);
@@ -119,5 +119,24 @@ public class EarkSipCreator extends SimpleSipCreator {
       // if it's a file, add it to the representation
       rep.addFile(tn.getPath(), relativePath);
     }
+  }
+
+  @Override
+  public void sipBuildStarted(int current) {
+    countFilesOfZip = current;
+  }
+
+  @Override
+  public void sipBuildCurrentStatus(int current) {
+    String format = AppProperties.getLocalizedString("CreationModalProcessing.eark.progress");
+    String progress = String.format(format, current, countFilesOfZip);
+    currentAction = progress;
+    currentSipProgress = ((float) current) / countFilesOfZip;
+    currentSipProgress /= sipPreviewCount;
+  }
+
+  @Override
+  public void sipBuildEnded() {
+    currentAction = actionFinalizingSip;
   }
 }

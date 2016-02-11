@@ -59,6 +59,7 @@ public class SimpleSipCreator extends Thread {
   protected Instant sipStartInstant;
 
   protected boolean canceled = false;
+  protected float currentSipProgress;
 
   protected Set<SipPreview> unsuccessful;
 
@@ -258,5 +259,9 @@ public class SimpleSipCreator extends Thread {
   @Override
   public void run() {
 
+  }
+
+  public double getTimeRemainingEstimate() {
+    return -1;
   }
 }

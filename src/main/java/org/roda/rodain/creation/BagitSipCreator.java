@@ -3,6 +3,8 @@ package org.roda.rodain.creation;
 import java.io.File;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
@@ -25,6 +27,8 @@ public class BagitSipCreator extends SimpleSipCreator {
   private static final Logger log = LoggerFactory.getLogger(BagitSipCreator.class.getName());
   private static final String DATAFOLDER = "data";
 
+  private Instant startTime;
+
   /**
    * Creates a new BagIt exporter.
    *
@@ -40,6 +44,7 @@ public class BagitSipCreator extends SimpleSipCreator {
    */
   @Override
   public void run() {
+    startTime = Instant.now();
     for (SipPreview preview : previews.keySet()) {
       if (canceled) {
         break;
@@ -101,5 +106,62 @@ public class BagitSipCreator extends SimpleSipCreator {
       unsuccessful.add(sip);
       deleteDirectory(name);
     }
+  }
+
+  /**
+   * Estimates the remaining time needed to finish exporting the SIPs.
+   *
+   * <p>
+   * The estimate time is the sum of the data copy time and the other processes
+   * time. To estimate the data copy time, we first find the average copy speed
+   * and then divide the remaining data size by that speed.
+   * </p>
+   *
+   * <p>
+   * The other processes (metadata copy and finalizing) are estimated together,
+   * and can be obtained by subtracting the data copy time from the elapsed
+   * time. By dividing that result by the number of already exported SIPs, we
+   * get the average time these processes took.
+   * </p>
+   *
+   * @return The estimate in milliseconds
+   */
+  public double getTimeRemainingEstimate() {
+    // prevent divide by zero
+    if (transferedTime == 0)
+      return -1;
+    // estimate the remaining data copy time for the current SIP
+    float allSpeed = transferedSize / transferedTime;
+    long allSizeLeft = allSipsSize - transferedSize;
+    long sizeLeft = sipSize - sipTransferedSize;
+    float sipRemaining = sizeLeft / allSpeed;
+
+    // 80% is the progress of the data copy of current SIP
+    // the other 20% are for the SIP finalization
+    // divide the result by the number of SIPs because this should be the
+    // progress of 1 SIP
+    currentSipProgress = (sipTransferedSize / (float) sipSize) * 0.8f;
+    currentSipProgress /= sipPreviewCount;
+
+    // estimate the time remaining for the other SIPs, except the data copy time
+    long timeSinceStart = Duration.between(startTime, Instant.now()).toMillis();
+    long allOtherTime = timeSinceStart - transferedTime;
+    int createdSips = getCreatedSipsCount();
+    float eachOtherTime;
+    if (createdSips != 0) {
+      eachOtherTime = allOtherTime / createdSips;
+    } else { // if the finishing time is very small, set it to 70% of the
+      // estimated time
+      eachOtherTime = (sipSize / allSpeed) * 0.7f;
+    }
+
+    // time = data copy estimate + other SIP's estimate (without copy time)
+    int remaining = sipPreviewCount - createdSips;
+    float dataTime = sipRemaining + (allSizeLeft / allSpeed);
+    long sipTime = Duration.between(sipStartInstant, Instant.now()).toMillis();
+    float sipOtherTime = sipTime - sipTransferedTime;
+    float otherTime = (eachOtherTime * remaining) - sipOtherTime;
+
+    return dataTime + otherTime;
   }
 }
