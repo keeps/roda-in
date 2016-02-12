@@ -6,3 +6,7 @@ script:
   - mvn clean install -DskipTests
 jdk:
   - oraclejdk8
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
