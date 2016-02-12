@@ -1,7 +1,5 @@
 language: java
 sudo: false
-before_script:
-  - sudo apt-get update
 install:
   - true
 script:
