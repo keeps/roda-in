@@ -6,9 +6,11 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.creation.ui.CreationModalProcessing;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda_project.commons_ip.model.*;
@@ -26,6 +28,9 @@ import org.slf4j.LoggerFactory;
 public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
   private static final Logger log = LoggerFactory.getLogger(EarkSipCreator.class.getName());
   private int countFilesOfZip;
+  private int currentSIPadded = 0;
+  private int currentSIPsize = 0;
+  private int repProcessingSize;
 
   /**
    * Creates a new EARK SIP exporter.
@@ -89,11 +94,21 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
       earkSip.addDescriptiveMetadata(metadata);
 
       currentAction = actionCopyingData;
-      for (TreeNode tn : sip.getFiles()) {
+      Set<TreeNode> files = sip.getFiles();
+      currentSIPadded = 0;
+      currentSIPsize = 0;
+      // count files
+      for (TreeNode tn : files) {
+        currentSIPsize += tn.getFullTreePaths().size();
+      }
+      // add files to representation
+      for (TreeNode tn : files) {
         addFileToRepresentation(tn, new ArrayList<>(), rep);
       }
 
       earkSip.addRepresentation(rep);
+
+      currentAction = "Initializing zip file";
 
       earkSip.build(outputPath);
 
@@ -101,9 +116,11 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
     } catch (SIPException e) {
       log.error("Commons IP exception", e);
       unsuccessful.add(sip);
+      CreationModalProcessing.showError(sip, e);
     } catch (IOException e) {
       log.error("Error accessing the files", e);
       unsuccessful.add(sip);
+      CreationModalProcessing.showError(sip, e);
     }
   }
 
@@ -119,16 +136,43 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
     } else {
       // if it's a file, add it to the representation
       rep.addFile(tn.getPath(), relativePath);
+      currentSIPadded++;
+      currentAction = String.format(actionCopyingData + " (%d/%d)", currentSIPadded, currentSIPsize);
     }
   }
 
   @Override
-  public void sipBuildStarted(int current) {
+  public void sipBuildRepresentationsProcessingStarted(int i) {
+
+  }
+
+  @Override
+  public void sipBuildRepresentationProcessingStarted(int size) {
+    repProcessingSize = size;
+  }
+
+  @Override
+  public void sipBuildRepresentationProcessingCurrentStatus(int i) {
+    currentAction = "Processing representation (" + i + "/" + repProcessingSize + ")";
+  }
+
+  @Override
+  public void sipBuildRepresentationProcessingEnded() {
+
+  }
+
+  @Override
+  public void sipBuildRepresentationsProcessingEnded() {
+
+  }
+
+  @Override
+  public void sipBuildPackagingStarted(int current) {
     countFilesOfZip = current;
   }
 
   @Override
-  public void sipBuildCurrentStatus(int current) {
+  public void sipBuildPackagingCurrentStatus(int current) {
     String format = AppProperties.getLocalizedString("CreationModalProcessing.eark.progress");
     String progress = String.format(format, current, countFilesOfZip);
     currentAction = progress;
@@ -137,7 +181,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
   }
 
   @Override
-  public void sipBuildEnded() {
+  public void sipBuildPackagingEnded() {
     currentAction = actionFinalizingSip;
     currentSipProgress = 0;
   }

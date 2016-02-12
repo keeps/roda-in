@@ -1,6 +1,7 @@
 package org.roda.rodain.creation;
 
-import java.io.File;
+import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -10,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.creation.ui.CreationModalProcessing;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.slf4j.Logger;
@@ -38,6 +40,16 @@ public class BagitSipCreator extends SimpleSipCreator {
    */
   public BagitSipCreator(Path outputPath, Map<SipPreview, String> previews) {
     super(outputPath, previews);
+
+    for (SipPreview sip : previews.keySet()) {
+      for (TreeNode tn : sip.getFiles()) {
+        try {
+          allSipsSize += nodeSize(tn);
+        } catch (IOException e) {
+          log.error("Can't access file: " + tn.getPath(), e);
+        }
+      }
+    }
   }
 
   /**
@@ -106,6 +118,7 @@ public class BagitSipCreator extends SimpleSipCreator {
     } catch (Exception e) {
       log.error("Error creating SIP", e);
       unsuccessful.add(sip);
+      CreationModalProcessing.showError(sip, e);
       deleteDirectory(name);
     }
   }
@@ -165,5 +178,77 @@ public class BagitSipCreator extends SimpleSipCreator {
     float otherTime = (eachOtherTime * remaining) - sipOtherTime;
 
     return dataTime + otherTime;
+  }
+
+  private long nodeSize(TreeNode node) throws IOException {
+    Path nodePath = node.getPath();
+    long result = 0;
+    if (Files.isDirectory(nodePath)) {
+      for (TreeNode tn : node.getAllFiles().values()) {
+        result += nodeSize(tn);
+      }
+    } else {
+      result += Files.size(nodePath);
+    }
+    return result;
+  }
+
+  private void createFiles(TreeNode node, Path dest) throws IOException {
+    sipSize = nodeSize(node);
+    sipTransferedSize = 0;
+    sipTransferedTime = 0;
+    sipStartInstant = Instant.now();
+    recCreateFiles(node, dest);
+  }
+
+  private void recCreateFiles(TreeNode node, Path dest) throws IOException {
+    Path nodePath = node.getPath();
+    if (Files.isDirectory(nodePath)) {
+      Path directory = dest.resolve(nodePath.getFileName().toString());
+      new File(directory.toString()).mkdir();
+      for (TreeNode tn : node.getAllFiles().values()) {
+        recCreateFiles(tn, directory);
+      }
+    } else {
+      Path destination = dest.resolve(nodePath.getFileName().toString());
+      copyFile(nodePath, destination);
+    }
+  }
+
+  private void copyFile(Path path, Path dest) {
+    final int progress_checkpoint = 1000;
+    long bytesCopied = 0, previousLen = 0;
+    File destFile = dest.toFile();
+
+    try {
+      long totalBytes = Files.size(path);
+      InputStream in = new FileInputStream(path.toFile());
+      OutputStream out = new FileOutputStream(destFile);
+      byte[] buf = new byte[1024];
+      int counter = 0;
+      int len;
+      lastInstant = Instant.now();
+
+      while ((len = in.read(buf)) > 0) {
+        out.write(buf, 0, len);
+        counter += len;
+        bytesCopied += (destFile.length() - previousLen);
+        previousLen = destFile.length();
+        if (counter > progress_checkpoint || bytesCopied == totalBytes) {
+          sipTransferedSize += counter;
+          transferedSize += counter;
+          Instant now = Instant.now();
+          Duration dur = Duration.between(lastInstant, now);
+          transferedTime += dur.toMillis();
+          sipTransferedTime += dur.toMillis();
+          lastInstant = now;
+          counter = 0;
+        }
+      }
+      in.close();
+      out.close();
+    } catch (IOException e) {
+      log.error("Error writing(copying) file. Source: " + path + "; Destination: " + dest, e);
+    }
   }
 }

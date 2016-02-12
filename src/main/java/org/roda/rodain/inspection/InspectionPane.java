@@ -68,6 +68,7 @@ public class InspectionPane extends BorderPane {
   private Button flatten, skip;
   private HBox loadingPane, contentBottom;
   private static Image loadingGif;
+  private Task<Void> contentTask;
   // Rules
   private BorderPane rules;
   private ListView<RuleCell> ruleList;
@@ -360,7 +361,7 @@ public class InspectionPane extends BorderPane {
     content.setCenter(loadingPane);
     content.setBottom(new HBox());
 
-    Task<Void> task = new Task<Void>() {
+    contentTask = new Task<Void>() {
       @Override
       protected Void call() throws Exception {
         Set<TreeNode> files = node.getSip().getFiles();
@@ -373,7 +374,7 @@ public class InspectionPane extends BorderPane {
         return null;
       }
     };
-    task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+    contentTask.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
       @Override
       public void handle(WorkerStateEvent workerStateEvent) {
         sipRoot = newRoot;
@@ -382,7 +383,7 @@ public class InspectionPane extends BorderPane {
         content.setBottom(contentBottom);
       }
     });
-    new Thread(task).start();
+    new Thread(contentTask).start();
 
   }
 
@@ -519,6 +520,9 @@ public class InspectionPane extends BorderPane {
     setCenter(center);
     currentSIP = sip.getSip();
     currentSchema = null;
+    if(contentTask != null && contentTask.isRunning()){
+      contentTask.cancel(true);
+    }
 
     /* Top */
     Label title = new Label(sip.getValue());
@@ -576,6 +580,9 @@ public class InspectionPane extends BorderPane {
     setTop(topBox);
     currentSIP = null;
     currentSchema = node;
+    if(contentTask != null && contentTask.isRunning()){
+      contentTask.cancel(true);
+    }
 
     /* top */
     // title

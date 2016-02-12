@@ -1,8 +1,6 @@
 package org.roda.rodain.creation;
 
 import java.nio.file.Path;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.Map;
 
 import org.roda.rodain.core.RodaIn;
