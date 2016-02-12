@@ -1,15 +1,15 @@
 package org.roda.rodain.core;
 
+import org.apache.commons.lang.StringUtils;
+import org.roda.rodain.source.ui.items.SourceTreeDirectory;
+import org.roda.rodain.source.ui.items.SourceTreeItem;
+import org.roda.rodain.source.ui.items.SourceTreeItemState;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import org.apache.commons.lang.StringUtils;
-import org.roda.rodain.source.ui.items.SourceTreeDirectory;
-import org.roda.rodain.source.ui.items.SourceTreeItem;
-import org.roda.rodain.source.ui.items.SourceTreeItemState;
 
 /**
  * A collection of paths and it's associated state and SourceTreeItem.
@@ -84,6 +84,7 @@ public class PathCollection {
     if (items.containsKey(path)) {
       SourceTreeItem item = items.get(path);
       item.setState(states.get(path));
+      verifyStateAncestors(path);
     }
 
     // move the modified children in the parent
@@ -183,6 +184,10 @@ public class PathCollection {
         break;
       } else {
         String sub = path.substring(0, index);
+        // avoid "C:", "D:", etc in Windows
+        if(sub.matches("[A-Z]:")){
+          sub += separator;
+        }
         // move the starting index for the next iteration so it's before the
         // slash
         end = index - 1;
