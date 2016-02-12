@@ -1,13 +1,5 @@
 package org.roda.rodain.inspection;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -28,7 +20,6 @@ import javafx.scene.layout.*;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.Rule;
@@ -40,6 +31,14 @@ import org.roda.rodain.schema.ui.SipPreviewNode;
 import org.roda.rodain.source.ui.SourceTreeCell;
 import org.roda.rodain.utils.UIPair;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -593,7 +592,7 @@ public class InspectionPane extends BorderPane {
     title.textProperty().bindBidirectional(node.valueProperty());
 
     HBox top = new HBox(5);
-    top.setPadding(new Insets(0, 10, 5, 10));
+    top.setPadding(new Insets(2, 10, 5, 10));
     top.setAlignment(Pos.CENTER_LEFT);
     topIcon = new ImageView(node.getImage());
     top.getChildren().addAll(topIcon, title, itemTypes);
@@ -639,6 +638,11 @@ public class InspectionPane extends BorderPane {
 
     center.getChildren().addAll(idBox, metadata, rules);
     setCenter(center);
+  }
+
+  public void showHelp(){
+    setCenter(centerHelp);
+    setTop(new HBox());
   }
 
   /**
