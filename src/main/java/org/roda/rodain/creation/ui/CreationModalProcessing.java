@@ -1,10 +1,5 @@
 package org.roda.rodain.creation.ui;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -12,10 +7,14 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.creation.CreateSips;
 import org.roda.rodain.rules.sip.SipPreview;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -253,13 +252,12 @@ public class CreationModalProcessing extends BorderPane {
 
         TextArea textArea = new TextArea(exceptionText);
         textArea.setEditable(false);
-        textArea.setWrapText(true);
-
-        textArea.setMaxWidth(Double.MAX_VALUE);
-        textArea.setMaxHeight(100);
+        textArea.minWidthProperty().bind(alert.getDialogPane().widthProperty().subtract(20));
+        textArea.maxWidthProperty().bind(alert.getDialogPane().widthProperty().subtract(20));
 
         GridPane expContent = new GridPane();
         expContent.setMaxWidth(Double.MAX_VALUE);
+        GridPane.setHgrow(expContent, Priority.ALWAYS);
         expContent.add(label, 0, 0);
         expContent.add(textArea, 0, 1);
 
