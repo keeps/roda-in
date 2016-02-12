@@ -238,7 +238,11 @@ public class CreationModalProcessing extends BorderPane {
         String header = String.format(AppProperties.getLocalizedString("CreationModalProcessing.alert.header"),
           sip.getName());
         alert.setHeaderText(header);
-        alert.setContentText(AppProperties.getLocalizedString("CreationModalProcessing.alert.content"));
+        StringBuilder content = new StringBuilder(ex.getLocalizedMessage());
+        content.append("\n");
+        content.append(AppProperties.getLocalizedString("CreationModalProcessing.cause"));
+        content.append(": ").append(ex.getCause().getLocalizedMessage());
+        alert.setContentText(content.toString());
         alert.getDialogPane().setStyle(AppProperties.getStyle("export.alert"));
         HBox.setHgrow(alert.getDialogPane(), Priority.ALWAYS);
 

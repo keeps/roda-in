@@ -1,15 +1,9 @@
 package org.roda.rodain.core;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import javafx.application.Platform;
 import javafx.scene.control.TreeItem;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.roda.rodain.creation.ui.CreationModalPreparation;
@@ -20,6 +14,11 @@ import org.roda.rodain.schema.ui.SipPreviewNode;
 import org.roda.rodain.source.ui.FileExplorerPane;
 import org.roda.rodain.testing.Utils;
 import org.testfx.framework.junit.ApplicationTest;
+
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -176,7 +175,7 @@ public class MainTest extends ApplicationTest {
     CreationModalPreparation.setOutputFolder(output.toString());
     clickOn(AppProperties.getLocalizedString("start"));
 
-    sleep(2000);
+    sleep(5000);
     clickOn(AppProperties.getLocalizedString("close"));
 
     clickOn(AppProperties.getLocalizedString("Main.file"));
@@ -184,7 +183,7 @@ public class MainTest extends ApplicationTest {
     clickOn("#sipTypes").clickOn("BagIt");
     CreationModalPreparation.setOutputFolder(output.toString());
     clickOn(AppProperties.getLocalizedString("start"));
-    sleep(2000);
+    sleep(5000);
     clickOn(AppProperties.getLocalizedString("close"));
 
     clickOn("FTP");

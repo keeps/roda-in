@@ -117,6 +117,8 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
       log.error("Commons IP exception", e);
       unsuccessful.add(sip);
       CreationModalProcessing.showError(sip, e);
+    } catch(InterruptedException e) {
+      canceled = true;
     } catch (IOException e) {
       log.error("Error accessing the files", e);
       unsuccessful.add(sip);

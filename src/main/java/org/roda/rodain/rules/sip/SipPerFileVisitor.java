@@ -1,11 +1,5 @@
 package org.roda.rodain.rules.sip;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
-
 import org.apache.commons.io.FilenameUtils;
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.MetadataTypes;
@@ -13,12 +7,21 @@ import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.filters.ContentFilter;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.TreeVisitor;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 05-10-2015.
  */
 public class SipPerFileVisitor extends Observable implements TreeVisitor, SipPreviewCreator {
+  private static final org.slf4j.Logger log = LoggerFactory.getLogger(SipPerFileVisitor.class.getName());
   private static final int UPDATEFREQUENCY = 500; // in milliseconds
   // This map is returned, in full, to the SipPreviewNode when there's an update
   private Map<String, SipPreview> sipsMap;
@@ -58,6 +61,8 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipPre
     this.metadataPath = metadataPath;
     this.templateType = templateType;
     this.templateVersion = templateVersion;
+
+
   }
 
   /**
@@ -100,10 +105,37 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipPre
    * Sets the starting path of this TreeVisitor. This method is empty in this
    * class, but it's defined because of the SipPreviewCreator interface.
    *
-   * @param st The starting path of the TreeVisitor.
+   * @param path The starting path of the TreeVisitor.
    */
   @Override
-  public void setStartPath(String st) {
+  public void setStartPath(String path) {
+    try {
+      Files.walkFileTree(Paths.get(path), new SimpleFileVisitor<Path>() {
+        @Override
+        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+          PathCollection.simpleAddPath(file.toString());
+          return isTerminated();
+        }
+
+        @Override
+        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+          PathCollection.simpleAddPath(dir.toString());
+          return isTerminated();
+        }
+      });
+    } catch (AccessDeniedException e) {
+      log.info("Access denied to file", e);
+    } catch (IOException e) {
+      log.error("Error walking the file tree", e);
+    }
+  }
+
+  private FileVisitResult isTerminated() {
+    // terminate if the thread has been interrupted
+    if (Thread.interrupted() || cancelled) {
+      return FileVisitResult.TERMINATE;
+    }
+    return FileVisitResult.CONTINUE;
   }
 
   /**

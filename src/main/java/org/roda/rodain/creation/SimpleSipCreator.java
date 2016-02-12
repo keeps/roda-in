@@ -165,7 +165,7 @@ public class SimpleSipCreator extends Thread {
    */
   public void cancel() {
     canceled = true;
-    Thread.currentThread().interrupt();
+    interrupt();
   }
 
   /**
@@ -175,6 +175,8 @@ public class SimpleSipCreator extends Thread {
   public void run() {
 
   }
+
+
 
   public double getTimeRemainingEstimate() {
     return -1;

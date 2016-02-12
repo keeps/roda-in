@@ -15,18 +15,6 @@
     </properties>
 
     <repositories>
-        <!--<repository>-->
-        <!--<id>vendorDependencies</id>-->
-        <!--<name>Vendor dependencies</name>-->
-        <!--<releases>-->
-        <!--<enabled>true</enabled>-->
-        <!--<checksumPolicy>ignore</checksumPolicy>-->
-        <!--</releases>-->
-        <!--<snapshots>-->
-        <!--<enabled>true</enabled>-->
-        <!--</snapshots>-->
-        <!--<url>file://${projectLocalRepository}/</url>-->
-        <!--</repository>-->
         <repository>
             <id>KEEPS-Artifacts</id>
             <name>KEEP Artifacts-releases (fits, etc.)</name>
@@ -209,7 +197,7 @@
         <dependency>
             <groupId>org.roda-project</groupId>
             <artifactId>commons-ip</artifactId>
-            <version>1.0.0-alpha7</version>
+            <version>1.0.0-alpha8</version>
         </dependency>
         <dependency>
             <groupId>com.samskivert</groupId>
