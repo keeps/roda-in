@@ -1,7 +1,18 @@
 # RODA-In
 [![Build Status](https://api.travis-ci.org/keeps/roda-in.png?branch=master)](https://travis-ci.org/keeps/roda-in)
 
-Application to create SIPs using the file system as the work area. 
+RODA-in is a tool to help producers and archivists create Submission Information Packages (SIP) using the file system as the working area. 
+
+In version 2 we revolutionized the way SIP are created to satisfy the need of mass processing data. In the new version you can create thousands of valid SIP in just a few clicks, complete with metadata.
+
+The tool has features such as:
+* Create, load and edit a classification scheme
+* Automatic association of files/folders to SIP(s)
+* Automatic association of metadata to SIP(s)
+* Creation of metadata templates
+* Support for all metadata formats (EAD, DC, etc.)
+* Creation of SIP with unlimited size
+* Export SIP in two formats: [BagIt](https://github.com/LibraryOfCongress/bagit-java) and [E-ARK](http://www.eark-project.com/resources/project-deliverables/51-d33pilotspec)
 
 ## Installation
 
@@ -10,6 +21,8 @@ mvn install
 ```
 
 ## Usage
+
+Download the [latest release here](https://github.com/keeps/roda-in/releases).
 
 To use RODA-In you must at least have [Java 8](https://www.java.com/en/download/).
 
