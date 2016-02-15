@@ -161,7 +161,7 @@ public class RuleCell extends HBox implements Observer {
     HBox contentSummary = buildContentSummary(dirs, fil);
 
     toggleBox = new HBox();
-    toggleLink = new Hyperlink("Expand");
+    toggleLink = new Hyperlink(AppProperties.getLocalizedString("expand"));
     toggleLink.setTextAlignment(TextAlignment.CENTER);
     toggleBox.getChildren().add(toggleLink);
     HBox.setHgrow(toggleBox, Priority.ALWAYS);

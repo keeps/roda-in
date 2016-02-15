@@ -17,7 +17,6 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -230,21 +229,8 @@ public class RodaIn extends Application {
         Platform.exit();
       }
     });
-
-    menuFile.getItems().addAll(openFolder, createCS, updateCS, exportCS, createSIPs, quit);
-
-    // Edit
-    final MenuItem ignoreItems = new MenuItem(AppProperties.getLocalizedString("Main.ignoreItems"));
-    ignoreItems.setAccelerator(KeyCombination.keyCombination("DELETE"));
-    ignoreItems.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent t) {
-        previewExplorer.ignore();
-      }
-    });
-
     final MenuItem reset = new MenuItem(AppProperties.getLocalizedString("Main.reset"));
-    reset.setAccelerator(KeyCombination.keyCombination("Ctrl+Alt+R"));
+    reset.setAccelerator(KeyCombination.keyCombination("Ctrl+N"));
     reset.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent t) {
@@ -265,7 +251,20 @@ public class RodaIn extends Application {
         }
       }
     });
-    menuEdit.getItems().addAll(reset, ignoreItems);
+
+    menuFile.getItems().addAll(reset, openFolder, createCS, updateCS, exportCS, createSIPs, quit);
+
+    // Edit
+    final MenuItem ignoreItems = new MenuItem(AppProperties.getLocalizedString("Main.ignoreItems"));
+    ignoreItems.setAccelerator(KeyCombination.keyCombination("DELETE"));
+    ignoreItems.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent t) {
+        previewExplorer.ignore();
+      }
+    });
+
+    menuEdit.getItems().addAll(ignoreItems);
 
     // View
     final MenuItem showFiles = new MenuItem(AppProperties.getLocalizedString("Main.hideFiles"));

@@ -1,5 +1,13 @@
 package org.roda.rodain.creation;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.io.FileUtils;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.creation.ui.CreationModalProcessing;
@@ -12,14 +20,6 @@ import org.roda_project.commons_ip.utils.METSEnums;
 import org.roda_project.commons_ip.utils.SIPException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -155,7 +155,8 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
 
   @Override
   public void sipBuildRepresentationProcessingCurrentStatus(int i) {
-    currentAction = AppProperties.getLocalizedString("CreationModalProcessing.representation") + " (" + i + "/" + repProcessingSize + ")";
+    String format = AppProperties.getLocalizedString("CreationModalProcessing.representation") + " (%d/%d)";
+    currentAction = String.format(format, i, repProcessingSize);
   }
 
   @Override
