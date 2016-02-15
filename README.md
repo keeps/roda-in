@@ -1,5 +1,4 @@
 # RODA-In
-[![Build Status](https://api.travis-ci.org/keeps/roda-in.png?branch=master)](https://travis-ci.org/keeps/roda-in)
 
 RODA-in is a tool to help producers and archivists create Submission Information Packages (SIP) using the file system as the working area. 
 
@@ -48,6 +47,10 @@ The following actions are supported to edit the classification scheme:
 * Remove node
 
 ## Contributing
+
+[![Build Status](https://api.travis-ci.org/keeps/roda-in.png?branch=master)](https://travis-ci.org/keeps/roda-in)
+
+[Maven](https://maven.apache.org/) is required to build RODA-in.
 
 1. Fork it!
 2. Create your feature branch: `git checkout -b my-new-feature`
