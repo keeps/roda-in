@@ -58,10 +58,6 @@ The following actions are supported to edit the classification scheme:
 4. Push to the branch: `git push origin my-new-feature`
 5. Submit a pull request :D
 
-## Credits
-
-https://www.iconfinder.com/iconsets/flat-color-icons
-
 ## License
 
 LGPLv3
