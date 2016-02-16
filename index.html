@@ -2,78 +2,89 @@
 <html lang="en-us">
   <head>
     <meta charset="UTF-8">
-    <title>Roda-in by keeps</title>
+    <title>RODA-in by keeps</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
   </head>
   <body>
     <section class="page-header">
-      <h1 class="project-name">Roda-in</h1>
-      <h2 class="project-tagline">Program to create SIPs for RODA</h2>
+      <h1 class="project-name">RODA-in</h1>
+      <h2 class="project-tagline">Tool to create Submission Information Packages (SIP)</h2>
       <a href="https://github.com/keeps/roda-in" class="btn">View on GitHub</a>
-      <a href="https://github.com/keeps/roda-in/releases/download/1.0.0-beta.2.1/rodain-app-1.0.0-beta.2.1.exe" class="btn">
-        <i class="fa fa-windows"></i>
-        Download Beta.2.1
-        </a>
-      <a href="https://github.com/keeps/roda-in/releases/download/1.0.0-beta.2.1/rodain-app-1.0.0-beta.2.1.jar" class="btn">Download Beta.2.1 jar</a>
+      <a href="https://github.com/keeps/roda-in/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/keeps/roda-in/tarball/master" class="btn">Download .tar.gz</a>
     </section>
 
     <section class="main-content">
       <h1>
 <a id="roda-in" class="anchor" href="#roda-in" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>RODA-In</h1>
 
-<p>RODA-in is a tool to help producers and archivists create Submission Information Packages (SIP) using the file system as the working area. </p>
+<p>RODA-in is a tool specially designed for producers and archivists to create Submission Information Packages (SIP) ready for to be submitted to a Open Archival Information System (OAIS). The tool creates SIPs from files and folders available on the local file system. </p>
 
-<p>In version 2 we revolutionized the way SIP are created to satisfy the need of mass processing data. In the new version you can create thousands of valid SIP in just a few clicks, complete with metadata.</p>
+<p>In version 2 we revolutionized the way SIPs are created to satisfy the need for mass processing of data. In this version you can create thousands of valid SIPs with just a few clicks, complete with data and metadata.</p>
 
-<p>The tool has features such as:</p>
+<p>The tool includes features such as:</p>
 
 <ul>
-<li>Create, load and edit a classification scheme</li>
-<li>Automatic association of files/folders to SIP(s)</li>
-<li>Automatic association of metadata to SIP(s)</li>
-<li>Creation of metadata templates</li>
-<li>Support for all metadata formats (EAD, DC, etc.)</li>
-<li>Creation of SIP with unlimited size</li>
-<li>Export SIP in two formats: <a href="https://github.com/LibraryOfCongress/bagit-java">BagIt</a> and <a href="http://www.eark-project.com/resources/project-deliverables/51-d33pilotspec">E-ARK</a>
+<li>Create, load and edit a classification schemas</li>
+<li>Automatic association of files/folders to SIPs</li>
+<li>Automatic association of metadata to SIPs</li>
+<li>Definition of metadata templates</li>
+<li>Support for various metadata formats (EAD, DC, etc.)</li>
+<li>Creation of SIPs of unlimited size</li>
+<li>Export SIPs in various formats: <a href="https://github.com/LibraryOfCongress/bagit-java">BagIt</a> and <a href="http://www.eark-project.com/resources/project-deliverables/51-d33pilotspec">E-ARK</a>
 </li>
 </ul>
 
 <h2>
-<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
+<a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Requirements</h2>
 
-<pre><code>mvn install
+<p>RODA-in has been successfully tested on:</p>
+
+<ul>
+<li>[x] Windows 7, 8 and 10.</li>
+<li>[x] Mac OS X El Capitan</li>
+<li>[x] Ubuntu Desktop 14</li>
+</ul>
+
+<p>To use RODA-In you must have Java 8 installed in your operating system. Go ahead, download Java and install it in your system before downloading RODA-in.</p>
+
+<p>Java 8 can be downloaded <a href="https://www.java.com/en/download/">here</a>.</p>
+
+<h2>
+<a id="download-and-run" class="anchor" href="#download-and-run" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Download and run</h2>
+
+<p>The latest version of RODA-in is available <a href="https://github.com/keeps/roda-in/releases">here</a>.</p>
+
+<p>To use RODA-in no installation is required. You just need to download the latest release of the application and run it by double clicking the downloaded file (*.jar extension). If that doesn't work, open a console window (or terminal) and type</p>
+
+<pre><code>java -jar roda-in-app.xxx.yyy.jar
 </code></pre>
 
 <h2>
 <a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
 
-<p>Download the <a href="https://github.com/keeps/roda-in/releases">latest release here</a>.</p>
-
-<p>To use RODA-In you must at least have <a href="https://www.java.com/en/download/">Java 8</a>.</p>
-
-<p>The basic workflow of the application is:</p>
+<p>The basic workflow of the application is as follows:</p>
 
 <ol>
-<li>Choose the root directory of the file system (panel on the left).</li>
-<li>Choose the classification scheme (panel on the center). There's two options:
+<li>Choose a working folder in your file system (panel on the left). This will serve as the root of your project.</li>
+<li>Choose or create a classification scheme (panel on the center). There's two options:
 
 <ul>
-<li>Load a classification scheme. You can obtain a classification scheme from RODA, for example.</li>
-<li>Create a classification scheme. </li>
+<li>Load a classification scheme. You can obtain a classification scheme from RODA reposiory, for example.</li>
+<li>Create a new classification scheme. </li>
 </ul>
 </li>
-<li>Drag files/directories from the left to the center panel</li>
-<li>Choose the type of association and metadata desired. This will have impact on the number and structure of the SIPs created.</li>
+<li>Drag files/folders from the left panel to the center panel into the appropriate node in the classification scheme.</li>
+<li>Choose the type of data and metadata association. This will have impact on the number and structure of the SIPs created.</li>
 <li>(Optional) Inspect the created SIPs, edit metadata and content.</li>
-<li>Export the SIPs to a directory</li>
+<li>Export the SIPs to a folder</li>
 </ol>
 
-<p>To select more than one file/directory you can press SHIFT or CTRL.</p>
+<p>To select more than one file/folder you can press SHIFT or CTRL.</p>
 
 <p>The following actions are supported to edit the classification scheme:</p>
 
@@ -89,6 +100,29 @@
 </li>
 <li>Remove node</li>
 </ul>
+
+<h2>
+<a id="tutorials" class="anchor" href="#tutorials" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Tutorials</h2>
+
+<p>Will be available soon...</p>
+
+<h2>
+<a id="installation-from-source-code" class="anchor" href="#installation-from-source-code" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation from source code</h2>
+
+<ol>
+<li>Make sure you have installed Java 8 and Maven.</li>
+<li>Clone the repository by issuing the command XXX</li>
+<li>Install by running the following command:</li>
+<li>
+</ol>
+
+<pre><code>mvn install
+</code></pre>
+
+<p>That's it! A jar file will be created on the folder XXX. To run it, just double click on the file or run the following command on the console:</p>
+
+<pre><code>java -jar roda-in-app.xxx.yyy.jar
+</code></pre>
 
 <h2>
 <a id="contributing" class="anchor" href="#contributing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Contributing</h2>
@@ -111,10 +145,178 @@
 <h2>
 <a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License</h2>
 
-<p>LGPLv3</p>
+<p>RODA-in licence is <a href="http://www.gnu.org/licenses/lgpl-3.0.html">LGPLv3</a></p>
+
+<pre><code>                   GNU LESSER GENERAL PUBLIC LICENSE
+                       Version 3, 29 June 2007
+
+ Copyright (C) 2007 Free Software Foundation, Inc. &lt;http://fsf.org/&gt;
+ Everyone is permitted to copy and distribute verbatim copies
+ of this license document, but changing it is not allowed.
+
+
+  This version of the GNU Lesser General Public License incorporates
+the terms and conditions of version 3 of the GNU General Public
+License, supplemented by the additional permissions listed below.
+
+  0. Additional Definitions.
+
+  As used herein, "this License" refers to version 3 of the GNU Lesser
+General Public License, and the "GNU GPL" refers to version 3 of the GNU
+General Public License.
+
+  "The Library" refers to a covered work governed by this License,
+other than an Application or a Combined Work as defined below.
+
+  An "Application" is any work that makes use of an interface provided
+by the Library, but which is not otherwise based on the Library.
+Defining a subclass of a class defined by the Library is deemed a mode
+of using an interface provided by the Library.
+
+  A "Combined Work" is a work produced by combining or linking an
+Application with the Library.  The particular version of the Library
+with which the Combined Work was made is also called the "Linked
+Version".
+
+  The "Minimal Corresponding Source" for a Combined Work means the
+Corresponding Source for the Combined Work, excluding any source code
+for portions of the Combined Work that, considered in isolation, are
+based on the Application, and not on the Linked Version.
+
+  The "Corresponding Application Code" for a Combined Work means the
+object code and/or source code for the Application, including any data
+and utility programs needed for reproducing the Combined Work from the
+Application, but excluding the System Libraries of the Combined Work.
+
+  1. Exception to Section 3 of the GNU GPL.
+
+  You may convey a covered work under sections 3 and 4 of this License
+without being bound by section 3 of the GNU GPL.
+
+  2. Conveying Modified Versions.
+
+  If you modify a copy of the Library, and, in your modifications, a
+facility refers to a function or data to be supplied by an Application
+that uses the facility (other than as an argument passed when the
+facility is invoked), then you may convey a copy of the modified
+version:
+
+   a) under this License, provided that you make a good faith effort to
+   ensure that, in the event an Application does not supply the
+   function or data, the facility still operates, and performs
+   whatever part of its purpose remains meaningful, or
+
+   b) under the GNU GPL, with none of the additional permissions of
+   this License applicable to that copy.
+
+  3. Object Code Incorporating Material from Library Header Files.
+
+  The object code form of an Application may incorporate material from
+a header file that is part of the Library.  You may convey such object
+code under terms of your choice, provided that, if the incorporated
+material is not limited to numerical parameters, data structure
+layouts and accessors, or small macros, inline functions and templates
+(ten or fewer lines in length), you do both of the following:
+
+   a) Give prominent notice with each copy of the object code that the
+   Library is used in it and that the Library and its use are
+   covered by this License.
+
+   b) Accompany the object code with a copy of the GNU GPL and this license
+   document.
+
+  4. Combined Works.
+
+  You may convey a Combined Work under terms of your choice that,
+taken together, effectively do not restrict modification of the
+portions of the Library contained in the Combined Work and reverse
+engineering for debugging such modifications, if you also do each of
+the following:
+
+   a) Give prominent notice with each copy of the Combined Work that
+   the Library is used in it and that the Library and its use are
+   covered by this License.
+
+   b) Accompany the Combined Work with a copy of the GNU GPL and this license
+   document.
+
+   c) For a Combined Work that displays copyright notices during
+   execution, include the copyright notice for the Library among
+   these notices, as well as a reference directing the user to the
+   copies of the GNU GPL and this license document.
+
+   d) Do one of the following:
+
+       0) Convey the Minimal Corresponding Source under the terms of this
+       License, and the Corresponding Application Code in a form
+       suitable for, and under terms that permit, the user to
+       recombine or relink the Application with a modified version of
+       the Linked Version to produce a modified Combined Work, in the
+       manner specified by section 6 of the GNU GPL for conveying
+       Corresponding Source.
+
+       1) Use a suitable shared library mechanism for linking with the
+       Library.  A suitable mechanism is one that (a) uses at run time
+       a copy of the Library already present on the user's computer
+       system, and (b) will operate properly with a modified version
+       of the Library that is interface-compatible with the Linked
+       Version.
+
+   e) Provide Installation Information, but only if you would otherwise
+   be required to provide such information under section 6 of the
+   GNU GPL, and only to the extent that such information is
+   necessary to install and execute a modified version of the
+   Combined Work produced by recombining or relinking the
+   Application with a modified version of the Linked Version. (If
+   you use option 4d0, the Installation Information must accompany
+   the Minimal Corresponding Source and Corresponding Application
+   Code. If you use option 4d1, you must provide the Installation
+   Information in the manner specified by section 6 of the GNU GPL
+   for conveying Corresponding Source.)
+
+  5. Combined Libraries.
+
+  You may place library facilities that are a work based on the
+Library side by side in a single library together with other library
+facilities that are not Applications and are not covered by this
+License, and convey such a combined library under terms of your
+choice, if you do both of the following:
+
+   a) Accompany the combined library with a copy of the same work based
+   on the Library, uncombined with any other library facilities,
+   conveyed under the terms of this License.
+
+   b) Give prominent notice with the combined library that part of it
+   is a work based on the Library, and explaining where to find the
+   accompanying uncombined form of the same work.
+
+  6. Revised Versions of the GNU Lesser General Public License.
+
+  The Free Software Foundation may publish revised and/or new versions
+of the GNU Lesser General Public License from time to time. Such new
+versions will be similar in spirit to the present version, but may
+differ in detail to address new problems or concerns.
+
+  Each version is given a distinguishing version number. If the
+Library as you received it specifies that a certain numbered version
+of the GNU Lesser General Public License "or any later version"
+applies to it, you have the option of following the terms and
+conditions either of that published version or of any later version
+published by the Free Software Foundation. If the Library as you
+received it does not specify a version number of the GNU Lesser
+General Public License, you may choose any version of the GNU Lesser
+General Public License ever published by the Free Software Foundation.
+
+  If the Library as you received it specifies that a proxy can decide
+whether future versions of the GNU Lesser General Public License shall
+apply, that proxy's public statement of acceptance of any version is
+permanent authorization for you to choose that version for the
+Library.
+
+</code></pre>
 
       <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/keeps/roda-in">Roda-in</a> is maintained by <a href="https://github.com/keeps">keeps</a>.</span>
+        <span class="site-footer-owner"><a href="https://github.com/keeps/roda-in">RODA-in</a> is maintained by <a href="https://github.com/keeps">keeps</a>.</span>
 
         <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
       </footer>
