@@ -19,8 +19,13 @@ This application was part of the [RODA project](http://www.roda-community.org) a
 
 RODA-in supports several Submission Information Package formats. At the moment we have included support for:
 
-* BagIt, a hierarchical file packaging format for storage and transfer of arbitrary digital content.  A "bag" has just enough structure to enclose descriptive "tags" and a "payload" but does not require knowledge of the payload's internal semantics. This BagIt format should be suitable for disk-based or network-based storage and transfer.  BagIt is widely used in the practice of digital preservation. The specification of BagIt can be found [here](https://tools.ietf.org/html/draft-kunze-bagit-13).
-* E-ARK SIP format, ... text in http://www.eark-project.com/resources/project-deliverables/17-d32-e-ark-sip-draft-specification/file
+### Bagit
+
+BagIt, a hierarchical file packaging format for storage and transfer of arbitrary digital content.  A "bag" has just enough structure to enclose descriptive "tags" and a "payload" but does not require knowledge of the payload's internal semantics. This BagIt format should be suitable for disk-based or network-based storage and transfer.  BagIt is widely used in the practice of digital preservation. The specification of BagIt can be found [here](https://tools.ietf.org/html/draft-kunze-bagit-13).
+
+### E-ARK SIP
+
+E-ARK SIP format, ... text in http://www.eark-project.com/resources/project-deliverables/17-d32-e-ark-sip-draft-specification/file
 
 
 ## Requirements
