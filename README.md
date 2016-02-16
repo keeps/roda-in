@@ -1,29 +1,26 @@
 # RODA-In
 
-RODA-in is a tool to help producers and archivists create Submission Information Packages (SIP) using the file system as the working area. 
+RODA-in is a tool specially designed for producers and archivists to create Submission Information Packages (SIP) ready for to be submitted to a Open Archival Information System (OAIS). The tool creates SIPs from files and folders available on the local file system. 
 
-In version 2 we revolutionized the way SIP are created to satisfy the need of mass processing data. In the new version you can create thousands of valid SIP in just a few clicks, complete with metadata.
+In version 2 we revolutionized the way SIPs are created to satisfy the need for mass processing of data. In this version you can create thousands of valid SIPs with just a few clicks, complete with data and metadata.
 
-The tool has features such as:
-* Create, load and edit a classification scheme
-* Automatic association of files/folders to SIP(s)
-* Automatic association of metadata to SIP(s)
-* Creation of metadata templates
-* Support for all metadata formats (EAD, DC, etc.)
-* Creation of SIP with unlimited size
-* Export SIP in two formats: [BagIt](https://github.com/LibraryOfCongress/bagit-java) and [E-ARK](http://www.eark-project.com/resources/project-deliverables/51-d33pilotspec)
+The tool includes features such as:
+* Create, load and edit a classification schemas
+* Automatic association of files/folders to SIPs
+* Automatic association of metadata to SIPs
+* Definition of metadata templates
+* Support for various metadata formats (EAD, DC, etc.)
+* Creation of SIPs of unlimited size
+* Export SIPs in various formats: [BagIt](https://github.com/LibraryOfCongress/bagit-java) and [E-ARK](http://www.eark-project.com/resources/project-deliverables/51-d33pilotspec)
 
-## Installation
 
-```
-mvn install
-```
-
-## Usage
+## Download and installation
 
 Download the [latest release here](https://github.com/keeps/roda-in/releases).
 
 To use RODA-In you must at least have [Java 8](https://www.java.com/en/download/).
+
+## Usage
 
 The basic workflow of the application is:
 
@@ -45,6 +42,27 @@ The following actions are supported to edit the classification scheme:
   - Change parent
   - Move to the root of the tree
 * Remove node
+
+## Tutorials
+
+Will be available soon...
+
+## Installation from source code 
+
+1. Make sure you have installed Java 8 and Maven.
+2. Clone the repository by issuing the command XXX
+3. Install by running the following command:
+4. 
+```
+mvn install
+```
+
+That's it! A jar file will be created on the folder XXX. To run it, just double click on the file or run the following command on the console:
+
+```
+java -jar roda-in-app.xxx.yyy.jar
+```
+
 
 ## Contributing
 
