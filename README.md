@@ -109,9 +109,13 @@ For more information or commercial support, contact (KEEP SOLUTIONS)[http://www.
 
 ## Further reading
 
-Bagit spec
-SIP spec
-Common spec
+* Bagit spec
+* SIP spec
+* Common spec
+* RODA source code
+* RODA community
+* E-ARK project
+* etc.
 
 
 ## Contributing
