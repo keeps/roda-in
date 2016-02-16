@@ -25,15 +25,16 @@ RODA-in supports several Submission Information Package formats. At the moment w
 
 ## Requirements
 
-Java 8 can be downloaded [here](https://www.java.com/en/download/).
-
-To use RODA-In you must have Java 8 installed in your operating system. Go ahead, download Java and install it in your system before downloading RODA-in.
-
 RODA-in has been successfully tested on:
 
 - [x] Windows 7, 8 and 10.
 - [x] Mac OS X El Capitan
 - [x] Ubuntu Desktop 14
+
+To use RODA-In you must have Java 8 installed in your operating system. Go ahead, download Java and install it in your system before downloading RODA-in.
+
+Java 8 can be downloaded [here](https://www.java.com/en/download/).
+
 
 ## Download pre-compiled version
 
