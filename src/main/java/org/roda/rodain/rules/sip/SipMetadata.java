@@ -90,33 +90,11 @@ public class SipMetadata {
   }
 
   private void loadValues() {
-    Map<String, List<String>> paths = new HashMap<>();
-    List<String> titleXpaths = new ArrayList<>();
-    titleXpaths.add("//*[local-name()='titleproper']");
-    titleXpaths.add("//*[local-name()='unittitle']");
-    paths.put("Title", titleXpaths);
-
-    List<String> dateXpaths = new ArrayList<>();
-    dateXpaths.add("//*[local-name()='date']/@normal");
-    dateXpaths.add("//*[local-name()='date']");
-    dateXpaths.add("//*[local-name()='unitdate']/@normal");
-    dateXpaths.add("//*[local-name()='unitdate']");
-    paths.put("Date", dateXpaths);
-
-    List<String> repCodeXpaths = new ArrayList<>();
-    repCodeXpaths.add("//*[local-name()='unitid']/@repositorycode");
-    paths.put("Repository code", repCodeXpaths);
-
-    List<String> idXpaths = new ArrayList<>();
-    idXpaths.add("//*[local-name()='unitid']");
-    paths.put("ID", idXpaths);
-
-    System.out.println(values.toString());
+    Map<String, List<String>> formRules = createEADForm();
 
     try {
       Document document = loadXMLFromString(getMetadataContent());
-      paths.forEach((title, xpathList) -> {
-        //System.out.println(title + " - " + xpath);
+      formRules.forEach((title, xpathList) -> {
         MetadataValue currentMeta = getMetadataValue(title);
         // if there was a MetadataValue already we don't need to add the xpaths again
         boolean wasNull = currentMeta == null;
@@ -172,6 +150,9 @@ public class SipMetadata {
     return content;
   }
 
+  /**
+   * @return The set of MetadataValue objects. Used to create the form.
+   */
   public Set<MetadataValue> getValues() {
     loadValues();
     return values;
@@ -212,6 +193,9 @@ public class SipMetadata {
     content = meta;
   }
 
+  /**
+   * Applies the data from the MetadataValues to the XML string.
+   */
   public void applyMetadataValues() {
     try {
       Document document = loadXMLFromString(getMetadataContent());
@@ -230,5 +214,29 @@ public class SipMetadata {
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+
+  private Map<String, List<String>> createEADForm() {
+    Map<String, List<String>> paths = new HashMap<>();
+    List<String> titleXpaths = new ArrayList<>();
+    titleXpaths.add("//*[local-name()='titleproper']");
+    titleXpaths.add("//*[local-name()='unittitle']");
+    paths.put("Title", titleXpaths);
+
+    List<String> dateXpaths = new ArrayList<>();
+    dateXpaths.add("//*[local-name()='date']/@normal");
+    dateXpaths.add("//*[local-name()='date']");
+    dateXpaths.add("//*[local-name()='unitdate']/@normal");
+    dateXpaths.add("//*[local-name()='unitdate']");
+    paths.put("Date", dateXpaths);
+
+    List<String> repCodeXpaths = new ArrayList<>();
+    repCodeXpaths.add("//*[local-name()='unitid']/@repositorycode");
+    paths.put("Repository code", repCodeXpaths);
+
+    List<String> idXpaths = new ArrayList<>();
+    idXpaths.add("//*[local-name()='unitid']");
+    paths.put("ID", idXpaths);
+    return paths;
   }
 }
