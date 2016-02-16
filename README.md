@@ -14,26 +14,40 @@ The tool includes features such as:
 * Export SIPs in various formats: [BagIt](https://github.com/LibraryOfCongress/bagit-java) and [E-ARK](http://www.eark-project.com/resources/project-deliverables/51-d33pilotspec)
 
 
-## Download and installation
+## Requirements
 
-Download the [latest release here](https://github.com/keeps/roda-in/releases).
+RODA-in has been successfully tested on:
 
-To use RODA-In you must at least have [Java 8](https://www.java.com/en/download/).
+- Windows 7, 8 and 10.
+- Mac OS X El Capitan
+- Ubuntu Desktop 14
+
+To use RODA-In you must have [Java 8](https://www.java.com/en/download/) installed in your operating system. Go ahead, download Java and install it in your system before downloading RODA-in.
+
+## Download and run
+
+The latest version of RODA-in is available [here](https://github.com/keeps/roda-in/releases).
+
+To use RODA-in no installation is required. You just need to download the latest release of the application and run it by double clicking the downloaded file (*.jar extension). If that doesn't work, open a console window (or terminal) and type
+
+```
+java -jar roda-in-app.xxx.yyy.jar
+```
 
 ## Usage
 
-The basic workflow of the application is:
+The basic workflow of the application is as follows:
 
-1. Choose the root directory of the file system (panel on the left).
-2. Choose the classification scheme (panel on the center). There's two options:
-  - Load a classification scheme. You can obtain a classification scheme from RODA, for example.
-  - Create a classification scheme. 
-3. Drag files/directories from the left to the center panel
-4. Choose the type of association and metadata desired. This will have impact on the number and structure of the SIPs created.
+1. Choose a working folder in your file system (panel on the left). This will serve as the root of your project.
+2. Choose or create a classification scheme (panel on the center). There's two options:
+  - Load a classification scheme. You can obtain a classification scheme from RODA reposiory, for example.
+  - Create a new classification scheme. 
+3. Drag files/folders from the left panel to the center panel into the appropriate node in the classification scheme.
+4. Choose the type of data and metadata association. This will have impact on the number and structure of the SIPs created.
 5. (Optional) Inspect the created SIPs, edit metadata and content.
-6. Export the SIPs to a directory
+6. Export the SIPs to a folder
 
-To select more than one file/directory you can press SHIFT or CTRL.
+To select more than one file/folder you can press SHIFT or CTRL.
 
 The following actions are supported to edit the classification scheme:
 * Add node
