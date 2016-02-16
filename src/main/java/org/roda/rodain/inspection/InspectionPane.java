@@ -1,5 +1,14 @@
 package org.roda.rodain.inspection;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -17,28 +26,24 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.TreeNode;
+import org.roda.rodain.rules.sip.MetadataValue;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SipPreviewNode;
 import org.roda.rodain.source.ui.SourceTreeCell;
+import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.UIPair;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -59,6 +64,7 @@ public class InspectionPane extends BorderPane {
   // Metadata
   private VBox metadata;
   private TextArea metaText;
+  private GridPane metadataForm;
   // SIP Content
   private BorderPane content;
   private VBox treeBox;
@@ -136,14 +142,44 @@ public class InspectionPane extends BorderPane {
     metadata = new VBox();
     metadata.getStyleClass().add("inspectionPart");
 
+    metadataForm = new GridPane();
+    metadataForm.setPadding(new Insets(5, 5, 5, 5));
+    ColumnConstraints column1 = new ColumnConstraints();
+    column1.setPercentWidth(20);
+    ColumnConstraints column2 = new ColumnConstraints();
+    column2.setPercentWidth(80);
+    metadataForm.getColumnConstraints().addAll(column1, column2);
+
     HBox box = new HBox();
     box.getStyleClass().add("hbox");
     box.setPadding(new Insets(5, 10, 5, 10));
     box.setAlignment(Pos.CENTER_LEFT);
 
     Label title = new Label(AppProperties.getLocalizedString("InspectionPane.metadata"));
+    HBox space = new HBox();
+    HBox.setHgrow(space, Priority.ALWAYS);
 
-    box.getChildren().add(title);
+    ToggleButton toggle = new ToggleButton();
+    Image unselected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.code, Color.WHITE);
+    Image selected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.code, Color.GREY);
+    ImageView toggleImage = new ImageView();
+    toggle.setGraphic(toggleImage);
+    toggleImage.imageProperty().bind(Bindings.when(toggle.selectedProperty()).then(selected).otherwise(unselected));
+
+    toggle.selectedProperty().addListener(new ChangeListener<Boolean>() {
+      @Override
+      public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+        if (newValue) {
+          metadata.getChildren().remove(metaText);
+          metadata.getChildren().add(metadataForm);
+        } else {
+          metadata.getChildren().remove(metadataForm);
+          metadata.getChildren().add(metaText);
+        }
+      }
+    });
+
+    box.getChildren().addAll(title, space, toggle);
 
     metaText = new TextArea();
     metaText.setPromptText(AppProperties.getLocalizedString("InspectionPane.metadata.placeholder"));
@@ -555,6 +591,20 @@ public class InspectionPane extends BorderPane {
     // metadata
     String meta = sip.getSip().getMetadataContent();
     metaText.setText(meta);
+
+    metadataForm.getChildren().clear();
+    List<MetadataValue> metadataValues = sip.getSip().getMetadataValues();
+    int i = 0;
+    for (MetadataValue metadataValue : metadataValues) {
+      Label label = new Label(metadataValue.getTitle());
+      label.getStyleClass().add("formLabel");
+      TextField textField = new TextField(metadataValue.getValue());
+      HBox.setHgrow(textField, Priority.ALWAYS);
+      textField.setUserData(metadataValue);
+      metadataForm.add(label, 0, i);
+      metadataForm.add(textField, 1, i);
+      i++;
+    }
 
     // content tree
     createContent(sip);

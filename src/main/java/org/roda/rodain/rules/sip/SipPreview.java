@@ -78,7 +78,6 @@ public class SipPreview extends Observable implements Observer {
   public String getMetadataContent() {
     String content = metadata.getMetadataContent();
     if (content != null) {
-      //TODO configurable tags...
       Template tmpl = Mustache.compiler().compile(content);
       Map<String, String> data = new HashMap<>();
       data.put("title", getName());
@@ -88,6 +87,7 @@ public class SipPreview extends Observable implements Observer {
       //we need to clean the '\r' character in windows,
       // otherwise the strings are different even if no modification has been made
       content = content.replace("\r", "");
+      metadata.update(content);
     }
     return content;
   }
@@ -143,6 +143,14 @@ public class SipPreview extends Observable implements Observer {
    */
   public boolean isMetadataModified() {
     return metadata.isModified();
+  }
+
+  /**
+   * @return A list with the metadata values.
+   * @see SipMetadata#getValues()
+   */
+  public List<MetadataValue> getMetadataValues() {
+    return metadata.getValues();
   }
 
   /**

@@ -35,7 +35,7 @@ public class SipMetadata {
   private String version;
   private String templateType;
   private boolean loaded = false, modified = false;
-  private String content;
+  private String template, content;
   private Path path;
   private List<MetadataValue> values;
 
@@ -65,9 +65,9 @@ public class SipMetadata {
     try {
       if (type == MetadataTypes.TEMPLATE) {
         if (templateType != null) {
-          content = AppProperties.getMetadataFile(templateType);
+          template = AppProperties.getMetadataFile(templateType);
+          content = template;
           loaded = true;
-          loadValues();
         }
       } else {
         if (path != null) {
@@ -111,8 +111,10 @@ public class SipMetadata {
     idXpaths.add("//*[local-name()='unitid']");
     paths.put("ID", idXpaths);
 
+    System.out.println(getMetadataContent());
+
     try {
-      Document document = loadXMLFromString(content);
+      Document document = loadXMLFromString(getMetadataContent());
       paths.forEach((title, xpathList) -> {
         //System.out.println(title + " - " + xpath);
         MetadataValue currentMeta = null;
@@ -154,6 +156,7 @@ public class SipMetadata {
   }
 
   public List<MetadataValue> getValues() {
+    loadValues();
     return values;
   }
 
