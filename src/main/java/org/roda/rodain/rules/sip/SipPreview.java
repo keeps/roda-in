@@ -87,7 +87,7 @@ public class SipPreview extends Observable implements Observer {
       //we need to clean the '\r' character in windows,
       // otherwise the strings are different even if no modification has been made
       content = content.replace("\r", "");
-      metadata.update(content);
+      metadata.setContent(content);
     }
     return content;
   }
@@ -149,7 +149,7 @@ public class SipPreview extends Observable implements Observer {
    * @return A list with the metadata values.
    * @see SipMetadata#getValues()
    */
-  public List<MetadataValue> getMetadataValues() {
+  public Set<MetadataValue> getMetadataValues() {
     return metadata.getValues();
   }
 

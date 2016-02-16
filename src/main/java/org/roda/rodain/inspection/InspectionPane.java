@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -161,7 +162,7 @@ public class InspectionPane extends BorderPane {
 
     ToggleButton toggle = new ToggleButton();
     Image unselected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.code, Color.WHITE);
-    Image selected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.code, Color.GREY);
+    Image selected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.code, Color.DARKBLUE);
     ImageView toggleImage = new ImageView();
     toggle.setGraphic(toggleImage);
     toggleImage.imageProperty().bind(Bindings.when(toggle.selectedProperty()).then(selected).otherwise(unselected));
@@ -170,7 +171,22 @@ public class InspectionPane extends BorderPane {
       @Override
       public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
         if (newValue) {
+          saveMetadata();
           metadata.getChildren().remove(metaText);
+          metadataForm.getChildren().clear();
+          Set<MetadataValue> metadataValues = currentSIP.getMetadataValues();
+          int i = 0;
+          for (MetadataValue metadataValue : metadataValues) {
+            Label label = new Label(metadataValue.getTitle());
+            label.getStyleClass().add("formLabel");
+            TextField textField = new TextField();
+            HBox.setHgrow(textField, Priority.ALWAYS);
+            textField.setUserData(metadataValue);
+            textField.textProperty().bindBidirectional(new SimpleStringProperty(metadataValue.value));
+            metadataForm.add(label, 0, i);
+            metadataForm.add(textField, 1, i);
+            i++;
+          }
           metadata.getChildren().add(metadataForm);
         } else {
           metadata.getChildren().remove(metadataForm);
@@ -591,20 +607,6 @@ public class InspectionPane extends BorderPane {
     // metadata
     String meta = sip.getSip().getMetadataContent();
     metaText.setText(meta);
-
-    metadataForm.getChildren().clear();
-    List<MetadataValue> metadataValues = sip.getSip().getMetadataValues();
-    int i = 0;
-    for (MetadataValue metadataValue : metadataValues) {
-      Label label = new Label(metadataValue.getTitle());
-      label.getStyleClass().add("formLabel");
-      TextField textField = new TextField(metadataValue.getValue());
-      HBox.setHgrow(textField, Priority.ALWAYS);
-      textField.setUserData(metadataValue);
-      metadataForm.add(label, 0, i);
-      metadataForm.add(textField, 1, i);
-      i++;
-    }
 
     // content tree
     createContent(sip);

@@ -7,7 +7,8 @@ import java.util.List;
  * Created by adrapereira on 08-02-2016.
  */
 public class MetadataValue {
-  private String title, value;
+  private String title;
+  public String value;
   private List<String> xpathDestinations;
 
   public MetadataValue(String title, String value) {

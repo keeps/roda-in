@@ -4,10 +4,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -37,7 +34,7 @@ public class SipMetadata {
   private boolean loaded = false, modified = false;
   private String template, content;
   private Path path;
-  private List<MetadataValue> values;
+  private Set<MetadataValue> values;
 
   /**
    * Creates a new SipMetadata object.
@@ -51,7 +48,7 @@ public class SipMetadata {
     this.path = path;
     this.templateType = templateType;
     this.version = version;
-    this.values = new ArrayList<>();
+    this.values = new HashSet<>();
   }
 
   /**
@@ -111,13 +108,15 @@ public class SipMetadata {
     idXpaths.add("//*[local-name()='unitid']");
     paths.put("ID", idXpaths);
 
-    System.out.println(getMetadataContent());
+    System.out.println(values.toString());
 
     try {
       Document document = loadXMLFromString(getMetadataContent());
       paths.forEach((title, xpathList) -> {
         //System.out.println(title + " - " + xpath);
-        MetadataValue currentMeta = null;
+        MetadataValue currentMeta = getMetadataValue(title);
+        // if there was a MetadataValue already we don't need to add the xpaths again
+        boolean wasNull = currentMeta == null;
         for (String xpath : xpathList) {
           XPath xPath = XPathFactory.newInstance().newXPath();
           NodeList nodes = null;
@@ -126,20 +125,35 @@ public class SipMetadata {
           } catch (XPathExpressionException e) {
             e.printStackTrace();
           }
-          if (nodes.getLength() > 0) {
+          if (nodes != null && nodes.getLength() > 0) {
             if (currentMeta == null) {
               currentMeta = new MetadataValue(title, nodes.item(0).getTextContent());
             }
-            currentMeta.addXpathDestination(xpath);
+            if (wasNull) {
+              currentMeta.addXpathDestination(xpath);
+            }
+            currentMeta.setValue(nodes.item(0).getTextContent());
           }
         }
-        values.add(currentMeta);
+        if (wasNull)
+          values.add(currentMeta);
       });
     } catch (SAXException e) {
       e.printStackTrace();
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+
+  private MetadataValue getMetadataValue(String title) {
+    MetadataValue result = null;
+    for (MetadataValue mv : values) {
+      if (mv.getTitle().equals(title)) {
+        result = mv;
+        break;
+      }
+    }
+    return result;
   }
 
   /**
@@ -155,7 +169,7 @@ public class SipMetadata {
     return content;
   }
 
-  public List<MetadataValue> getValues() {
+  public Set<MetadataValue> getValues() {
     loadValues();
     return values;
   }
@@ -181,6 +195,17 @@ public class SipMetadata {
    */
   public void update(String meta) {
     modified = true;
+    content = meta;
+  }
+
+  /**
+   * Sets the metadata content of the SIP.
+   * This will not flag the SIP as edited! Use update() instead.
+   *
+   * @param meta The new metadata content.
+   * @see #update(String)
+   */
+  public void setContent(String meta) {
     content = meta;
   }
 }
