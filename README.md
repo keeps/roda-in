@@ -1,6 +1,6 @@
 # RODA-In
 
-RODA-in is a tool specially designed for producers and archivists to create Submission Information Packages (SIP) ready for to be submitted to a Open Archival Information System (OAIS). The tool creates SIPs from files and folders available on the local file system. 
+RODA-in is a tool specially designed for producers and archivists to create Submission Information Packages (SIP) ready for to be submitted to an Open Archival Information System (OAIS). The tool creates SIPs from files and folders available on the local file system. 
 
 In version 2 we revolutionized the way SIPs are created to satisfy the need for mass processing of data. In this version you can create thousands of valid SIPs with just a few clicks, complete with data and metadata.
 
@@ -11,7 +11,16 @@ The tool includes features such as:
 * Definition of metadata templates
 * Support for various metadata formats (EAD, DC, etc.)
 * Creation of SIPs of unlimited size
-* Export SIPs in various formats: [BagIt](https://github.com/LibraryOfCongress/bagit-java) and [E-ARK](http://www.eark-project.com/resources/project-deliverables/51-d33pilotspec)
+* Creation of SIPs in various formats: [BagIt](https://github.com/LibraryOfCongress/bagit-java) and [E-ARK](http://www.eark-project.com/resources/project-deliverables/51-d33pilotspec)
+
+This application was part of the [RODA project](http://www.roda-community.org) and now has been released as a project by its own due to the increasing interest in its particular functionality. It is now being further developed in the [EARK project](http://www.eark-project.com).
+
+## Supported SIP formats
+
+RODA-in supports several Submission Information Package formats. At the moment we have included support for:
+
+* BagIt, a hierarchical file packaging format for storage and transfer of arbitrary digital content.  A "bag" has just enough structure to enclose descriptive "tags" and a "payload" but does not require knowledge of the payload's internal semantics. This BagIt format should be suitable for disk-based or network-based storage and transfer.  BagIt is widely used in the practice of digital preservation. The specification of BagIt can be found [here](https://tools.ietf.org/html/draft-kunze-bagit-13).
+* E-ARK SIP format, ... text in http://www.eark-project.com/resources/project-deliverables/17-d32-e-ark-sip-draft-specification/file
 
 
 ## Requirements
@@ -26,17 +35,17 @@ To use RODA-In you must have Java 8 installed in your operating system. Go ahead
 
 Java 8 can be downloaded [here](https://www.java.com/en/download/).
 
-## Download and run
+## Download pre-compiled version
 
 The latest version of RODA-in is available [here](https://github.com/keeps/roda-in/releases).
 
 To use RODA-in no installation is required. You just need to download the latest release of the application and run it by double clicking the downloaded file (*.jar extension). If that doesn't work, open a console window (or terminal) and type
 
 ```
-java -jar roda-in-app.xxx.yyy.jar
+java -jar roda-in-app-x.y.z.jar
 ```
 
-## Usage
+## How to use
 
 The basic workflow of the application is as follows:
 
@@ -63,7 +72,7 @@ The following actions are supported to edit the classification scheme:
 
 Will be available soon...
 
-## Installation from source code 
+## How to build from source
 
 1. Make sure you have installed Java 8 and Maven.
 2. Clone the repository by issuing the command XXX
@@ -73,11 +82,36 @@ Will be available soon...
 mvn install
 ```
 
-That's it! A jar file will be created on the folder XXX. To run it, just double click on the file or run the following command on the console:
+That's it! Binaries will be on the target folder. To run the application just double click on the file or run the following command on the console/terminal:
 
 ```
-java -jar roda-in-app.xxx.yyy.jar
+java -jar roda-in-app-x.y.z.jar
 ```
+
+## Troubleshooting
+
+### How do I change the default metadata that is added to SIPs?
+
+Metadata templates exist under the folder XXX. Open the files with your favourite text editor and make sure they remain valid XML files acording to the provided schemas.
+
+### Got error "java.lang.OutOfMemoryError: Java heap space". What do I do?
+
+The application might need more memory than it is available by default (normally 64MB). To increase the available memory use the -Xmx option. For example, the following command will increase the heap size to 3 GB.
+```
+$ java -Xmx3g -jar roda-in-app-x.y.z.jar
+```
+
+The application needs enough memory to put the file structure definition in memory (not the data).
+
+## Commercial support
+
+For more information or commercial support, contact (KEEP SOLUTIONS)[http://www.keep.pt].
+
+## Further reading
+
+Bagit spec
+SIP spec
+Common spec
 
 
 ## Contributing
@@ -91,6 +125,7 @@ java -jar roda-in-app.xxx.yyy.jar
 3. Commit your changes: `git commit -am 'Add some feature'`
 4. Push to the branch: `git push origin my-new-feature`
 5. Submit a pull request :D
+
 
 ## License
 
