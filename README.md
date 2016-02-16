@@ -22,7 +22,9 @@ RODA-in has been successfully tested on:
 - Mac OS X El Capitan
 - Ubuntu Desktop 14
 
-To use RODA-In you must have [Java 8](https://www.java.com/en/download/) installed in your operating system. Go ahead, download Java and install it in your system before downloading RODA-in.
+To use RODA-In you must have Java 8 installed in your operating system. Go ahead, download Java and install it in your system before downloading RODA-in.
+
+Java 8 can be downloaded [here](https://www.java.com/en/download/).
 
 ## Download and run
 
