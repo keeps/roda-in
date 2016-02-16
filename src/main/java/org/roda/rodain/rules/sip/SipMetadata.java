@@ -18,9 +18,12 @@ import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.utils.Utils;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import com.jcabi.xml.XMLDocument;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -207,5 +210,25 @@ public class SipMetadata {
    */
   public void setContent(String meta) {
     content = meta;
+  }
+
+  public void applyMetadataValues() {
+    try {
+      Document document = loadXMLFromString(getMetadataContent());
+      for (MetadataValue mv : values) {
+        for (String xPath : mv.getXpathDestinations()) {
+          XPath xPathObj = XPathFactory.newInstance().newXPath();
+          NodeList nodes = (NodeList) xPathObj.evaluate(xPath, document.getDocumentElement(), XPathConstants.NODESET);
+          for (int i = 0; i < nodes.getLength(); i++) {
+            Node node = nodes.item(i);
+            node.setTextContent(mv.getValue());
+          }
+        }
+      }
+      String result = new XMLDocument(document).toString();
+      update(result);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 }

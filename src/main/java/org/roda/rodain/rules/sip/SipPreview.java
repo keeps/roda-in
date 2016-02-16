@@ -210,6 +210,10 @@ public class SipPreview extends Observable implements Observer {
     notifyObservers();
   }
 
+  public void applyMetadataValues() {
+    metadata.applyMetadataValues();
+  }
+
   /**
    * Sets the content modified state as true if it receives a notification from
    * any TreeNode in the files Set.

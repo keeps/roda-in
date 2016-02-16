@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Set;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -179,17 +178,26 @@ public class InspectionPane extends BorderPane {
           for (MetadataValue metadataValue : metadataValues) {
             Label label = new Label(metadataValue.getTitle());
             label.getStyleClass().add("formLabel");
-            TextField textField = new TextField();
+
+            TextField textField = new TextField(metadataValue.getValue());
             HBox.setHgrow(textField, Priority.ALWAYS);
             textField.setUserData(metadataValue);
-            textField.textProperty().bindBidirectional(new SimpleStringProperty(metadataValue.value));
+            textField.textProperty().addListener(new ChangeListener<String>() {
+              @Override
+              public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                metadataValue.setValue(newValue);
+              }
+            });
+
             metadataForm.add(label, 0, i);
             metadataForm.add(textField, 1, i);
             i++;
           }
           metadata.getChildren().add(metadataForm);
         } else {
+          currentSIP.applyMetadataValues();
           metadata.getChildren().remove(metadataForm);
+          metaText.setText(currentSIP.getMetadataContent());
           metadata.getChildren().add(metaText);
         }
       }
