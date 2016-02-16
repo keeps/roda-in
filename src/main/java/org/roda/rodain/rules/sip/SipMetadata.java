@@ -11,7 +11,6 @@ import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -22,7 +21,6 @@ import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.utils.Utils;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -33,8 +31,6 @@ import org.xml.sax.SAXException;
  */
 public class SipMetadata {
   private static final org.slf4j.Logger log = LoggerFactory.getLogger(SipMetadata.class.getName());
-  private static final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-  private static DocumentBuilder documentBuilder;
   private MetadataTypes type;
   private String version;
   private String templateType;
@@ -56,12 +52,6 @@ public class SipMetadata {
     this.templateType = templateType;
     this.version = version;
     this.values = new ArrayList<>();
-
-    try {
-      documentBuilder = documentBuilderFactory.newDocumentBuilder();
-    } catch (ParserConfigurationException e) {
-      log.debug("Error creating XML document builder", e);
-    }
   }
 
   /**
@@ -90,30 +80,62 @@ public class SipMetadata {
     }
   }
 
-  private void loadValues() {
-    Map<String, String> paths = new HashMap<>();
-    paths.put("Title", "//ead:titleproper|//ead:unittitle");
-    paths.put("Date", "//ead:date/@normal|//ead:date|//ead:unitdate/@normal|//ead:unitdate");
-    paths.put("Repository code", "//ead:unitid/@repositorycode");
+  public Document loadXMLFromString(String xml) throws Exception {
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
-    InputSource is = new InputSource(new StringReader(content));
-    System.out.println();
+    factory.setNamespaceAware(true);
+    DocumentBuilder builder = factory.newDocumentBuilder();
+
+    return builder.parse(new InputSource(new StringReader(xml)));
+  }
+
+  private void loadValues() {
+    Map<String, List<String>> paths = new HashMap<>();
+    List<String> titleXpaths = new ArrayList<>();
+    titleXpaths.add("//*[local-name()='titleproper']");
+    titleXpaths.add("//*[local-name()='unittitle']");
+    paths.put("Title", titleXpaths);
+
+    List<String> dateXpaths = new ArrayList<>();
+    dateXpaths.add("//*[local-name()='date']/@normal");
+    dateXpaths.add("//*[local-name()='date']");
+    dateXpaths.add("//*[local-name()='unitdate']/@normal");
+    dateXpaths.add("//*[local-name()='unitdate']");
+    paths.put("Date", dateXpaths);
+
+    List<String> repCodeXpaths = new ArrayList<>();
+    repCodeXpaths.add("//*[local-name()='unitid']/@repositorycode");
+    paths.put("Repository code", repCodeXpaths);
+
+    List<String> idXpaths = new ArrayList<>();
+    idXpaths.add("//*[local-name()='unitid']");
+    paths.put("ID", idXpaths);
+
     try {
-      Document document = documentBuilder.parse(is);
-      for (String title : paths.keySet()) {
-        String xpath = paths.get(title);
-        XPath xPath = XPathFactory.newInstance().newXPath();
-        NodeList nodes = (NodeList) xPath.evaluate(xpath, document.getDocumentElement(), XPathConstants.NODESET);
-        if (nodes.getLength() > 0) {
-          Element elem = (Element) nodes.item(0);
-          values.add(new MetadataValue(title, elem.getNodeValue(), xpath));
+      Document document = loadXMLFromString(content);
+      paths.forEach((title, xpathList) -> {
+        //System.out.println(title + " - " + xpath);
+        MetadataValue currentMeta = null;
+        for (String xpath : xpathList) {
+          XPath xPath = XPathFactory.newInstance().newXPath();
+          NodeList nodes = null;
+          try {
+            nodes = (NodeList) xPath.evaluate(xpath, document.getDocumentElement(), XPathConstants.NODESET);
+          } catch (XPathExpressionException e) {
+            e.printStackTrace();
+          }
+          if (nodes.getLength() > 0) {
+            if (currentMeta == null) {
+              currentMeta = new MetadataValue(title, nodes.item(0).getTextContent());
+            }
+            currentMeta.addXpathDestination(xpath);
+          }
         }
-      }
+        values.add(currentMeta);
+      });
     } catch (SAXException e) {
       e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
-    } catch (XPathExpressionException e) {
+    } catch (Exception e) {
       e.printStackTrace();
     }
   }
@@ -128,8 +150,11 @@ public class SipMetadata {
     if (!loaded) {
       loadMetadata();
     }
-    return values.toString();
-    // return content;
+    return content;
+  }
+
+  public List<MetadataValue> getValues() {
+    return values;
   }
 
   /**

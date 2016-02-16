@@ -83,6 +83,7 @@ public class SipPreview extends Observable implements Observer {
       Map<String, String> data = new HashMap<>();
       data.put("title", getName());
       data.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+      data.put("id", id);
       content = tmpl.execute(data);
       //we need to clean the '\r' character in windows,
       // otherwise the strings are different even if no modification has been made

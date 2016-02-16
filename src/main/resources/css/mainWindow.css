@@ -40,6 +40,11 @@
     -fx-faint-focus-color: transparent;
 }
 
+.toggle-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
 /* Tree-view and Tree-cell*/
 .tree-view {
     -fx-background-color: white;

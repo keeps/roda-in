@@ -6,7 +6,7 @@
         <ead:eadid> </ead:eadid>
         <ead:filedesc>
             <ead:titlestmt>
-                <ead:titleproper encodinganalog="Title"> </ead:titleproper>
+                <ead:titleproper encodinganalog="Title">{{title}}</ead:titleproper>
             </ead:titlestmt>
         </ead:filedesc>
         <ead:profiledesc>
@@ -20,7 +20,7 @@
     </ead:eadheader>
     <ead:archdesc level="item">
         <ead:did>
-            <ead:unitid repositorycode="PT-RODA"></ead:unitid>
+            <ead:unitid repositorycode="PT-RODA">{{id}}</ead:unitid>
             <ead:unittitle>{{title}}</ead:unittitle>
             <ead:unitdate normal="{{date}}">{{date}}</ead:unitdate>
         </ead:did>
