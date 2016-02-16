@@ -78,7 +78,7 @@ java -jar roda-in-app.xxx.yyy.jar
 
 ## License
 
-RODA-in licence is [LGPLv3](http://www.gnu.org/licenses/lgpl-3.0.html)
+RODA-in licence is [http://www.gnu.org/graphics/lgplv3-88x31.png](http://www.gnu.org/licenses/lgpl-3.0.html)
 
 ```
                    GNU LESSER GENERAL PUBLIC LICENSE
