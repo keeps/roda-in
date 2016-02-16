@@ -18,9 +18,9 @@ The tool includes features such as:
 
 RODA-in has been successfully tested on:
 
-- Windows 7, 8 and 10.
-- Mac OS X El Capitan
-- Ubuntu Desktop 14
+- [x] Windows 7, 8 and 10.
+- [x] Mac OS X El Capitan
+- [x] Ubuntu Desktop 14
 
 To use RODA-In you must have Java 8 installed in your operating system. Go ahead, download Java and install it in your system before downloading RODA-in.
 
