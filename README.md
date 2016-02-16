@@ -19,26 +19,21 @@ This application was part of the [RODA project](http://www.roda-community.org) a
 
 RODA-in supports several Submission Information Package formats. At the moment we have included support for:
 
-### Bagit
-
-BagIt, a hierarchical file packaging format for storage and transfer of arbitrary digital content.  A "bag" has just enough structure to enclose descriptive "tags" and a "payload" but does not require knowledge of the payload's internal semantics. This BagIt format should be suitable for disk-based or network-based storage and transfer.  BagIt is widely used in the practice of digital preservation. The specification of BagIt can be found [here](https://tools.ietf.org/html/draft-kunze-bagit-13).
-
-### E-ARK SIP
-
-E-ARK SIP format, ... text in http://www.eark-project.com/resources/project-deliverables/17-d32-e-ark-sip-draft-specification/file
+* BagIt, a hierarchical file packaging format for storage and transfer of arbitrary digital content.  A "bag" has just enough structure to enclose descriptive "tags" and a "payload" but does not require knowledge of the payload's internal semantics. This BagIt format should be suitable for disk-based or network-based storage and transfer.  BagIt is widely used in the practice of digital preservation. The specification of BagIt can be found [here](https://tools.ietf.org/html/draft-kunze-bagit-13).
+* E-ARK SIP format, ... text in http://www.eark-project.com/resources/project-deliverables/17-d32-e-ark-sip-draft-specification/file
 
 
 ## Requirements
+
+Java 8 can be downloaded [here](https://www.java.com/en/download/).
+
+To use RODA-In you must have Java 8 installed in your operating system. Go ahead, download Java and install it in your system before downloading RODA-in.
 
 RODA-in has been successfully tested on:
 
 - [x] Windows 7, 8 and 10.
 - [x] Mac OS X El Capitan
 - [x] Ubuntu Desktop 14
-
-To use RODA-In you must have Java 8 installed in your operating system. Go ahead, download Java and install it in your system before downloading RODA-in.
-
-Java 8 can be downloaded [here](https://www.java.com/en/download/).
 
 ## Download pre-compiled version
 
