@@ -159,6 +159,7 @@ public class RodaIn extends Application {
     MenuBar menu = new MenuBar();
     Menu menuFile = new Menu(AppProperties.getLocalizedString("Main.file"));
     Menu menuEdit = new Menu(AppProperties.getLocalizedString("Main.edit"));
+    Menu menuClassScheme = new Menu(AppProperties.getLocalizedString("Main.classScheme"));
     Menu menuView = new Menu(AppProperties.getLocalizedString("Main.view"));
 
     // File
@@ -168,47 +169,6 @@ public class RodaIn extends Application {
       @Override
       public void handle(ActionEvent t) {
         previewExplorer.chooseNewRoot();
-      }
-    });
-
-    final MenuItem createCS = new MenuItem(AppProperties.getLocalizedString("Main.createCS"));
-    createCS.setAccelerator(KeyCombination.keyCombination("Ctrl+R"));
-    createCS.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent t) {
-        schemaPane.createClassificationScheme();
-      }
-    });
-
-    final MenuItem updateCS = new MenuItem(AppProperties.getLocalizedString("Main.loadCS"));
-    updateCS.setAccelerator(KeyCombination.keyCombination("Ctrl+L"));
-    updateCS.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent t) {
-        schemaPane.loadClassificationSchema();
-      }
-    });
-
-    final MenuItem exportCS = new MenuItem(AppProperties.getLocalizedString("Main.exportCS"));
-    exportCS.setAccelerator(KeyCombination.keyCombination("Ctrl+E"));
-    exportCS.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent t) {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle(AppProperties.getLocalizedString("filechooser.title"));
-        File selectedFile = chooser.showSaveDialog(stage);
-        if (selectedFile == null)
-          return;
-        String outputFile = selectedFile.toPath().toString();
-
-        Set<SchemaNode> nodes = schemaPane.getSchemaNodes();
-        List<DescriptionObject> dobjs = new ArrayList<>();
-        for (SchemaNode sn : nodes) {
-          dobjs.add(sn.getDob());
-        }
-        ClassificationSchema cs = new ClassificationSchema();
-        cs.setDos(dobjs);
-        cs.export(outputFile);
       }
     });
 
@@ -253,7 +213,50 @@ public class RodaIn extends Application {
       }
     });
 
-    menuFile.getItems().addAll(reset, openFolder, createCS, updateCS, exportCS, createSIPs, quit);
+    menuFile.getItems().addAll(reset, openFolder, createSIPs, quit);
+
+    final MenuItem createCS = new MenuItem(AppProperties.getLocalizedString("Main.createCS"));
+    createCS.setAccelerator(KeyCombination.keyCombination("Ctrl+R"));
+    createCS.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent t) {
+        schemaPane.createClassificationScheme();
+      }
+    });
+
+    final MenuItem updateCS = new MenuItem(AppProperties.getLocalizedString("Main.loadCS"));
+    updateCS.setAccelerator(KeyCombination.keyCombination("Ctrl+L"));
+    updateCS.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent t) {
+        schemaPane.loadClassificationSchema();
+      }
+    });
+
+    final MenuItem exportCS = new MenuItem(AppProperties.getLocalizedString("Main.exportCS"));
+    exportCS.setAccelerator(KeyCombination.keyCombination("Ctrl+E"));
+    exportCS.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent t) {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle(AppProperties.getLocalizedString("filechooser.title"));
+        File selectedFile = chooser.showSaveDialog(stage);
+        if (selectedFile == null)
+          return;
+        String outputFile = selectedFile.toPath().toString();
+
+        Set<SchemaNode> nodes = schemaPane.getSchemaNodes();
+        List<DescriptionObject> dobjs = new ArrayList<>();
+        for (SchemaNode sn : nodes) {
+          dobjs.add(sn.getDob());
+        }
+        ClassificationSchema cs = new ClassificationSchema();
+        cs.setDos(dobjs);
+        cs.export(outputFile);
+      }
+    });
+
+    menuClassScheme.getItems().addAll(createCS, updateCS, exportCS);
 
     // Edit
     final MenuItem ignoreItems = new MenuItem(AppProperties.getLocalizedString("Main.ignoreItems"));
@@ -307,7 +310,7 @@ public class RodaIn extends Application {
 
     menuView.getItems().addAll(showFiles, showIgnored, showMapped);
 
-    menu.getMenus().addAll(menuFile, menuEdit, menuView);
+    menu.getMenus().addAll(menuFile, menuEdit, menuClassScheme, menuView);
     mainPane.setTop(menu);
   }
 

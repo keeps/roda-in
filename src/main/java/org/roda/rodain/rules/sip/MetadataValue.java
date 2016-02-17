@@ -7,16 +7,20 @@ import java.util.List;
  * Created by adrapereira on 08-02-2016.
  */
 public class MetadataValue {
-  private String title;
+  private String title, id;
   public String value;
   private List<String> xpathDestinations;
 
-  public MetadataValue(String title, String value) {
+  public MetadataValue(String id, String title, String value) {
+    this.id = id;
     this.title = title;
     this.value = value;
     this.xpathDestinations = new ArrayList<>();
   }
 
+  public String getId() {
+    return id;
+  }
   public String getTitle() {
     return title;
   }

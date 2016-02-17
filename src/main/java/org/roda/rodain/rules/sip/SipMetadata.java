@@ -94,8 +94,8 @@ public class SipMetadata {
 
     try {
       Document document = loadXMLFromString(getMetadataContent());
-      formRules.forEach((title, xpathList) -> {
-        MetadataValue currentMeta = getMetadataValue(title);
+      formRules.forEach((id, xpathList) -> {
+        MetadataValue currentMeta = getMetadataValue(id);
         // if there was a MetadataValue already we don't need to add the xpaths again
         boolean wasNull = currentMeta == null;
         for (String xpath : xpathList) {
@@ -108,7 +108,8 @@ public class SipMetadata {
           }
           if (nodes != null && nodes.getLength() > 0) {
             if (currentMeta == null) {
-              currentMeta = new MetadataValue(title, nodes.item(0).getTextContent());
+              String title = AppProperties.getLocalizedString("metadataValue." + id);
+              currentMeta = new MetadataValue(id, title, nodes.item(0).getTextContent());
             }
             if (wasNull) {
               currentMeta.addXpathDestination(xpath);
@@ -129,7 +130,7 @@ public class SipMetadata {
   private MetadataValue getMetadataValue(String title) {
     MetadataValue result = null;
     for (MetadataValue mv : values) {
-      if (mv.getTitle().equals(title)) {
+      if (mv.getId().equals(title)) {
         result = mv;
         break;
       }
@@ -221,22 +222,22 @@ public class SipMetadata {
     List<String> titleXpaths = new ArrayList<>();
     titleXpaths.add("//*[local-name()='titleproper']");
     titleXpaths.add("//*[local-name()='unittitle']");
-    paths.put("Title", titleXpaths);
+    paths.put("title", titleXpaths);
 
     List<String> dateXpaths = new ArrayList<>();
     dateXpaths.add("//*[local-name()='date']/@normal");
     dateXpaths.add("//*[local-name()='date']");
     dateXpaths.add("//*[local-name()='unitdate']/@normal");
     dateXpaths.add("//*[local-name()='unitdate']");
-    paths.put("Date", dateXpaths);
+    paths.put("date", dateXpaths);
 
     List<String> repCodeXpaths = new ArrayList<>();
     repCodeXpaths.add("//*[local-name()='unitid']/@repositorycode");
-    paths.put("Repository code", repCodeXpaths);
+    paths.put("repcode", repCodeXpaths);
 
     List<String> idXpaths = new ArrayList<>();
     idXpaths.add("//*[local-name()='unitid']");
-    paths.put("ID", idXpaths);
+    paths.put("id", idXpaths);
     return paths;
   }
 }
