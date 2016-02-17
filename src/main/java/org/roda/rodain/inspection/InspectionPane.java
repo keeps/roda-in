@@ -58,9 +58,11 @@ public class InspectionPane extends BorderPane {
   private HBox topSpace;
   private ComboBox<UIPair> itemTypes;
 
+  private SipPreviewNode currentSIPNode;
   private SipPreview currentSIP;
   private SchemaNode currentSchema;
   private ImageView topIcon;
+  private Label paneTitle;
 
   private VBox centerHelp;
   // Metadata
@@ -191,7 +193,10 @@ public class InspectionPane extends BorderPane {
                 metadataValue.setValue(newValue);
               }
             });
-
+            if (metadataValue.getId().equals("title")) {
+              textField.textProperty().bindBidirectional(currentSIPNode.valueProperty());
+              textField.textProperty().bindBidirectional(paneTitle.textProperty());
+            }
             metadataForm.add(label, 0, i);
             metadataForm.add(textField, 1, i);
             i++;
@@ -585,6 +590,7 @@ public class InspectionPane extends BorderPane {
   public void update(SipPreviewNode sip) {
     setTop(topBox);
     setCenter(center);
+    currentSIPNode = sip;
     currentSIP = sip.getSip();
     currentSchema = null;
     if(contentTask != null && contentTask.isRunning()){
@@ -592,14 +598,14 @@ public class InspectionPane extends BorderPane {
     }
 
     /* Top */
-    Label title = new Label(sip.getValue());
-    title.setWrapText(true);
-    title.getStyleClass().add("title");
+    paneTitle = new Label(sip.getValue());
+    paneTitle.setWrapText(true);
+    paneTitle.getStyleClass().add("title");
 
     HBox top = new HBox(5);
     top.setPadding(new Insets(0, 10, 10, 10));
     top.setAlignment(Pos.CENTER_LEFT);
-    top.getChildren().addAll(sip.getGraphic(), title);
+    top.getChildren().addAll(sip.getGraphic(), paneTitle);
     Separator separatorTop = new Separator();
 
     topBox.setPadding(new Insets(10, 0, 10, 0));
@@ -650,6 +656,7 @@ public class InspectionPane extends BorderPane {
   public void update(SchemaNode node) {
     setTop(topBox);
     currentSIP = null;
+    currentSIPNode = null;
     currentSchema = node;
     if(contentTask != null && contentTask.isRunning()){
       contentTask.cancel(true);
