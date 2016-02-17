@@ -30,7 +30,7 @@
 
     </appender>
 
-    <logger name="debugToConsole" level="debug" additivity="false">
+    <logger name="debugToConsole" level="trace" additivity="false">
         <appender-ref ref="STDOUT"/>
     </logger>
 

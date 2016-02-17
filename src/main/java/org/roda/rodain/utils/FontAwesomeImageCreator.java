@@ -22,6 +22,7 @@ public class FontAwesomeImageCreator {
   public static final String chevron_left = "\uf053";
   public static final String times = "\uf00d";
   public static final String code = "\uf121";
+  public static final String list = "\uf022";
 
   public static final Font font = loadFont();
   private FontAwesomeImageCreator() {

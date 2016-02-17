@@ -31,6 +31,8 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
+import org.fxmisc.richtext.CodeArea;
+import org.fxmisc.richtext.LineNumberFactory;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.Rule;
@@ -63,8 +65,9 @@ public class InspectionPane extends BorderPane {
   private VBox centerHelp;
   // Metadata
   private VBox metadata;
-  private TextArea metaText;
+  private CodeArea metaText;
   private GridPane metadataForm;
+  private ToggleButton toggleForm;
   // SIP Content
   private BorderPane content;
   private VBox treeBox;
@@ -159,14 +162,14 @@ public class InspectionPane extends BorderPane {
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
-    ToggleButton toggle = new ToggleButton();
-    Image unselected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.code, Color.WHITE);
-    Image selected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.code, Color.DARKBLUE);
+    toggleForm = new ToggleButton();
+    Image selected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.code, Color.WHITE);
+    Image unselected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.list, Color.WHITE);
     ImageView toggleImage = new ImageView();
-    toggle.setGraphic(toggleImage);
-    toggleImage.imageProperty().bind(Bindings.when(toggle.selectedProperty()).then(selected).otherwise(unselected));
+    toggleForm.setGraphic(toggleImage);
+    toggleImage.imageProperty().bind(Bindings.when(toggleForm.selectedProperty()).then(selected).otherwise(unselected));
 
-    toggle.selectedProperty().addListener(new ChangeListener<Boolean>() {
+    toggleForm.selectedProperty().addListener(new ChangeListener<Boolean>() {
       @Override
       public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
         if (newValue) {
@@ -197,16 +200,21 @@ public class InspectionPane extends BorderPane {
         } else {
           currentSIP.applyMetadataValues();
           metadata.getChildren().remove(metadataForm);
-          metaText.setText(currentSIP.getMetadataContent());
+          metaText.replaceText(currentSIP.getMetadataContent());
           metadata.getChildren().add(metaText);
         }
       }
     });
 
-    box.getChildren().addAll(title, space, toggle);
+    box.getChildren().addAll(title, space, toggleForm);
 
-    metaText = new TextArea();
-    metaText.setPromptText(AppProperties.getLocalizedString("InspectionPane.metadata.placeholder"));
+    metaText = new CodeArea();
+    metaText.setStyle("-fx-font-size: 90%");
+    metaText.setParagraphGraphicFactory(LineNumberFactory.get(metaText));
+    metaText.textProperty().addListener((obs, oldText, newText) -> {
+      metaText.setStyleSpans(0, XMLEditor.computeHighlighting(newText));
+    });
+    // metaText.setPromptText(AppProperties.getLocalizedString("InspectionPane.metadata.placeholder"));
     metaText.setWrapText(true);
     VBox.setVgrow(metaText, Priority.ALWAYS);
     metadata.getChildren().addAll(box, metaText);
@@ -614,13 +622,17 @@ public class InspectionPane extends BorderPane {
 
     // metadata
     String meta = sip.getSip().getMetadataContent();
-    metaText.setText(meta);
+    metaText.replaceText(meta);
 
     // content tree
     createContent(sip);
 
     center.getChildren().addAll(idBox, metadata, content);
     setCenter(center);
+
+    if (!toggleForm.isSelected()) {
+      toggleForm.fire();
+    }
   }
 
   /**
@@ -689,7 +701,7 @@ public class InspectionPane extends BorderPane {
     List<DescObjMetadata> metadatas = node.getDob().getMetadata();
     if (!metadatas.isEmpty()) {
       // For now we only get the first metadata object
-      metaText.setText(metadatas.get(0).getContentDecoded());
+      metaText.replaceText(metadatas.get(0).getContentDecoded());
     } else
       metaText.clear();
 

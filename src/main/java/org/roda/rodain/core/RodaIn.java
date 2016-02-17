@@ -113,6 +113,7 @@ public class RodaIn extends Application {
 
     scene.getStylesheets().add(ClassLoader.getSystemResource("css/mainWindow.css").toExternalForm());
     scene.getStylesheets().add(ClassLoader.getSystemResource("css/shared.css").toExternalForm());
+    scene.getStylesheets().add(ClassLoader.getSystemResource("css/xml-highlighting.css").toExternalForm());
     stage.setScene(scene);
 
     stage.setMaximized(true);
