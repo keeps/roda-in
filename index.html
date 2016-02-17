@@ -22,20 +22,33 @@
       <h1>
 <a id="roda-in" class="anchor" href="#roda-in" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>RODA-In</h1>
 
-<p>RODA-in is a tool specially designed for producers and archivists to create Submission Information Packages (SIP) ready for to be submitted to a Open Archival Information System (OAIS). The tool creates SIPs from files and folders available on the local file system. </p>
+<p>RODA-in is a tool specially designed for producers and archivists to create Submission Information Packages (SIP) ready to be submitted to an Open Archival Information System (OAIS). The tool creates SIPs from files and folders available on the local file system. </p>
 
 <p>In version 2 we revolutionized the way SIPs are created to satisfy the need for mass processing of data. In this version you can create thousands of valid SIPs with just a few clicks, complete with data and metadata.</p>
 
 <p>The tool includes features such as:</p>
 
 <ul>
-<li>Create, load and edit a classification schemas</li>
-<li>Automatic association of files/folders to SIPs</li>
-<li>Automatic association of metadata to SIPs</li>
+<li>Create, load and edit classification schemas</li>
+<li>Automatic association of files/folders to SIP</li>
+<li>Automatic association of metadata to SIP</li>
 <li>Definition of metadata templates</li>
 <li>Support for various metadata formats (EAD, DC, etc.)</li>
-<li>Creation of SIPs of unlimited size</li>
-<li>Export SIPs in various formats: <a href="https://github.com/LibraryOfCongress/bagit-java">BagIt</a> and <a href="http://www.eark-project.com/resources/project-deliverables/51-d33pilotspec">E-ARK</a>
+<li>Creation of SIP of unlimited size</li>
+<li>Creation of SIP in various formats: <a href="https://github.com/LibraryOfCongress/bagit-java">BagIt</a> and <a href="http://www.eark-project.com/resources/project-deliverables/51-d33pilotspec">E-ARK</a>
+</li>
+</ul>
+
+<p>This application was part of the <a href="http://www.roda-community.org">RODA project</a> and now has been released as a project by its own due to the increasing interest in its particular functionality. It is now being further developed in the <a href="http://www.eark-project.com">EARK project</a>.</p>
+
+<h2>
+<a id="supported-sip-formats" class="anchor" href="#supported-sip-formats" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Supported SIP formats</h2>
+
+<p>RODA-in supports several Submission Information Package formats. At the moment we have included support for:</p>
+
+<ul>
+<li>BagIt, a hierarchical file packaging format for storage and transfer of arbitrary digital content.  A "bag" has just enough structure to enclose descriptive "tags" and a "payload" but does not require knowledge of the payload's internal semantics. This BagIt format should be suitable for disk-based or network-based storage and transfer.  BagIt is widely used in the practice of digital preservation. The specification of BagIt can be found <a href="https://tools.ietf.org/html/draft-kunze-bagit-13">here</a>.</li>
+<li>E-ARK SIP format, specification <a href="http://www.eark-project.com/resources/project-deliverables/17-d32-e-ark-sip-draft-specification/file">here</a>
 </li>
 </ul>
 
@@ -55,17 +68,17 @@
 <p>Java 8 can be downloaded <a href="https://www.java.com/en/download/">here</a>.</p>
 
 <h2>
-<a id="download-and-run" class="anchor" href="#download-and-run" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Download and run</h2>
+<a id="download-pre-compiled-version" class="anchor" href="#download-pre-compiled-version" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Download pre-compiled version</h2>
 
 <p>The latest version of RODA-in is available <a href="https://github.com/keeps/roda-in/releases">here</a>.</p>
 
 <p>To use RODA-in no installation is required. You just need to download the latest release of the application and run it by double clicking the downloaded file (*.jar extension). If that doesn't work, open a console window (or terminal) and type</p>
 
-<pre><code>java -jar roda-in-app.xxx.yyy.jar
+<pre><code>java -jar roda-in-app-x.y.z.jar
 </code></pre>
 
 <h2>
-<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
+<a id="how-to-use" class="anchor" href="#how-to-use" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How to use</h2>
 
 <p>The basic workflow of the application is as follows:</p>
 
@@ -74,7 +87,7 @@
 <li>Choose or create a classification scheme (panel on the center). There's two options:
 
 <ul>
-<li>Load a classification scheme. You can obtain a classification scheme from RODA reposiory, for example.</li>
+<li>Load a classification scheme. You can obtain a classification scheme from RODA repository, for example.</li>
 <li>Create a new classification scheme. </li>
 </ul>
 </li>
@@ -107,22 +120,57 @@
 <p>Will be available soon...</p>
 
 <h2>
-<a id="installation-from-source-code" class="anchor" href="#installation-from-source-code" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation from source code</h2>
+<a id="how-to-build-from-source" class="anchor" href="#how-to-build-from-source" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How to build from source</h2>
 
 <ol>
 <li>Make sure you have installed Java 8 and Maven.</li>
-<li>Clone the repository by issuing the command XXX</li>
-<li>Install by running the following command:</li>
-<li>
+<li>Clone the repository by issuing the command <code>git clone https://github.com/keeps/roda-in.git</code>
+</li>
+<li>Change directory to "roda-in"</li>
+<li>Install by running the following command: <code>mvn install</code>
+</li>
 </ol>
 
-<pre><code>mvn install
+<p>That's it! Binaries will be on the target folder. To run the application just double click on the file or run the following command on the console/terminal:</p>
+
+<pre><code>java -jar roda-in-app-x.y.z.jar
 </code></pre>
 
-<p>That's it! A jar file will be created on the folder XXX. To run it, just double click on the file or run the following command on the console:</p>
+<h2>
+<a id="troubleshooting" class="anchor" href="#troubleshooting" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Troubleshooting</h2>
 
-<pre><code>java -jar roda-in-app.xxx.yyy.jar
+<h3>
+<a id="how-do-i-change-the-default-metadata-that-is-added-to-sips" class="anchor" href="#how-do-i-change-the-default-metadata-that-is-added-to-sips" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How do I change the default metadata that is added to SIPs?</h3>
+
+<p>Metadata templates exist under the folder "roda-in" in your home directory ("Documents" for Windows users). Open the files with your favourite text editor and make sure they remain valid XML files acording to the provided schemas.</p>
+
+<h3>
+<a id="got-error-javalangoutofmemoryerror-java-heap-space-what-do-i-do" class="anchor" href="#got-error-javalangoutofmemoryerror-java-heap-space-what-do-i-do" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Got error "java.lang.OutOfMemoryError: Java heap space". What do I do?</h3>
+
+<p>The application might need more memory than what is available by default (normally 64MB). To increase the available memory use the -Xmx option. For example, the following command will increase the heap size to 3 GB.</p>
+
+<pre><code>$ java -Xmx3g -jar roda-in-app-x.y.z.jar
 </code></pre>
+
+<p>The application needs enough memory to put the file structure definition in memory (not the data).</p>
+
+<h2>
+<a id="commercial-support" class="anchor" href="#commercial-support" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Commercial support</h2>
+
+<p>For more information or commercial support, contact <a href="http://www.keep.pt">KEEP SOLUTIONS</a>.</p>
+
+<h2>
+<a id="further-reading" class="anchor" href="#further-reading" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Further reading</h2>
+
+<ul>
+<li>Bagit spec</li>
+<li>SIP spec</li>
+<li>Common spec</li>
+<li>RODA source code</li>
+<li>RODA community</li>
+<li>E-ARK project</li>
+<li>etc.</li>
+</ul>
 
 <h2>
 <a id="contributing" class="anchor" href="#contributing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Contributing</h2>
@@ -323,6 +371,16 @@ Library.
 
     </section>
 
-  
+            <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-42276300-4");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
   </body>
 </html>
