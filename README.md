@@ -20,7 +20,7 @@ This application was part of the [RODA project](http://www.roda-community.org) a
 RODA-in supports several Submission Information Package formats. At the moment we have included support for:
 
 * BagIt, a hierarchical file packaging format for storage and transfer of arbitrary digital content.  A "bag" has just enough structure to enclose descriptive "tags" and a "payload" but does not require knowledge of the payload's internal semantics. This BagIt format should be suitable for disk-based or network-based storage and transfer.  BagIt is widely used in the practice of digital preservation. The specification of BagIt can be found [here](https://tools.ietf.org/html/draft-kunze-bagit-13).
-* E-ARK SIP format, ... text in http://www.eark-project.com/resources/project-deliverables/17-d32-e-ark-sip-draft-specification/file
+* E-ARK SIP format, specification [here](http://www.eark-project.com/resources/project-deliverables/17-d32-e-ark-sip-draft-specification/file)
 
 
 ## Requirements
@@ -52,7 +52,7 @@ The basic workflow of the application is as follows:
 
 1. Choose a working folder in your file system (panel on the left). This will serve as the root of your project.
 2. Choose or create a classification scheme (panel on the center). There's two options:
-  - Load a classification scheme. You can obtain a classification scheme from RODA reposiory, for example.
+  - Load a classification scheme. You can obtain a classification scheme from RODA repository, for example.
   - Create a new classification scheme. 
 3. Drag files/folders from the left panel to the center panel into the appropriate node in the classification scheme.
 4. Choose the type of data and metadata association. This will have impact on the number and structure of the SIPs created.
@@ -76,12 +76,9 @@ Will be available soon...
 ## How to build from source
 
 1. Make sure you have installed Java 8 and Maven.
-2. Clone the repository by issuing the command XXX
-3. Install by running the following command:
-4. 
-```
-mvn install
-```
+2. Clone the repository by issuing the command `git clone https://github.com/keeps/roda-in.git`
+3. Change directory to "roda-in"
+4. Install by running the following command: `mvn install`
 
 That's it! Binaries will be on the target folder. To run the application just double click on the file or run the following command on the console/terminal:
 
@@ -93,7 +90,7 @@ java -jar roda-in-app-x.y.z.jar
 
 ### How do I change the default metadata that is added to SIPs?
 
-Metadata templates exist under the folder XXX. Open the files with your favourite text editor and make sure they remain valid XML files acording to the provided schemas.
+Metadata templates exist under the folder "roda-in" in your home directory ("Documents" for Windows users). Open the files with your favourite text editor and make sure they remain valid XML files acording to the provided schemas.
 
 ### Got error "java.lang.OutOfMemoryError: Java heap space". What do I do?
 
@@ -106,7 +103,7 @@ The application needs enough memory to put the file structure definition in memo
 
 ## Commercial support
 
-For more information or commercial support, contact (KEEP SOLUTIONS)[http://www.keep.pt].
+For more information or commercial support, contact [KEEP SOLUTIONS](http://www.keep.pt).
 
 ## Further reading
 
