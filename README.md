@@ -1,17 +1,17 @@
 # RODA-In
 
-RODA-in is a tool specially designed for producers and archivists to create Submission Information Packages (SIP) ready for to be submitted to an Open Archival Information System (OAIS). The tool creates SIPs from files and folders available on the local file system. 
+RODA-in is a tool specially designed for producers and archivists to create Submission Information Packages (SIP) ready to be submitted to an Open Archival Information System (OAIS). The tool creates SIPs from files and folders available on the local file system. 
 
 In version 2 we revolutionized the way SIPs are created to satisfy the need for mass processing of data. In this version you can create thousands of valid SIPs with just a few clicks, complete with data and metadata.
 
 The tool includes features such as:
-* Create, load and edit a classification schemas
-* Automatic association of files/folders to SIPs
-* Automatic association of metadata to SIPs
+* Create, load and edit classification schemas
+* Automatic association of files/folders to SIP
+* Automatic association of metadata to SIP
 * Definition of metadata templates
 * Support for various metadata formats (EAD, DC, etc.)
-* Creation of SIPs of unlimited size
-* Creation of SIPs in various formats: [BagIt](https://github.com/LibraryOfCongress/bagit-java) and [E-ARK](http://www.eark-project.com/resources/project-deliverables/51-d33pilotspec)
+* Creation of SIP of unlimited size
+* Creation of SIP in various formats: [BagIt](https://github.com/LibraryOfCongress/bagit-java) and [E-ARK](http://www.eark-project.com/resources/project-deliverables/51-d33pilotspec)
 
 This application was part of the [RODA project](http://www.roda-community.org) and now has been released as a project by its own due to the increasing interest in its particular functionality. It is now being further developed in the [EARK project](http://www.eark-project.com).
 
@@ -94,7 +94,7 @@ Metadata templates exist under the folder "roda-in" in your home directory ("Doc
 
 ### Got error "java.lang.OutOfMemoryError: Java heap space". What do I do?
 
-The application might need more memory than it is available by default (normally 64MB). To increase the available memory use the -Xmx option. For example, the following command will increase the heap size to 3 GB.
+The application might need more memory than what is available by default (normally 64MB). To increase the available memory use the -Xmx option. For example, the following command will increase the heap size to 3 GB.
 ```
 $ java -Xmx3g -jar roda-in-app-x.y.z.jar
 ```
