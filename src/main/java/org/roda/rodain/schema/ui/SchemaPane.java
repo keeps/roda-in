@@ -79,8 +79,17 @@ public class SchemaPane extends BorderPane {
     createBottom();
 
     createCenterHelp();
-
     this.setCenter(centerHelp);
+
+    String lastClassScheme = AppProperties.getConfig("lastClassificationScheme");
+    if (lastClassScheme != null) {
+      try {
+        ClassificationSchema schema = loadClassificationSchemaFile(lastClassScheme);
+        updateClassificationSchema(schema);
+      } catch (IOException e) {
+        log.error("Error reading classification scheme specification", e);
+      }
+    }
 
     this.prefWidthProperty().bind(stage.widthProperty().multiply(0.33));
     this.minWidthProperty().bind(stage.widthProperty().multiply(0.2));
@@ -315,6 +324,8 @@ public class SchemaPane extends BorderPane {
   }
 
   private ClassificationSchema loadClassificationSchemaFile(String fileName) throws IOException {
+    AppProperties.setConfig("lastClassificationScheme", fileName);
+    AppProperties.saveConfig();
     InputStream input = new FileInputStream(fileName);
 
     // create ObjectMapper instance

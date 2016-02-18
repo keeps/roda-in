@@ -235,7 +235,7 @@ public class InspectionPane extends BorderPane {
           } else {
             if (currentSchema != null) {
               currentSchema.getDob().applyMetadataValues();
-              List<DescObjMetadata> metadatas = currentSchema.getDob().getMetadata();
+              List<DescObjMetadata> metadatas = currentSchema.getDob().getMetadataWithReplaces();
               if (!metadatas.isEmpty()) {
                 metaText.replaceText(metadatas.get(0).getContentDecoded());
               }
@@ -286,7 +286,7 @@ public class InspectionPane extends BorderPane {
 
     } else if (currentSchema != null) {
       newMetadata = metaText.getText();
-      List<DescObjMetadata> metadatas = currentSchema.getDob().getMetadata();
+      List<DescObjMetadata> metadatas = currentSchema.getDob().getMetadataWithReplaces();
       if (!metadatas.isEmpty()) {
         oldMetadata = metadatas.get(0).getContentDecoded();
       }
@@ -304,7 +304,7 @@ public class InspectionPane extends BorderPane {
       if (currentSIP != null) {
         currentSIP.updateMetadata(metaText.getText());
       } else if (currentSchema != null) {
-        List<DescObjMetadata> metadatas = currentSchema.getDob().getMetadata();
+        List<DescObjMetadata> metadatas = currentSchema.getDob().getMetadataWithReplaces();
         if (!metadatas.isEmpty()) {
           metadatas.get(0).setContentDecoded(newMetadata);
         } else {
@@ -717,7 +717,7 @@ public class InspectionPane extends BorderPane {
     center.getChildren().clear();
 
     // metadata
-    List<DescObjMetadata> metadatas = node.getDob().getMetadata();
+    List<DescObjMetadata> metadatas = node.getDob().getMetadataWithReplaces();
     if (!metadatas.isEmpty()) {
       // For now we only get the first metadata object
       metaText.replaceText(metadatas.get(0).getContentDecoded());

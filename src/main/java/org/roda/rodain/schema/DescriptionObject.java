@@ -8,6 +8,7 @@ import org.roda.rodain.rules.InvalidEADException;
 import org.roda.rodain.rules.sip.MetadataValue;
 import org.roda.rodain.rules.sip.SipMetadata;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
 
@@ -33,8 +34,9 @@ public class DescriptionObject {
    * @return A list with the metadata values.
    * @see SipMetadata#getValues()
    */
+  @JsonIgnore
   public Map<String, MetadataValue> getMetadataValues() throws InvalidEADException {
-    List<DescObjMetadata> metadataDup = getMetadata();
+    List<DescObjMetadata> metadataDup = getMetadataWithReplaces();
     if (!metadataDup.isEmpty()) {
       return metadataDup.get(0).getValues();
     } else
@@ -119,12 +121,18 @@ public class DescriptionObject {
     this.descriptionlevel = descriptionlevel;
   }
 
+  public List<DescObjMetadata> getMetadata() {
+    return metadata;
+  }
+
   /**
-   * Gets the metadata list of the description object
+   * Gets the metadata list of the description object, replacing the fields from
+   * the template.
    *
    * @return The metadata list
    */
-  public List<DescObjMetadata> getMetadata() {
+  @JsonIgnore
+  public List<DescObjMetadata> getMetadataWithReplaces() {
     for (DescObjMetadata dom : metadata) {
       String content = dom.getContentDecoded();
       if (content != null) {

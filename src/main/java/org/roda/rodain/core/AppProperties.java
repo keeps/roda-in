@@ -221,4 +221,24 @@ public class AppProperties {
   public static String getLocalizedString(String key) {
     return resourceBundle.getString(key);
   }
+
+  /**
+   * Sets the value of a configuration.
+   * 
+   * @param key
+   *          The key of the property.
+   * @param value
+   *          The value of the property
+   */
+  public static void setConfig(String key, String value) {
+    ext_config.setProperty(key, value);
+  }
+
+  public static void saveConfig() {
+    try {
+      ext_config.save(rodainPath.resolve("config.properties").toFile());
+    } catch (ConfigurationException e) {
+      e.printStackTrace();
+    }
+  }
 }

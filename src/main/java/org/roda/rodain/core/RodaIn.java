@@ -253,6 +253,8 @@ public class RodaIn extends Application {
         ClassificationSchema cs = new ClassificationSchema();
         cs.setDos(dobjs);
         cs.export(outputFile);
+        AppProperties.setConfig("lastClassificationScheme", outputFile);
+        AppProperties.saveConfig();
       }
     });
 

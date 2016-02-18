@@ -9,11 +9,14 @@ import org.roda.rodain.rules.XMLToMetadataValue;
 import org.roda.rodain.rules.sip.MetadataValue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 07-12-2015.
  */
+@JsonIgnoreProperties({"values"})
 public class DescObjMetadata {
   private String id;
   private String type;
@@ -29,15 +32,21 @@ public class DescObjMetadata {
   public DescObjMetadata(String cont) {
     setContentDecoded(cont);
     contentEncoding = "Base64";
-    id = "templates/ead.xml";
+    id = "ead.xml";
   }
 
   /**
    * @return The set of MetadataValue objects. Used to create the form.
    */
+  @JsonIgnore
   public Map<String, MetadataValue> getValues() throws InvalidEADException {
     values = XMLToMetadataValue.createEADMetadataValues(getContentDecoded(), values);
     return values;
+  }
+
+  @JsonProperty
+  public void setValues(Map<String, MetadataValue> val) {
+    this.values = val;
   }
 
   /**
