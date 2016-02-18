@@ -197,9 +197,17 @@ public class AppProperties {
    * @return The value of the property (config)
    */
   public static String getConfig(String key) {
-    if (ext_config.containsKey(key))
-      return ext_config.getString(key);
-    return config.getString(key);
+    Object res;
+    if (ext_config.containsKey(key)) {
+      res = ext_config.getProperty(key);
+    } else {
+      res = config.getProperty(key);
+    }
+    if (res instanceof String) {
+      return (String) res;
+    }
+    // if it isn't a string then it must be a list Ex: a,b,c,d
+    return String.join(",", config.getStringArray(key));
   }
 
   /**
@@ -208,7 +216,12 @@ public class AppProperties {
    * @return The value of the property (description levels hierarchy)
    */
   public static String getDescLevels(String key) {
-    return descLevels.getString(key);
+    Object res = descLevels.getProperty(key);
+    if (res instanceof String) {
+      return (String) res;
+    }
+    // if it isn't a string then it must be a list Ex: a,b,c,d
+    return String.join(",", descLevels.getStringArray(key));
   }
 
   /**
