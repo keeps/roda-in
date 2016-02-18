@@ -50,6 +50,10 @@
     -fx-border-color: transparent;
 }
 
+.code-area {
+    -fx-font-size: 90%;
+}
+
 /* Tree-view and Tree-cell*/
 .tree-view {
     -fx-background-color: white;

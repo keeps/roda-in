@@ -33,8 +33,9 @@ public class DescriptionObject {
    * @see SipMetadata#getValues()
    */
   public Map<String, MetadataValue> getMetadataValues() {
-    if (!metadata.isEmpty()) {
-      return metadata.get(0).getValues();
+    List<DescObjMetadata> metadataDup = getMetadata();
+    if (!metadataDup.isEmpty()) {
+      return metadataDup.get(0).getValues();
     } else
       return null;
   }
@@ -123,7 +124,6 @@ public class DescriptionObject {
    * @return The metadata list
    */
   public List<DescObjMetadata> getMetadata() {
-    List<DescObjMetadata> result = new ArrayList<>();
     for (DescObjMetadata dom : metadata) {
       String content = dom.getContentDecoded();
       if (content != null) {
@@ -137,11 +137,10 @@ public class DescriptionObject {
         // otherwise the strings are different even if no modification has been
         // made
         content = content.replace("\r", "");
-        DescObjMetadata template = new DescObjMetadata(content);
-        result.add(template);
+        dom.setContentDecoded(content);
       }
     }
-    return result;
+    return metadata;
   }
 
   /**

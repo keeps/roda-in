@@ -206,12 +206,12 @@ public class InspectionPane extends BorderPane {
               }
             });
             if (metadataValue.getId().equals("title")) {
-              textField.textProperty().bindBidirectional(paneTitle.textProperty());
+              paneTitle.textProperty().bind(textField.textProperty());
               if (currentSIPNode != null) {
-                textField.textProperty().bindBidirectional(currentSIPNode.valueProperty());
+                currentSIPNode.valueProperty().bind(textField.textProperty());
               } else {
                 if (currentSchema != null) {
-                  textField.textProperty().bindBidirectional(currentSchema.valueProperty());
+                  currentSchema.valueProperty().bind(textField.textProperty());
                 }
               }
             }
@@ -242,12 +242,10 @@ public class InspectionPane extends BorderPane {
     box.getChildren().addAll(title, space, toggleForm);
 
     metaText = new CodeArea();
-    metaText.setStyle("-fx-font-size: 90%");
     metaText.setParagraphGraphicFactory(LineNumberFactory.get(metaText));
     metaText.textProperty().addListener((obs, oldText, newText) -> {
       metaText.setStyleSpans(0, XMLEditor.computeHighlighting(newText));
     });
-    // metaText.setPromptText(AppProperties.getLocalizedString("InspectionPane.metadata.placeholder"));
     metaText.setWrapText(true);
     VBox.setVgrow(metaText, Priority.ALWAYS);
     metadata.getChildren().addAll(box, metaText);
@@ -642,18 +640,6 @@ public class InspectionPane extends BorderPane {
 
     /* Center */
     center.getChildren().clear();
-    // id
-    HBox idBox = new HBox(5);
-    Label idKey = new Label("ID:");
-    idKey.getStyleClass().add("sipId");
-
-    Label id = new Label(sip.getSip().getId());
-    id.setWrapText(true);
-    id.getStyleClass().add("sipId");
-    id = makeSelectable(id);
-
-    idBox.getChildren().addAll(idKey, id);
-
     // metadata
     String meta = sip.getSip().getMetadataContent();
     metaText.replaceText(meta);
@@ -661,7 +647,7 @@ public class InspectionPane extends BorderPane {
     // content tree
     createContent(sip);
 
-    center.getChildren().addAll(idBox, metadata, content);
+    center.getChildren().addAll(metadata, content);
     setCenter(center);
 
     // update the form using the XML
@@ -718,17 +704,6 @@ public class InspectionPane extends BorderPane {
 
     /* center */
     center.getChildren().clear();
-    // id
-    HBox idBox = new HBox(5);
-    Label idKey = new Label("ID:");
-    idKey.getStyleClass().add("sipId");
-
-    Label id = new Label(node.getDob().getId());
-    id.setWrapText(true);
-    id.getStyleClass().add("sipId");
-    id = makeSelectable(id);
-
-    idBox.getChildren().addAll(idKey, id);
 
     // metadata
     List<DescObjMetadata> metadatas = node.getDob().getMetadata();
@@ -741,7 +716,7 @@ public class InspectionPane extends BorderPane {
     // rules
     updateRuleList();
 
-    center.getChildren().addAll(idBox, metadata, rules);
+    center.getChildren().addAll(metadata, rules);
     setCenter(center);
 
     // update the form using the XML

@@ -45,6 +45,8 @@ public class DescObjMetadata {
   public void applyMetadataValues() {
     String result = XMLToMetadataValue.applyMetadataValues(getContentDecoded(), values);
     setContentDecoded(result);
+    int i = 0;
+    i++;
   }
 
   /**
