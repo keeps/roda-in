@@ -29,7 +29,7 @@ public class DescObjMetadata {
   public DescObjMetadata(String cont) {
     setContentDecoded(cont);
     contentEncoding = "Base64";
-    id = "ead.xml";
+    id = "templates/ead.xml";
   }
 
   /**

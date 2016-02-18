@@ -84,6 +84,9 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
           metadataName = "custom.xml";
           metadataType = METSEnums.MetadataType.OTHER;
         }
+        Path schemaPath = AppProperties.getSchemaPath(sip.getTemplateType());
+        if (schemaPath != null)
+          earkSip.addSchema(new IPFile(schemaPath));
       }
 
       String content = sip.getMetadataContent();

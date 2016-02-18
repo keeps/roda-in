@@ -1,6 +1,7 @@
 package org.roda.rodain.core;
 
 import java.io.*;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -75,8 +76,14 @@ public class AppProperties {
         String templateName = "metadata.template." + templ.trim() + ".file";
         String fileName = config.getProperty(templateName);
         // if (!Files.exists(rodainPath.resolve(fileName)))
-        Files.copy(ClassLoader.getSystemResourceAsStream(fileName), rodainPath.resolve(fileName),
+        Files.copy(ClassLoader.getSystemResourceAsStream("templates/" + fileName), rodainPath.resolve(fileName),
           StandardCopyOption.REPLACE_EXISTING);
+
+        String schemaName = "metadata.template." + templ.trim() + ".schema";
+        String schemaFileName = config.getProperty(schemaName);
+        // if (!Files.exists(rodainPath.resolve(fileName)))
+        Files.copy(ClassLoader.getSystemResourceAsStream("templates/" + schemaFileName),
+          rodainPath.resolve(schemaFileName), StandardCopyOption.REPLACE_EXISTING);
       }
 
       // load config
@@ -125,6 +132,31 @@ public class AppProperties {
 
   public static String getMetadataFile(String propertyName) {
     String completeKey = "metadata.template." + propertyName + ".file";
+    return getFile(completeKey);
+  }
+
+  public static String getSchemaFile(String propertyName) {
+    String completeKey = "metadata.template." + propertyName + ".schema";
+    return getFile(completeKey);
+  }
+
+  public static Path getSchemaPath(String propertyName) {
+    String completeKey = "metadata.template." + propertyName + ".schema";
+    if (ext_config.containsKey(completeKey)) {
+      Path filePath = rodainPath.resolve(ext_config.getProperty(completeKey));
+      if (Files.exists(filePath)) {
+        return filePath;
+      }
+    }
+    String fileName = config.getProperty(completeKey);
+    URL temp = ClassLoader.getSystemResource("templates/" + fileName);
+    if (temp != null)
+      return Paths.get(temp.getPath());
+    else
+      return null;
+  }
+
+  private static String getFile(String completeKey) {
     try {
       if (ext_config.containsKey(completeKey)) {
         Path filePath = rodainPath.resolve(ext_config.getProperty(completeKey));
@@ -133,7 +165,11 @@ public class AppProperties {
         }
       }
       String fileName = config.getProperty(completeKey);
-      InputStream contentStream = ClassLoader.getSystemResource(fileName).openStream();
+      URL temp = ClassLoader.getSystemResource("templates/" + fileName);
+      if (temp == null) {
+        return "";
+      }
+      InputStream contentStream = temp.openStream();
       return Utils.convertStreamToString(contentStream);
     } catch (IOException e) {
       log.error("Error reading metadata file", e);

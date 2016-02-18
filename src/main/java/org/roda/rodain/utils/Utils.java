@@ -87,7 +87,7 @@ public class Utils {
     try {
       // build the schema
       SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-      File schemaFile = new File(ClassLoader.getSystemResource("ead.xsd").getFile());
+      File schemaFile = new File(ClassLoader.getSystemResource("templates/ead.xsd").getFile());
       Schema schema = factory.newSchema(schemaFile);
       Validator validator = schema.newValidator();
 
