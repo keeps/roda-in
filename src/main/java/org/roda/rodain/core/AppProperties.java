@@ -7,13 +7,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.MissingResourceException;
-import java.util.Properties;
 import java.util.ResourceBundle;
 
 import javax.swing.filechooser.FileSystemView;
 
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.roda.rodain.utils.FolderBasedUTF8Control;
 import org.roda.rodain.utils.Utils;
 import org.slf4j.Logger;
@@ -28,7 +30,7 @@ public class AppProperties {
   private static final String CONFIGFOLDER = "roda-in";
   public static final Path rodainPath = getRodainPath();
   private static final Logger log = LoggerFactory.getLogger(AppProperties.class.getName());
-  private static Properties style = load("styles"), config = load("config"), ext_config,
+  private static PropertiesConfiguration style = load("styles"), config = load("config"), ext_config,
     descLevels = load("roda-description-levels-hierarchy");
   private static ResourceBundle resourceBundle;
   public static Locale locale;
@@ -54,40 +56,42 @@ public class AppProperties {
         Files.copy(ClassLoader.getSystemResourceAsStream("properties/config.properties"), configPath);
       } else { // if the file already exists, we need to check if it's missing
                // any properties
-        Properties internal = load("config");
-        Properties external = new Properties();
-        external.load(new FileInputStream(configPath.toFile()));
+        PropertiesConfiguration internal = load("config");
+        PropertiesConfiguration external = new PropertiesConfiguration();
+        external.load(new FileReader(configPath.toFile()));
         boolean store = false;
-        for (Object key : internal.keySet()) {
+        Iterator<String> keys = internal.getKeys();
+        while (keys.hasNext()) {
+          String key = keys.next();
           if (!external.containsKey(key)) {
-            external.put(key, internal.get(key));
+            external.addProperty(key, internal.getString(key));
             store = true;
           }
         }
         if (store) {
           OutputStream out = new FileOutputStream(configPath.toFile());
-          external.store(out, "Stored missing properties");
+          external.save(out);
         }
       }
       // copy metadata templates
-      String templatesRaw = config.getProperty("metadata.templates");
+      String templatesRaw = config.getString("metadata.templates");
       String[] templates = templatesRaw.split(",");
       for (String templ : templates) {
         String templateName = "metadata.template." + templ.trim() + ".file";
-        String fileName = config.getProperty(templateName);
+        String fileName = config.getString(templateName);
         // if (!Files.exists(rodainPath.resolve(fileName)))
         Files.copy(ClassLoader.getSystemResourceAsStream("templates/" + fileName), rodainPath.resolve(fileName),
           StandardCopyOption.REPLACE_EXISTING);
 
         String schemaName = "metadata.template." + templ.trim() + ".schema";
-        String schemaFileName = config.getProperty(schemaName);
+        String schemaFileName = config.getString(schemaName);
         // if (!Files.exists(rodainPath.resolve(fileName)))
         Files.copy(ClassLoader.getSystemResourceAsStream("templates/" + schemaFileName),
           rodainPath.resolve(schemaFileName), StandardCopyOption.REPLACE_EXISTING);
       }
 
       // load config
-      ext_config = new Properties();
+      ext_config = new PropertiesConfiguration();
       ext_config.load(new FileInputStream(configPath.toFile()));
 
       String appLanguage = getConfig("app.language");
@@ -103,6 +107,8 @@ public class AppProperties {
     } catch (MissingResourceException e) {
       locale = Locale.forLanguageTag("en");
       resourceBundle = ResourceBundle.getBundle("properties/lang", locale, new FolderBasedUTF8Control());
+    } catch (ConfigurationException e) {
+      e.printStackTrace();
     }
   }
 
@@ -119,13 +125,12 @@ public class AppProperties {
     return documentsPath.resolve(CONFIGFOLDER);
   }
 
-  private static Properties load(String fileName) {
-    Properties result = null;
+  private static PropertiesConfiguration load(String fileName) {
+    PropertiesConfiguration result = null;
     try {
-      result = new Properties();
-      result.load(ClassLoader.getSystemResource("properties/" + fileName + ".properties").openStream());
-    } catch (IOException e) {
-      log.error("Error while loading properties", e);
+      result = new PropertiesConfiguration("properties/" + fileName + ".properties");
+    } catch (ConfigurationException e) {
+      e.printStackTrace();
     }
     return result;
   }
@@ -143,12 +148,12 @@ public class AppProperties {
   public static Path getSchemaPath(String propertyName) {
     String completeKey = "metadata.template." + propertyName + ".schema";
     if (ext_config.containsKey(completeKey)) {
-      Path filePath = rodainPath.resolve(ext_config.getProperty(completeKey));
+      Path filePath = rodainPath.resolve(ext_config.getString(completeKey));
       if (Files.exists(filePath)) {
         return filePath;
       }
     }
-    String fileName = config.getProperty(completeKey);
+    String fileName = config.getString(completeKey);
     URL temp = ClassLoader.getSystemResource("templates/" + fileName);
     if (temp != null)
       return Paths.get(temp.getPath());
@@ -159,12 +164,12 @@ public class AppProperties {
   private static String getFile(String completeKey) {
     try {
       if (ext_config.containsKey(completeKey)) {
-        Path filePath = rodainPath.resolve(ext_config.getProperty(completeKey));
+        Path filePath = rodainPath.resolve(ext_config.getString(completeKey));
         if (Files.exists(filePath)) {
           return Utils.readFile(filePath.toString(), Charset.defaultCharset());
         }
       }
-      String fileName = config.getProperty(completeKey);
+      String fileName = config.getString(completeKey);
       URL temp = ClassLoader.getSystemResource("templates/" + fileName);
       if (temp == null) {
         return "";
@@ -183,7 +188,7 @@ public class AppProperties {
    * @return The value of the property (style)
    */
   public static String getStyle(String key) {
-    return style.getProperty(key);
+    return style.getString(key);
   }
 
   /**
@@ -193,8 +198,8 @@ public class AppProperties {
    */
   public static String getConfig(String key) {
     if (ext_config.containsKey(key))
-      return ext_config.getProperty(key);
-    return config.getProperty(key);
+      return ext_config.getString(key);
+    return config.getString(key);
   }
 
   /**
@@ -203,7 +208,7 @@ public class AppProperties {
    * @return The value of the property (description levels hierarchy)
    */
   public static String getDescLevels(String key) {
-    return descLevels.getProperty(key);
+    return descLevels.getString(key);
   }
 
   /**
