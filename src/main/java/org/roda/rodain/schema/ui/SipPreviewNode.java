@@ -54,6 +54,10 @@ public class SipPreviewNode extends TreeItem<String> implements Observer {
       return iconWhite;
   }
 
+  public Image getIconBlack() {
+    return iconBlack;
+  }
+
   public void setBlackIconSelected(boolean value) {
     blackIconSelected = value;
   }

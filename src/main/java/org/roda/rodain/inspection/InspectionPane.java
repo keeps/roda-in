@@ -134,7 +134,7 @@ public class InspectionPane extends BorderPane {
       public void changed(ObservableValue ov, UIPair t, UIPair t1) {
         if (currentSchema != null) {
           currentSchema.updateDescLevel(t1.getKey().toString());
-          topIcon.setImage(currentSchema.getImage());
+          topIcon.setImage(currentSchema.getIconBlack());
           // force update
           String title = currentSchema.getValue();
           currentSchema.setValue(null);
@@ -640,7 +640,8 @@ public class InspectionPane extends BorderPane {
     HBox top = new HBox(5);
     top.setPadding(new Insets(0, 10, 10, 10));
     top.setAlignment(Pos.CENTER_LEFT);
-    top.getChildren().addAll(sip.getGraphic(), paneTitle);
+    ImageView imageView = new ImageView(sip.getIconBlack());
+    top.getChildren().addAll(imageView, paneTitle);
     Separator separatorTop = new Separator();
 
     topBox.setPadding(new Insets(10, 0, 10, 0));
@@ -695,7 +696,7 @@ public class InspectionPane extends BorderPane {
     HBox top = new HBox(5);
     top.setPadding(new Insets(2, 10, 5, 10));
     top.setAlignment(Pos.CENTER_LEFT);
-    topIcon = new ImageView(node.getImage());
+    topIcon = new ImageView(node.getIconBlack());
     top.getChildren().addAll(topIcon, paneTitle, itemTypes);
 
     // Select current description level
