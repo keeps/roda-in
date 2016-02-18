@@ -14,6 +14,8 @@ import java.util.Set;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
@@ -163,6 +165,33 @@ public class RodaIn extends Application {
     Menu menuView = new Menu(AppProperties.getLocalizedString("Main.view"));
 
     // File
+    Menu language = new Menu(AppProperties.getLocalizedString("Main.language"));
+    final ToggleGroup languageGroup = new ToggleGroup();
+    RadioMenuItem langPT = new RadioMenuItem("Português");
+    langPT.setUserData("pt");
+    langPT.setToggleGroup(languageGroup);
+    RadioMenuItem langEN = new RadioMenuItem("English");
+    langEN.setUserData("en");
+    langEN.setToggleGroup(languageGroup);
+    language.getItems().addAll(langEN, langPT);
+
+    languageGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+      public void changed(ObservableValue<? extends Toggle> ov, Toggle old_toggle, Toggle new_toggle) {
+        if (languageGroup.getSelectedToggle() != null) {
+          String lang = (String) languageGroup.getSelectedToggle().getUserData();
+          AppProperties.setConfig("app.language", lang);
+          AppProperties.saveConfig();
+          Alert dlg = new Alert(Alert.AlertType.INFORMATION);
+          dlg.setHeaderText(AppProperties.getLocalizedString("Main.updateLang.header"));
+          dlg.setTitle(AppProperties.getLocalizedString("Main.updateLang.title"));
+          dlg.setContentText(AppProperties.getLocalizedString("Main.updateLang.content"));
+          dlg.initModality(Modality.APPLICATION_MODAL);
+          dlg.initOwner(stage);
+          dlg.show();
+        }
+      }
+    });
+
     final MenuItem openFolder = new MenuItem(AppProperties.getLocalizedString("Main.openFolder"));
     openFolder.setAccelerator(KeyCombination.keyCombination("Ctrl+O"));
     openFolder.setOnAction(new EventHandler<ActionEvent>() {
@@ -213,8 +242,9 @@ public class RodaIn extends Application {
       }
     });
 
-    menuFile.getItems().addAll(reset, openFolder, createSIPs, quit);
+    menuFile.getItems().addAll(reset, openFolder, createSIPs, language, quit);
 
+    // Classification scheme
     final MenuItem createCS = new MenuItem(AppProperties.getLocalizedString("Main.createCS"));
     createCS.setAccelerator(KeyCombination.keyCombination("Ctrl+R"));
     createCS.setOnAction(new EventHandler<ActionEvent>() {
