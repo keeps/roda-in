@@ -33,7 +33,6 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.LineNumberFactory;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.InvalidEADException;
@@ -231,13 +230,13 @@ public class InspectionPane extends BorderPane {
         } else {
           if (currentSIP != null) {
             currentSIP.applyMetadataValues();
-            metaText.replaceText(currentSIP.getMetadataContent());
+            updateTextArea(currentSIP.getMetadataContent());
           } else {
             if (currentSchema != null) {
               currentSchema.getDob().applyMetadataValues();
               List<DescObjMetadata> metadatas = currentSchema.getDob().getMetadataWithReplaces();
               if (!metadatas.isEmpty()) {
-                metaText.replaceText(metadatas.get(0).getContentDecoded());
+                updateTextArea(metadatas.get(0).getContentDecoded());
               }
             }
           }
@@ -251,11 +250,6 @@ public class InspectionPane extends BorderPane {
     box.getChildren().addAll(title, space, toggleForm);
 
     metaText = new CodeArea();
-    metaText.setParagraphGraphicFactory(LineNumberFactory.get(metaText));
-    metaText.textProperty().addListener((obs, oldText, newText) -> {
-      metaText.setStyleSpans(0, XMLEditor.computeHighlighting(newText));
-    });
-    metaText.setWrapText(true);
     VBox.setVgrow(metaText, Priority.ALWAYS);
     metadata.getChildren().addAll(box, metaText);
 
@@ -273,6 +267,11 @@ public class InspectionPane extends BorderPane {
         }
       }
     });
+  }
+
+  private void updateTextArea(String text) {
+    metaText.replaceText(text);
+    metaText.setStyleSpans(0, XMLEditor.computeHighlighting(text));
   }
 
   /**
@@ -652,7 +651,7 @@ public class InspectionPane extends BorderPane {
     center.getChildren().clear();
     // metadata
     String meta = sip.getSip().getMetadataContent();
-    metaText.replaceText(meta);
+    updateTextArea(meta);
 
     // content tree
     createContent(sip);
@@ -720,7 +719,7 @@ public class InspectionPane extends BorderPane {
     List<DescObjMetadata> metadatas = node.getDob().getMetadataWithReplaces();
     if (!metadatas.isEmpty()) {
       // For now we only get the first metadata object
-      metaText.replaceText(metadatas.get(0).getContentDecoded());
+      updateTextArea(metadatas.get(0).getContentDecoded());
     } else
       metaText.clear();
 

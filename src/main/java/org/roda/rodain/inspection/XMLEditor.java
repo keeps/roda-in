@@ -11,20 +11,20 @@ import org.fxmisc.richtext.StyleSpansBuilder;
 public class XMLEditor {
 
   private static final Pattern XML_TAG = Pattern
-    .compile("(?<ELEMENT>(</?\\h*)(\\w+)([^<>]*)(\\h*/?>))" + "|(?<COMMENT><!--[^<>]+-->)");
+    .compile("(?<ELEMENT>(</?\\h*)(\\w+:)?(\\w+)([^<>]*)(\\h*/?>))" + "|(?<COMMENT><!--[^<>]+-->)");
 
   private static final Pattern ATTRIBUTES = Pattern.compile("(\\w+\\h*)(=)(\\h*\"[^\"]+\")");
 
   private static final int GROUP_OPEN_BRACKET = 2;
-  private static final int GROUP_ELEMENT_NAME = 3;
-  private static final int GROUP_ATTRIBUTES_SECTION = 4;
-  private static final int GROUP_CLOSE_BRACKET = 5;
+  private static final int GROUP_NAMESPACE = 3;
+  private static final int GROUP_ELEMENT_NAME = 4;
+  private static final int GROUP_ATTRIBUTES_SECTION = 5;
+  private static final int GROUP_CLOSE_BRACKET = 6;
   private static final int GROUP_ATTRIBUTE_NAME = 1;
   private static final int GROUP_EQUAL_SYMBOL = 2;
   private static final int GROUP_ATTRIBUTE_VALUE = 3;
 
   public static StyleSpans<Collection<String>> computeHighlighting(String text) {
-
     Matcher matcher = XML_TAG.matcher(text);
     int lastKwEnd = 0;
     StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
@@ -39,8 +39,15 @@ public class XMLEditor {
 
           spansBuilder.add(Collections.singleton("tagmark"),
             matcher.end(GROUP_OPEN_BRACKET) - matcher.start(GROUP_OPEN_BRACKET));
-          spansBuilder.add(Collections.singleton("anytag"),
-            matcher.end(GROUP_ELEMENT_NAME) - matcher.end(GROUP_OPEN_BRACKET));
+          if (matcher.start(GROUP_NAMESPACE) != -1 && matcher.end(GROUP_NAMESPACE) != -1) {
+            spansBuilder.add(Collections.singleton("namespace"),
+              matcher.end(GROUP_NAMESPACE) - matcher.end(GROUP_OPEN_BRACKET));
+            spansBuilder.add(Collections.singleton("anytag"),
+              matcher.end(GROUP_ELEMENT_NAME) - matcher.end(GROUP_NAMESPACE));
+          } else {
+            spansBuilder.add(Collections.singleton("anytag"),
+              matcher.end(GROUP_ELEMENT_NAME) - matcher.end(GROUP_OPEN_BRACKET));
+          }
 
           if (!attributesText.isEmpty()) {
 
