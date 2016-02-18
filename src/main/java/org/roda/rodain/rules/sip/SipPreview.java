@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.roda.rodain.core.PathCollection;
+import org.roda.rodain.rules.InvalidEADException;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 
@@ -149,7 +150,7 @@ public class SipPreview extends Observable implements Observer {
    * @return A list with the metadata values.
    * @see SipMetadata#getValues()
    */
-  public Map<String, MetadataValue> getMetadataValues() {
+  public Map<String, MetadataValue> getMetadataValues() throws InvalidEADException {
     return metadata.getValues();
   }
 

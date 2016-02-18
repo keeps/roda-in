@@ -36,6 +36,7 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.RodaIn;
+import org.roda.rodain.rules.InvalidEADException;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.MetadataValue;
@@ -149,6 +150,7 @@ public class InspectionPane extends BorderPane {
     metadata.getStyleClass().add("inspectionPart");
 
     metadataForm = new GridPane();
+    metadataForm.setVgap(5);
     metadataForm.setPadding(new Insets(5, 5, 5, 5));
     ColumnConstraints column1 = new ColumnConstraints();
     column1.setPercentWidth(20);
@@ -181,15 +183,21 @@ public class InspectionPane extends BorderPane {
           metadata.getChildren().remove(metaText);
           metadataForm.getChildren().clear();
           Map<String, MetadataValue> metadataValues;
-          if (currentSIP != null) {
-            metadataValues = currentSIP.getMetadataValues();
-          } else {
-            if (currentSchema != null) {
-              metadataValues = currentSchema.getDob().getMetadataValues();
+          try {
+            if (currentSIP != null) {
+              metadataValues = currentSIP.getMetadataValues();
             } else {
-              // error, there is no SIP or SchemaNode selected
-              return;
+              if (currentSchema != null) {
+                metadataValues = currentSchema.getDob().getMetadataValues();
+              } else {
+                // error, there is no SIP or SchemaNode selected
+                return;
+              }
             }
+          } catch (InvalidEADException e) {
+            metadata.getChildren().add(metaText);
+            toggleForm.setVisible(false);
+            return;
           }
           int i = 0;
           for (MetadataValue metadataValue : metadataValues.values()) {
@@ -234,7 +242,8 @@ public class InspectionPane extends BorderPane {
             }
           }
           metadata.getChildren().remove(metadataForm);
-          metadata.getChildren().add(metaText);
+          if (!metadata.getChildren().contains(metaText))
+            metadata.getChildren().add(metaText);
         }
       }
     });
@@ -651,6 +660,7 @@ public class InspectionPane extends BorderPane {
     setCenter(center);
 
     // update the form using the XML
+    toggleForm.setVisible(true);
     toggleForm.setSelected(false);
     toggleForm.fire();
   }
@@ -720,6 +730,7 @@ public class InspectionPane extends BorderPane {
     setCenter(center);
 
     // update the form using the XML
+    toggleForm.setVisible(true);
     toggleForm.setSelected(false);
     toggleForm.fire();
   }

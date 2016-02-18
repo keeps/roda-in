@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.rules.InvalidEADException;
 import org.roda.rodain.rules.sip.MetadataValue;
 import org.roda.rodain.rules.sip.SipMetadata;
 
@@ -20,7 +21,7 @@ public class DescriptionObject {
   private String parentId;
   private String descriptionlevel;
   private List<DescObjMetadata> metadata = new ArrayList<>();
-  private Map<String, Object> additionalProperties = new HashMap<>();
+  private Map<String, Object> additionalProperties = new TreeMap<>();
 
   public DescriptionObject(){
     title = AppProperties.getLocalizedString("root");
@@ -32,7 +33,7 @@ public class DescriptionObject {
    * @return A list with the metadata values.
    * @see SipMetadata#getValues()
    */
-  public Map<String, MetadataValue> getMetadataValues() {
+  public Map<String, MetadataValue> getMetadataValues() throws InvalidEADException {
     List<DescObjMetadata> metadataDup = getMetadata();
     if (!metadataDup.isEmpty()) {
       return metadataDup.get(0).getValues();

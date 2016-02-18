@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.rules.InvalidEADException;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.XMLToMetadataValue;
 import org.roda.rodain.utils.Utils;
@@ -83,7 +84,7 @@ public class SipMetadata {
   /**
    * @return The set of MetadataValue objects. Used to create the form.
    */
-  public Map<String, MetadataValue> getValues() {
+  public Map<String, MetadataValue> getValues() throws InvalidEADException {
     values = XMLToMetadataValue.createEADMetadataValues(getMetadataContent(), values);
     return values;
   }

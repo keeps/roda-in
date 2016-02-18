@@ -25,7 +25,11 @@ import com.jcabi.xml.XMLDocument;
  */
 public class XMLToMetadataValue {
 
-  public static Map<String, MetadataValue> createEADMetadataValues(String content, Map<String, MetadataValue> values) {
+  public static Map<String, MetadataValue> createEADMetadataValues(String content, Map<String, MetadataValue> values)
+    throws InvalidEADException {
+    if (!Utils.isEAD(content)) {
+      throw new InvalidEADException();
+    }
     Map<String, List<String>> formRules = createEADForm();
 
     try {

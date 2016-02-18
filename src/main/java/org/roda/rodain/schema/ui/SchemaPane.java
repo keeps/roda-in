@@ -1,6 +1,12 @@
 package org.roda.rodain.schema.ui;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
@@ -22,6 +28,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.sip.SipPreview;
@@ -35,12 +42,7 @@ import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -233,30 +235,32 @@ public class SchemaPane extends BorderPane {
       @Override
       public void changed(ObservableValue observable, TreeItem oldValue, TreeItem newValue) {
         RodaIn.getInspectionPane().saveMetadata();
-        if (newValue instanceof SipPreviewNode) {
-          RodaIn.getInspectionPane().update((SipPreviewNode) newValue);
-          ((SipPreviewNode) newValue).toggleIcon();
-          forceUpdate(newValue);
-        }
-        if (newValue instanceof SchemaNode) {
-          RodaIn.getInspectionPane().update((SchemaNode) newValue);
-          ((SchemaNode) newValue).toggleIcon();
-          forceUpdate(newValue);
-        }
         if (oldValue instanceof SipPreviewNode) {
-          ((SipPreviewNode) oldValue).toggleIcon();
+          oldValue.valueProperty().unbind();
+          ((SipPreviewNode) oldValue).setBlackIconSelected(true);
           forceUpdate(oldValue);
         }
         if (oldValue instanceof SchemaNode) {
-          ((SchemaNode) oldValue).toggleIcon();
+          oldValue.valueProperty().unbind();
+          ((SchemaNode) oldValue).setBlackIconSelected(true);
           forceUpdate(oldValue);
+        }
+        if (newValue instanceof SipPreviewNode) {
+          ((SipPreviewNode) newValue).setBlackIconSelected(false);
+          forceUpdate(newValue);
+          RodaIn.getInspectionPane().update((SipPreviewNode) newValue);
+        }
+        if (newValue instanceof SchemaNode) {
+          ((SchemaNode) newValue).setBlackIconSelected(false);
+          forceUpdate(newValue);
+          RodaIn.getInspectionPane().update((SchemaNode) newValue);
         }
       }
     });
   }
 
-  private void forceUpdate(TreeItem item) {
-    Object value = item.getValue();
+  private void forceUpdate(TreeItem<String> item) {
+    String value = item.getValue();
     item.setValue(null);
     item.setValue(value);
   }

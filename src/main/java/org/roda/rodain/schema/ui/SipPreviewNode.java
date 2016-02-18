@@ -54,14 +54,8 @@ public class SipPreviewNode extends TreeItem<String> implements Observer {
       return iconWhite;
   }
 
-  public void toggleIcon() {
-    if (blackIconSelected) {
-      setGraphic(new ImageView(iconWhite));
-      blackIconSelected = false;
-    } else {
-      setGraphic(new ImageView(iconBlack));
-      blackIconSelected = true;
-    }
+  public void setBlackIconSelected(boolean value) {
+    blackIconSelected = value;
   }
 
   /**

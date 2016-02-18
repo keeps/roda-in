@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.net.util.Base64;
+import org.roda.rodain.rules.InvalidEADException;
 import org.roda.rodain.rules.XMLToMetadataValue;
 import org.roda.rodain.rules.sip.MetadataValue;
 
@@ -34,7 +35,7 @@ public class DescObjMetadata {
   /**
    * @return The set of MetadataValue objects. Used to create the form.
    */
-  public Map<String, MetadataValue> getValues() {
+  public Map<String, MetadataValue> getValues() throws InvalidEADException {
     values = XMLToMetadataValue.createEADMetadataValues(getContentDecoded(), values);
     return values;
   }
@@ -45,8 +46,6 @@ public class DescObjMetadata {
   public void applyMetadataValues() {
     String result = XMLToMetadataValue.applyMetadataValues(getContentDecoded(), values);
     setContentDecoded(result);
-    int i = 0;
-    i++;
   }
 
   /**
@@ -120,8 +119,10 @@ public class DescObjMetadata {
    * @param content The decoded content
    */
   public void setContentDecoded(String content) {
-    byte[] encoded = Base64.encodeBase64(content.getBytes());
-    this.content = new String(encoded);
+    if (content != null) {
+      byte[] encoded = Base64.encodeBase64(content.getBytes());
+      this.content = new String(encoded);
+    }
   }
 
   /**
