@@ -1,14 +1,18 @@
 package org.roda.rodain.utils;
 
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.nio.file.*;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Pattern;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -47,34 +51,6 @@ public class Utils {
     return depth.get() - path.getNameCount();
   }
 
-  public static String longestCommonPrefix(List<String> strs) {
-    if (strs == null || strs.isEmpty())
-      return "";
-
-    int minLen = Integer.MAX_VALUE;
-    for (String str : strs) {
-      if (minLen > str.length())
-        minLen = str.length();
-    }
-    if (minLen == 0)
-      return "";
-
-    for (int j = 0; j < minLen; j++) {
-      char prev = '0';
-      for (int i = 0; i < strs.size(); i++) {
-        if (i == 0) {
-          prev = strs.get(i).charAt(j);
-          continue;
-        }
-
-        if (strs.get(i).charAt(j) != prev) {
-          return strs.get(i).substring(0, j);
-        }
-      }
-    }
-    return strs.get(0).substring(0, minLen);
-  }
-
   public static String readFile(String path, Charset encoding) throws IOException {
     byte[] encoded = Files.readAllBytes(Paths.get(path));
     return new String(encoded, encoding);
@@ -83,6 +59,15 @@ public class Utils {
   public static String convertStreamToString(InputStream is) {
     java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
     return s.hasNext() ? s.next() : "";
+  }
+
+  public static Document loadXMLFromString(String xml) throws Exception {
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
+    factory.setNamespaceAware(true);
+    DocumentBuilder builder = factory.newDocumentBuilder();
+
+    return builder.parse(new InputSource(new StringReader(xml)));
   }
 
   public static String replaceTag(String content, String tag, String replacement) {

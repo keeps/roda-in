@@ -1,11 +1,14 @@
 package org.roda.rodain.schema;
 
-import org.roda.rodain.core.AppProperties;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.rules.sip.MetadataValue;
+import org.roda.rodain.rules.sip.SipMetadata;
+
+import com.samskivert.mustache.Mustache;
+import com.samskivert.mustache.Template;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -21,6 +24,25 @@ public class DescriptionObject {
 
   public DescriptionObject(){
     title = AppProperties.getLocalizedString("root");
+    id = UUID.randomUUID().toString();
+    metadata.add(new DescObjMetadata(AppProperties.getMetadataFile("ead")));
+  }
+
+  /**
+   * @return A list with the metadata values.
+   * @see SipMetadata#getValues()
+   */
+  public Map<String, MetadataValue> getMetadataValues() {
+    if (!metadata.isEmpty()) {
+      return metadata.get(0).getValues();
+    } else
+      return null;
+  }
+
+  public void applyMetadataValues() {
+    if (!metadata.isEmpty()) {
+      metadata.get(0).applyMetadataValues();
+    }
   }
 
   /**
@@ -101,7 +123,25 @@ public class DescriptionObject {
    * @return The metadata list
    */
   public List<DescObjMetadata> getMetadata() {
-    return metadata;
+    List<DescObjMetadata> result = new ArrayList<>();
+    for (DescObjMetadata dom : metadata) {
+      String content = dom.getContentDecoded();
+      if (content != null) {
+        Template tmpl = Mustache.compiler().compile(content);
+        Map<String, String> data = new HashMap<>();
+        data.put("title", title);
+        data.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+        data.put("id", id);
+        content = tmpl.execute(data);
+        // we need to clean the '\r' character in windows,
+        // otherwise the strings are different even if no modification has been
+        // made
+        content = content.replace("\r", "");
+        DescObjMetadata template = new DescObjMetadata(content);
+        result.add(template);
+      }
+    }
+    return result;
   }
 
   /**

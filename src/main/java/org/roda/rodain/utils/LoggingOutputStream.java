@@ -18,6 +18,7 @@ public class LoggingOutputStream extends OutputStream {
     char c = (char) b;
     if (c == '\n' || c == '\r') {
       log.warn(buffer.toString());
+      System.out.println(buffer.toString());
       buffer = new StringBuilder();
     } else
       buffer.append(c);

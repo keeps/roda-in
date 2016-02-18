@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javafx.beans.binding.Bindings;
@@ -174,13 +175,24 @@ public class InspectionPane extends BorderPane {
     toggleForm.selectedProperty().addListener(new ChangeListener<Boolean>() {
       @Override
       public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+        // newValue == true means that the form will be displayed
         if (newValue) {
           saveMetadata();
           metadata.getChildren().remove(metaText);
           metadataForm.getChildren().clear();
-          Set<MetadataValue> metadataValues = currentSIP.getMetadataValues();
+          Map<String, MetadataValue> metadataValues;
+          if (currentSIP != null) {
+            metadataValues = currentSIP.getMetadataValues();
+          } else {
+            if (currentSchema != null) {
+              metadataValues = currentSchema.getDob().getMetadataValues();
+            } else {
+              // error, there is no SIP or SchemaNode selected
+              return;
+            }
+          }
           int i = 0;
-          for (MetadataValue metadataValue : metadataValues) {
+          for (MetadataValue metadataValue : metadataValues.values()) {
             Label label = new Label(metadataValue.getTitle());
             label.getStyleClass().add("formLabel");
 
@@ -194,8 +206,14 @@ public class InspectionPane extends BorderPane {
               }
             });
             if (metadataValue.getId().equals("title")) {
-              textField.textProperty().bindBidirectional(currentSIPNode.valueProperty());
               textField.textProperty().bindBidirectional(paneTitle.textProperty());
+              if (currentSIPNode != null) {
+                textField.textProperty().bindBidirectional(currentSIPNode.valueProperty());
+              } else {
+                if (currentSchema != null) {
+                  textField.textProperty().bindBidirectional(currentSchema.valueProperty());
+                }
+              }
             }
             metadataForm.add(label, 0, i);
             metadataForm.add(textField, 1, i);
@@ -203,9 +221,19 @@ public class InspectionPane extends BorderPane {
           }
           metadata.getChildren().add(metadataForm);
         } else {
-          currentSIP.applyMetadataValues();
+          if (currentSIP != null) {
+            currentSIP.applyMetadataValues();
+            metaText.replaceText(currentSIP.getMetadataContent());
+          } else {
+            if (currentSchema != null) {
+              currentSchema.getDob().applyMetadataValues();
+              List<DescObjMetadata> metadatas = currentSchema.getDob().getMetadata();
+              if (!metadatas.isEmpty()) {
+                metaText.replaceText(metadatas.get(0).getContentDecoded());
+              }
+            }
+          }
           metadata.getChildren().remove(metadataForm);
-          metaText.replaceText(currentSIP.getMetadataContent());
           metadata.getChildren().add(metaText);
         }
       }
@@ -636,9 +664,9 @@ public class InspectionPane extends BorderPane {
     center.getChildren().addAll(idBox, metadata, content);
     setCenter(center);
 
-    if (!toggleForm.isSelected()) {
-      toggleForm.fire();
-    }
+    // update the form using the XML
+    toggleForm.setSelected(false);
+    toggleForm.fire();
   }
 
   /**
@@ -664,17 +692,15 @@ public class InspectionPane extends BorderPane {
 
     /* top */
     // title
-    TextField title = new TextField(node.getValue());
-    title.setId("schemeNodeTitle");
-    title.getStyleClass().add("title");
-    HBox.setHgrow(title, Priority.ALWAYS);
-    title.textProperty().bindBidirectional(node.valueProperty());
+    paneTitle = new Label(node.getValue());
+    paneTitle.setWrapText(true);
+    paneTitle.getStyleClass().add("title");
 
     HBox top = new HBox(5);
     top.setPadding(new Insets(2, 10, 5, 10));
     top.setAlignment(Pos.CENTER_LEFT);
     topIcon = new ImageView(node.getImage());
-    top.getChildren().addAll(topIcon, title, itemTypes);
+    top.getChildren().addAll(topIcon, paneTitle, itemTypes);
 
     // Select current description level
     String currentDescLevel = node.getDob().getDescriptionlevel();
@@ -717,6 +743,10 @@ public class InspectionPane extends BorderPane {
 
     center.getChildren().addAll(idBox, metadata, rules);
     setCenter(center);
+
+    // update the form using the XML
+    toggleForm.setSelected(false);
+    toggleForm.fire();
   }
 
   public void showHelp(){

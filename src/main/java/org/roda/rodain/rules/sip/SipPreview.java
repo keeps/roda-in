@@ -149,7 +149,7 @@ public class SipPreview extends Observable implements Observer {
    * @return A list with the metadata values.
    * @see SipMetadata#getValues()
    */
-  public Set<MetadataValue> getMetadataValues() {
+  public Map<String, MetadataValue> getMetadataValues() {
     return metadata.getValues();
   }
 

@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.net.util.Base64;
+import org.roda.rodain.rules.XMLToMetadataValue;
+import org.roda.rodain.rules.sip.MetadataValue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -17,6 +19,33 @@ public class DescObjMetadata {
   private String content;
   private String contentEncoding;
   private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  private Map<String, MetadataValue> values = new HashMap<>();
+
+  public DescObjMetadata() {
+
+  }
+
+  public DescObjMetadata(String cont) {
+    setContentDecoded(cont);
+    contentEncoding = "Base64";
+    id = "ead.xml";
+  }
+
+  /**
+   * @return The set of MetadataValue objects. Used to create the form.
+   */
+  public Map<String, MetadataValue> getValues() {
+    values = XMLToMetadataValue.createEADMetadataValues(getContentDecoded(), values);
+    return values;
+  }
+
+  /**
+   * Applies the data from the MetadataValues to the XML string.
+   */
+  public void applyMetadataValues() {
+    String result = XMLToMetadataValue.applyMetadataValues(getContentDecoded(), values);
+    setContentDecoded(result);
+  }
 
   /**
    * Gets the id of the description object metadata.
