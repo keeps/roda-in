@@ -125,13 +125,12 @@ For more information or commercial support, contact [KEEP SOLUTIONS](http://www.
 
 ## Further reading
 
-* Bagit spec
-* SIP spec
-* Common spec
-* RODA source code
-* RODA community
-* E-ARK project
-* etc.
+* [Bagit specification](https://tools.ietf.org/html/draft-kunze-bagit-08)
+* [E-ARK SIP specification](http://www.eark-project.com/resources/project-deliverables/17-d32-e-ark-sip-draft-specification/file)
+* [E-ARK Common specification](http://www.eark-project.com/resources/specificationdocs/50-draftcommonspec-1/file)
+* [RODA source code](http://github.com/keeps/roda)
+* [RODA Community Web site](http://www.roda-community.org)
+* [E-ARK Project Web site](http://www.eark-project.com)
 
 
 ## Contributing
