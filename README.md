@@ -71,20 +71,22 @@ The following actions are supported to edit the classification scheme:
 
 ## Tutorials
 
-### RODA-in Tutorial: How to download and run the application  
+In this section you may find a few video tutorials on how to use the RODA-in tool. 
+
+#### RODA-in Tutorial: How to download and run the application  
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=bIcWnOJVyLg
 " target="_blank"><img src="http://img.youtube.com/vi/bIcWnOJVyLg/0.jpg" 
 alt="Tutorial" width="240" height="180" border="10" /></a>
 
-### RODA-in Tutorial: How to create Submission Information Packages
+#### RODA-in Tutorial: How to create Submission Information Packages
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=bIcWnOJVyLg
 " target="_blank"><img src="http://img.youtube.com/vi/bIcWnOJVyLg/0.jpg" 
 alt="Tutorial" width="240" height="180" border="10" /></a>
 
 
-### RODA-in Tutorial: Advanced ways of creating Submission Information Packages
+#### RODA-in Tutorial: Advanced ways of creating Submission Information Packages
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=bIcWnOJVyLg
 " target="_blank"><img src="http://img.youtube.com/vi/bIcWnOJVyLg/0.jpg" 
