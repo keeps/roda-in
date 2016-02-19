@@ -20,7 +20,7 @@ This application was part of the [RODA project](http://www.roda-community.org) a
 RODA-in supports several Submission Information Package formats. At the moment we have included support for:
 
 * BagIt, a hierarchical file packaging format for storage and transfer of arbitrary digital content.  A "bag" has just enough structure to enclose descriptive "tags" and a "payload" but does not require knowledge of the payload's internal semantics. This BagIt format should be suitable for disk-based or network-based storage and transfer.  BagIt is widely used in the practice of digital preservation. The specification of BagIt can be found [here](https://tools.ietf.org/html/draft-kunze-bagit-13).
-* E-ARK SIP format, specification [here](http://www.eark-project.com/resources/project-deliverables/17-d32-e-ark-sip-draft-specification/file)
+* E-ARK SIP format, a Submission Information Package format developed by the EU funded E-ARK Project. The specification can be found [here](http://www.eark-project.com/resources/project-deliverables/17-d32-e-ark-sip-draft-specification/file)
 
 
 ## Requirements
@@ -71,7 +71,25 @@ The following actions are supported to edit the classification scheme:
 
 ## Tutorials
 
-Will be available soon...
+### RODA-in Tutorial: How to download and run the application  
+
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=bIcWnOJVyLg
+" target="_blank"><img src="http://img.youtube.com/vi/bIcWnOJVyLg/0.jpg" 
+alt="Tutorial" width="240" height="180" border="10" /></a>
+
+### RODA-in Tutorial: How to create Submission Information Packages
+
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=bIcWnOJVyLg
+" target="_blank"><img src="http://img.youtube.com/vi/bIcWnOJVyLg/0.jpg" 
+alt="Tutorial" width="240" height="180" border="10" /></a>
+
+
+### RODA-in Tutorial: Advanced ways of creating Submission Information Packages
+
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=bIcWnOJVyLg
+" target="_blank"><img src="http://img.youtube.com/vi/bIcWnOJVyLg/0.jpg" 
+alt="Tutorial" width="240" height="180" border="10" /></a>
+
 
 ## How to build from source
 
