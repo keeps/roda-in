@@ -71,22 +71,22 @@ The following actions are supported to edit the classification scheme:
 
 ## Tutorials
 
-In this section you may find a few video tutorials on how to use the RODA-in tool. 
+In this section you may find a few video tutorials on how to use the RODA-in tool to create Submission Information Packages (SIP). 
 
-#### RODA-in Tutorial: How to download and run the application  
-
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=bIcWnOJVyLg
-" target="_blank"><img src="http://img.youtube.com/vi/bIcWnOJVyLg/0.jpg" 
-alt="Tutorial" width="240" height="180" border="10" /></a>
-
-#### RODA-in Tutorial: How to create Submission Information Packages
+#### How to download and run the application  
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=bIcWnOJVyLg
 " target="_blank"><img src="http://img.youtube.com/vi/bIcWnOJVyLg/0.jpg" 
 alt="Tutorial" width="240" height="180" border="10" /></a>
 
+#### How to create SIPs from folders
 
-#### RODA-in Tutorial: Advanced ways of creating Submission Information Packages
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=bIcWnOJVyLg
+" target="_blank"><img src="http://img.youtube.com/vi/bIcWnOJVyLg/0.jpg" 
+alt="Tutorial" width="240" height="180" border="10" /></a>
+
+
+#### Advanced ways of creating SIPs
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=bIcWnOJVyLg
 " target="_blank"><img src="http://img.youtube.com/vi/bIcWnOJVyLg/0.jpg" 
