@@ -77,20 +77,20 @@ In this section you may find a few video tutorials on how to use the RODA-in too
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=bIcWnOJVyLg
 " target="_blank"><img src="http://img.youtube.com/vi/bIcWnOJVyLg/0.jpg" 
-alt="Tutorial" width="240" height="180" border="10" /></a>
+alt="Tutorial" width="240" height="180" border="1" /></a>
 
-#### How to create SIPs from folders
+#### How to create SIPs from local files and folders
 
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=bIcWnOJVyLg
-" target="_blank"><img src="http://img.youtube.com/vi/bIcWnOJVyLg/0.jpg" 
-alt="Tutorial" width="240" height="180" border="10" /></a>
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=FRd6NUHZ3R4
+" target="_blank"><img src="http://img.youtube.com/vi/FRd6NUHZ3R4/0.jpg" 
+alt="Tutorial" width="240" height="180" border="1" /></a>
 
 
 #### Advanced ways of creating SIPs
 
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=bIcWnOJVyLg
-" target="_blank"><img src="http://img.youtube.com/vi/bIcWnOJVyLg/0.jpg" 
-alt="Tutorial" width="240" height="180" border="10" /></a>
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=nJEeTFdEyWM
+" target="_blank"><img src="http://img.youtube.com/vi/nJEeTFdEyWM/0.jpg" 
+alt="Tutorial" width="240" height="180" border="1" /></a>
 
 
 ## How to build from source
