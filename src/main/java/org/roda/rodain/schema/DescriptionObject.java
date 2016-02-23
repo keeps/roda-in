@@ -141,6 +141,8 @@ public class DescriptionObject {
         data.put("title", title);
         data.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
         data.put("id", id);
+        data.put("repcode", "RODA-PT");
+        data.put("level", descriptionlevel);
         content = tmpl.execute(data);
         // we need to clean the '\r' character in windows,
         // otherwise the strings are different even if no modification has been

@@ -1,9 +1,8 @@
 package org.roda.rodain.rules;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -12,6 +11,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.sip.MetadataValue;
+import org.roda.rodain.utils.UIPair;
 import org.roda.rodain.utils.Utils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -25,21 +25,20 @@ import com.jcabi.xml.XMLDocument;
  */
 public class XMLToMetadataValue {
 
-  public static Map<String, MetadataValue> createEADMetadataValues(String content, Map<String, MetadataValue> values)
+  public static Map<String, MetadataValue> createEADMetadataValues(String content)
     throws InvalidEADException {
     if (!Utils.isEAD(content)) {
       throw new InvalidEADException();
     }
-    Map<String, List<String>> formRules = createEADForm();
+    Map<String, MetadataValue> metadataValues = createEADForm();
 
     try {
       Document document = Utils.loadXMLFromString(content);
-      formRules.forEach((id, xpathList) -> {
-        MetadataValue currentMeta = values.get(id);
+      metadataValues.forEach((id, metadataValue) -> {
         // if there was a MetadataValue already we don't need to add the xpaths
         // again
-        boolean wasNull = currentMeta == null;
-        for (String xpath : xpathList) {
+        List<String> xpaths = metadataValue.getXpathDestinations();
+        for (String xpath : xpaths) {
           XPath xPath = XPathFactory.newInstance().newXPath();
           NodeList nodes = null;
           try {
@@ -48,25 +47,16 @@ public class XMLToMetadataValue {
             e.printStackTrace();
           }
           if (nodes != null && nodes.getLength() > 0) {
-            if (currentMeta == null) {
-              String title = AppProperties.getLocalizedString("metadataValue." + id);
-              currentMeta = new MetadataValue(id, title, nodes.item(0).getTextContent());
-            }
-            if (wasNull) {
-              currentMeta.addXpathDestination(xpath);
-            }
-            currentMeta.setValue(nodes.item(0).getTextContent());
+            metadataValue.setValue(nodes.item(0).getTextContent());
           }
         }
-        if (wasNull)
-          values.put(id, currentMeta);
       });
     } catch (SAXException e) {
       e.printStackTrace();
     } catch (Exception e) {
       e.printStackTrace();
     }
-    return values;
+    return metadataValues;
   }
 
   /**
@@ -93,27 +83,41 @@ public class XMLToMetadataValue {
     return result;
   }
 
-  private static Map<String, List<String>> createEADForm() {
-    Map<String, List<String>> paths = new HashMap<>();
-    List<String> titleXpaths = new ArrayList<>();
-    titleXpaths.add("//*[local-name()='titleproper']");
-    titleXpaths.add("//*[local-name()='unittitle']");
-    paths.put("title", titleXpaths);
+  private static Map<String, MetadataValue> createEADForm() {
+    Map<String, MetadataValue> result = new TreeMap<>();
+    MetadataValue title = new MetadataValue("title", AppProperties.getLocalizedString("metadataValue.title"), null,
+      "text");
+    title.addXpathDestination("//*[local-name()='titleproper']");
+    title.addXpathDestination("//*[local-name()='unittitle']");
+    result.put("title", title);
 
-    List<String> dateXpaths = new ArrayList<>();
-    dateXpaths.add("//*[local-name()='date']/@normal");
-    dateXpaths.add("//*[local-name()='date']");
-    dateXpaths.add("//*[local-name()='unitdate']/@normal");
-    dateXpaths.add("//*[local-name()='unitdate']");
-    paths.put("date", dateXpaths);
+    MetadataValue date = new MetadataValue("date", AppProperties.getLocalizedString("metadataValue.date"), null,
+      "date");
+    date.addXpathDestination("//*[local-name()='date']/@normal");
+    date.addXpathDestination("//*[local-name()='date']");
+    date.addXpathDestination("//*[local-name()='unitdate']/@normal");
+    date.addXpathDestination("//*[local-name()='unitdate']");
+    result.put("date", date);
 
-    List<String> repCodeXpaths = new ArrayList<>();
-    repCodeXpaths.add("//*[local-name()='unitid']/@repositorycode");
-    paths.put("repcode", repCodeXpaths);
+    MetadataValue repCode = new MetadataValue("repcode", AppProperties.getLocalizedString("metadataValue.repcode"),
+      null, "text");
+    repCode.addXpathDestination("//*[local-name()='unitid']/@repositorycode");
+    result.put("repcode", repCode);
 
-    List<String> idXpaths = new ArrayList<>();
-    idXpaths.add("//*[local-name()='unitid']");
-    paths.put("id", idXpaths);
-    return paths;
+    MetadataValue id = new MetadataValue("id", AppProperties.getLocalizedString("metadataValue.id"), null, "text");
+    id.addXpathDestination("//*[local-name()='unitid']");
+    result.put("id", id);
+
+    MetadataValue level = new MetadataValue("level", AppProperties.getLocalizedString("metadataValue.level"), null,
+      "combo");
+    level.addXpathDestination("//*[local-name()='archdesc']/@level");
+    String itemTypesRaw = AppProperties.getDescLevels("levels_ordered");
+    String[] itemTypesArray = itemTypesRaw.split(",");
+    for (String item : itemTypesArray) {
+      UIPair pair = new UIPair(item, AppProperties.getDescLevels("label.en." + item));
+      level.addFieldOption(pair);
+    }
+    result.put("level", level);
+    return result;
   }
 }

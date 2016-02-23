@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import javafx.util.converter.LocalDateStringConverter;
 
 import org.fxmisc.richtext.CodeArea;
 import org.roda.rodain.core.AppProperties;
@@ -57,7 +59,6 @@ public class InspectionPane extends BorderPane {
   private VBox topBox;
   private VBox center;
   private HBox topSpace;
-  private ComboBox<UIPair> itemTypes;
 
   private SipPreviewNode currentSIPNode;
   private SipPreview currentSIP;
@@ -119,31 +120,6 @@ public class InspectionPane extends BorderPane {
 
     topSpace = new HBox();
     HBox.setHgrow(topSpace, Priority.ALWAYS);
-
-    itemTypes = new ComboBox<>();
-    itemTypes.setId("itemLevels");
-    ObservableList<UIPair> itemList = FXCollections.observableArrayList();
-    String itemTypesRaw = AppProperties.getDescLevels("levels_ordered");
-    String[] itemTypesArray = itemTypesRaw.split(",");
-    for (String item : itemTypesArray) {
-      UIPair pair = new UIPair(item, AppProperties.getDescLevels("label.en." + item));
-      itemList.add(pair);
-    }
-    itemTypes.setItems(itemList);
-    itemTypes.valueProperty().addListener(new ChangeListener<UIPair>() {
-      @Override
-      public void changed(ObservableValue ov, UIPair t, UIPair t1) {
-        if (currentSchema != null) {
-          currentSchema.updateDescLevel(t1.getKey().toString());
-          topIcon.setImage(currentSchema.getIconBlack());
-          // force update
-          String title = currentSchema.getValue();
-          currentSchema.setValue(null);
-          currentSchema.setValue(title);
-        }
-      }
-    });
-
   }
 
   private void createMetadata() {
@@ -164,7 +140,7 @@ public class InspectionPane extends BorderPane {
     metadataTopBox.setPadding(new Insets(5, 10, 5, 10));
     metadataTopBox.setAlignment(Pos.CENTER_LEFT);
 
-    Label title = new Label(AppProperties.getLocalizedString("InspectionPane.metadata"));
+    Label titleLabel = new Label(AppProperties.getLocalizedString("InspectionPane.metadata"));
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
@@ -175,77 +151,130 @@ public class InspectionPane extends BorderPane {
     toggleForm.setGraphic(toggleImage);
     toggleImage.imageProperty().bind(Bindings.when(toggleForm.selectedProperty()).then(selected).otherwise(unselected));
 
-    toggleForm.selectedProperty().addListener(new ChangeListener<Boolean>() {
-      @Override
-      public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-        // newValue == true means that the form will be displayed
-        if (newValue) {
-          saveMetadata();
-          metadata.getChildren().remove(metaText);
-          metadataForm.getChildren().clear();
-          Map<String, MetadataValue> metadataValues;
-          try {
-            metadataValues = getMetadataValues();
-          } catch (InvalidEADException e) {
-            noForm();
-            return;
-          }
-          if (metadataValues == null || metadataValues.isEmpty()) {
-            noForm();
-            return;
-          }
-          int i = 0;
-          for (MetadataValue metadataValue : metadataValues.values()) {
-            Label label = new Label(metadataValue.getTitle());
-            label.getStyleClass().add("formLabel");
-
-            TextField textField = new TextField(metadataValue.getValue());
-            HBox.setHgrow(textField, Priority.ALWAYS);
-            textField.setUserData(metadataValue);
-            textField.textProperty().addListener(new ChangeListener<String>() {
-              @Override
-              public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                metadataValue.setValue(newValue);
-              }
-            });
-            if (metadataValue.getId().equals("title")) {
-              paneTitle.textProperty().bind(textField.textProperty());
-              if (currentSIPNode != null) {
-                currentSIPNode.valueProperty().bind(textField.textProperty());
-              } else {
-                if (currentSchema != null) {
-                  currentSchema.valueProperty().bind(textField.textProperty());
-                }
-              }
-            }
-            metadataForm.add(label, 0, i);
-            metadataForm.add(textField, 1, i);
-            i++;
-          }
-          if (!metadata.getChildren().contains(metadataForm)) {
-            metadata.getChildren().add(metadataForm);
-          }
-        } else { // from the form to the metadata text
-          if (currentSIP != null) {
-            currentSIP.applyMetadataValues();
-            updateTextArea(currentSIP.getMetadataContent());
-          } else {
-            if (currentSchema != null) {
-              currentSchema.getDob().applyMetadataValues();
-              List<DescObjMetadata> metadatas = currentSchema.getDob().getMetadataWithReplaces();
-              if (!metadatas.isEmpty()) {
-                updateTextArea(metadatas.get(0).getContentDecoded());
-              }
-            }
-          }
-          metadata.getChildren().remove(metadataForm);
-          if (!metadata.getChildren().contains(metaText))
-            metadata.getChildren().add(metaText);
-        }
+    Button saveButton = new Button();
+    saveButton.setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.floppy, Color.WHITE)));
+    saveButton.setOnAction(event -> {
+      saveMetadata();
+      if (Utils.isEAD(metaText.getText())) {
+        toggleForm.setVisible(true);
+        if (metadata.getChildren().contains(metaText)) {
+          toggleForm.setSelected(false);
+        } else
+          toggleForm.setSelected(true);
       }
     });
 
-    metadataTopBox.getChildren().addAll(title, space, toggleForm);
+    toggleForm.selectedProperty().addListener((observable, oldValue, newValue) -> {
+      // newValue == true means that the form will be displayed
+      if (newValue) {
+        saveMetadata();
+        metadata.getChildren().remove(metaText);
+        metadataForm.getChildren().clear();
+        Map<String, MetadataValue> metadataValues;
+        try {
+          metadataValues = getMetadataValues();
+        } catch (InvalidEADException e) {
+          noForm();
+          return;
+        }
+        if (metadataValues == null || metadataValues.isEmpty()) {
+          noForm();
+          return;
+        }
+        int i = 0;
+        for (MetadataValue metadataValue : metadataValues.values()) {
+          Label label = new Label(metadataValue.getTitle());
+          label.getStyleClass().add("formLabel");
+
+          Control control;
+          switch (metadataValue.getFieldType()) {
+            case "date":
+              String pattern = "yyyy-MM-dd";
+              DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+              LocalDateStringConverter ldsc = new LocalDateStringConverter(formatter, null);
+
+              DatePicker datePicker = new DatePicker(ldsc.fromString(metadataValue.getValue()));
+              datePicker.setMaxWidth(Double.MAX_VALUE);
+              datePicker.valueProperty().addListener((observable1, oldValue1, newValue1) -> {
+                metadataValue.setValue(ldsc.toString(newValue1));
+              });
+              control = datePicker;
+              break;
+            case "combo":
+              ComboBox<UIPair> itemTypes = new ComboBox<>();
+              itemTypes.setMaxWidth(Double.MAX_VALUE);
+              control = itemTypes;
+              itemTypes.setId("itemLevels");
+              ObservableList<UIPair> itemList = FXCollections.observableArrayList(metadataValue.getFieldOptions());
+              itemTypes.setItems(itemList);
+              // Select current value
+              for (UIPair pair : itemTypes.getItems()) {
+                if (metadataValue.getValue().equals(pair.getKey())) {
+                  itemTypes.getSelectionModel().select(pair);
+                  break;
+                }
+              }
+              itemTypes.valueProperty().addListener((observable1, oldValue1, newValue1) -> {
+                metadataValue.setValue(newValue1.getKey().toString());
+                if (metadataValue.getId().equals("level")) {
+                  if (currentSchema != null) {
+                    currentSchema.updateDescLevel(newValue1.getKey().toString());
+                    topIcon.setImage(currentSchema.getIconBlack());
+                    // force update
+                    String title = currentSchema.getValue();
+                    currentSchema.setValue(null);
+                    currentSchema.setValue(title);
+                  }
+                }
+              });
+              break;
+            default:
+              TextField textField = new TextField(metadataValue.getValue());
+              HBox.setHgrow(textField, Priority.ALWAYS);
+              textField.setUserData(metadataValue);
+              control = textField;
+              textField.textProperty().addListener((observable2, oldValue2, newValue2) -> {
+                metadataValue.setValue(newValue2);
+              });
+              if (metadataValue.getId().equals("title")) {
+                paneTitle.textProperty().bind(textField.textProperty());
+                if (currentSIPNode != null) {
+                  currentSIPNode.valueProperty().bind(textField.textProperty());
+                } else {
+                  if (currentSchema != null) {
+                    currentSchema.valueProperty().bind(textField.textProperty());
+                  }
+                }
+              }
+              break;
+          }
+          metadataForm.add(label, 0, i);
+          metadataForm.add(control, 1, i);
+          i++;
+        }
+        if (!metadata.getChildren().contains(metadataForm)) {
+          metadata.getChildren().add(metadataForm);
+        }
+      } else { // from the form to the metadata text
+        if (currentSIP != null) {
+          currentSIP.applyMetadataValues();
+          updateTextArea(currentSIP.getMetadataContent());
+        } else {
+          if (currentSchema != null) {
+            currentSchema.getDob().applyMetadataValues();
+            List<DescObjMetadata> metadatas = currentSchema.getDob().getMetadataWithReplaces();
+            if (!metadatas.isEmpty()) {
+              updateTextArea(metadatas.get(0).getContentDecoded());
+            }
+          }
+        }
+        metadata.getChildren().remove(metadataForm);
+        if (!metadata.getChildren().contains(metaText))
+          metadata.getChildren().add(metaText);
+      }
+    });
+
+    metadataTopBox.getChildren().addAll(titleLabel, space, toggleForm, saveButton);
 
     metaText = new CodeArea();
     VBox.setVgrow(metaText, Priority.ALWAYS);
@@ -322,7 +351,7 @@ public class InspectionPane extends BorderPane {
       } else if (currentSchema != null) {
         List<DescObjMetadata> metadatas = currentSchema.getDob().getMetadataWithReplaces();
         if (!metadatas.isEmpty()) {
-          metadatas.get(0).setContentDecoded(newMetadata);
+          metadatas.get(0).setContentDecoded(metaText.getText());
         } else {
           DescObjMetadata newObjMetadata = new DescObjMetadata();
           newObjMetadata.setContentEncoding("Base64");
@@ -691,16 +720,7 @@ public class InspectionPane extends BorderPane {
     top.setPadding(new Insets(2, 10, 5, 10));
     top.setAlignment(Pos.CENTER_LEFT);
     topIcon = new ImageView(node.getIconBlack());
-    top.getChildren().addAll(topIcon, paneTitle, itemTypes);
-
-    // Select current description level
-    String currentDescLevel = node.getDob().getDescriptionlevel();
-    for (UIPair pair : itemTypes.getItems()) {
-      if (currentDescLevel.equals(pair.getKey())) {
-        itemTypes.getSelectionModel().select(pair);
-        break;
-      }
-    }
+    top.getChildren().addAll(topIcon, paneTitle);
 
     Separator separatorTop = new Separator();
     topBox.setPadding(new Insets(5, 0, 5, 0));

@@ -85,7 +85,7 @@ public class SipMetadata {
    * @return The set of MetadataValue objects. Used to create the form.
    */
   public Map<String, MetadataValue> getValues() throws InvalidEADException {
-    values = XMLToMetadataValue.createEADMetadataValues(getMetadataContent(), values);
+    values = XMLToMetadataValue.createEADMetadataValues(getMetadataContent());
     return values;
   }
 

@@ -40,7 +40,7 @@ public class DescObjMetadata {
    */
   @JsonIgnore
   public Map<String, MetadataValue> getValues() throws InvalidEADException {
-    values = XMLToMetadataValue.createEADMetadataValues(getContentDecoded(), values);
+    values = XMLToMetadataValue.createEADMetadataValues(getContentDecoded());
     return values;
   }
 

@@ -17,9 +17,9 @@
             </ead:langusage>
         </ead:profiledesc>
     </ead:eadheader>
-    <ead:archdesc level="item">
+    <ead:archdesc level="{{level}}">
         <ead:did>
-            <ead:unitid repositorycode="PT-RODA">{{id}}</ead:unitid>
+            <ead:unitid repositorycode="{{repcode}}">{{id}}</ead:unitid>
             <ead:unittitle>{{title}}</ead:unittitle>
             <ead:unitdate normal="{{date}}">{{date}}</ead:unitdate>
         </ead:did>

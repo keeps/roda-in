@@ -54,6 +54,14 @@
     -fx-font-size: 90%;
 }
 
+.inspectionPart .date-picker .label {
+    -fx-text-fill: black;
+    -fx-font-size: medium;
+}
+.inspectionPart .date-picker .button {
+    -fx-background-color: transparent;
+}
+
 /* Tree-view and Tree-cell*/
 .tree-view {
     -fx-background-color: white;

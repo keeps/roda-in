@@ -84,6 +84,8 @@ public class SipPreview extends Observable implements Observer {
       data.put("title", getName());
       data.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
       data.put("id", id);
+      data.put("level", "item");
+      data.put("repcode", "RODA-PT");
       content = tmpl.execute(data);
       //we need to clean the '\r' character in windows,
       // otherwise the strings are different even if no modification has been made
