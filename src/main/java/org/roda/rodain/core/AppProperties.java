@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
@@ -29,6 +30,7 @@ public class AppProperties {
   private static Properties style = load("styles"), config = load("config"), ext_config,
     descLevels = load("roda-description-levels-hierarchy");
   private static ResourceBundle resourceBundle;
+  public static Locale locale;
 
   private AppProperties() {
 
@@ -82,7 +84,6 @@ public class AppProperties {
       ext_config.load(new FileInputStream(configPath.toFile()));
 
       String appLanguage = getConfig("app.language");
-      Locale locale;
       if (appLanguage != null) {
         locale = Locale.forLanguageTag(appLanguage);
       } else {
@@ -92,6 +93,9 @@ public class AppProperties {
       resourceBundle = ResourceBundle.getBundle("properties/lang", locale, new FolderBasedUTF8Control());
     } catch (IOException e) {
       log.error("Error copying config file", e);
+    } catch (MissingResourceException e) {
+      locale = Locale.forLanguageTag("en");
+      resourceBundle = ResourceBundle.getBundle("properties/lang", locale, new FolderBasedUTF8Control());
     }
   }
 
