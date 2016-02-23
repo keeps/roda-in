@@ -24,7 +24,6 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -46,6 +45,7 @@ import org.roda.rodain.schema.ui.SipPreviewNode;
 import org.roda.rodain.source.ui.SourceTreeCell;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.UIPair;
+import org.roda.rodain.utils.Utils;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -71,6 +71,7 @@ public class InspectionPane extends BorderPane {
   private CodeArea metaText;
   private GridPane metadataForm;
   private ToggleButton toggleForm;
+  private HBox metadataLoadingPane, metadataTopBox;
   // SIP Content
   private BorderPane content;
   private VBox treeBox;
@@ -80,6 +81,7 @@ public class InspectionPane extends BorderPane {
   private HBox loadingPane, contentBottom;
   private static Image loadingGif;
   private Task<Void> contentTask;
+  private Task<Boolean> metadataTask;
   // Rules
   private BorderPane rules;
   private ListView<RuleCell> ruleList;
@@ -97,7 +99,7 @@ public class InspectionPane extends BorderPane {
     createMetadata();
     createContent();
     createRulesList();
-    createLoadingPane();
+    createLoadingPanes();
 
     center = new VBox(10);
     center.setPadding(new Insets(0, 10, 10, 10));
@@ -157,10 +159,10 @@ public class InspectionPane extends BorderPane {
     column2.setPercentWidth(80);
     metadataForm.getColumnConstraints().addAll(column1, column2);
 
-    HBox box = new HBox();
-    box.getStyleClass().add("hbox");
-    box.setPadding(new Insets(5, 10, 5, 10));
-    box.setAlignment(Pos.CENTER_LEFT);
+    metadataTopBox = new HBox();
+    metadataTopBox.getStyleClass().add("hbox");
+    metadataTopBox.setPadding(new Insets(5, 10, 5, 10));
+    metadataTopBox.setAlignment(Pos.CENTER_LEFT);
 
     Label title = new Label(AppProperties.getLocalizedString("InspectionPane.metadata"));
     HBox space = new HBox();
@@ -183,19 +185,13 @@ public class InspectionPane extends BorderPane {
           metadataForm.getChildren().clear();
           Map<String, MetadataValue> metadataValues;
           try {
-            if (currentSIP != null) {
-              metadataValues = currentSIP.getMetadataValues();
-            } else {
-              if (currentSchema != null) {
-                metadataValues = currentSchema.getDob().getMetadataValues();
-              } else {
-                // error, there is no SIP or SchemaNode selected
-                return;
-              }
-            }
+            metadataValues = getMetadataValues();
           } catch (InvalidEADException e) {
-            metadata.getChildren().add(metaText);
-            toggleForm.setVisible(false);
+            noForm();
+            return;
+          }
+          if (metadataValues == null || metadataValues.isEmpty()) {
+            noForm();
             return;
           }
           int i = 0;
@@ -226,8 +222,10 @@ public class InspectionPane extends BorderPane {
             metadataForm.add(textField, 1, i);
             i++;
           }
-          metadata.getChildren().add(metadataForm);
-        } else {
+          if (!metadata.getChildren().contains(metadataForm)) {
+            metadata.getChildren().add(metadataForm);
+          }
+        } else { // from the form to the metadata text
           if (currentSIP != null) {
             currentSIP.applyMetadataValues();
             updateTextArea(currentSIP.getMetadataContent());
@@ -247,11 +245,11 @@ public class InspectionPane extends BorderPane {
       }
     });
 
-    box.getChildren().addAll(title, space, toggleForm);
+    metadataTopBox.getChildren().addAll(title, space, toggleForm);
 
     metaText = new CodeArea();
     VBox.setVgrow(metaText, Priority.ALWAYS);
-    metadata.getChildren().addAll(box, metaText);
+    metadata.getChildren().addAll(metadataTopBox, metaText);
 
     /*
      * We listen to the focused property and not the text property because we
@@ -272,6 +270,25 @@ public class InspectionPane extends BorderPane {
   private void updateTextArea(String text) {
     metaText.replaceText(text);
     metaText.setStyleSpans(0, XMLEditor.computeHighlighting(text));
+  }
+
+  private void noForm() {
+    metadata.getChildren().clear();
+    metadata.getChildren().addAll(metadataTopBox, metaText);
+    toggleForm.setVisible(false);
+  }
+
+  private Map<String, MetadataValue> getMetadataValues() throws InvalidEADException {
+    if (currentSIP != null) {
+      return currentSIP.getMetadataValues();
+    } else {
+      if (currentSchema != null) {
+        return currentSchema.getDob().getMetadataValues();
+      } else {
+        // error, there is no SIP or SchemaNode selected
+        return null;
+      }
+    }
   }
 
   /**
@@ -379,13 +396,17 @@ public class InspectionPane extends BorderPane {
     createContentBottom();
   }
 
-  private void createLoadingPane() {
+  private void createLoadingPanes() {
     loadingPane = new HBox();
+    metadataLoadingPane = new HBox();
     loadingPane.setAlignment(Pos.CENTER);
+    metadataLoadingPane.setAlignment(Pos.CENTER);
+    VBox.setVgrow(metadataLoadingPane, Priority.ALWAYS);
     try {
       if (loadingGif == null)
         loadingGif = new Image(ClassLoader.getSystemResource("loading.GIF").openStream());
       loadingPane.getChildren().add(new ImageView(loadingGif));
+      metadataLoadingPane.getChildren().add(new ImageView(loadingGif));
     } catch (IOException e) {
       log.error("Error reading loading GIF", e);
     }
@@ -572,41 +593,6 @@ public class InspectionPane extends BorderPane {
   }
 
   /**
-   * @return the passed in label made selectable.
-   */
-  private Label makeSelectable(Label label) {
-    StackPane textStack = new StackPane();
-    textStack.setAlignment(Pos.CENTER_LEFT);
-
-    TextField textField = new TextField(label.getText());
-    textField.setEditable(false);
-    textField.getStyleClass().add("hiddenTextField");
-
-    textField.setOnMouseClicked(new EventHandler<MouseEvent>() {
-      @Override
-      public void handle(MouseEvent event) {
-        if (event.getClickCount() == 1) {
-          textField.requestFocus();
-          textField.selectAll();
-        }
-      }
-    });
-
-    // the invisible label is a hack to get the textField to size like a label.
-    Label invisibleLabel = new Label();
-    invisibleLabel.setMinWidth(200);
-    invisibleLabel.textProperty().bind(label.textProperty());
-    invisibleLabel.setVisible(false);
-
-    textStack.getChildren().addAll(invisibleLabel, textField);
-    label.textProperty().bindBidirectional(textField.textProperty());
-    label.setGraphic(textStack);
-    label.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-
-    return label;
-  }
-
-  /**
    * Updates the UI using a SipPreviewNode.
    * <p/>
    * <p>
@@ -647,22 +633,28 @@ public class InspectionPane extends BorderPane {
     topBox.getChildren().clear();
     topBox.getChildren().addAll(top, separatorTop);
 
+    metadata.getChildren().clear();
+    metadata.getChildren().addAll(metadataTopBox, metadataLoadingPane);
+    metadataTask = new Task<Boolean>() {
+      @Override
+      protected Boolean call() throws Exception {
+        // metadata
+        String meta = sip.getSip().getMetadataContent();
+        updateTextArea(meta);
+        return Utils.isEAD(metaText.getText());
+      }
+    };
+    metadataTask.setOnSucceeded((Void) -> showMetadataPane(metadataTask.getValue()));
+    new Thread(metadataTask).start();
+
     /* Center */
     center.getChildren().clear();
-    // metadata
-    String meta = sip.getSip().getMetadataContent();
-    updateTextArea(meta);
 
     // content tree
     createContent(sip);
 
     center.getChildren().addAll(metadata, content);
     setCenter(center);
-
-    // update the form using the XML
-    toggleForm.setVisible(true);
-    toggleForm.setSelected(false);
-    toggleForm.fire();
   }
 
   /**
@@ -684,6 +676,9 @@ public class InspectionPane extends BorderPane {
     currentSchema = node;
     if(contentTask != null && contentTask.isRunning()){
       contentTask.cancel(true);
+    }
+    if (metadataTask != null && metadataTask.isRunning()) {
+      metadataTask.cancel(true);
     }
 
     /* top */
@@ -714,30 +709,49 @@ public class InspectionPane extends BorderPane {
 
     /* center */
     center.getChildren().clear();
+    metadata.getChildren().clear();
+    metadata.getChildren().addAll(metadataTopBox, metadataLoadingPane);
 
-    // metadata
-    List<DescObjMetadata> metadatas = node.getDob().getMetadataWithReplaces();
-    if (!metadatas.isEmpty()) {
-      // For now we only get the first metadata object
-      updateTextArea(metadatas.get(0).getContentDecoded());
-    } else
-      metaText.clear();
+    metadataTask = new Task<Boolean>() {
+      @Override
+      protected Boolean call() throws Exception {
+        // metadata
+        List<DescObjMetadata> metadatas = node.getDob().getMetadataWithReplaces();
+        if (!metadatas.isEmpty()) {
+          // For now we only get the first metadata object
+          updateTextArea(metadatas.get(0).getContentDecoded());
+        } else
+          metaText.clear();
+        return Utils.isEAD(metaText.getText());
+      }
+    };
+    metadataTask.setOnSucceeded((Void) -> showMetadataPane(metadataTask.getValue()));
+    new Thread(metadataTask).start();
 
     // rules
     updateRuleList();
 
     center.getChildren().addAll(metadata, rules);
     setCenter(center);
-
-    // update the form using the XML
-    toggleForm.setVisible(true);
-    toggleForm.setSelected(false);
-    toggleForm.fire();
   }
 
   public void showHelp(){
     setCenter(centerHelp);
     setTop(new HBox());
+  }
+
+  private void showMetadataPane(boolean isEAD) {
+    metadata.getChildren().clear();
+    metadata.getChildren().add(metadataTopBox);
+
+    if (isEAD) {
+      toggleForm.setVisible(true);
+      toggleForm.setSelected(false);
+      toggleForm.fire();
+    } else {
+      toggleForm.setVisible(false);
+      metadata.getChildren().add(metaText);
+    }
   }
 
   /**

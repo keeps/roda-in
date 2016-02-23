@@ -95,7 +95,7 @@ public class AppProperties {
       ext_config.load(new FileInputStream(configPath.toFile()));
 
       String appLanguage = getConfig("app.language");
-      if (appLanguage != null) {
+      if (appLanguage != null && !"".equals(appLanguage)) {
         locale = Locale.forLanguageTag(appLanguage);
       } else {
         locale = Locale.getDefault();

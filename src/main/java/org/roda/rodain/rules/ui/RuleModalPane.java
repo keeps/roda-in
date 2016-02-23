@@ -32,7 +32,6 @@ import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.UIPair;
-import org.roda.rodain.utils.Utils;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -171,61 +170,16 @@ public class RuleModalPane extends BorderPane {
     HBoxCell cellSipPerFile = new HBoxCell("assoc3", icon, title, description, new HBox());
     cellSipPerFile.setUserData(RuleTypes.SIP_PER_FILE);
 
-    // icon = AppProperties.getStyle("association.sipPerFolder.icon");
-    // title =
-    // AppProperties.getLocalizedString("association.sipPerFolder.title");
-    // description =
-    // AppProperties.getLocalizedString("association.sipPerFolder.description");
-    // HBox options = createPerFolderOptions();
-    // HBoxCell cellSipPerFolder = new HBoxCell("assoc4", icon, title,
-    // description, options);
-    // cellSipPerFolder.setUserData(RuleTypes.SIP_PER_FOLDER);
-
     ObservableList<HBoxCell> hboxList = FXCollections.observableArrayList();
     hboxList.addAll(cellSelected, cellSingleSip, cellSipPerFile);
     assocList.setItems(hboxList);
     assocList.getSelectionModel().selectFirst();
-
-    // if (folderCount == 0 || level.getItems().isEmpty()) {
-    // cellSipPerFolder.setDisable(true);
-    // }
 
     if (sourceSet.size() == 1) {
       cellSingleSip.setDisable(true);
     }
 
     boxAssociation.getChildren().addAll(subtitle, assocList);
-  }
-
-  private HBox createPerFolderOptions() {
-    HBox resultBox = new HBox(10);
-    resultBox.setAlignment(Pos.CENTER_LEFT);
-
-    int depth = 0;
-    if (folderCount == sourceSet.size()) { // check if the selected items are
-      // all directories
-      // we only need to compute the depth if we'll be going to activate the
-      // radio button
-      for (SourceTreeItem std : sourceSet) {
-        Path startPath = Paths.get(std.getPath());
-        int depthAux = Utils.getRelativeMaxDepth(startPath);
-        if (depthAux > depth)
-          depth = depthAux;
-      }
-    }
-
-    ArrayList<Integer> levels = new ArrayList<>();
-    for (int i = 1; i <= depth; i++)
-      levels.add(i);
-
-    ObservableList<Integer> options = FXCollections.observableArrayList(levels);
-    level = new ComboBox<>(options);
-    level.setValue((int) Math.ceil(depth / 2.0));
-
-    Label lLevel = new Label(AppProperties.getLocalizedString("RuleModalPane.maxDepth"));
-    resultBox.getChildren().addAll(lLevel, level);
-
-    return resultBox;
   }
 
   private void createCenterMetadata() {

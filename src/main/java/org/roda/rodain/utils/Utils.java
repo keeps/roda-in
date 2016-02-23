@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.nio.charset.Charset;
-import java.nio.file.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -38,26 +38,6 @@ public class Utils {
     return String.format("%.1f %sB", (double) v / (1L << (z * 10)), " KMGTPE".charAt(z));
   }
 
-  public static int getRelativeMaxDepth(Path path) {
-    final AtomicInteger depth = new AtomicInteger(0);
-    try {
-      Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
-        @Override
-        public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
-          if (dir.getNameCount() > depth.get())
-            depth.set(dir.getNameCount());
-          return FileVisitResult.CONTINUE;
-        }
-      });
-    } catch (AccessDeniedException e) {
-      log.info("Access denied to file", e);
-    } catch (IOException e) {
-      log.error("Error walking the file tree", e);
-    }
-    // return the relative depth to the start path
-    return depth.get() - path.getNameCount();
-  }
-
   public static String readFile(String path, Charset encoding) throws IOException {
     byte[] encoded = Files.readAllBytes(Paths.get(path));
     return new String(encoded, encoding);
@@ -77,11 +57,6 @@ public class Utils {
     return builder.parse(new InputSource(new StringReader(xml)));
   }
 
-  public static String replaceTag(String content, String tag, String replacement) {
-    String escapedString = replacement.replaceAll("\\$", "\\\\\\$");
-    return content.replaceAll(tag, escapedString);
-  }
-
   public static boolean isEAD(String content){
     boolean isValid = false;
     try {
@@ -98,7 +73,7 @@ public class Utils {
       validator.validate(source);
       isValid = true;
     } catch (SAXException e) {
-      e.printStackTrace();
+      // do nothing
     } catch (IOException e) {
       e.printStackTrace();
     }

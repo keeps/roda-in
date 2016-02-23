@@ -175,6 +175,18 @@ public class RodaIn extends Application {
     langEN.setToggleGroup(languageGroup);
     language.getItems().addAll(langEN, langPT);
 
+    switch (AppProperties.locale.getLanguage()) {
+      case "en":
+        langEN.setSelected(true);
+        break;
+      case "pt":
+        langPT.setSelected(true);
+        break;
+      default:
+        langEN.setSelected(true);
+        break;
+    }
+
     languageGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
       public void changed(ObservableValue<? extends Toggle> ov, Toggle old_toggle, Toggle new_toggle) {
         if (languageGroup.getSelectedToggle() != null) {
