@@ -74,7 +74,7 @@ public class AppProperties {
         }
       }
       // copy metadata templates
-      String templatesRaw = config.getString("metadata.templates");
+      String templatesRaw = getConfig("metadata.templates");
       String[] templates = templatesRaw.split(",");
       for (String templ : templates) {
         String templateName = "metadata.template." + templ.trim() + ".file";
@@ -198,7 +198,7 @@ public class AppProperties {
    */
   public static String getConfig(String key) {
     Object res;
-    if (ext_config.containsKey(key)) {
+    if (ext_config != null && ext_config.containsKey(key)) {
       res = ext_config.getProperty(key);
     } else {
       res = config.getProperty(key);

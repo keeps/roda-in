@@ -82,7 +82,7 @@ public class SchemaPane extends BorderPane {
     this.setCenter(centerHelp);
 
     String lastClassScheme = AppProperties.getConfig("lastClassificationScheme");
-    if (lastClassScheme != null) {
+    if (lastClassScheme != null && !"".equals(lastClassScheme)) {
       try {
         ClassificationSchema schema = loadClassificationSchemaFile(lastClassScheme);
         updateClassificationSchema(schema);
