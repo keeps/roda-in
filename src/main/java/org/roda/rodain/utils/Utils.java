@@ -9,12 +9,14 @@ import java.nio.file.Paths;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import org.roda.rodain.rules.InvalidEADException;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -47,7 +49,7 @@ public class Utils {
     return s.hasNext() ? s.next() : "";
   }
 
-  public static Document loadXMLFromString(String xml) throws Exception {
+  public static Document loadXMLFromString(String xml) throws IOException, SAXException, ParserConfigurationException {
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
     factory.setNamespaceAware(true);
@@ -56,7 +58,7 @@ public class Utils {
     return builder.parse(new InputSource(new StringReader(xml)));
   }
 
-  public static boolean isEAD(String content){
+  public static boolean isEAD(String content) throws InvalidEADException {
     boolean isValid = false;
     try {
       // build the schema
@@ -71,10 +73,11 @@ public class Utils {
       // check input
       validator.validate(source);
       isValid = true;
-    } catch (SAXException e) {
-      // do nothing
     } catch (IOException e) {
-      e.printStackTrace();
+      log.error("Can't access the schema file", e);
+    } catch (SAXException e) {
+      log.info("Error validating the XML with the EAD schema", e);
+      throw new InvalidEADException(e.getMessage());
     }
 
     return isValid;

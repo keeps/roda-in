@@ -142,7 +142,8 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
       // if it's a file, add it to the representation
       rep.addFile(tn.getPath(), relativePath);
       currentSIPadded++;
-      currentAction = String.format(actionCopyingData + " (%d/%d)", currentSIPadded, currentSIPsize);
+      String format = String.format("%s %s", actionCopyingData, "(%d/%d)");
+      currentAction = String.format(format, currentSIPadded, currentSIPsize);
     }
   }
 

@@ -38,6 +38,7 @@
     -fx-background-color: white;
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
+    -fx-text-fill: black;
 }
 
 .inspectionPart .formLabel {
@@ -83,6 +84,11 @@
     -fx-background-color: white;
     -fx-border-color: gray;
     -fx-border-width: 1px;
+}
+
+.inspectionPart .popover .label {
+    -fx-text-fill: black;
+    -fx-font-size: medium;
 }
 
 /* Tree-view and Tree-cell*/

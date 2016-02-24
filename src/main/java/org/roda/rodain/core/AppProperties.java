@@ -105,10 +105,11 @@ public class AppProperties {
     } catch (IOException e) {
       log.error("Error copying config file", e);
     } catch (MissingResourceException e) {
+      log.error("Can't find the language resource for the current locale", e);
       locale = Locale.forLanguageTag("en");
       resourceBundle = ResourceBundle.getBundle("properties/lang", locale, new FolderBasedUTF8Control());
     } catch (ConfigurationException e) {
-      e.printStackTrace();
+      log.error("Error loading the config file", e);
     }
   }
 
@@ -130,7 +131,7 @@ public class AppProperties {
     try {
       result = new PropertiesConfiguration("properties/" + fileName + ".properties");
     } catch (ConfigurationException e) {
-      e.printStackTrace();
+      log.error("Error loading the config file", e);
     }
     return result;
   }
@@ -251,7 +252,7 @@ public class AppProperties {
     try {
       ext_config.save(rodainPath.resolve("config.properties").toFile());
     } catch (ConfigurationException e) {
-      e.printStackTrace();
+      log.error("Error loading the config file", e);
     }
   }
 }

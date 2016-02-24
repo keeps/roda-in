@@ -155,16 +155,42 @@ public class InspectionPane extends BorderPane {
     toggleImage.imageProperty().bind(Bindings.when(toggleForm.selectedProperty()).then(selected).otherwise(unselected));
 
     Button saveButton = new Button();
-    saveButton.setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.floppy, Color.WHITE)));
+    saveButton.setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.check, Color.WHITE)));
     saveButton.setOnAction(event -> {
       saveMetadata();
-      if (Utils.isEAD(metaText.getText())) {
-        toggleForm.setVisible(true);
-        if (metadata.getChildren().contains(metaText)) {
-          toggleForm.setSelected(false);
-        } else
-          toggleForm.setSelected(true);
-      }
+      StringBuilder message = new StringBuilder();
+      ValidationPopOver popOver = new ValidationPopOver();
+      popOver.show(saveButton);
+
+      Task<Boolean> validationTask = new Task<Boolean>() {
+        @Override
+        protected Boolean call() throws Exception {
+          boolean result = false;
+          try {
+            if (Utils.isEAD(metaText.getText())) {
+              result = true;
+            }
+          } catch (InvalidEADException e) {
+            message.append(e.getMessage());
+          }
+          return result;
+        }
+      };
+      validationTask.setOnSucceeded((Void) -> {
+        if (validationTask.getValue()) {
+          popOver.updateContent(true, message.toString());
+          toggleForm.setVisible(true);
+          if (metadata.getChildren().contains(metaText)) {
+            toggleForm.setSelected(false);
+          } else
+            toggleForm.setSelected(true);
+        } else {
+          popOver.updateContent(false, message.toString());
+          toggleForm.setVisible(false);
+        }
+      });
+      new Thread(validationTask).start();
+
     });
 
     toggleForm.selectedProperty().addListener((observable, oldValue, newValue) -> {
@@ -701,7 +727,12 @@ public class InspectionPane extends BorderPane {
         // metadata
         String meta = sip.getSip().getMetadataContent();
         updateTextArea(meta);
-        return Utils.isEAD(metaText.getText());
+        boolean result = false;
+        try {
+          result = Utils.isEAD(metaText.getText());
+        } catch (InvalidEADException e) {
+        }
+        return result;
       }
     };
     metadataTask.setOnSucceeded((Void) -> showMetadataPane(metadataTask.getValue()));
@@ -773,7 +804,12 @@ public class InspectionPane extends BorderPane {
           updateTextArea(metadatas.get(0).getContentDecoded());
         } else
           metaText.clear();
-        return Utils.isEAD(metaText.getText());
+        boolean result = false;
+        try {
+          result = Utils.isEAD(metaText.getText());
+        } catch (InvalidEADException e) {
+        }
+        return result;
       }
     };
     metadataTask.setOnSucceeded((Void) -> showMetadataPane(metadataTask.getValue()));

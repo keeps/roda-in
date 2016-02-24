@@ -1,9 +1,11 @@
 package org.roda.rodain.rules;
 
+import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -13,6 +15,8 @@ import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.sip.MetadataValue;
 import org.roda.rodain.utils.UIPair;
 import org.roda.rodain.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -24,11 +28,12 @@ import com.jcabi.xml.XMLDocument;
  * Created by adrapereira on 18-02-2016.
  */
 public class XMLToMetadataValue {
+  private static final Logger log = LoggerFactory.getLogger(XMLToMetadataValue.class.getName());
 
   public static Map<String, MetadataValue> createEADMetadataValues(String content)
     throws InvalidEADException {
     if (!Utils.isEAD(content)) {
-      throw new InvalidEADException();
+      throw new InvalidEADException("Invalid EAD");
     }
     Map<String, MetadataValue> metadataValues = createEADForm();
 
@@ -44,7 +49,7 @@ public class XMLToMetadataValue {
           try {
             nodes = (NodeList) xPath.evaluate(xpath, document.getDocumentElement(), XPathConstants.NODESET);
           } catch (XPathExpressionException e) {
-            e.printStackTrace();
+            log.error("Error parsing the XPath expression", e);
           }
           if (nodes != null && nodes.getLength() > 0) {
             metadataValue.setValue(nodes.item(0).getTextContent());
@@ -52,9 +57,11 @@ public class XMLToMetadataValue {
         }
       });
     } catch (SAXException e) {
-      e.printStackTrace();
-    } catch (Exception e) {
-      e.printStackTrace();
+      log.error("Error parsing the XML", e);
+    } catch (ParserConfigurationException e) {
+      log.error("Error in the configuration of the parser", e);
+    } catch (IOException e) {
+      log.error("Error reading the XML", e);
     }
     return metadataValues;
   }
@@ -78,19 +85,24 @@ public class XMLToMetadataValue {
         }
       }
       result = new XMLDocument(document).toString();
-    } catch (Exception e) {
-      e.printStackTrace();
+    } catch (SAXException e) {
+      log.error("Error parsing the XML", e);
+    } catch (ParserConfigurationException e) {
+      log.error("Error in the configuration of the parser", e);
+    } catch (IOException e) {
+      log.error("Error reading the XML", e);
+    } catch (XPathExpressionException e) {
+      log.error("Error parsing the XPath expression", e);
     }
     return result;
   }
 
   private static Map<String, MetadataValue> createEADForm() {
-    Map<String, MetadataValue> result = new TreeMap<>();
+    Map<String, MetadataValue> result = new LinkedHashMap<>();
     MetadataValue title = new MetadataValue("title", AppProperties.getLocalizedString("metadataValue.title"), null,
       "text");
     title.addXpathDestination("//*[local-name()='titleproper']");
     title.addXpathDestination("//*[local-name()='unittitle']");
-    result.put("title", title);
 
     MetadataValue date = new MetadataValue("date", AppProperties.getLocalizedString("metadataValue.date"), null,
       "date");
@@ -98,16 +110,13 @@ public class XMLToMetadataValue {
     date.addXpathDestination("//*[local-name()='date']");
     date.addXpathDestination("//*[local-name()='unitdate']/@normal");
     date.addXpathDestination("//*[local-name()='unitdate']");
-    result.put("date", date);
 
     MetadataValue repCode = new MetadataValue("repcode", AppProperties.getLocalizedString("metadataValue.repcode"),
       null, "text");
     repCode.addXpathDestination("//*[local-name()='unitid']/@repositorycode");
-    result.put("repcode", repCode);
 
     MetadataValue id = new MetadataValue("id", AppProperties.getLocalizedString("metadataValue.id"), null, "text");
     id.addXpathDestination("//*[local-name()='unitid']");
-    result.put("id", id);
 
     MetadataValue level = new MetadataValue("level", AppProperties.getLocalizedString("metadataValue.level"), null,
       "combo");
@@ -118,7 +127,14 @@ public class XMLToMetadataValue {
       UIPair pair = new UIPair(item, AppProperties.getDescLevels("label.en." + item));
       level.addFieldOption(pair);
     }
+
+    // add values to result
     result.put("level", level);
+    result.put("title", title);
+    result.put("date", date);
+    result.put("id", id);
+    result.put("repcode", repCode);
+
     return result;
   }
 }
