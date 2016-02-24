@@ -168,133 +168,16 @@ public class InspectionPane extends BorderPane {
     });
 
     toggleForm.selectedProperty().addListener((observable, oldValue, newValue) -> {
+      saveMetadata();
       // newValue == true means that the form will be displayed
       if (newValue) {
-        saveMetadata();
         metadata.getChildren().remove(metaText);
         metadataForm.getChildren().clear();
-        Map<String, MetadataValue> metadataValues;
-        try {
-          metadataValues = getMetadataValues();
-        } catch (InvalidEADException e) {
-          noForm();
-          return;
-        }
-        if (metadataValues == null || metadataValues.isEmpty()) {
-          noForm();
-          return;
-        }
-        int i = 0;
-        for (MetadataValue metadataValue : metadataValues.values()) {
-          Label label = new Label(metadataValue.getTitle());
-          label.getStyleClass().add("formLabel");
-
-          Control control;
-          switch (metadataValue.getFieldType()) {
-            case "date":
-              String pattern = "yyyy-MM-dd";
-              DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
-              LocalDateStringConverter ldsc = new LocalDateStringConverter(formatter, null);
-
-              DatePicker datePicker = new DatePicker(ldsc.fromString(metadataValue.getValue()));
-              datePicker.setMaxWidth(Double.MAX_VALUE);
-              datePicker.setConverter(new StringConverter<LocalDate>() {
-                private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern);
-
-                @Override
-                public String toString(LocalDate localDate) {
-                  if (localDate == null)
-                    return "";
-                  return dateTimeFormatter.format(localDate);
-                }
-
-                @Override
-                public LocalDate fromString(String dateString) {
-                  if (dateString == null || dateString.trim().isEmpty())
-                    return null;
-                  return LocalDate.parse(dateString, dateTimeFormatter);
-                }
-              });
-              datePicker.valueProperty().addListener((observable1, oldValue1, newValue1) -> {
-                metadataValue.setValue(ldsc.toString(newValue1));
-              });
-              control = datePicker;
-              break;
-            case "combo":
-              ComboBox<UIPair> itemTypes = new ComboBox<>();
-              itemTypes.setMaxWidth(Double.MAX_VALUE);
-              control = itemTypes;
-              itemTypes.setId("itemLevels");
-              ObservableList<UIPair> itemList = FXCollections.observableArrayList(metadataValue.getFieldOptions());
-              itemTypes.setItems(itemList);
-              // Select current value
-              for (UIPair pair : itemTypes.getItems()) {
-                if (metadataValue.getValue().equals(pair.getKey())) {
-                  itemTypes.getSelectionModel().select(pair);
-                  break;
-                }
-              }
-              itemTypes.valueProperty().addListener((observable1, oldValue1, newValue1) -> {
-                metadataValue.setValue(newValue1.getKey().toString());
-                if (metadataValue.getId().equals("level")) {
-                  if (currentSchema != null) {
-                    currentSchema.updateDescLevel(newValue1.getKey().toString());
-                    topIcon.setImage(currentSchema.getIconBlack());
-                  }
-                  if (currentSIPNode != null) {
-                    currentSIPNode.setDescriptionLevel(newValue1.getKey().toString());
-                    topIcon.setImage(currentSIPNode.getIconBlack());
-                  }
-                  if (titleTextField != null) {
-                    // force update
-                    String title = titleTextField.getText();
-                    titleTextField.setText("");
-                    titleTextField.setText(title);
-                  }
-                }
-              });
-              break;
-            default:
-              TextField textField = new TextField(metadataValue.getValue());
-              HBox.setHgrow(textField, Priority.ALWAYS);
-              textField.setUserData(metadataValue);
-              control = textField;
-              textField.textProperty().addListener((observable2, oldValue2, newValue2) -> {
-                metadataValue.setValue(newValue2);
-              });
-              if (metadataValue.getId().equals("title")) {
-                titleTextField = textField;
-                paneTitle.textProperty().bind(textField.textProperty());
-                if (currentSIPNode != null) {
-                  currentSIPNode.valueProperty().bind(textField.textProperty());
-                } else {
-                  if (currentSchema != null) {
-                    currentSchema.valueProperty().bind(textField.textProperty());
-                  }
-                }
-              }
-              break;
-          }
-          metadataForm.add(label, 0, i);
-          metadataForm.add(control, 1, i);
-          i++;
-        }
+        updateForm();
         if (!metadata.getChildren().contains(metadataForm)) {
           metadata.getChildren().add(metadataForm);
         }
       } else { // from the form to the metadata text
-        if (currentSIP != null) {
-          currentSIP.applyMetadataValues();
-          updateTextArea(currentSIP.getMetadataContent());
-        } else {
-          if (currentSchema != null) {
-            currentSchema.getDob().applyMetadataValues();
-            List<DescObjMetadata> metadatas = currentSchema.getDob().getMetadataWithReplaces();
-            if (!metadatas.isEmpty()) {
-              updateTextArea(metadatas.get(0).getContentDecoded());
-            }
-          }
-        }
         metadata.getChildren().remove(metadataForm);
         if (!metadata.getChildren().contains(metaText))
           metadata.getChildren().add(metaText);
@@ -321,6 +204,115 @@ public class InspectionPane extends BorderPane {
         }
       }
     });
+  }
+
+  private void updateForm() {
+    Map<String, MetadataValue> metadataValues;
+    try {
+      metadataValues = getMetadataValues();
+    } catch (InvalidEADException e) {
+      noForm();
+      return;
+    }
+    if (metadataValues == null || metadataValues.isEmpty()) {
+      noForm();
+      return;
+    }
+    int i = 0;
+    for (MetadataValue metadataValue : metadataValues.values()) {
+      Label label = new Label(metadataValue.getTitle());
+      label.getStyleClass().add("formLabel");
+
+      Control control;
+      switch (metadataValue.getFieldType()) {
+        case "date":
+          String pattern = "yyyy-MM-dd";
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+          LocalDateStringConverter ldsc = new LocalDateStringConverter(formatter, null);
+
+          DatePicker datePicker = new DatePicker(ldsc.fromString(metadataValue.getValue()));
+          datePicker.setMaxWidth(Double.MAX_VALUE);
+          datePicker.setConverter(new StringConverter<LocalDate>() {
+            private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern);
+
+            @Override
+            public String toString(LocalDate localDate) {
+              if (localDate == null)
+                return "";
+              return dateTimeFormatter.format(localDate);
+            }
+
+            @Override
+            public LocalDate fromString(String dateString) {
+              if (dateString == null || dateString.trim().isEmpty())
+                return null;
+              return LocalDate.parse(dateString, dateTimeFormatter);
+            }
+          });
+          datePicker.valueProperty().addListener((observable1, oldValue1, newValue1) -> {
+            metadataValue.setValue(ldsc.toString(newValue1));
+          });
+          control = datePicker;
+          break;
+        case "combo":
+          ComboBox<UIPair> itemTypes = new ComboBox<>();
+          itemTypes.setMaxWidth(Double.MAX_VALUE);
+          control = itemTypes;
+          itemTypes.setId("itemLevels");
+          ObservableList<UIPair> itemList = FXCollections.observableArrayList(metadataValue.getFieldOptions());
+          itemTypes.setItems(itemList);
+          // Select current value
+          for (UIPair pair : itemTypes.getItems()) {
+            if (metadataValue.getValue().equals(pair.getKey())) {
+              itemTypes.getSelectionModel().select(pair);
+              break;
+            }
+          }
+          itemTypes.valueProperty().addListener((observable1, oldValue1, newValue1) -> {
+            metadataValue.setValue(newValue1.getKey().toString());
+            if (metadataValue.getId().equals("level")) {
+              if (currentSchema != null) {
+                currentSchema.updateDescLevel(newValue1.getKey().toString());
+                topIcon.setImage(currentSchema.getIconBlack());
+              }
+              if (currentSIPNode != null) {
+                currentSIPNode.setDescriptionLevel(newValue1.getKey().toString());
+                topIcon.setImage(currentSIPNode.getIconBlack());
+              }
+              if (titleTextField != null) {
+                // force update
+                String title = titleTextField.getText();
+                titleTextField.setText("");
+                titleTextField.setText(title);
+              }
+            }
+          });
+          break;
+        default:
+          TextField textField = new TextField(metadataValue.getValue());
+          HBox.setHgrow(textField, Priority.ALWAYS);
+          textField.setUserData(metadataValue);
+          control = textField;
+          textField.textProperty().addListener((observable2, oldValue2, newValue2) -> {
+            metadataValue.setValue(newValue2);
+          });
+          if (metadataValue.getId().equals("title")) {
+            titleTextField = textField;
+            paneTitle.textProperty().bind(textField.textProperty());
+            if (currentSIPNode != null) {
+              currentSIPNode.valueProperty().bind(textField.textProperty());
+            } else {
+              if (currentSchema != null) {
+                currentSchema.valueProperty().bind(textField.textProperty());
+              }
+            }
+          }
+          break;
+      }
+      metadataForm.add(label, 0, i);
+      metadataForm.add(control, 1, i);
+      i++;
+    }
   }
 
   private void updateTextArea(String text) {
@@ -351,39 +343,51 @@ public class InspectionPane extends BorderPane {
    * Saves the metadata from the text area in the SIP.
    */
   public void saveMetadata() {
-    String oldMetadata = null, newMetadata = null;
-    if (currentSIP != null) {
-      oldMetadata = currentSIP.getMetadataContent();
-      newMetadata = metaText.getText();
-
-    } else if (currentSchema != null) {
-      newMetadata = metaText.getText();
-      List<DescObjMetadata> metadatas = currentSchema.getDob().getMetadataWithReplaces();
-      if (!metadatas.isEmpty()) {
-        oldMetadata = metadatas.get(0).getContentDecoded();
-      }
-    }
-    // only update if there's been modifications or there's no old
-    // metadata and the new isn't empty
-    boolean update = false;
-    if (newMetadata != null) {
-      if (oldMetadata == null)
-        update = true;
-      else if (!oldMetadata.equals(newMetadata))
-        update = true;
-    }
-    if (update) {
+    if (metadata.getChildren().contains(metadataForm)) {
       if (currentSIP != null) {
-        currentSIP.updateMetadata(newMetadata);
+        currentSIP.applyMetadataValues();
+        updateTextArea(currentSIP.getMetadataContent());
+      }
+      if (currentSchema != null) {
+        currentSchema.getDob().applyMetadataValues();
+        updateTextArea(currentSchema.getDob().getMetadataWithReplaces().get(0).getContentDecoded());
+      }
+    } else {
+      String oldMetadata = null, newMetadata = null;
+      if (currentSIP != null) {
+        oldMetadata = currentSIP.getMetadataContent();
+        newMetadata = metaText.getText();
+
       } else if (currentSchema != null) {
+        newMetadata = metaText.getText();
         List<DescObjMetadata> metadatas = currentSchema.getDob().getMetadataWithReplaces();
         if (!metadatas.isEmpty()) {
-          metadatas.get(0).setContentDecoded(newMetadata);
-        } else {
-          DescObjMetadata newObjMetadata = new DescObjMetadata();
-          newObjMetadata.setContentEncoding("Base64");
-          newObjMetadata.setContentDecoded(newMetadata);
-          metadatas.add(newObjMetadata);
+          oldMetadata = metadatas.get(0).getContentDecoded();
+        }
+      }
+      // only update if there's been modifications or there's no old
+      // metadata and the new isn't empty
+      boolean update = false;
+      if (newMetadata != null) {
+        if (oldMetadata == null)
+          update = true;
+        else if (!oldMetadata.equals(newMetadata))
+          update = true;
+      }
+
+      if (update) {
+        if (currentSIP != null) {
+          currentSIP.updateMetadata(newMetadata);
+        } else if (currentSchema != null) {
+          List<DescObjMetadata> metadatas = currentSchema.getDob().getMetadataWithReplaces();
+          if (!metadatas.isEmpty()) {
+            metadatas.get(0).setContentDecoded(newMetadata);
+          } else {
+            DescObjMetadata newObjMetadata = new DescObjMetadata();
+            newObjMetadata.setContentEncoding("Base64");
+            newObjMetadata.setContentDecoded(newMetadata);
+            metadatas.add(newObjMetadata);
+          }
         }
       }
     }
@@ -419,7 +423,7 @@ public class InspectionPane extends BorderPane {
 
     HBox top = new HBox();
     top.getStyleClass().add("hbox");
-    top.setPadding(new Insets(5, 10, 5, 10));
+    top.setPadding(new Insets(10, 10, 10, 10));
 
     Label title = new Label(AppProperties.getLocalizedString("content"));
     top.getChildren().add(title);
@@ -593,7 +597,7 @@ public class InspectionPane extends BorderPane {
 
     HBox top = new HBox();
     top.getStyleClass().add("hbox");
-    top.setPadding(new Insets(5, 10, 5, 10));
+    top.setPadding(new Insets(10, 10, 10, 10));
 
     Label title = new Label(AppProperties.getLocalizedString("InspectionPane.rules"));
     top.getChildren().add(title);

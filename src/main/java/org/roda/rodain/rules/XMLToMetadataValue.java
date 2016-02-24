@@ -66,6 +66,7 @@ public class XMLToMetadataValue {
     String result = null;
     try {
       Document document = Utils.loadXMLFromString(content);
+      document.setXmlStandalone(true);
       for (MetadataValue mv : values.values()) {
         for (String xPath : mv.getXpathDestinations()) {
           XPath xPathObj = XPathFactory.newInstance().newXPath();

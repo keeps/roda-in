@@ -12,6 +12,9 @@ import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.XMLToMetadataValue;
 import org.roda.rodain.utils.Utils;
 import org.slf4j.LoggerFactory;
+import org.xmlunit.builder.DiffBuilder;
+import org.xmlunit.diff.Diff;
+import org.xmlunit.diff.DifferenceEvaluators;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -129,6 +132,13 @@ public class SipMetadata {
    */
   public void applyMetadataValues() {
     String result = XMLToMetadataValue.applyMetadataValues(getMetadataContent(), values);
-    update(result);
+    if (content != null) {
+      Diff myDiff = DiffBuilder.compare(content).withTest(result).withDifferenceEvaluator(DifferenceEvaluators.Default)
+        .checkForSimilar().build();
+      if (myDiff.hasDifferences()) {
+        modified = true;
+      }
+    }
+    content = result;
   }
 }
