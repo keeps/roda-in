@@ -1,6 +1,5 @@
 package org.roda.rodain.utils;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -62,8 +61,8 @@ public class Utils {
     try {
       // build the schema
       SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-      File schemaFile = new File(ClassLoader.getSystemResource("templates/ead.xsd").getFile());
-      Schema schema = factory.newSchema(schemaFile);
+      StreamSource streamSource = new StreamSource(ClassLoader.getSystemResourceAsStream("templates/ead.xsd"));
+      Schema schema = factory.newSchema(streamSource);
       Validator validator = schema.newValidator();
 
       // create a source from a string
