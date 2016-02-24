@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.List;
@@ -31,6 +32,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import javafx.util.StringConverter;
 import javafx.util.converter.LocalDateStringConverter;
 
 import org.fxmisc.richtext.CodeArea;
@@ -196,6 +198,23 @@ public class InspectionPane extends BorderPane {
 
               DatePicker datePicker = new DatePicker(ldsc.fromString(metadataValue.getValue()));
               datePicker.setMaxWidth(Double.MAX_VALUE);
+              datePicker.setConverter(new StringConverter<LocalDate>() {
+                private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern);
+
+                @Override
+                public String toString(LocalDate localDate) {
+                  if (localDate == null)
+                    return "";
+                  return dateTimeFormatter.format(localDate);
+                }
+
+                @Override
+                public LocalDate fromString(String dateString) {
+                  if (dateString == null || dateString.trim().isEmpty())
+                    return null;
+                  return LocalDate.parse(dateString, dateTimeFormatter);
+                }
+              });
               datePicker.valueProperty().addListener((observable1, oldValue1, newValue1) -> {
                 metadataValue.setValue(ldsc.toString(newValue1));
               });
@@ -725,7 +744,7 @@ public class InspectionPane extends BorderPane {
     paneTitle.getStyleClass().add("title");
 
     HBox top = new HBox(5);
-    top.setPadding(new Insets(2, 10, 5, 10));
+    top.setPadding(new Insets(5, 10, 10, 10));
     top.setAlignment(Pos.CENTER_LEFT);
     topIcon = new ImageView(node.getIconBlack());
     top.getChildren().addAll(topIcon, paneTitle);

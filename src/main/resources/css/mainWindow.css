@@ -58,8 +58,31 @@
     -fx-text-fill: black;
     -fx-font-size: medium;
 }
+
+.inspectionPart .date-picker .arrow-button {
+    -fx-background-color: white;
+    -fx-border-color: gray;
+    -fx-border-width: 1px;
+}
+
 .inspectionPart .date-picker .button {
     -fx-background-color: transparent;
+}
+
+.inspectionPart .date-picker-popup > .month-year-pane {
+    -fx-background-color: white;
+    -fx-background-insets: 0 0 0 0, 0 0 1 0;
+}
+
+.inspectionPart .date-picker-popup {
+    -fx-border-color: gray;
+    -fx-border-width: 1px;
+}
+
+.inspectionPart .text-field {
+    -fx-background-color: white;
+    -fx-border-color: gray;
+    -fx-border-width: 1px;
 }
 
 /* Tree-view and Tree-cell*/
