@@ -73,6 +73,7 @@ public class InspectionPane extends BorderPane {
   private GridPane metadataForm;
   private ToggleButton toggleForm;
   private HBox metadataLoadingPane, metadataTopBox;
+  private TextField titleTextField;
   // SIP Content
   private BorderPane content;
   private VBox treeBox;
@@ -220,10 +221,16 @@ public class InspectionPane extends BorderPane {
                   if (currentSchema != null) {
                     currentSchema.updateDescLevel(newValue1.getKey().toString());
                     topIcon.setImage(currentSchema.getIconBlack());
+                  }
+                  if (currentSIPNode != null) {
+                    currentSIPNode.setDescriptionLevel(newValue1.getKey().toString());
+                    topIcon.setImage(currentSIPNode.getIconBlack());
+                  }
+                  if (titleTextField != null) {
                     // force update
-                    String title = currentSchema.getValue();
-                    currentSchema.setValue(null);
-                    currentSchema.setValue(title);
+                    String title = titleTextField.getText();
+                    titleTextField.setText("");
+                    titleTextField.setText(title);
                   }
                 }
               });
@@ -237,6 +244,7 @@ public class InspectionPane extends BorderPane {
                 metadataValue.setValue(newValue2);
               });
               if (metadataValue.getId().equals("title")) {
+                titleTextField = textField;
                 paneTitle.textProperty().bind(textField.textProperty());
                 if (currentSIPNode != null) {
                   currentSIPNode.valueProperty().bind(textField.textProperty());
@@ -347,11 +355,11 @@ public class InspectionPane extends BorderPane {
     }
     if (update) {
       if (currentSIP != null) {
-        currentSIP.updateMetadata(metaText.getText());
+        currentSIP.updateMetadata(newMetadata);
       } else if (currentSchema != null) {
         List<DescObjMetadata> metadatas = currentSchema.getDob().getMetadataWithReplaces();
         if (!metadatas.isEmpty()) {
-          metadatas.get(0).setContentDecoded(metaText.getText());
+          metadatas.get(0).setContentDecoded(newMetadata);
         } else {
           DescObjMetadata newObjMetadata = new DescObjMetadata();
           newObjMetadata.setContentEncoding("Base64");

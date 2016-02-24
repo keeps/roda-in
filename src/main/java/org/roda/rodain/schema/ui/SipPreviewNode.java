@@ -2,12 +2,15 @@ package org.roda.rodain.schema.ui;
 
 import java.util.Observable;
 import java.util.Observer;
+import java.util.ResourceBundle;
 
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 
 import org.roda.rodain.rules.sip.SipPreview;
+import org.roda.rodain.utils.FontAwesomeImageCreator;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -56,6 +59,17 @@ public class SipPreviewNode extends TreeItem<String> implements Observer {
 
   public Image getIconBlack() {
     return iconBlack;
+  }
+
+  public void setDescriptionLevel(String descLevel) {
+    sip.setDescriptionLevel(descLevel);
+    ResourceBundle hierarchyConfig = ResourceBundle.getBundle("properties/roda-description-levels-hierarchy");
+    String category = hierarchyConfig.getString("category." + sip.getDescriptionLevel());
+    String unicode = hierarchyConfig.getString("icon." + category);
+
+    iconBlack = FontAwesomeImageCreator.generate(unicode);
+    iconWhite = FontAwesomeImageCreator.generate(unicode, Color.WHITE);
+    this.setGraphic(new ImageView(iconBlack));
   }
 
   public void setBlackIconSelected(boolean value) {

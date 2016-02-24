@@ -17,8 +17,7 @@ import com.samskivert.mustache.Template;
  * @since 01-10-2015.
  */
 public class SipPreview extends Observable implements Observer {
-  private String id;
-  private String name;
+  private String id, name, descriptionLevel;
   private SipMetadata metadata;
   private Set<TreeNode> files;
   private boolean contentModified = false;
@@ -38,6 +37,7 @@ public class SipPreview extends Observable implements Observer {
     this.name = name;
     this.files = files;
     this.metadata = metadata;
+    this.descriptionLevel = "item";
     // metadata = new SipMetadata(metaType, metadataPath, templateType);
     id = UUID.randomUUID().toString();
 
@@ -45,6 +45,14 @@ public class SipPreview extends Observable implements Observer {
     for (TreeNode tn : files) {
       PathCollection.addPath(tn.getPath().toString(), SourceTreeItemState.MAPPED);
     }
+  }
+
+  public String getDescriptionLevel() {
+    return descriptionLevel;
+  }
+
+  public void setDescriptionLevel(String descriptionLevel) {
+    this.descriptionLevel = descriptionLevel;
   }
 
   /**
@@ -84,7 +92,7 @@ public class SipPreview extends Observable implements Observer {
       data.put("title", getName());
       data.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
       data.put("id", id);
-      data.put("level", "item");
+      data.put("level", descriptionLevel);
       data.put("repcode", "RODA-PT");
       content = tmpl.execute(data);
       //we need to clean the '\r' character in windows,
