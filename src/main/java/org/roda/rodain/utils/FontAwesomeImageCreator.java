@@ -17,7 +17,7 @@ import javafx.scene.text.TextAlignment;
  * @since 22-09-2015.
  */
 public class FontAwesomeImageCreator {
-  public static final double SIZE = 16;
+  public static final int SIZE = 16;
   public static final String chevron_right = "\uf054";
   public static final String chevron_left = "\uf053";
   public static final String times = "\uf00d";
@@ -64,7 +64,7 @@ public class FontAwesomeImageCreator {
     return generate(unicode, color, SIZE);
   }
 
-  public static Image generate(String unicode, Paint color, double size) {
+  public static Image generate(String unicode, Paint color, int size) {
     Font newFont;
     if (size == SIZE) {
       newFont = font;

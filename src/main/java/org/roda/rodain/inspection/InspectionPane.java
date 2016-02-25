@@ -676,6 +676,9 @@ public class InspectionPane extends BorderPane {
     if(contentTask != null && contentTask.isRunning()){
       contentTask.cancel(true);
     }
+    if (metadataTask != null && metadataTask.isRunning()) {
+      metadataTask.cancel(true);
+    }
 
     /* Top */
     paneTitle = new Label(sip.getValue());
