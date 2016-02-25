@@ -203,6 +203,7 @@ public class SchemaPane extends BorderPane {
 
     // create the tree view
     treeView = new TreeView<>(rootNode);
+    treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     VBox.setVgrow(treeView, Priority.ALWAYS);
     treeView.setShowRoot(false);
     treeView.setEditable(true);
@@ -413,35 +414,37 @@ public class SchemaPane extends BorderPane {
     removeLevel.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent event) {
-        TreeItem<String> selected = getSelectedItem();
-        if (selected != null) {
-          if (selected instanceof SchemaNode) {
-            SchemaNode node = (SchemaNode) selected;
-            int fullSipCount = node.fullSipCount();
-            if (fullSipCount != 0) {
-              String content = String.format(AppProperties.getLocalizedString("SchemaPane.confirmRemove.content"),
-                fullSipCount);
-              Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
-              dlg.setHeaderText(AppProperties.getLocalizedString("SchemaPane.confirmRemove.header"));
-              dlg.setTitle(AppProperties.getLocalizedString("SchemaPane.confirmRemove.title"));
-              dlg.setContentText(content);
-              dlg.initModality(Modality.APPLICATION_MODAL);
-              dlg.initOwner(primaryStage);
-              dlg.show();
-              dlg.resultProperty().addListener(o -> confirmRemove(selected, dlg.getResult()));
-            } else
-              removeNode(selected);
-          } else if (selected instanceof SipPreviewNode) {
-            SipPreview currentSIP = ((SipPreviewNode) selected).getSip();
-            RuleModalController.removeSipPreview(currentSIP);
-            Task<Void> removeTask = new Task<Void>() {
-              @Override
-              protected Void call() throws Exception {
-                currentSIP.removeSIP();
-                return null;
-              }
-            };
-            new Thread(removeTask).start();
+        List<TreeItem<String>> selectedItems = new ArrayList<>(treeView.getSelectionModel().getSelectedItems());
+        if (selectedItems != null) {
+          for (TreeItem<String> selected : selectedItems) {
+            if (selected instanceof SchemaNode) {
+              SchemaNode node = (SchemaNode) selected;
+              int fullSipCount = node.fullSipCount();
+              if (fullSipCount != 0) {
+                String content = String.format(AppProperties.getLocalizedString("SchemaPane.confirmRemove.content"),
+                  fullSipCount);
+                Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
+                dlg.setHeaderText(AppProperties.getLocalizedString("SchemaPane.confirmRemove.header"));
+                dlg.setTitle(AppProperties.getLocalizedString("SchemaPane.confirmRemove.title"));
+                dlg.setContentText(content);
+                dlg.initModality(Modality.APPLICATION_MODAL);
+                dlg.initOwner(primaryStage);
+                dlg.show();
+                dlg.resultProperty().addListener(o -> confirmRemove(selected, dlg.getResult()));
+              } else
+                removeNode(selected);
+            } else if (selected instanceof SipPreviewNode) {
+              SipPreview currentSIP = ((SipPreviewNode) selected).getSip();
+              RuleModalController.removeSipPreview(currentSIP);
+              Task<Void> removeTask = new Task<Void>() {
+                @Override
+                protected Void call() throws Exception {
+                  currentSIP.removeSIP();
+                  return null;
+                }
+              };
+              new Thread(removeTask).start();
+            }
           }
         }
       }
