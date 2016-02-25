@@ -27,7 +27,6 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.RodaIn;
@@ -132,22 +131,12 @@ public class SchemaPane extends BorderPane {
     load.setMinHeight(65);
     load.setMinWidth(130);
     load.setMaxWidth(130);
-    load.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        loadClassificationSchema();
-      }
-    });
+    load.setOnAction(event -> loadClassificationSchema());
     load.getStyleClass().add("helpButton");
     loadBox.getChildren().add(load);
 
     Hyperlink link = new Hyperlink(AppProperties.getLocalizedString("SchemaPane.create"));
-    link.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        createClassificationScheme();
-      }
-    });
+    link.setOnAction(event -> createClassificationScheme());
 
     TextFlow flow = new TextFlow(new Text(AppProperties.getLocalizedString("SchemaPane.or")), link);
     flow.setTextAlignment(TextAlignment.CENTER);
@@ -173,31 +162,22 @@ public class SchemaPane extends BorderPane {
     innerBox.getChildren().add(title);
     dropBox.getChildren().addAll(separatorTop, innerBox, separatorBottom);
 
-    dropBox.setOnDragOver(new EventHandler<DragEvent>() {
-      @Override
-      public void handle(DragEvent event) {
-        if (rootNode != null && event.getGestureSource() instanceof SourceTreeCell) {
-          event.acceptTransferModes(TransferMode.COPY);
-          title.setText(AppProperties.getLocalizedString("InspectionPane.onDrop"));
-        }
-        event.consume();
+    dropBox.setOnDragOver(event -> {
+      if (rootNode != null && event.getGestureSource() instanceof SourceTreeCell) {
+        event.acceptTransferModes(TransferMode.COPY);
+        title.setText(AppProperties.getLocalizedString("InspectionPane.onDrop"));
       }
+      event.consume();
     });
 
-    dropBox.setOnDragDropped(new EventHandler<DragEvent>() {
-      @Override
-      public void handle(DragEvent event) {
-        RodaIn.getSchemaPane().startAssociation(rootNode);
-        event.consume();
-      }
+    dropBox.setOnDragDropped(event -> {
+      RodaIn.getSchemaPane().startAssociation(rootNode);
+      event.consume();
     });
 
-    dropBox.setOnDragExited(new EventHandler<DragEvent>() {
-      @Override
-      public void handle(DragEvent event) {
-        title.setText(AppProperties.getLocalizedString("SchemaPane.dragHelp"));
-        event.consume();
-      }
+    dropBox.setOnDragExited(event -> {
+      title.setText(AppProperties.getLocalizedString("SchemaPane.dragHelp"));
+      event.consume();
     });
   }
 
@@ -226,13 +206,10 @@ public class SchemaPane extends BorderPane {
     VBox.setVgrow(treeView, Priority.ALWAYS);
     treeView.setShowRoot(false);
     treeView.setEditable(true);
-    treeView.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
-      @Override
-      public TreeCell<String> call(TreeView<String> p) {
-        SchemaTreeCell cell = new SchemaTreeCell();
-        setDropEvent(cell);
-        return cell;
-      }
+    treeView.setCellFactory(param -> {
+      SchemaTreeCell cell = new SchemaTreeCell();
+      setDropEvent(cell);
+      return cell;
     });
 
     Separator separatorTop = new Separator();
@@ -405,7 +382,6 @@ public class SchemaPane extends BorderPane {
       return true;
     }
     String content = AppProperties.getLocalizedString("SchemaPane.confirmNewScheme.content");
-    // Localization.setLocale(Locale.forLanguageTag("pt"));
     Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
     dlg.setHeaderText(AppProperties.getLocalizedString("SchemaPane.confirmNewScheme.header"));
     dlg.setTitle(AppProperties.getLocalizedString("SchemaPane.confirmNewScheme.title"));
@@ -474,12 +450,7 @@ public class SchemaPane extends BorderPane {
     Button addLevel = new Button(AppProperties.getLocalizedString("SchemaPane.add"));
     addLevel.setMinWidth(100);
 
-    addLevel.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent actionEvent) {
-        addNewLevel();
-      }
-    });
+    addLevel.setOnAction(event -> addNewLevel());
 
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);

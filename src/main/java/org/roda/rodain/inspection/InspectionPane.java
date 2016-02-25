@@ -17,15 +17,11 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -44,6 +40,7 @@ import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.MetadataValue;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.schema.DescObjMetadata;
+import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SipPreviewNode;
 import org.roda.rodain.source.ui.SourceTreeCell;
@@ -63,8 +60,8 @@ public class InspectionPane extends BorderPane {
   private HBox topSpace;
 
   private SipPreviewNode currentSIPNode;
-  private SipPreview currentSIP;
   private SchemaNode currentSchema;
+  private DescriptionObject currentDescOb;
   private ImageView topIcon;
   private Label paneTitle;
 
@@ -353,15 +350,11 @@ public class InspectionPane extends BorderPane {
   }
 
   private Map<String, MetadataValue> getMetadataValues() throws InvalidEADException {
-    if (currentSIP != null) {
-      return currentSIP.getMetadataValues();
+    if (currentDescOb != null) {
+      return currentDescOb.getMetadataValues();
     } else {
-      if (currentSchema != null) {
-        return currentSchema.getDob().getMetadataValues();
-      } else {
-        // error, there is no SIP or SchemaNode selected
-        return null;
-      }
+      // error, there is no SIP or SchemaNode selected
+      return null;
     }
   }
 
@@ -370,23 +363,15 @@ public class InspectionPane extends BorderPane {
    */
   public void saveMetadata() {
     if (metadata.getChildren().contains(metadataForm)) {
-      if (currentSIP != null) {
-        currentSIP.applyMetadataValues();
-        updateTextArea(currentSIP.getMetadataContent());
-      }
-      if (currentSchema != null) {
-        currentSchema.getDob().applyMetadataValues();
-        updateTextArea(currentSchema.getDob().getMetadataWithReplaces().get(0).getContentDecoded());
+      if (currentDescOb != null) {
+        currentDescOb.applyMetadataValues();
+        updateTextArea(currentDescOb.getMetadataWithReplaces().get(0).getContentDecoded());
       }
     } else {
       String oldMetadata = null, newMetadata = null;
-      if (currentSIP != null) {
-        oldMetadata = currentSIP.getMetadataContent();
+      if (currentDescOb != null) {
         newMetadata = metaText.getText();
-
-      } else if (currentSchema != null) {
-        newMetadata = metaText.getText();
-        List<DescObjMetadata> metadatas = currentSchema.getDob().getMetadataWithReplaces();
+        List<DescObjMetadata> metadatas = currentDescOb.getMetadataWithReplaces();
         if (!metadatas.isEmpty()) {
           oldMetadata = metadatas.get(0).getContentDecoded();
         }
@@ -402,9 +387,7 @@ public class InspectionPane extends BorderPane {
       }
 
       if (update) {
-        if (currentSIP != null) {
-          currentSIP.updateMetadata(newMetadata);
-        } else if (currentSchema != null) {
+        if (currentDescOb != null) {
           List<DescObjMetadata> metadatas = currentSchema.getDob().getMetadataWithReplaces();
           if (!metadatas.isEmpty()) {
             metadatas.get(0).setContentDecoded(newMetadata);
@@ -504,58 +487,50 @@ public class InspectionPane extends BorderPane {
     contentBottom.setAlignment(Pos.CENTER);
 
     Button ignore = new Button(AppProperties.getLocalizedString("ignore"));
-    ignore.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent e) {
-        InspectionTreeItem selected = (InspectionTreeItem) sipFiles.getSelectionModel().getSelectedItem();
-        if (selected == null)
-          return;
-        Set<Path> paths = new HashSet<>();
-        paths.add(selected.getPath());
-        if (currentSIP != null) {
-          currentSIP.ignoreContent(paths);
-          TreeItem parent = selected.getParentDir();
-          TreeItem child = (TreeItem) selected;
-          parent.getChildren().remove(child);
-        }
+    ignore.setOnAction(event -> {
+      InspectionTreeItem selected = (InspectionTreeItem) sipFiles.getSelectionModel().getSelectedItem();
+      if (selected == null)
+        return;
+      Set<Path> paths = new HashSet<>();
+      paths.add(selected.getPath());
+      if (currentDescOb != null && currentDescOb instanceof SipPreview) {
+        ((SipPreview) currentDescOb).ignoreContent(paths);
+        TreeItem parent = selected.getParentDir();
+        TreeItem child = (TreeItem) selected;
+        parent.getChildren().remove(child);
       }
     });
     flatten = new Button(AppProperties.getLocalizedString("InspectionPane.flatten"));
-    flatten.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent e) {
-        Object selected = sipFiles.getSelectionModel().getSelectedItem();
-        if (selected instanceof SipContentDirectory) {
-          SipContentDirectory dir = (SipContentDirectory) selected;
-          dir.flatten();
-        }
+    flatten.setOnAction(event -> {
+      Object selected = sipFiles.getSelectionModel().getSelectedItem();
+      if (selected instanceof SipContentDirectory) {
+        SipContentDirectory dir = (SipContentDirectory) selected;
+        dir.flatten();
       }
     });
     skip = new Button(AppProperties.getLocalizedString("InspectionPane.skip"));
-    skip.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent e) {
-        Object selected = sipFiles.getSelectionModel().getSelectedItem();
-        if (selected instanceof SipContentDirectory) {
-          SipContentDirectory dir = (SipContentDirectory) selected;
-          SipContentDirectory parent = (SipContentDirectory) dir.getParent();
-          dir.skip();
-          // update the SIP's internal content representation
-          Set<TreeNode> newFiles = new HashSet<>();
-          for (String s : sipRoot.getTreeNode().getKeys())
-            newFiles.add(sipRoot.getTreeNode().get(s));
-          currentSIP.setFiles(newFiles);
-          // clear the parent and recreate the children based on the updated
-          // tree nodes
-          TreeItem grandparent = parent.getParent();
-          if (grandparent == null) {
-            grandparent = parent;
-          }
-          TreeItem newParent = recCreateSipContent(parent.getTreeNode(), grandparent);
-          parent.getChildren().clear();
-          parent.getChildren().addAll(newParent.getChildren());
-          parent.sortChildren();
+    skip.setOnAction(event -> {
+      Object selected = sipFiles.getSelectionModel().getSelectedItem();
+      if (selected instanceof SipContentDirectory) {
+        SipContentDirectory dir = (SipContentDirectory) selected;
+        SipContentDirectory parent = (SipContentDirectory) dir.getParent();
+        dir.skip();
+        // update the SIP's internal content representation
+        Set<TreeNode> newFiles = new HashSet<>();
+        for (String s : sipRoot.getTreeNode().getKeys())
+          newFiles.add(sipRoot.getTreeNode().get(s));
+
+        ((SipPreview) currentDescOb).setFiles(newFiles);
+        // clear the parent and recreate the children based on the updated
+        // tree nodes
+        TreeItem grandparent = parent.getParent();
+        if (grandparent == null) {
+          grandparent = parent;
         }
+        TreeItem newParent = recCreateSipContent(parent.getTreeNode(), grandparent);
+        parent.getChildren().clear();
+        parent.getChildren().addAll(newParent.getChildren());
+        parent.sortChildren();
       }
     });
 
@@ -587,14 +562,11 @@ public class InspectionPane extends BorderPane {
         return null;
       }
     };
-    contentTask.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-      @Override
-      public void handle(WorkerStateEvent workerStateEvent) {
-        sipRoot = newRoot;
-        sipFiles.setRoot(sipRoot);
-        content.setCenter(treeBox);
-        content.setBottom(contentBottom);
-      }
+    contentTask.setOnSucceeded(event -> {
+      sipRoot = newRoot;
+      sipFiles.setRoot(sipRoot);
+      content.setCenter(treeBox);
+      content.setBottom(contentBottom);
     });
     new Thread(contentTask).start();
 
@@ -645,31 +617,22 @@ public class InspectionPane extends BorderPane {
     emptyText.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(emptyText);
 
-    emptyRulesPane.setOnDragOver(new EventHandler<DragEvent>() {
-      @Override
-      public void handle(DragEvent event) {
-        if (currentSchema != null && event.getGestureSource() instanceof SourceTreeCell) {
-          event.acceptTransferModes(TransferMode.COPY);
-          emptyText.setText(AppProperties.getLocalizedString("InspectionPane.onDrop"));
-        }
-        event.consume();
+    emptyRulesPane.setOnDragOver(event -> {
+      if (currentSchema != null && event.getGestureSource() instanceof SourceTreeCell) {
+        event.acceptTransferModes(TransferMode.COPY);
+        emptyText.setText(AppProperties.getLocalizedString("InspectionPane.onDrop"));
       }
+      event.consume();
     });
 
-    emptyRulesPane.setOnDragDropped(new EventHandler<DragEvent>() {
-      @Override
-      public void handle(DragEvent event) {
-        RodaIn.getSchemaPane().startAssociation(currentSchema);
-        event.consume();
-      }
+    emptyRulesPane.setOnDragDropped(event -> {
+      RodaIn.getSchemaPane().startAssociation(currentSchema);
+      event.consume();
     });
 
-    emptyRulesPane.setOnDragExited(new EventHandler<DragEvent>() {
-      @Override
-      public void handle(DragEvent event) {
-        emptyText.setText(AppProperties.getLocalizedString("InspectionPane.help.ruleList"));
-        event.consume();
-      }
+    emptyRulesPane.setOnDragExited(event -> {
+      emptyText.setText(AppProperties.getLocalizedString("InspectionPane.help.ruleList"));
+      event.consume();
     });
 
 
@@ -697,7 +660,7 @@ public class InspectionPane extends BorderPane {
     setTop(topBox);
     setCenter(center);
     currentSIPNode = sip;
-    currentSIP = sip.getSip();
+    currentDescOb = sip.getSip();
     currentSchema = null;
     if(contentTask != null && contentTask.isRunning()){
       contentTask.cancel(true);
@@ -725,7 +688,7 @@ public class InspectionPane extends BorderPane {
       @Override
       protected Boolean call() throws Exception {
         // metadata
-        String meta = sip.getSip().getMetadataContent();
+        String meta = currentDescOb.getMetadataWithReplaces().get(0).getContentDecoded();
         updateTextArea(meta);
         boolean result = false;
         try {
@@ -762,7 +725,7 @@ public class InspectionPane extends BorderPane {
    */
   public void update(SchemaNode node) {
     setTop(topBox);
-    currentSIP = null;
+    currentDescOb = node.getDob();
     currentSIPNode = null;
     currentSchema = node;
     if(contentTask != null && contentTask.isRunning()){

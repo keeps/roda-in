@@ -62,7 +62,7 @@ public class SchemaTreeCell extends TreeCell<String> {
           addHbox = true;
           SipPreviewNode sipNode = (SipPreviewNode) treeItem;
           icon = new ImageView(sipNode.getIcon());
-          if (sipNode.isMetaModified() || sipNode.isContentModified()) {
+          if (sipNode.isContentModified()) {
             setText("*");
           } else
             setText("");

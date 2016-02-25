@@ -1,5 +1,10 @@
 package org.roda.rodain.creation.ui;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -7,14 +12,10 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.creation.CreateSips;
 import org.roda.rodain.rules.sip.SipPreview;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -236,7 +237,7 @@ public class CreationModalProcessing extends BorderPane {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(AppProperties.getLocalizedString("CreationModalProcessing.alert.title"));
         String header = String.format(AppProperties.getLocalizedString("CreationModalProcessing.alert.header"),
-          sip.getName());
+          sip.getTitle());
         alert.setHeaderText(header);
         StringBuilder content = new StringBuilder(ex.getLocalizedMessage());
         content.append("\n");

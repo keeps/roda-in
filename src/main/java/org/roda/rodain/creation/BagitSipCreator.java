@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -14,6 +15,7 @@ import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.creation.ui.CreationModalProcessing;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
+import org.roda.rodain.schema.DescObjMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,8 +74,8 @@ public class BagitSipCreator extends SimpleSipCreator {
     // conflicts
     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd kk'h'mm'm'ss's'SSS");
     String dateToString = format.format(new Date());
-    String timestampedName = String.format("%s %s.zip", dateToString, sip.getName());
-    currentSipName = sip.getName();
+    String timestampedName = String.format("%s %s.zip", dateToString, sip.getTitle());
+    currentSipName = sip.getTitle();
     currentAction = actionCreatingFolders;
     // make the directories
     Path name = outputPath.resolve(timestampedName);
@@ -93,11 +95,14 @@ public class BagitSipCreator extends SimpleSipCreator {
       // additional metadata
       b.getBagInfoTxt().put("id", sip.getId());
       b.getBagInfoTxt().put("parent", schemaId);
-      b.getBagInfoTxt().put("title", sip.getName());
+      b.getBagInfoTxt().put("title", sip.getTitle());
       b.getBagInfoTxt().put("level", "item");
 
       currentAction = actionCopyingMetadata;
-      String content = sip.getMetadataContent();
+      List<DescObjMetadata> metadataList = sip.getMetadataWithReplaces();
+      String content = "";
+      if (!metadataList.isEmpty())
+        content = metadataList.get(0).getContentDecoded();
 
       Map<String, String> metadata = getMetadata(content);
       for (String key : metadata.keySet()) {

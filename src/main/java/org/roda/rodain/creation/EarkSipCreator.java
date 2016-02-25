@@ -13,6 +13,7 @@ import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.creation.ui.CreationModalProcessing;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
+import org.roda.rodain.schema.DescObjMetadata;
 import org.roda_project.commons_ip.model.*;
 import org.roda_project.commons_ip.model.impl.eark.EARKSIP;
 import org.roda_project.commons_ip.utils.EARKEnums;
@@ -68,33 +69,37 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
       IPRepresentation rep = new IPRepresentation("rep1");
 
       currentSipProgress = 0;
-      currentSipName = sip.getName();
+      currentSipName = sip.getTitle();
       currentAction = actionCopyingMetadata;
-      String templateType = sip.getTemplateType();
-      METSEnums.MetadataType metadataType = METSEnums.MetadataType.OTHER;
 
-      if (templateType != null) {
-        if (templateType.equals("dc")) {
-          metadataName = "dc.xml";
-          metadataType = METSEnums.MetadataType.DC;
-        } else if (templateType.startsWith("ead")) {
-          metadataName = "ead.xml";
-          metadataType = METSEnums.MetadataType.EAD;
-        } else {
-          metadataName = "custom.xml";
-          metadataType = METSEnums.MetadataType.OTHER;
+      for (DescObjMetadata descObjMetadata : sip.getMetadata()) {
+        String templateType = descObjMetadata.getTemplateType();
+        METSEnums.MetadataType metadataType = METSEnums.MetadataType.OTHER;
+
+        if (templateType != null) {
+          if (templateType.equals("dc")) {
+            metadataName = "dc.xml";
+            metadataType = METSEnums.MetadataType.DC;
+          } else if (templateType.startsWith("ead")) {
+            metadataName = "ead.xml";
+            metadataType = METSEnums.MetadataType.EAD;
+          } else {
+            metadataName = "custom.xml";
+            metadataType = METSEnums.MetadataType.OTHER;
+          }
+          Path schemaPath = AppProperties.getSchemaPath(descObjMetadata.getTemplateType());
+          if (schemaPath != null)
+            earkSip.addSchema(new IPFile(schemaPath));
         }
-        Path schemaPath = AppProperties.getSchemaPath(sip.getTemplateType());
-        if (schemaPath != null)
-          earkSip.addSchema(new IPFile(schemaPath));
+
+        String content = descObjMetadata.getContentDecoded();
+
+        FileUtils.writeStringToFile(rodainPath.resolve(metadataName).toFile(), content);
+        IPFile metadataFile = new IPFile(rodainPath.resolve(metadataName));
+        IPDescriptiveMetadata metadata = new IPDescriptiveMetadata(metadataFile, metadataType,
+          descObjMetadata.getVersion());
+        earkSip.addDescriptiveMetadata(metadata);
       }
-
-      String content = sip.getMetadataContent();
-
-      FileUtils.writeStringToFile(rodainPath.resolve(metadataName).toFile(), content);
-      IPFile metadataFile = new IPFile(rodainPath.resolve(metadataName));
-      IPDescriptiveMetadata metadata = new IPDescriptiveMetadata(metadataFile, metadataType, sip.getMetadataVersion());
-      earkSip.addDescriptiveMetadata(metadata);
 
       currentAction = actionCopyingData;
       Set<TreeNode> files = sip.getFiles();

@@ -1,12 +1,19 @@
 package org.roda.rodain.schema;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.net.util.Base64;
+import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.InvalidEADException;
+import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.XMLToMetadataValue;
 import org.roda.rodain.rules.sip.MetadataValue;
+import org.roda.rodain.utils.Utils;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -16,23 +23,36 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Andre Pereira apereira@keep.pt
  * @since 07-12-2015.
  */
-@JsonIgnoreProperties({"values"})
+@JsonIgnoreProperties({"values", "path", "loaded", "type", "version", "templateType"})
 public class DescObjMetadata {
-  private String id;
-  private String type;
-  private String content;
-  private String contentEncoding;
+  private static final org.slf4j.Logger log = LoggerFactory.getLogger(DescObjMetadata.class.getName());
+  private String id, content, contentEncoding;
   private Map<String, Object> additionalProperties = new HashMap<String, Object>();
   private Map<String, MetadataValue> values = new HashMap<>();
+  private Path path;
+  private boolean loaded = false;
+
+  // template
+  private MetadataTypes type;
+  private String version, templateType;
 
   public DescObjMetadata() {
 
   }
 
-  public DescObjMetadata(String cont) {
-    setContentDecoded(cont);
-    contentEncoding = "Base64";
-    id = "ead.xml";
+  public DescObjMetadata(MetadataTypes type, String templateType, String version) {
+    this.type = type;
+    this.templateType = templateType;
+    this.version = version;
+    this.contentEncoding = "Base64";
+    this.id = templateType + ".xml";
+  }
+
+  public DescObjMetadata(MetadataTypes type, Path path) {
+    this.type = type;
+    this.path = path;
+    this.contentEncoding = "Base64";
+    this.id = path.getFileName().toString();
   }
 
   /**
@@ -57,6 +77,14 @@ public class DescObjMetadata {
     setContentDecoded(result);
   }
 
+  public String getVersion() {
+    return version;
+  }
+
+  public String getTemplateType() {
+    return templateType;
+  }
+
   /**
    * Gets the id of the description object metadata.
    *
@@ -76,24 +104,6 @@ public class DescObjMetadata {
   }
 
   /**
-   * Gets the type of the description object metadata.
-   *
-   * @return The type
-   */
-  public String getType() {
-    return type;
-  }
-
-  /**
-   * Sets the type of the description object metadata.
-   *
-   * @param type The type
-   */
-  public void setType(String type) {
-    this.type = type;
-  }
-
-  /**
    * Gets the content of the description object metadata.
    *
    * @return The content
@@ -109,8 +119,31 @@ public class DescObjMetadata {
    */
   @JsonIgnore
   public String getContentDecoded() {
+    if (!loaded) {
+      loadMetadata();
+    }
     byte[] decoded = Base64.decodeBase64(content);
     return new String(decoded);
+  }
+
+  private void loadMetadata() {
+    try {
+      if (type == MetadataTypes.TEMPLATE) {
+        if (templateType != null) {
+          String tempContent = AppProperties.getMetadataFile(templateType);
+          setContentDecoded(tempContent);
+          loaded = true;
+        }
+      } else {
+        if (path != null) {
+          String tempContent = Utils.readFile(path.toString(), Charset.defaultCharset());
+          setContentDecoded(tempContent);
+          loaded = true;
+        }
+      }
+    } catch (IOException e) {
+      log.error("Error reading metadata file", e);
+    }
   }
 
   /**

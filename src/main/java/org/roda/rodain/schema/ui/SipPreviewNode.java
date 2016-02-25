@@ -33,7 +33,7 @@ public class SipPreviewNode extends TreeItem<String> implements Observer {
    *          The icon to be used in the SipPreviewNode, with the color white
    */
   public SipPreviewNode(SipPreview sip, Image iconBlack, Image iconWhite) {
-    super(sip.getName());
+    super(sip.getTitle());
     this.sip = sip;
     this.iconBlack = iconBlack;
     this.iconWhite = iconWhite;
@@ -62,7 +62,7 @@ public class SipPreviewNode extends TreeItem<String> implements Observer {
   }
 
   public void setDescriptionLevel(String descLevel) {
-    sip.setDescriptionLevel(descLevel);
+    sip.setDescriptionlevel(descLevel);
     ResourceBundle hierarchyConfig = ResourceBundle.getBundle("properties/roda-description-levels-hierarchy");
     String category = hierarchyConfig.getString("category." + sip.getDescriptionLevel());
     String unicode = hierarchyConfig.getString("icon." + category);
@@ -74,15 +74,6 @@ public class SipPreviewNode extends TreeItem<String> implements Observer {
 
   public void setBlackIconSelected(boolean value) {
     blackIconSelected = value;
-  }
-
-  /**
-   * @return True if the SipPreview's metadata has been modified, false
-   * otherwise
-   * @see SipPreview#isMetadataModified()
-   */
-  public boolean isMetaModified() {
-    return sip.isMetadataModified();
   }
 
   /**

@@ -8,6 +8,7 @@ import java.util.*;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.filters.ContentFilter;
+import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.utils.TreeVisitor;
 
 /**
@@ -159,7 +160,12 @@ public class SipPerFolderVisitor extends Observable implements TreeVisitor, SipP
       Set<TreeNode> files = new HashSet<>();
       files.add(node);
 
-      SipMetadata metadata = new SipMetadata(metaType, metaPath, templateType, templateVersion);
+      DescObjMetadata metadata;
+      if (metaType == MetadataTypes.TEMPLATE)
+        metadata = new DescObjMetadata(metaType, templateType, templateVersion);
+      else
+        metadata = new DescObjMetadata(metaType, metaPath);
+
       SipPreview sipPreview = new SipPreview(path.getFileName().toString(), files, metadata);
       node.addObserver(sipPreview);
 

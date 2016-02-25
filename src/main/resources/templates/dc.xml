@@ -1,16 +1,14 @@
 <?xml version="1.0"?>
 
 <simpledc>
-    <title>
-        {{title}}
-    </title>
-    <description>
 
-    </description>
-    <publisher>
+    <type>{{level}}</type>
+    <title>{{title}}</title>
+    <identifier>{{id}}</identifier>
+    <creator>{{author}}</creator>
+    <date>{{date}}</date>
+    <description>{{description}}</description>
+    <publisher>{{producer}}</publisher>
+    <rights>{{rights}}</rights>
 
-    </publisher>
-    <identifier>
-
-    </identifier>
 </simpledc>

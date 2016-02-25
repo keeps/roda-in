@@ -14,7 +14,7 @@
         <file>debug.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <Pattern>
-                %d{yyyy-MM-dd HH:mm:ss} %-5level - %msg%n
+                %d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n
             </Pattern>
         </encoder>
 
@@ -39,6 +39,12 @@
     </logger>
 
     <logger name="gov.loc.repository.bagit.utilities.FileHelper" additivity="false">
+        <level value="WARN"/>
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="LOGFILE"/>
+    </logger>
+
+    <logger name="org.apache.commons.configuration.PropertiesConfiguration" additivity="false">
         <level value="WARN"/>
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="LOGFILE"/>
