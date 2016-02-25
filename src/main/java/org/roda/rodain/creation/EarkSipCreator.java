@@ -81,7 +81,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
             metadataName = "dc.xml";
             metadataType = METSEnums.MetadataType.DC;
           } else if (templateType.startsWith("ead")) {
-            metadataName = "ead2002.xml";
+            metadataName = templateType + ".xml";
             metadataType = METSEnums.MetadataType.EAD;
           } else {
             metadataName = "custom.xml";
@@ -92,7 +92,10 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
             earkSip.addSchema(new IPFile(schemaPath));
         }
 
-        String content = descObjMetadata.getContentDecoded();
+        List<DescObjMetadata> metadataList = sip.getMetadataWithReplaces();
+        String content = "";
+        if (!metadataList.isEmpty())
+          content = metadataList.get(0).getContentDecoded();
 
         FileUtils.writeStringToFile(rodainPath.resolve(metadataName).toFile(), content);
         IPFile metadataFile = new IPFile(rodainPath.resolve(metadataName));
