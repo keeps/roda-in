@@ -1,5 +1,13 @@
 package org.roda.rodain.core;
 
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
+import org.roda.rodain.utils.FolderBasedUTF8Control;
+import org.roda.rodain.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.swing.filechooser.FileSystemView;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -11,15 +19,6 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-
-import javax.swing.filechooser.FileSystemView;
-
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
-import org.roda.rodain.utils.FolderBasedUTF8Control;
-import org.roda.rodain.utils.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -64,7 +63,11 @@ public class AppProperties {
         while (keys.hasNext()) {
           String key = keys.next();
           if (!external.containsKey(key)) {
-            external.addProperty(key, internal.getString(key));
+            external.addProperty(key, internal.getProperty(key));
+            store = true;
+          }
+          if(key.startsWith("metadata.template")){
+            external.setProperty(key, internal.getProperty(key));
             store = true;
           }
         }
