@@ -376,7 +376,7 @@ public class InspectionPane extends BorderPane {
     if (metadata.getChildren().contains(metadataForm)) {
       if (currentDescOb != null) {
         currentDescOb.applyMetadataValues();
-        metaText.replaceText(currentDescOb.getMetadataWithReplaces().get(0).getContentDecoded());
+        updateTextArea(currentDescOb.getMetadataWithReplaces().get(0).getContentDecoded());
       }
     } else {
       String oldMetadata = null, newMetadata = null;
@@ -700,7 +700,7 @@ public class InspectionPane extends BorderPane {
       protected Boolean call() throws Exception {
         // metadata
         String meta = currentDescOb.getMetadataWithReplaces().get(0).getContentDecoded();
-        metaText.replaceText(meta);
+        updateTextArea(meta);
         boolean result = false;
         try {
           result = Utils.isEAD(metaText.getText());
@@ -775,7 +775,7 @@ public class InspectionPane extends BorderPane {
         List<DescObjMetadata> metadatas = currentDescOb.getMetadataWithReplaces();
         if (!metadatas.isEmpty()) {
           // For now we only get the first metadata object
-          metaText.replaceText(metadatas.get(0).getContentDecoded());
+          updateTextArea(metadatas.get(0).getContentDecoded());
         } else
           metaText.clear();
         boolean result = false;
@@ -794,6 +794,11 @@ public class InspectionPane extends BorderPane {
 
     center.getChildren().addAll(metadata, rules);
     setCenter(center);
+  }
+
+  private void updateTextArea(String content) {
+    metaText.replaceText(content);
+    metaText.setStyleSpans(0, XMLEditor.computeHighlighting(content));
   }
 
   public void showHelp(){

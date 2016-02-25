@@ -1,6 +1,6 @@
 <ead xmlns="http://ead3.archivists.org/schema/"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-     xsi:schemaLocation="http://ead3.archivists.org/schema/ file:/Users/mferreira/Desktop/roda-in%20templates/ead3.xsd">
+     xsi:schemaLocation="http://ead3.archivists.org/schema/ ../schemas/ead3.xsd">
     <control>
         <recordid>{{id}}</recordid>
         <filedesc>
