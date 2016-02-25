@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <ead xmlns="http://ead3.archivists.org/schema/"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-     xsi:schemaLocation="http://ead3.archivists.org/schema/ ../schemas/ead3.xsd">
+     xsi:schemaLocation="http://ead3.archivists.org/schema/ file:/Users/mferreira/Desktop/roda-in%20templates/ead3.xsd">
     <control>
         <recordid>{{id}}</recordid>
         <filedesc>
@@ -9,25 +8,59 @@
                 <titleproper>{{title}}</titleproper>
             </titlestmt>
         </filedesc>
-        <maintenancestatus value="revised">
-        </maintenancestatus>
+        <maintenancestatus value="new"/>
         <maintenanceagency>
-            <agencyname></agencyname>
+            <agencyname>{{producer}}</agencyname>
         </maintenanceagency>
+
         <maintenancehistory>
             <maintenanceevent>
-                <eventtype value="created"></eventtype>
-                <eventdatetime>
-                </eventdatetime>
-                <agenttype value="human">
-                </agenttype>
-                <agent></agent>
+                <eventtype value="created"/>
+                <eventdatetime standarddatetime="{{now}}">{{now}}</eventdatetime>
+                <agenttype value="machine"/>
+                <agent>RODA-in version 2</agent>
+                <eventdescription>Creation of EAD record using RODA-in version 2</eventdescription>
             </maintenanceevent>
         </maintenancehistory>
     </control>
-    <archdesc level="class">
+
+    <archdesc level="item">
         <did>
-            <materialspec/>
+            <unitid>{{id}}</unitid>
+            <unittitle>{{title}}</unittitle>
+
+            <unitdatestructured calendar="gregorian">
+                <daterange>
+                    <fromdate standarddate="{{dateInitial}}">{{dateInitial}}</fromdate>
+                    <todate standarddate="{{dateFinal}}">{{dateFinal}}</todate>
+                </daterange>
+            </unitdatestructured>
+
+            <origination label="producer">
+                <corpname>
+                    <part>{{producer}}</part>
+                </corpname>
+            </origination>
+
+            <origination label="creator">
+                <persname>
+                    <part>{{creator}}</part>
+                </persname>
+            </origination>
+
+            <langmaterial>
+                <language>{{language}}</language>
+            </langmaterial>
+
         </did>
+
+        <scopecontent>
+            <p>{{description}}</p>
+        </scopecontent>
+
+        <userestrict>
+            <p>{{rights}}</p>
+        </userestrict>
     </archdesc>
+
 </ead>

@@ -173,7 +173,8 @@ public class DescriptionObject extends Observable {
         Template tmpl = Mustache.compiler().defaultValue(" ").compile(content);
         Map<String, String> data = new HashMap<>();
         data.put("title", title);
-        data.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+        data.put("dateInitial", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+        data.put("dateFinal", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
         data.put("now", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
         data.put("id", id);
         data.put("level", descriptionlevel);

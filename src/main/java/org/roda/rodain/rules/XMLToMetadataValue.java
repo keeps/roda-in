@@ -105,15 +105,9 @@ public class XMLToMetadataValue {
     title.addXpathDestination("//*[local-name()='unittitle']");
 
     MetadataValue date = new MetadataValue("date", AppProperties.getLocalizedString("metadataValue.date"), null,
-      "date");
-    date.addXpathDestination("//*[local-name()='date']/@normal");
-    date.addXpathDestination("//*[local-name()='date']");
+      "text");
     date.addXpathDestination("//*[local-name()='unitdate']/@normal");
     date.addXpathDestination("//*[local-name()='unitdate']");
-
-    MetadataValue repCode = new MetadataValue("repcode", AppProperties.getLocalizedString("metadataValue.repcode"),
-      null, "text");
-    repCode.addXpathDestination("//*[local-name()='unitid']/@repositorycode");
 
     MetadataValue id = new MetadataValue("id", AppProperties.getLocalizedString("metadataValue.id"), null, "text");
     id.addXpathDestination("//*[local-name()='unitid']");
@@ -128,12 +122,36 @@ public class XMLToMetadataValue {
       level.addFieldOption(pair);
     }
 
+    MetadataValue description = new MetadataValue("description",
+      AppProperties.getLocalizedString("metadataValue.description"), null, "text");
+    description.addXpathDestination("//*[local-name()='scopecontent']/*[local-name()='p']");
+
+    MetadataValue rights = new MetadataValue("rights", AppProperties.getLocalizedString("metadataValue.rights"), null,
+      "text");
+    rights.addXpathDestination("//*[local-name()='userestrict']/*[local-name()='p']");
+
+    MetadataValue language = new MetadataValue("language", AppProperties.getLocalizedString("metadataValue.language"),
+      null, "text");
+    language.addXpathDestination("//*[local-name()='langmaterial']");
+
+    MetadataValue producer = new MetadataValue("producer", AppProperties.getLocalizedString("metadataValue.producer"),
+      null, "text");
+    producer.addXpathDestination("//*[local-name()='origination'][@label=\"producer\"]");
+
+    MetadataValue creator = new MetadataValue("creator", AppProperties.getLocalizedString("metadataValue.creator"),
+      null, "text");
+    creator.addXpathDestination("//*[local-name()='origination'][@label=\"creator\"]");
+
     // add values to result
     result.put("level", level);
     result.put("title", title);
     result.put("date", date);
     result.put("id", id);
-    result.put("repcode", repCode);
+    result.put("producer", producer);
+    result.put("creator", creator);
+    result.put("language", language);
+    result.put("description", description);
+    result.put("rights", rights);
 
     return result;
   }

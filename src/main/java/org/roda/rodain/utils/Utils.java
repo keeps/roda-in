@@ -63,7 +63,7 @@ public class Utils {
     try {
       // build the schema
       SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-      StreamSource streamSource = new StreamSource(ClassLoader.getSystemResourceAsStream("templates/ead.xsd"));
+      StreamSource streamSource = new StreamSource(ClassLoader.getSystemResourceAsStream("templates/ead2002.xsd"));
       Schema schema = factory.newSchema(streamSource);
       Validator validator = schema.newValidator();
 
