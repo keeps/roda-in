@@ -22,6 +22,8 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -31,6 +33,7 @@ import javafx.util.Callback;
 import javafx.util.StringConverter;
 import javafx.util.converter.LocalDateStringConverter;
 
+import org.apache.commons.lang.StringUtils;
 import org.fxmisc.richtext.CodeArea;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.RodaIn;
@@ -214,6 +217,17 @@ public class InspectionPane extends BorderPane {
     metaText = new CodeArea();
     VBox.setVgrow(metaText, Priority.ALWAYS);
     metadata.getChildren().addAll(metadataTopBox, metaText);
+    metaText.textProperty().addListener((observable, oldValue, newValue) -> {
+      metaText.setStyleSpans(0, XMLEditor.computeHighlighting(newValue));
+    });
+    // set the tab size to 2 spaces
+    metaText.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+      if (event.getCode() == KeyCode.TAB) {
+        String s = StringUtils.repeat(" ", 2);
+        metaText.insertText(metaText.getCaretPosition(), s);
+        event.consume();
+      }
+    });
 
     /*
      * We listen to the focused property and not the text property because we
@@ -340,11 +354,6 @@ public class InspectionPane extends BorderPane {
     }
   }
 
-  private void updateTextArea(String text) {
-    metaText.replaceText(text);
-    metaText.setStyleSpans(0, XMLEditor.computeHighlighting(text));
-  }
-
   private void noForm() {
     metadata.getChildren().clear();
     metadata.getChildren().addAll(metadataTopBox, metaText);
@@ -367,7 +376,7 @@ public class InspectionPane extends BorderPane {
     if (metadata.getChildren().contains(metadataForm)) {
       if (currentDescOb != null) {
         currentDescOb.applyMetadataValues();
-        updateTextArea(currentDescOb.getMetadataWithReplaces().get(0).getContentDecoded());
+        metaText.replaceText(currentDescOb.getMetadataWithReplaces().get(0).getContentDecoded());
       }
     } else {
       String oldMetadata = null, newMetadata = null;
@@ -691,7 +700,7 @@ public class InspectionPane extends BorderPane {
       protected Boolean call() throws Exception {
         // metadata
         String meta = currentDescOb.getMetadataWithReplaces().get(0).getContentDecoded();
-        updateTextArea(meta);
+        metaText.replaceText(meta);
         boolean result = false;
         try {
           result = Utils.isEAD(metaText.getText());
@@ -766,7 +775,7 @@ public class InspectionPane extends BorderPane {
         List<DescObjMetadata> metadatas = currentDescOb.getMetadataWithReplaces();
         if (!metadatas.isEmpty()) {
           // For now we only get the first metadata object
-          updateTextArea(metadatas.get(0).getContentDecoded());
+          metaText.replaceText(metadatas.get(0).getContentDecoded());
         } else
           metaText.clear();
         boolean result = false;

@@ -504,7 +504,7 @@ public class SchemaPane extends BorderPane {
     DescriptionObject dobj = new DescriptionObject();
     dobj.setId(UUID.randomUUID().toString());
     dobj.setTitle(AppProperties.getLocalizedString("SchemaPane.newNode"));
-    dobj.setDescriptionlevel("class");
+    dobj.setDescriptionlevel("series");
     SchemaNode newNode = new SchemaNode(dobj);
     if (selected != null) {
       dobj.setParentId(selected.getDob().getId());
