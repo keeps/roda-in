@@ -154,7 +154,9 @@ public class InspectionPane extends BorderPane {
     Button saveButton = new Button();
     saveButton.setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.check, Color.WHITE)));
     saveButton.setOnAction(event -> {
-      saveMetadata();
+      if (metadata.getChildren().contains(metadataForm)) {
+        saveMetadata();
+      }
       StringBuilder message = new StringBuilder();
       ValidationPopOver popOver = new ValidationPopOver();
       popOver.show(saveButton);
@@ -388,7 +390,7 @@ public class InspectionPane extends BorderPane {
 
       if (update) {
         if (currentDescOb != null) {
-          List<DescObjMetadata> metadatas = currentSchema.getDob().getMetadataWithReplaces();
+          List<DescObjMetadata> metadatas = currentDescOb.getMetadataWithReplaces();
           if (!metadatas.isEmpty()) {
             metadatas.get(0).setContentDecoded(newMetadata);
           } else {
@@ -761,7 +763,7 @@ public class InspectionPane extends BorderPane {
       @Override
       protected Boolean call() throws Exception {
         // metadata
-        List<DescObjMetadata> metadatas = node.getDob().getMetadataWithReplaces();
+        List<DescObjMetadata> metadatas = currentDescOb.getMetadataWithReplaces();
         if (!metadatas.isEmpty()) {
           // For now we only get the first metadata object
           updateTextArea(metadatas.get(0).getContentDecoded());
