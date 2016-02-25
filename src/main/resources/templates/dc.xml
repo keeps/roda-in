@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<simpledc>
+
+    <type>{{level}}</type>
+    <title>{{title}}</title>
+    <identifier>{{id}}</identifier>
+    <creator>{{creator}}</creator>
+    <date>{{dateInitial}}</date>
+    <date>{{dateFinal}}</date>
+    <description>{{description}}</description>
+    <publisher>{{producer}}</publisher>
+    <rights>{{rights}}</rights>
+    <language>{{language}}</language>
+
+</simpledc>

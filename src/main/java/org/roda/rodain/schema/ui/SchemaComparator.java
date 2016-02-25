@@ -1,8 +1,8 @@
 package org.roda.rodain.schema.ui;
 
-import javafx.scene.control.TreeItem;
-
 import java.util.Comparator;
+
+import javafx.scene.control.TreeItem;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -35,8 +35,8 @@ public class SchemaComparator implements Comparator<TreeItem<String>> {
       } else if (o1 instanceof SipPreviewNode) {
         SipPreviewNode n1 = (SipPreviewNode) o1;
         SipPreviewNode n2 = (SipPreviewNode) o2;
-        s1 = n1.getSip().getName();
-        s2 = n2.getSip().getName();
+        s1 = n1.getSip().getTitle();
+        s2 = n2.getSip().getTitle();
       }
       if (s1 != null && s2 != null)
         return s1.compareToIgnoreCase(s2);

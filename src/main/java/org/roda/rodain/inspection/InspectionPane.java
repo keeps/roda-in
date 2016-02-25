@@ -1,43 +1,54 @@
 package org.roda.rodain.inspection;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import javafx.util.StringConverter;
+import javafx.util.converter.LocalDateStringConverter;
+import org.apache.commons.lang.StringUtils;
+import org.fxmisc.richtext.CodeArea;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.RodaIn;
+import org.roda.rodain.rules.InvalidEADException;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.TreeNode;
+import org.roda.rodain.rules.sip.MetadataValue;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.schema.DescObjMetadata;
+import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SipPreviewNode;
 import org.roda.rodain.source.ui.SourceTreeCell;
+import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.UIPair;
+import org.roda.rodain.utils.Utils;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -49,16 +60,21 @@ public class InspectionPane extends BorderPane {
   private VBox topBox;
   private VBox center;
   private HBox topSpace;
-  private ComboBox<UIPair> itemTypes;
 
-  private SipPreview currentSIP;
+  private SipPreviewNode currentSIPNode;
   private SchemaNode currentSchema;
+  private DescriptionObject currentDescOb;
   private ImageView topIcon;
+  private Label paneTitle;
 
   private VBox centerHelp;
   // Metadata
   private VBox metadata;
-  private TextArea metaText;
+  private CodeArea metaText;
+  private GridPane metadataForm;
+  private ToggleButton toggleForm;
+  private HBox metadataLoadingPane, metadataTopBox;
+  private TextField titleTextField;
   // SIP Content
   private BorderPane content;
   private VBox treeBox;
@@ -68,6 +84,7 @@ public class InspectionPane extends BorderPane {
   private HBox loadingPane, contentBottom;
   private static Image loadingGif;
   private Task<Void> contentTask;
+  private Task<Boolean> metadataTask;
   // Rules
   private BorderPane rules;
   private ListView<RuleCell> ruleList;
@@ -85,7 +102,7 @@ public class InspectionPane extends BorderPane {
     createMetadata();
     createContent();
     createRulesList();
-    createLoadingPane();
+    createLoadingPanes();
 
     center = new VBox(10);
     center.setPadding(new Insets(0, 10, 10, 10));
@@ -105,51 +122,111 @@ public class InspectionPane extends BorderPane {
 
     topSpace = new HBox();
     HBox.setHgrow(topSpace, Priority.ALWAYS);
-
-    itemTypes = new ComboBox<>();
-    itemTypes.setId("itemLevels");
-    ObservableList<UIPair> itemList = FXCollections.observableArrayList();
-    String itemTypesRaw = AppProperties.getDescLevels("levels_ordered");
-    String[] itemTypesArray = itemTypesRaw.split(",");
-    for (String item : itemTypesArray) {
-      UIPair pair = new UIPair(item, AppProperties.getDescLevels("label.en." + item));
-      itemList.add(pair);
-    }
-    itemTypes.setItems(itemList);
-    itemTypes.valueProperty().addListener(new ChangeListener<UIPair>() {
-      @Override
-      public void changed(ObservableValue ov, UIPair t, UIPair t1) {
-        if (currentSchema != null) {
-          currentSchema.updateDescLevel(t1.getKey().toString());
-          topIcon.setImage(currentSchema.getImage());
-          // force update
-          String title = currentSchema.getValue();
-          currentSchema.setValue(null);
-          currentSchema.setValue(title);
-        }
-      }
-    });
-
   }
 
   private void createMetadata() {
     metadata = new VBox();
     metadata.getStyleClass().add("inspectionPart");
 
-    HBox box = new HBox();
-    box.getStyleClass().add("hbox");
-    box.setPadding(new Insets(5, 10, 5, 10));
-    box.setAlignment(Pos.CENTER_LEFT);
+    metadataForm = new GridPane();
+    metadataForm.setVgap(5);
+    metadataForm.setPadding(new Insets(5, 5, 5, 5));
+    ColumnConstraints column1 = new ColumnConstraints();
+    column1.setPercentWidth(20);
+    ColumnConstraints column2 = new ColumnConstraints();
+    column2.setPercentWidth(80);
+    metadataForm.getColumnConstraints().addAll(column1, column2);
 
-    Label title = new Label(AppProperties.getLocalizedString("InspectionPane.metadata"));
+    metadataTopBox = new HBox();
+    metadataTopBox.getStyleClass().add("hbox");
+    metadataTopBox.setPadding(new Insets(5, 10, 5, 10));
+    metadataTopBox.setAlignment(Pos.CENTER_LEFT);
 
-    box.getChildren().add(title);
+    Label titleLabel = new Label(AppProperties.getLocalizedString("InspectionPane.metadata"));
+    HBox space = new HBox();
+    HBox.setHgrow(space, Priority.ALWAYS);
 
-    metaText = new TextArea();
-    metaText.setPromptText(AppProperties.getLocalizedString("InspectionPane.metadata.placeholder"));
-    metaText.setWrapText(true);
+    toggleForm = new ToggleButton();
+    Image selected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.code, Color.WHITE);
+    Image unselected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.list, Color.WHITE);
+    ImageView toggleImage = new ImageView();
+    toggleForm.setGraphic(toggleImage);
+    toggleImage.imageProperty().bind(Bindings.when(toggleForm.selectedProperty()).then(selected).otherwise(unselected));
+
+    Button saveButton = new Button();
+    saveButton.setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.check, Color.WHITE)));
+    saveButton.setOnAction(event -> {
+      if (metadata.getChildren().contains(metadataForm)) {
+        saveMetadata();
+      }
+      StringBuilder message = new StringBuilder();
+      ValidationPopOver popOver = new ValidationPopOver();
+      popOver.show(saveButton);
+
+      Task<Boolean> validationTask = new Task<Boolean>() {
+        @Override
+        protected Boolean call() throws Exception {
+          boolean result = false;
+          try {
+            if (Utils.isEAD(metaText.getText())) {
+              result = true;
+            }
+          } catch (InvalidEADException e) {
+            message.append(e.getMessage());
+          }
+          return result;
+        }
+      };
+      validationTask.setOnSucceeded((Void) -> {
+        if (validationTask.getValue()) {
+          popOver.updateContent(true, message.toString());
+          toggleForm.setVisible(true);
+          if (metadata.getChildren().contains(metaText)) {
+            toggleForm.setSelected(false);
+          } else
+            toggleForm.setSelected(true);
+        } else {
+          popOver.updateContent(false, message.toString());
+          toggleForm.setVisible(false);
+        }
+      });
+      new Thread(validationTask).start();
+
+    });
+
+    toggleForm.selectedProperty().addListener((observable, oldValue, newValue) -> {
+      saveMetadata();
+      // newValue == true means that the form will be displayed
+      if (newValue) {
+        metadata.getChildren().remove(metaText);
+        metadataForm.getChildren().clear();
+        updateForm();
+        if (!metadata.getChildren().contains(metadataForm)) {
+          metadata.getChildren().add(metadataForm);
+        }
+      } else { // from the form to the metadata text
+        metadata.getChildren().remove(metadataForm);
+        if (!metadata.getChildren().contains(metaText))
+          metadata.getChildren().add(metaText);
+      }
+    });
+
+    metadataTopBox.getChildren().addAll(titleLabel, space, toggleForm, saveButton);
+
+    metaText = new CodeArea();
     VBox.setVgrow(metaText, Priority.ALWAYS);
-    metadata.getChildren().addAll(box, metaText);
+    metadata.getChildren().addAll(metadataTopBox, metaText);
+    metaText.textProperty().addListener((observable, oldValue, newValue) -> {
+      metaText.setStyleSpans(0, XMLEditor.computeHighlighting(newValue));
+    });
+    // set the tab size to 2 spaces
+    metaText.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+      if (event.getCode() == KeyCode.TAB) {
+        String s = StringUtils.repeat(" ", 2);
+        metaText.insertText(metaText.getCaretPosition(), s);
+        event.consume();
+      }
+    });
 
     /*
      * We listen to the focused property and not the text property because we
@@ -167,43 +244,169 @@ public class InspectionPane extends BorderPane {
     });
   }
 
+  private void updateForm() {
+    Map<String, MetadataValue> metadataValues;
+    try {
+      metadataValues = getMetadataValues();
+    } catch (InvalidEADException e) {
+      noForm();
+      return;
+    }
+    if (metadataValues == null || metadataValues.isEmpty()) {
+      noForm();
+      return;
+    }
+    int i = 0;
+    for (MetadataValue metadataValue : metadataValues.values()) {
+      Label label = new Label(metadataValue.getTitle());
+      label.getStyleClass().add("formLabel");
+
+      Control control;
+      switch (metadataValue.getFieldType()) {
+        case "date":
+          String pattern = "yyyy-MM-dd";
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+          LocalDateStringConverter ldsc = new LocalDateStringConverter(formatter, null);
+
+          DatePicker datePicker = new DatePicker(ldsc.fromString(metadataValue.getValue()));
+          datePicker.setMaxWidth(Double.MAX_VALUE);
+          datePicker.setConverter(new StringConverter<LocalDate>() {
+            private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern);
+
+            @Override
+            public String toString(LocalDate localDate) {
+              if (localDate == null)
+                return "";
+              return dateTimeFormatter.format(localDate);
+            }
+
+            @Override
+            public LocalDate fromString(String dateString) {
+              if (dateString == null || dateString.trim().isEmpty())
+                return null;
+              return LocalDate.parse(dateString, dateTimeFormatter);
+            }
+          });
+          datePicker.valueProperty().addListener((observable1, oldValue1, newValue1) -> {
+            metadataValue.setValue(ldsc.toString(newValue1));
+          });
+          control = datePicker;
+          break;
+        case "combo":
+          ComboBox<UIPair> itemTypes = new ComboBox<>();
+          itemTypes.setMaxWidth(Double.MAX_VALUE);
+          control = itemTypes;
+          itemTypes.setId("itemLevels");
+          ObservableList<UIPair> itemList = FXCollections.observableArrayList(metadataValue.getFieldOptions());
+          itemTypes.setItems(itemList);
+          // Select current value
+          for (UIPair pair : itemTypes.getItems()) {
+            if (metadataValue.getValue().equals(pair.getKey())) {
+              itemTypes.getSelectionModel().select(pair);
+              break;
+            }
+          }
+          itemTypes.valueProperty().addListener((observable1, oldValue1, newValue1) -> {
+            metadataValue.setValue(newValue1.getKey().toString());
+            if (metadataValue.getId().equals("level")) {
+              if (currentSchema != null) {
+                currentSchema.updateDescLevel(newValue1.getKey().toString());
+                topIcon.setImage(currentSchema.getIconBlack());
+              }
+              if (currentSIPNode != null) {
+                currentSIPNode.setDescriptionLevel(newValue1.getKey().toString());
+                topIcon.setImage(currentSIPNode.getIconBlack());
+              }
+              if (titleTextField != null) {
+                // force update
+                String title = titleTextField.getText();
+                titleTextField.setText("");
+                titleTextField.setText(title);
+              }
+            }
+          });
+          break;
+        default:
+          TextField textField = new TextField(metadataValue.getValue());
+          HBox.setHgrow(textField, Priority.ALWAYS);
+          textField.setUserData(metadataValue);
+          control = textField;
+          textField.textProperty().addListener((observable2, oldValue2, newValue2) -> {
+            metadataValue.setValue(newValue2);
+          });
+          if (metadataValue.getId().equals("title")) {
+            titleTextField = textField;
+            paneTitle.textProperty().bind(textField.textProperty());
+            if (currentSIPNode != null) {
+              currentSIPNode.valueProperty().bind(textField.textProperty());
+            } else {
+              if (currentSchema != null) {
+                currentSchema.valueProperty().bind(textField.textProperty());
+              }
+            }
+          }
+          break;
+      }
+      metadataForm.add(label, 0, i);
+      metadataForm.add(control, 1, i);
+      i++;
+    }
+  }
+
+  private void noForm() {
+    metadata.getChildren().clear();
+    metadata.getChildren().addAll(metadataTopBox, metaText);
+    toggleForm.setVisible(false);
+  }
+
+  private Map<String, MetadataValue> getMetadataValues() throws InvalidEADException {
+    if (currentDescOb != null) {
+      return currentDescOb.getMetadataValues();
+    } else {
+      // error, there is no SIP or SchemaNode selected
+      return null;
+    }
+  }
+
   /**
    * Saves the metadata from the text area in the SIP.
    */
   public void saveMetadata() {
-    String oldMetadata = null, newMetadata = null;
-    if (currentSIP != null) {
-      oldMetadata = currentSIP.getMetadataContent();
-      newMetadata = metaText.getText();
-
-    } else if (currentSchema != null) {
-      newMetadata = metaText.getText();
-      List<DescObjMetadata> metadatas = currentSchema.getDob().getMetadata();
-      if (!metadatas.isEmpty()) {
-        oldMetadata = metadatas.get(0).getContentDecoded();
+    if (metadata.getChildren().contains(metadataForm)) {
+      if (currentDescOb != null) {
+        currentDescOb.applyMetadataValues();
+        updateTextArea(currentDescOb.getMetadataWithReplaces().get(0).getContentDecoded());
       }
-    }
-    // only update if there's been modifications or there's no old
-    // metadata and the new isn't empty
-    boolean update = false;
-    if (newMetadata != null) {
-      if (oldMetadata == null)
-        update = true;
-      else if (!oldMetadata.equals(newMetadata))
-        update = true;
-    }
-    if (update) {
-      if (currentSIP != null) {
-        currentSIP.updateMetadata(metaText.getText());
-      } else if (currentSchema != null) {
-        List<DescObjMetadata> metadatas = currentSchema.getDob().getMetadata();
+    } else {
+      String oldMetadata = null, newMetadata = null;
+      if (currentDescOb != null) {
+        newMetadata = metaText.getText();
+        List<DescObjMetadata> metadatas = currentDescOb.getMetadataWithReplaces();
         if (!metadatas.isEmpty()) {
-          metadatas.get(0).setContentDecoded(newMetadata);
-        } else {
-          DescObjMetadata newObjMetadata = new DescObjMetadata();
-          newObjMetadata.setContentEncoding("Base64");
-          newObjMetadata.setContentDecoded(newMetadata);
-          metadatas.add(newObjMetadata);
+          oldMetadata = metadatas.get(0).getContentDecoded();
+        }
+      }
+      // only update if there's been modifications or there's no old
+      // metadata and the new isn't empty
+      boolean update = false;
+      if (newMetadata != null) {
+        if (oldMetadata == null)
+          update = true;
+        else if (!oldMetadata.equals(newMetadata))
+          update = true;
+      }
+
+      if (update) {
+        if (currentDescOb != null) {
+          List<DescObjMetadata> metadatas = currentDescOb.getMetadataWithReplaces();
+          if (!metadatas.isEmpty()) {
+            metadatas.get(0).setContentDecoded(newMetadata);
+          } else {
+            DescObjMetadata newObjMetadata = new DescObjMetadata();
+            newObjMetadata.setContentEncoding("Base64");
+            newObjMetadata.setContentDecoded(newMetadata);
+            metadatas.add(newObjMetadata);
+          }
         }
       }
     }
@@ -239,7 +442,7 @@ public class InspectionPane extends BorderPane {
 
     HBox top = new HBox();
     top.getStyleClass().add("hbox");
-    top.setPadding(new Insets(5, 10, 5, 10));
+    top.setPadding(new Insets(10, 10, 10, 10));
 
     Label title = new Label(AppProperties.getLocalizedString("content"));
     top.getChildren().add(title);
@@ -272,13 +475,17 @@ public class InspectionPane extends BorderPane {
     createContentBottom();
   }
 
-  private void createLoadingPane() {
+  private void createLoadingPanes() {
     loadingPane = new HBox();
+    metadataLoadingPane = new HBox();
     loadingPane.setAlignment(Pos.CENTER);
+    metadataLoadingPane.setAlignment(Pos.CENTER);
+    VBox.setVgrow(metadataLoadingPane, Priority.ALWAYS);
     try {
       if (loadingGif == null)
         loadingGif = new Image(ClassLoader.getSystemResource("loading.GIF").openStream());
       loadingPane.getChildren().add(new ImageView(loadingGif));
+      metadataLoadingPane.getChildren().add(new ImageView(loadingGif));
     } catch (IOException e) {
       log.error("Error reading loading GIF", e);
     }
@@ -290,58 +497,50 @@ public class InspectionPane extends BorderPane {
     contentBottom.setAlignment(Pos.CENTER);
 
     Button ignore = new Button(AppProperties.getLocalizedString("ignore"));
-    ignore.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent e) {
-        InspectionTreeItem selected = (InspectionTreeItem) sipFiles.getSelectionModel().getSelectedItem();
-        if (selected == null)
-          return;
-        Set<Path> paths = new HashSet<>();
-        paths.add(selected.getPath());
-        if (currentSIP != null) {
-          currentSIP.ignoreContent(paths);
-          TreeItem parent = selected.getParentDir();
-          TreeItem child = (TreeItem) selected;
-          parent.getChildren().remove(child);
-        }
+    ignore.setOnAction(event -> {
+      InspectionTreeItem selected = (InspectionTreeItem) sipFiles.getSelectionModel().getSelectedItem();
+      if (selected == null)
+        return;
+      Set<Path> paths = new HashSet<>();
+      paths.add(selected.getPath());
+      if (currentDescOb != null && currentDescOb instanceof SipPreview) {
+        ((SipPreview) currentDescOb).ignoreContent(paths);
+        TreeItem parent = selected.getParentDir();
+        TreeItem child = (TreeItem) selected;
+        parent.getChildren().remove(child);
       }
     });
     flatten = new Button(AppProperties.getLocalizedString("InspectionPane.flatten"));
-    flatten.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent e) {
-        Object selected = sipFiles.getSelectionModel().getSelectedItem();
-        if (selected instanceof SipContentDirectory) {
-          SipContentDirectory dir = (SipContentDirectory) selected;
-          dir.flatten();
-        }
+    flatten.setOnAction(event -> {
+      Object selected = sipFiles.getSelectionModel().getSelectedItem();
+      if (selected instanceof SipContentDirectory) {
+        SipContentDirectory dir = (SipContentDirectory) selected;
+        dir.flatten();
       }
     });
     skip = new Button(AppProperties.getLocalizedString("InspectionPane.skip"));
-    skip.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent e) {
-        Object selected = sipFiles.getSelectionModel().getSelectedItem();
-        if (selected instanceof SipContentDirectory) {
-          SipContentDirectory dir = (SipContentDirectory) selected;
-          SipContentDirectory parent = (SipContentDirectory) dir.getParent();
-          dir.skip();
-          // update the SIP's internal content representation
-          Set<TreeNode> newFiles = new HashSet<>();
-          for (String s : sipRoot.getTreeNode().getKeys())
-            newFiles.add(sipRoot.getTreeNode().get(s));
-          currentSIP.setFiles(newFiles);
-          // clear the parent and recreate the children based on the updated
-          // tree nodes
-          TreeItem grandparent = parent.getParent();
-          if (grandparent == null) {
-            grandparent = parent;
-          }
-          TreeItem newParent = recCreateSipContent(parent.getTreeNode(), grandparent);
-          parent.getChildren().clear();
-          parent.getChildren().addAll(newParent.getChildren());
-          parent.sortChildren();
+    skip.setOnAction(event -> {
+      Object selected = sipFiles.getSelectionModel().getSelectedItem();
+      if (selected instanceof SipContentDirectory) {
+        SipContentDirectory dir = (SipContentDirectory) selected;
+        SipContentDirectory parent = (SipContentDirectory) dir.getParent();
+        dir.skip();
+        // update the SIP's internal content representation
+        Set<TreeNode> newFiles = new HashSet<>();
+        for (String s : sipRoot.getTreeNode().getKeys())
+          newFiles.add(sipRoot.getTreeNode().get(s));
+
+        ((SipPreview) currentDescOb).setFiles(newFiles);
+        // clear the parent and recreate the children based on the updated
+        // tree nodes
+        TreeItem grandparent = parent.getParent();
+        if (grandparent == null) {
+          grandparent = parent;
         }
+        TreeItem newParent = recCreateSipContent(parent.getTreeNode(), grandparent);
+        parent.getChildren().clear();
+        parent.getChildren().addAll(newParent.getChildren());
+        parent.sortChildren();
       }
     });
 
@@ -373,14 +572,11 @@ public class InspectionPane extends BorderPane {
         return null;
       }
     };
-    contentTask.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-      @Override
-      public void handle(WorkerStateEvent workerStateEvent) {
-        sipRoot = newRoot;
-        sipFiles.setRoot(sipRoot);
-        content.setCenter(treeBox);
-        content.setBottom(contentBottom);
-      }
+    contentTask.setOnSucceeded(event -> {
+      sipRoot = newRoot;
+      sipFiles.setRoot(sipRoot);
+      content.setCenter(treeBox);
+      content.setBottom(contentBottom);
     });
     new Thread(contentTask).start();
 
@@ -409,7 +605,7 @@ public class InspectionPane extends BorderPane {
 
     HBox top = new HBox();
     top.getStyleClass().add("hbox");
-    top.setPadding(new Insets(5, 10, 5, 10));
+    top.setPadding(new Insets(10, 10, 10, 10));
 
     Label title = new Label(AppProperties.getLocalizedString("InspectionPane.rules"));
     top.getChildren().add(title);
@@ -431,72 +627,28 @@ public class InspectionPane extends BorderPane {
     emptyText.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(emptyText);
 
-    emptyRulesPane.setOnDragOver(new EventHandler<DragEvent>() {
-      @Override
-      public void handle(DragEvent event) {
-        if (currentSchema != null && event.getGestureSource() instanceof SourceTreeCell) {
-          event.acceptTransferModes(TransferMode.COPY);
-          emptyText.setText(AppProperties.getLocalizedString("InspectionPane.onDrop"));
-        }
-        event.consume();
+    emptyRulesPane.setOnDragOver(event -> {
+      if (currentSchema != null && event.getGestureSource() instanceof SourceTreeCell) {
+        event.acceptTransferModes(TransferMode.COPY);
+        emptyText.setText(AppProperties.getLocalizedString("InspectionPane.onDrop"));
       }
+      event.consume();
     });
 
-    emptyRulesPane.setOnDragDropped(new EventHandler<DragEvent>() {
-      @Override
-      public void handle(DragEvent event) {
-        RodaIn.getSchemaPane().startAssociation(currentSchema);
-        event.consume();
-      }
+    emptyRulesPane.setOnDragDropped(event -> {
+      RodaIn.getSchemaPane().startAssociation(currentSchema);
+      event.consume();
     });
 
-    emptyRulesPane.setOnDragExited(new EventHandler<DragEvent>() {
-      @Override
-      public void handle(DragEvent event) {
-        emptyText.setText(AppProperties.getLocalizedString("InspectionPane.help.ruleList"));
-        event.consume();
-      }
+    emptyRulesPane.setOnDragExited(event -> {
+      emptyText.setText(AppProperties.getLocalizedString("InspectionPane.help.ruleList"));
+      event.consume();
     });
 
 
     box.getChildren().addAll(titleBox);
     emptyRulesPane.getChildren().add(box);
     rules.setCenter(emptyRulesPane);
-  }
-
-  /**
-   * @return the passed in label made selectable.
-   */
-  private Label makeSelectable(Label label) {
-    StackPane textStack = new StackPane();
-    textStack.setAlignment(Pos.CENTER_LEFT);
-
-    TextField textField = new TextField(label.getText());
-    textField.setEditable(false);
-    textField.getStyleClass().add("hiddenTextField");
-
-    textField.setOnMouseClicked(new EventHandler<MouseEvent>() {
-      @Override
-      public void handle(MouseEvent event) {
-        if (event.getClickCount() == 1) {
-          textField.requestFocus();
-          textField.selectAll();
-        }
-      }
-    });
-
-    // the invisible label is a hack to get the textField to size like a label.
-    Label invisibleLabel = new Label();
-    invisibleLabel.setMinWidth(200);
-    invisibleLabel.textProperty().bind(label.textProperty());
-    invisibleLabel.setVisible(false);
-
-    textStack.getChildren().addAll(invisibleLabel, textField);
-    label.textProperty().bindBidirectional(textField.textProperty());
-    label.setGraphic(textStack);
-    label.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-
-    return label;
   }
 
   /**
@@ -517,49 +669,58 @@ public class InspectionPane extends BorderPane {
   public void update(SipPreviewNode sip) {
     setTop(topBox);
     setCenter(center);
-    currentSIP = sip.getSip();
+    currentSIPNode = sip;
+    currentDescOb = sip.getSip();
     currentSchema = null;
     if(contentTask != null && contentTask.isRunning()){
       contentTask.cancel(true);
     }
+    if (metadataTask != null && metadataTask.isRunning()) {
+      metadataTask.cancel(true);
+    }
 
     /* Top */
-    Label title = new Label(sip.getValue());
-    title.setWrapText(true);
-    title.getStyleClass().add("title");
+    paneTitle = new Label(sip.getValue());
+    paneTitle.setWrapText(true);
+    paneTitle.getStyleClass().add("title");
 
     HBox top = new HBox(5);
     top.setPadding(new Insets(0, 10, 10, 10));
     top.setAlignment(Pos.CENTER_LEFT);
-    top.getChildren().addAll(sip.getGraphic(), title);
+    topIcon = new ImageView(sip.getIconBlack());
+    top.getChildren().addAll(topIcon, paneTitle);
     Separator separatorTop = new Separator();
 
     topBox.setPadding(new Insets(10, 0, 10, 0));
     topBox.getChildren().clear();
     topBox.getChildren().addAll(top, separatorTop);
 
+    metadata.getChildren().clear();
+    metadata.getChildren().addAll(metadataTopBox, metadataLoadingPane);
+    metadataTask = new Task<Boolean>() {
+      @Override
+      protected Boolean call() throws Exception {
+        // metadata
+        String meta = currentDescOb.getMetadataWithReplaces().get(0).getContentDecoded();
+        updateTextArea(meta);
+        boolean result = false;
+        try {
+          result = Utils.isEAD(metaText.getText());
+        } catch (InvalidEADException e) {
+        }
+        return result;
+      }
+    };
+    metadataTask.setOnSucceeded((Void) -> showMetadataPane(metadataTask.getValue()));
+    new Thread(metadataTask).start();
+
     /* Center */
     center.getChildren().clear();
-    // id
-    HBox idBox = new HBox(5);
-    Label idKey = new Label("ID:");
-    idKey.getStyleClass().add("sipId");
-
-    Label id = new Label(sip.getSip().getId());
-    id.setWrapText(true);
-    id.getStyleClass().add("sipId");
-    id = makeSelectable(id);
-
-    idBox.getChildren().addAll(idKey, id);
-
-    // metadata
-    String meta = sip.getSip().getMetadataContent();
-    metaText.setText(meta);
 
     // content tree
     createContent(sip);
 
-    center.getChildren().addAll(idBox, metadata, content);
+    center.getChildren().addAll(metadata, content);
     setCenter(center);
   }
 
@@ -577,34 +738,27 @@ public class InspectionPane extends BorderPane {
    */
   public void update(SchemaNode node) {
     setTop(topBox);
-    currentSIP = null;
+    currentDescOb = node.getDob();
+    currentSIPNode = null;
     currentSchema = node;
     if(contentTask != null && contentTask.isRunning()){
       contentTask.cancel(true);
     }
+    if (metadataTask != null && metadataTask.isRunning()) {
+      metadataTask.cancel(true);
+    }
 
     /* top */
     // title
-    TextField title = new TextField(node.getValue());
-    title.setId("schemeNodeTitle");
-    title.getStyleClass().add("title");
-    HBox.setHgrow(title, Priority.ALWAYS);
-    title.textProperty().bindBidirectional(node.valueProperty());
+    paneTitle = new Label(node.getValue());
+    paneTitle.setWrapText(true);
+    paneTitle.getStyleClass().add("title");
 
     HBox top = new HBox(5);
-    top.setPadding(new Insets(2, 10, 5, 10));
+    top.setPadding(new Insets(5, 10, 10, 10));
     top.setAlignment(Pos.CENTER_LEFT);
-    topIcon = new ImageView(node.getImage());
-    top.getChildren().addAll(topIcon, title, itemTypes);
-
-    // Select current description level
-    String currentDescLevel = node.getDob().getDescriptionlevel();
-    for (UIPair pair : itemTypes.getItems()) {
-      if (currentDescLevel.equals(pair.getKey())) {
-        itemTypes.getSelectionModel().select(pair);
-        break;
-      }
-    }
+    topIcon = new ImageView(node.getIconBlack());
+    top.getChildren().addAll(topIcon, paneTitle);
 
     Separator separatorTop = new Separator();
     topBox.setPadding(new Insets(5, 0, 5, 0));
@@ -613,36 +767,59 @@ public class InspectionPane extends BorderPane {
 
     /* center */
     center.getChildren().clear();
-    // id
-    HBox idBox = new HBox(5);
-    Label idKey = new Label("ID:");
-    idKey.getStyleClass().add("sipId");
+    metadata.getChildren().clear();
+    metadata.getChildren().addAll(metadataTopBox, metadataLoadingPane);
 
-    Label id = new Label(node.getDob().getId());
-    id.setWrapText(true);
-    id.getStyleClass().add("sipId");
-    id = makeSelectable(id);
-
-    idBox.getChildren().addAll(idKey, id);
-
-    // metadata
-    List<DescObjMetadata> metadatas = node.getDob().getMetadata();
-    if (!metadatas.isEmpty()) {
-      // For now we only get the first metadata object
-      metaText.setText(metadatas.get(0).getContentDecoded());
-    } else
-      metaText.clear();
+    metadataTask = new Task<Boolean>() {
+      @Override
+      protected Boolean call() throws Exception {
+        // metadata
+        List<DescObjMetadata> metadatas = currentDescOb.getMetadataWithReplaces();
+        if (!metadatas.isEmpty()) {
+          // For now we only get the first metadata object
+          updateTextArea(metadatas.get(0).getContentDecoded());
+        } else
+          metaText.clear();
+        boolean result = false;
+        try {
+          result = Utils.isEAD(metaText.getText());
+        } catch (InvalidEADException e) {
+        }
+        return result;
+      }
+    };
+    metadataTask.setOnSucceeded((Void) -> showMetadataPane(metadataTask.getValue()));
+    new Thread(metadataTask).start();
 
     // rules
     updateRuleList();
 
-    center.getChildren().addAll(idBox, metadata, rules);
+    center.getChildren().addAll(metadata, rules);
     setCenter(center);
+  }
+
+  private void updateTextArea(String content) {
+    metaText.replaceText(content);
+    metaText.setStyleSpans(0, XMLEditor.computeHighlighting(content));
   }
 
   public void showHelp(){
     setCenter(centerHelp);
     setTop(new HBox());
+  }
+
+  private void showMetadataPane(boolean isEAD) {
+    metadata.getChildren().clear();
+    metadata.getChildren().add(metadataTopBox);
+
+    if (isEAD) {
+      toggleForm.setVisible(true);
+      toggleForm.setSelected(false);
+      toggleForm.fire();
+    } else {
+      toggleForm.setVisible(false);
+      metadata.getChildren().add(metaText);
+    }
   }
 
   /**

@@ -1,14 +1,26 @@
 package org.roda.rodain.utils;
 
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.nio.charset.Charset;
-import java.nio.file.*;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Pattern;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+
+import org.roda.rodain.rules.InvalidEADException;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -27,54 +39,6 @@ public class Utils {
     return String.format("%.1f %sB", (double) v / (1L << (z * 10)), " KMGTPE".charAt(z));
   }
 
-  public static int getRelativeMaxDepth(Path path) {
-    final AtomicInteger depth = new AtomicInteger(0);
-    try {
-      Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
-        @Override
-        public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
-          if (dir.getNameCount() > depth.get())
-            depth.set(dir.getNameCount());
-          return FileVisitResult.CONTINUE;
-        }
-      });
-    } catch (AccessDeniedException e) {
-      log.info("Access denied to file", e);
-    } catch (IOException e) {
-      log.error("Error walking the file tree", e);
-    }
-    // return the relative depth to the start path
-    return depth.get() - path.getNameCount();
-  }
-
-  public static String longestCommonPrefix(List<String> strs) {
-    if (strs == null || strs.isEmpty())
-      return "";
-
-    int minLen = Integer.MAX_VALUE;
-    for (String str : strs) {
-      if (minLen > str.length())
-        minLen = str.length();
-    }
-    if (minLen == 0)
-      return "";
-
-    for (int j = 0; j < minLen; j++) {
-      char prev = '0';
-      for (int i = 0; i < strs.size(); i++) {
-        if (i == 0) {
-          prev = strs.get(i).charAt(j);
-          continue;
-        }
-
-        if (strs.get(i).charAt(j) != prev) {
-          return strs.get(i).substring(0, j);
-        }
-      }
-    }
-    return strs.get(0).substring(0, minLen);
-  }
-
   public static String readFile(String path, Charset encoding) throws IOException {
     byte[] encoded = Files.readAllBytes(Paths.get(path));
     return new String(encoded, encoding);
@@ -85,8 +49,37 @@ public class Utils {
     return s.hasNext() ? s.next() : "";
   }
 
-  public static String replaceTag(String content, String tag, String replacement) {
-    String escapedString = replacement.replaceAll("\\$", "\\\\\\$");
-    return content.replaceAll(tag, escapedString);
+  public static Document loadXMLFromString(String xml) throws IOException, SAXException, ParserConfigurationException {
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
+    factory.setNamespaceAware(true);
+    DocumentBuilder builder = factory.newDocumentBuilder();
+
+    return builder.parse(new InputSource(new StringReader(xml)));
+  }
+
+  public static boolean isEAD(String content) throws InvalidEADException {
+    boolean isValid = false;
+    try {
+      // build the schema
+      SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+      StreamSource streamSource = new StreamSource(ClassLoader.getSystemResourceAsStream("templates/ead2002.xsd"));
+      Schema schema = factory.newSchema(streamSource);
+      Validator validator = schema.newValidator();
+
+      // create a source from a string
+      Source source = new StreamSource(new StringReader(content));
+
+      // check input
+      validator.validate(source);
+      isValid = true;
+    } catch (IOException e) {
+      log.error("Can't access the schema file", e);
+    } catch (SAXException e) {
+      log.info("Error validating the XML with the EAD schema", e);
+      throw new InvalidEADException(e.getMessage());
+    }
+
+    return isValid;
   }
 }

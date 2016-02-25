@@ -2,12 +2,15 @@ package org.roda.rodain.schema.ui;
 
 import java.util.Observable;
 import java.util.Observer;
+import java.util.ResourceBundle;
 
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 
 import org.roda.rodain.rules.sip.SipPreview;
+import org.roda.rodain.utils.FontAwesomeImageCreator;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -30,7 +33,7 @@ public class SipPreviewNode extends TreeItem<String> implements Observer {
    *          The icon to be used in the SipPreviewNode, with the color white
    */
   public SipPreviewNode(SipPreview sip, Image iconBlack, Image iconWhite) {
-    super(sip.getName());
+    super(sip.getTitle());
     this.sip = sip;
     this.iconBlack = iconBlack;
     this.iconWhite = iconWhite;
@@ -54,23 +57,23 @@ public class SipPreviewNode extends TreeItem<String> implements Observer {
       return iconWhite;
   }
 
-  public void toggleIcon() {
-    if (blackIconSelected) {
-      setGraphic(new ImageView(iconWhite));
-      blackIconSelected = false;
-    } else {
-      setGraphic(new ImageView(iconBlack));
-      blackIconSelected = true;
-    }
+  public Image getIconBlack() {
+    return iconBlack;
   }
 
-  /**
-   * @return True if the SipPreview's metadata has been modified, false
-   * otherwise
-   * @see SipPreview#isMetadataModified()
-   */
-  public boolean isMetaModified() {
-    return sip.isMetadataModified();
+  public void setDescriptionLevel(String descLevel) {
+    sip.setDescriptionlevel(descLevel);
+    ResourceBundle hierarchyConfig = ResourceBundle.getBundle("properties/roda-description-levels-hierarchy");
+    String category = hierarchyConfig.getString("category." + sip.getDescriptionLevel());
+    String unicode = hierarchyConfig.getString("icon." + category);
+
+    iconBlack = FontAwesomeImageCreator.generate(unicode);
+    iconWhite = FontAwesomeImageCreator.generate(unicode, Color.WHITE);
+    this.setGraphic(new ImageView(iconBlack));
+  }
+
+  public void setBlackIconSelected(boolean value) {
+    blackIconSelected = value;
   }
 
   /**

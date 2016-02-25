@@ -1,6 +1,12 @@
 package org.roda.rodain.schema.ui;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
@@ -21,7 +27,7 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.Callback;
+
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.sip.SipPreview;
@@ -35,12 +41,7 @@ import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -77,8 +78,17 @@ public class SchemaPane extends BorderPane {
     createBottom();
 
     createCenterHelp();
-
     this.setCenter(centerHelp);
+
+    String lastClassScheme = AppProperties.getConfig("lastClassificationScheme");
+    if (lastClassScheme != null && !"".equals(lastClassScheme)) {
+      try {
+        ClassificationSchema schema = loadClassificationSchemaFile(lastClassScheme);
+        updateClassificationSchema(schema);
+      } catch (IOException e) {
+        log.error("Error reading classification scheme specification", e);
+      }
+    }
 
     this.prefWidthProperty().bind(stage.widthProperty().multiply(0.33));
     this.minWidthProperty().bind(stage.widthProperty().multiply(0.2));
@@ -121,22 +131,12 @@ public class SchemaPane extends BorderPane {
     load.setMinHeight(65);
     load.setMinWidth(130);
     load.setMaxWidth(130);
-    load.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        loadClassificationSchema();
-      }
-    });
+    load.setOnAction(event -> loadClassificationSchema());
     load.getStyleClass().add("helpButton");
     loadBox.getChildren().add(load);
 
     Hyperlink link = new Hyperlink(AppProperties.getLocalizedString("SchemaPane.create"));
-    link.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        createClassificationScheme();
-      }
-    });
+    link.setOnAction(event -> createClassificationScheme());
 
     TextFlow flow = new TextFlow(new Text(AppProperties.getLocalizedString("SchemaPane.or")), link);
     flow.setTextAlignment(TextAlignment.CENTER);
@@ -162,31 +162,22 @@ public class SchemaPane extends BorderPane {
     innerBox.getChildren().add(title);
     dropBox.getChildren().addAll(separatorTop, innerBox, separatorBottom);
 
-    dropBox.setOnDragOver(new EventHandler<DragEvent>() {
-      @Override
-      public void handle(DragEvent event) {
-        if (rootNode != null && event.getGestureSource() instanceof SourceTreeCell) {
-          event.acceptTransferModes(TransferMode.COPY);
-          title.setText(AppProperties.getLocalizedString("InspectionPane.onDrop"));
-        }
-        event.consume();
+    dropBox.setOnDragOver(event -> {
+      if (rootNode != null && event.getGestureSource() instanceof SourceTreeCell) {
+        event.acceptTransferModes(TransferMode.COPY);
+        title.setText(AppProperties.getLocalizedString("InspectionPane.onDrop"));
       }
+      event.consume();
     });
 
-    dropBox.setOnDragDropped(new EventHandler<DragEvent>() {
-      @Override
-      public void handle(DragEvent event) {
-        RodaIn.getSchemaPane().startAssociation(rootNode);
-        event.consume();
-      }
+    dropBox.setOnDragDropped(event -> {
+      RodaIn.getSchemaPane().startAssociation(rootNode);
+      event.consume();
     });
 
-    dropBox.setOnDragExited(new EventHandler<DragEvent>() {
-      @Override
-      public void handle(DragEvent event) {
-        title.setText(AppProperties.getLocalizedString("SchemaPane.dragHelp"));
-        event.consume();
-      }
+    dropBox.setOnDragExited(event -> {
+      title.setText(AppProperties.getLocalizedString("SchemaPane.dragHelp"));
+      event.consume();
     });
   }
 
@@ -212,16 +203,14 @@ public class SchemaPane extends BorderPane {
 
     // create the tree view
     treeView = new TreeView<>(rootNode);
+    treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     VBox.setVgrow(treeView, Priority.ALWAYS);
     treeView.setShowRoot(false);
     treeView.setEditable(true);
-    treeView.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
-      @Override
-      public TreeCell<String> call(TreeView<String> p) {
-        SchemaTreeCell cell = new SchemaTreeCell();
-        setDropEvent(cell);
-        return cell;
-      }
+    treeView.setCellFactory(param -> {
+      SchemaTreeCell cell = new SchemaTreeCell();
+      setDropEvent(cell);
+      return cell;
     });
 
     Separator separatorTop = new Separator();
@@ -233,30 +222,32 @@ public class SchemaPane extends BorderPane {
       @Override
       public void changed(ObservableValue observable, TreeItem oldValue, TreeItem newValue) {
         RodaIn.getInspectionPane().saveMetadata();
-        if (newValue instanceof SipPreviewNode) {
-          RodaIn.getInspectionPane().update((SipPreviewNode) newValue);
-          ((SipPreviewNode) newValue).toggleIcon();
-          forceUpdate(newValue);
-        }
-        if (newValue instanceof SchemaNode) {
-          RodaIn.getInspectionPane().update((SchemaNode) newValue);
-          ((SchemaNode) newValue).toggleIcon();
-          forceUpdate(newValue);
-        }
         if (oldValue instanceof SipPreviewNode) {
-          ((SipPreviewNode) oldValue).toggleIcon();
+          oldValue.valueProperty().unbind();
+          ((SipPreviewNode) oldValue).setBlackIconSelected(true);
           forceUpdate(oldValue);
         }
         if (oldValue instanceof SchemaNode) {
-          ((SchemaNode) oldValue).toggleIcon();
+          oldValue.valueProperty().unbind();
+          ((SchemaNode) oldValue).setBlackIconSelected(true);
           forceUpdate(oldValue);
+        }
+        if (newValue instanceof SipPreviewNode) {
+          ((SipPreviewNode) newValue).setBlackIconSelected(false);
+          forceUpdate(newValue);
+          RodaIn.getInspectionPane().update((SipPreviewNode) newValue);
+        }
+        if (newValue instanceof SchemaNode) {
+          ((SchemaNode) newValue).setBlackIconSelected(false);
+          forceUpdate(newValue);
+          RodaIn.getInspectionPane().update((SchemaNode) newValue);
         }
       }
     });
   }
 
-  private void forceUpdate(TreeItem item) {
-    Object value = item.getValue();
+  private void forceUpdate(TreeItem<String> item) {
+    String value = item.getValue();
     item.setValue(null);
     item.setValue(value);
   }
@@ -311,6 +302,8 @@ public class SchemaPane extends BorderPane {
   }
 
   private ClassificationSchema loadClassificationSchemaFile(String fileName) throws IOException {
+    AppProperties.setConfig("lastClassificationScheme", fileName);
+    AppProperties.saveConfig();
     InputStream input = new FileInputStream(fileName);
 
     // create ObjectMapper instance
@@ -390,7 +383,6 @@ public class SchemaPane extends BorderPane {
       return true;
     }
     String content = AppProperties.getLocalizedString("SchemaPane.confirmNewScheme.content");
-    // Localization.setLocale(Locale.forLanguageTag("pt"));
     Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
     dlg.setHeaderText(AppProperties.getLocalizedString("SchemaPane.confirmNewScheme.header"));
     dlg.setTitle(AppProperties.getLocalizedString("SchemaPane.confirmNewScheme.title"));
@@ -422,35 +414,37 @@ public class SchemaPane extends BorderPane {
     removeLevel.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent event) {
-        TreeItem<String> selected = getSelectedItem();
-        if (selected != null) {
-          if (selected instanceof SchemaNode) {
-            SchemaNode node = (SchemaNode) selected;
-            int fullSipCount = node.fullSipCount();
-            if (fullSipCount != 0) {
-              String content = String.format(AppProperties.getLocalizedString("SchemaPane.confirmRemove.content"),
-                fullSipCount);
-              Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
-              dlg.setHeaderText(AppProperties.getLocalizedString("SchemaPane.confirmRemove.header"));
-              dlg.setTitle(AppProperties.getLocalizedString("SchemaPane.confirmRemove.title"));
-              dlg.setContentText(content);
-              dlg.initModality(Modality.APPLICATION_MODAL);
-              dlg.initOwner(primaryStage);
-              dlg.show();
-              dlg.resultProperty().addListener(o -> confirmRemove(selected, dlg.getResult()));
-            } else
-              removeNode(selected);
-          } else if (selected instanceof SipPreviewNode) {
-            SipPreview currentSIP = ((SipPreviewNode) selected).getSip();
-            RuleModalController.removeSipPreview(currentSIP);
-            Task<Void> removeTask = new Task<Void>() {
-              @Override
-              protected Void call() throws Exception {
-                currentSIP.removeSIP();
-                return null;
-              }
-            };
-            new Thread(removeTask).start();
+        List<TreeItem<String>> selectedItems = new ArrayList<>(treeView.getSelectionModel().getSelectedItems());
+        if (selectedItems != null) {
+          for (TreeItem<String> selected : selectedItems) {
+            if (selected instanceof SchemaNode) {
+              SchemaNode node = (SchemaNode) selected;
+              int fullSipCount = node.fullSipCount();
+              if (fullSipCount != 0) {
+                String content = String.format(AppProperties.getLocalizedString("SchemaPane.confirmRemove.content"),
+                  fullSipCount);
+                Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
+                dlg.setHeaderText(AppProperties.getLocalizedString("SchemaPane.confirmRemove.header"));
+                dlg.setTitle(AppProperties.getLocalizedString("SchemaPane.confirmRemove.title"));
+                dlg.setContentText(content);
+                dlg.initModality(Modality.APPLICATION_MODAL);
+                dlg.initOwner(primaryStage);
+                dlg.show();
+                dlg.resultProperty().addListener(o -> confirmRemove(selected, dlg.getResult()));
+              } else
+                removeNode(selected);
+            } else if (selected instanceof SipPreviewNode) {
+              SipPreview currentSIP = ((SipPreviewNode) selected).getSip();
+              RuleModalController.removeSipPreview(currentSIP);
+              Task<Void> removeTask = new Task<Void>() {
+                @Override
+                protected Void call() throws Exception {
+                  currentSIP.removeSIP();
+                  return null;
+                }
+              };
+              new Thread(removeTask).start();
+            }
           }
         }
       }
@@ -459,12 +453,7 @@ public class SchemaPane extends BorderPane {
     Button addLevel = new Button(AppProperties.getLocalizedString("SchemaPane.add"));
     addLevel.setMinWidth(100);
 
-    addLevel.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent actionEvent) {
-        addNewLevel();
-      }
-    });
+    addLevel.setOnAction(event -> addNewLevel());
 
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
@@ -518,7 +507,7 @@ public class SchemaPane extends BorderPane {
     DescriptionObject dobj = new DescriptionObject();
     dobj.setId(UUID.randomUUID().toString());
     dobj.setTitle(AppProperties.getLocalizedString("SchemaPane.newNode"));
-    dobj.setDescriptionlevel("class");
+    dobj.setDescriptionlevel("series");
     SchemaNode newNode = new SchemaNode(dobj);
     if (selected != null) {
       dobj.setParentId(selected.getDob().getId());

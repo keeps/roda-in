@@ -1,0 +1,66 @@
+<ead xmlns="http://ead3.archivists.org/schema/"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://ead3.archivists.org/schema/ ../schemas/ead3.xsd">
+    <control>
+        <recordid>{{id}}</recordid>
+        <filedesc>
+            <titlestmt>
+                <titleproper>{{title}}</titleproper>
+            </titlestmt>
+        </filedesc>
+        <maintenancestatus value="new"/>
+        <maintenanceagency>
+            <agencyname>{{producer}}</agencyname>
+        </maintenanceagency>
+
+        <maintenancehistory>
+            <maintenanceevent>
+                <eventtype value="created"/>
+                <eventdatetime standarddatetime="{{now}}">{{now}}</eventdatetime>
+                <agenttype value="machine"/>
+                <agent>RODA-in version 2</agent>
+                <eventdescription>Creation of EAD record using RODA-in version 2</eventdescription>
+            </maintenanceevent>
+        </maintenancehistory>
+    </control>
+
+    <archdesc level="item">
+        <did>
+            <unitid>{{id}}</unitid>
+            <unittitle>{{title}}</unittitle>
+
+            <unitdatestructured calendar="gregorian">
+                <daterange>
+                    <fromdate standarddate="{{dateInitial}}">{{dateInitial}}</fromdate>
+                    <todate standarddate="{{dateFinal}}">{{dateFinal}}</todate>
+                </daterange>
+            </unitdatestructured>
+
+            <origination label="producer">
+                <corpname>
+                    <part>{{producer}}</part>
+                </corpname>
+            </origination>
+
+            <origination label="creator">
+                <persname>
+                    <part>{{creator}}</part>
+                </persname>
+            </origination>
+
+            <langmaterial>
+                <language>{{language}}</language>
+            </langmaterial>
+
+        </did>
+
+        <scopecontent>
+            <p>{{description}}</p>
+        </scopecontent>
+
+        <userestrict>
+            <p>{{rights}}</p>
+        </userestrict>
+    </archdesc>
+
+</ead>

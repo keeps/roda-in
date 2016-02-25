@@ -1,24 +1,19 @@
 package org.roda.rodain.rules.sip;
 
 import java.nio.file.Path;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.TreeNode;
+import org.roda.rodain.schema.DescObjMetadata;
+import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
-
-import com.samskivert.mustache.Mustache;
-import com.samskivert.mustache.Template;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 01-10-2015.
  */
-public class SipPreview extends Observable implements Observer {
-  private String id;
-  private String name;
-  private SipMetadata metadata;
+public class SipPreview extends DescriptionObject implements Observer {
   private Set<TreeNode> files;
   private boolean contentModified = false;
   private boolean removed = false;
@@ -33,24 +28,20 @@ public class SipPreview extends Observable implements Observer {
    * @param metadata
    *          The metadata of the SIP
    */
-  public SipPreview(String name, Set<TreeNode> files, SipMetadata metadata) {
-    this.name = name;
+  public SipPreview(String name, Set<TreeNode> files, DescObjMetadata metadata) {
     this.files = files;
-    this.metadata = metadata;
+    setTitle(name);
+    List<DescObjMetadata> tempList = new ArrayList<>();
+    tempList.add(metadata);
+    setMetadata(tempList);
+    setDescriptionlevel("item");
     // metadata = new SipMetadata(metaType, metadataPath, templateType);
-    id = UUID.randomUUID().toString();
+    setId(UUID.randomUUID().toString());
 
     // set paths as mapped
     for (TreeNode tn : files) {
       PathCollection.addPath(tn.getPath().toString(), SourceTreeItemState.MAPPED);
     }
-  }
-
-  /**
-   * @return The name of the SIP.
-   */
-  public String getName() {
-    return name;
   }
 
   /**
@@ -72,47 +63,6 @@ public class SipPreview extends Observable implements Observer {
   }
 
   /**
-   * @return The metadata content of the SIP.
-   * @see SipMetadata#getMetadataContent()
-   */
-  public String getMetadataContent() {
-    String content = metadata.getMetadataContent();
-    if (content != null) {
-      //TODO configurable tags...
-      Template tmpl = Mustache.compiler().compile(content);
-      Map<String, String> data = new HashMap<>();
-      data.put("title", getName());
-      data.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
-      content = tmpl.execute(data);
-      //we need to clean the '\r' character in windows,
-      // otherwise the strings are different even if no modification has been made
-      content = content.replace("\r", "");
-    }
-    return content;
-  }
-
-  /**
-   * @return The type of the metadata.
-   */
-  public String getTemplateType() {
-    return metadata.getTemplateType();
-  }
-
-  /**
-   * Updates the metadata content of the SIP.
-   *
-   * @param meta The new metadata content.
-   * @see SipMetadata#update(String)
-   */
-  public void updateMetadata(String meta) {
-    if(!meta.equals(metadata.getMetadataContent())) {
-      metadata.update(meta);
-      setChanged();
-      notifyObservers();
-    }
-  }
-
-  /**
    * Removes from the SIP's content the set of paths received as parameter.
    *
    * @param paths The set of paths to be removed
@@ -130,21 +80,6 @@ public class SipPreview extends Observable implements Observer {
   }
 
   /**
-   * @return The version of the SIP's metadata
-   */
-  public String getMetadataVersion() {
-    return metadata.getVersion();
-  }
-
-  /**
-   * @return True if the metadata has been modified, false otherwise.
-   * @see SipMetadata#isModified()
-   */
-  public boolean isMetadataModified() {
-    return metadata.isModified();
-  }
-
-  /**
    * @return True if the content has been modified (nodes removed, flattened or
    * skipped), false otherwise.
    */
@@ -157,13 +92,6 @@ public class SipPreview extends Observable implements Observer {
    */
   public boolean isRemoved() {
     return removed;
-  }
-
-  /**
-   * @return The id of the SIP.
-   */
-  public String getId() {
-    return id;
   }
 
   /**

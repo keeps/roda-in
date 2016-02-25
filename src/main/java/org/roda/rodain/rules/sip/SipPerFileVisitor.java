@@ -1,20 +1,21 @@
 package org.roda.rodain.rules.sip;
 
-import org.apache.commons.io.FilenameUtils;
-import org.roda.rodain.core.PathCollection;
-import org.roda.rodain.rules.MetadataTypes;
-import org.roda.rodain.rules.TreeNode;
-import org.roda.rodain.rules.filters.ContentFilter;
-import org.roda.rodain.source.ui.items.SourceTreeItemState;
-import org.roda.rodain.utils.TreeVisitor;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
+
+import org.apache.commons.io.FilenameUtils;
+import org.roda.rodain.core.PathCollection;
+import org.roda.rodain.rules.MetadataTypes;
+import org.roda.rodain.rules.TreeNode;
+import org.roda.rodain.rules.filters.ContentFilter;
+import org.roda.rodain.schema.DescObjMetadata;
+import org.roda.rodain.source.ui.items.SourceTreeItemState;
+import org.roda.rodain.utils.TreeVisitor;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -187,7 +188,12 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipPre
     Set<TreeNode> files = new HashSet<>();
     files.add(node);
 
-    SipMetadata metadata = new SipMetadata(metaType, metaPath, templateType, templateVersion);
+    DescObjMetadata metadata;
+    if (metaType == MetadataTypes.TEMPLATE)
+      metadata = new DescObjMetadata(metaType, templateType, templateVersion);
+    else
+      metadata = new DescObjMetadata(metaType, metaPath);
+
     SipPreview sipPreview = new SipPreview(path.getFileName().toString(), files, metadata);
     node.addObserver(sipPreview);
 

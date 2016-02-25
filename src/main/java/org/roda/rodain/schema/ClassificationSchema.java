@@ -11,6 +11,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -65,6 +66,7 @@ public class ClassificationSchema {
       OutputStream outputStream = new FileOutputStream(fileName);
       // create ObjectMapper instance
       ObjectMapper objectMapper = new ObjectMapper();
+      objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
       objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
       // convert object to json string
       objectMapper.writeValue(outputStream, this);

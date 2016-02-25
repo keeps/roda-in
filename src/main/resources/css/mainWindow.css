@@ -38,6 +38,57 @@
     -fx-background-color: white;
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
+    -fx-text-fill: black;
+}
+
+.inspectionPart .formLabel {
+    -fx-text-fill: black;
+    -fx-font-size: medium;
+}
+
+.toggle-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.code-area {
+    -fx-font-size: 90%;
+}
+
+.inspectionPart .date-picker .label {
+    -fx-text-fill: black;
+    -fx-font-size: medium;
+}
+
+.inspectionPart .date-picker .arrow-button {
+    -fx-background-color: white;
+    -fx-border-color: gray;
+    -fx-border-width: 1px;
+}
+
+.inspectionPart .date-picker .button {
+    -fx-background-color: transparent;
+}
+
+.inspectionPart .date-picker-popup > .month-year-pane {
+    -fx-background-color: white;
+    -fx-background-insets: 0 0 0 0, 0 0 1 0;
+}
+
+.inspectionPart .date-picker-popup {
+    -fx-border-color: gray;
+    -fx-border-width: 1px;
+}
+
+.inspectionPart .text-field {
+    -fx-background-color: white;
+    -fx-border-color: gray;
+    -fx-border-width: 1px;
+}
+
+.inspectionPart .popover .label {
+    -fx-text-fill: black;
+    -fx-font-size: medium;
 }
 
 /* Tree-view and Tree-cell*/
@@ -97,25 +148,6 @@
 }
 
 /* Schema */
-
-.dropBox{
-    -fx-border-color: grey ;
-    -fx-border-width: 2 ;
-    -fx-border-style: segments(10, 15, 15, 15)  line-cap square ;
-}
-
-.dropBox:hover {
-    -fx-border-color: dimgray;
-    -fx-border-width: 2 ;
-    -fx-border-style: segments(10, 15, 15, 15)  line-cap square ;
-}
-
-.dropBoxHovered{
-    -fx-border-color: #089de3;
-    -fx-border-width: 2 ;
-    -fx-border-style: segments(10, 15, 15, 15)  line-cap square ;
-}
-
 .schemaNode .cellText {
     -fx-opacity: 70%;
 }
