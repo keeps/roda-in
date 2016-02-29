@@ -6,7 +6,7 @@
 
     <groupId>org.roda</groupId>
     <artifactId>rodain</artifactId>
-    <version>2.0.0-alpha.2.4</version>
+    <version>2.0.0-alpha.3</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -106,28 +106,6 @@
                                 <internalName>RODA-in</internalName>
                                 <originalFilename>rodain-app-${project.version}.exe</originalFilename>
                             </versionInfo>
-                        </configuration>
-                    </execution>
-
-                    <!--Command-line exe-->
-                    <execution>
-                        <id>l4j-cli</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>launch4j</goal>
-                        </goals>
-                        <configuration>
-                            <headerType>console</headerType>
-                            <outfile>target/rodain-cmd-${project.version}.exe</outfile>
-                            <jar>target/rodain-app-${project.version}.jar</jar>
-                            <errTitle>Error opening RODA-in</errTitle>
-                            <classPath>
-                                <mainClass>org.roda.rodain.core.Main</mainClass>
-                            </classPath>
-                            <icon>src/main/resources/roda2-logo.ico</icon>
-                            <jre>
-                                <minVersion>1.8.0</minVersion>
-                            </jre>
                         </configuration>
                     </execution>
                 </executions>

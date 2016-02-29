@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.net.util.Base64;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.InvalidEADException;
@@ -52,7 +53,9 @@ public class DescObjMetadata {
     this.type = type;
     this.path = path;
     this.contentEncoding = "Base64";
-    this.id = path.getFileName().toString();
+    if (path != null) {
+      this.id = path.getFileName().toString();
+    }
   }
 
   /**
@@ -122,8 +125,11 @@ public class DescObjMetadata {
     if (!loaded) {
       loadMetadata();
     }
-    byte[] decoded = Base64.decodeBase64(content);
-    return new String(decoded);
+    if (content != null) {
+      byte[] decoded = Base64.decodeBase64(content);
+      return new String(decoded);
+    } else
+      return "";
   }
 
   private void loadMetadata() {
@@ -149,7 +155,8 @@ public class DescObjMetadata {
   /**
    * Sets the content of the description object metadata.
    *
-   * @param content The content enconded in Base64
+   * @param content
+   *          The content encoded in Base64
    */
   public void setContent(String content) {
     this.content = content;
@@ -183,6 +190,17 @@ public class DescObjMetadata {
    */
   public void setContentEncoding(String contentEncoding) {
     this.contentEncoding = contentEncoding;
+  }
+
+  public String getSchema() {
+    String result = null;
+    if (templateType != null) {
+      result = AppProperties.getSchemaFile(templateType);
+    } else {
+      if (path != null)
+        result = AppProperties.getSchemaFile(FilenameUtils.removeExtension(path.getFileName().toString()));
+    }
+    return result;
   }
 
   /**

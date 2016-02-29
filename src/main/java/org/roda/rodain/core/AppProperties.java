@@ -1,13 +1,5 @@
 package org.roda.rodain.core;
 
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
-import org.roda.rodain.utils.FolderBasedUTF8Control;
-import org.roda.rodain.utils.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.swing.filechooser.FileSystemView;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -15,10 +7,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import java.util.*;
+
+import javax.swing.filechooser.FileSystemView;
+
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
+import org.roda.rodain.utils.FolderBasedUTF8Control;
+import org.roda.rodain.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -33,6 +31,8 @@ public class AppProperties {
     descLevels = load("roda-description-levels-hierarchy");
   private static ResourceBundle resourceBundle;
   public static Locale locale;
+
+  private static Set<Path> allSchemas;
 
   private AppProperties() {
 
@@ -93,6 +93,20 @@ public class AppProperties {
           rodainPath.resolve(schemaFileName), StandardCopyOption.REPLACE_EXISTING);
       }
 
+      // get all schema files in the roda-in home directory
+      allSchemas = new HashSet<>();
+      File folder = rodainPath.toFile();
+      File[] listOfFiles = folder.listFiles();
+
+      for (int i = 0; i < listOfFiles.length; i++) {
+        if (listOfFiles[i].isFile()) {
+          File file = listOfFiles[i];
+          if (file.getName().endsWith(".xsd")) {
+            allSchemas.add(Paths.get(file.getPath()));
+          }
+        }
+      }
+
       // load config
       ext_config = new PropertiesConfiguration();
       ext_config.load(new FileInputStream(configPath.toFile()));
@@ -146,7 +160,19 @@ public class AppProperties {
 
   public static String getSchemaFile(String propertyName) {
     String completeKey = "metadata.template." + propertyName + ".schema";
-    return getFile(completeKey);
+    String result = getFile(completeKey);
+    if (result == null || "".equals(result)) {
+      for (Path sch : allSchemas) {
+        if (sch.getFileName().toString().contains(propertyName)) {
+          try {
+            result = Utils.readFile(sch.toString(), Charset.defaultCharset());
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+        }
+      }
+    }
+    return result;
   }
 
   public static Path getSchemaPath(String propertyName) {

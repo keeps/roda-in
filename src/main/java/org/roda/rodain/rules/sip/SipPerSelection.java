@@ -1,7 +1,6 @@
 package org.roda.rodain.rules.sip;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
@@ -109,9 +108,12 @@ public class SipPerSelection extends Observable implements TreeVisitor, SipPrevi
     if (path.getFileName() == null) {
       return true;
     }
-    Pattern p = Pattern.compile(templateType);
-    Matcher m = p.matcher(path.getFileName().toString());
-    return m.matches();
+    if (templateType != null) {
+      Pattern p = Pattern.compile(templateType);
+      Matcher m = p.matcher(path.getFileName().toString());
+      return m.matches();
+    }
+    return false;
   }
 
   /**
@@ -231,11 +233,14 @@ public class SipPerSelection extends Observable implements TreeVisitor, SipPrevi
   }
 
   private Path searchMetadata(Path sipPath) {
-    File dir = new File(sipPath.toString());
-    File[] foundFiles = dir.listFiles(new FilenameFilter() {
-      public boolean accept(File dir, String name) {
-        return name.startsWith("metadata.");
-      }
+    File dir = sipPath.toFile();
+    if (!dir.isDirectory())
+      dir = sipPath.getParent().toFile();
+
+    Pattern p = Pattern.compile(templateType);
+    File[] foundFiles = dir.listFiles((dir1, name) -> {
+      Matcher m = p.matcher(name);
+      return m.matches();
     });
 
     if (foundFiles != null && foundFiles.length > 0) {

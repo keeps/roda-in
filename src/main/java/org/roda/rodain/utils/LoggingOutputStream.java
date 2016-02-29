@@ -7,7 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Created by adrapereira on 05-01-2016.
+ * @author Andre Pereira apereira@keep.pt
+ * @since 05-01-2016.
  */
 public class LoggingOutputStream extends OutputStream {
   private static final Logger log = LoggerFactory.getLogger(LoggingOutputStream.class.getName());

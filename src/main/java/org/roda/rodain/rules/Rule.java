@@ -227,7 +227,7 @@ public class Rule extends Observable implements Observer, Comparable {
     if (o instanceof SipPreviewCreator) {
       SipPreviewCreator visit = (SipPreviewCreator) o;
       sips = visit.getSips();
-      while (visit.hasNext() && added < 100) {
+      while (visit.hasNext()) {
         added++;
         SipPreview sipPreview = visit.getNext();
         SipPreviewNode sipNode = new SipPreviewNode(sipPreview, iconBlack, iconWhite);

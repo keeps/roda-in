@@ -1,5 +1,16 @@
 package org.roda.rodain.inspection;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -21,6 +32,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import javafx.util.converter.LocalDateStringConverter;
+
 import org.apache.commons.lang.StringUtils;
 import org.fxmisc.richtext.CodeArea;
 import org.roda.rodain.core.AppProperties;
@@ -32,6 +44,7 @@ import org.roda.rodain.rules.sip.MetadataValue;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.DescriptionObject;
+import org.roda.rodain.schema.InvalidMetadataException;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SipPreviewNode;
 import org.roda.rodain.source.ui.SourceTreeCell;
@@ -39,17 +52,6 @@ import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.UIPair;
 import org.roda.rodain.utils.Utils;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -75,6 +77,7 @@ public class InspectionPane extends BorderPane {
   private ToggleButton toggleForm;
   private HBox metadataLoadingPane, metadataTopBox;
   private TextField titleTextField;
+  private Button validationButton;
   // SIP Content
   private BorderPane content;
   private VBox treeBox;
@@ -153,25 +156,32 @@ public class InspectionPane extends BorderPane {
     toggleForm.setGraphic(toggleImage);
     toggleImage.imageProperty().bind(Bindings.when(toggleForm.selectedProperty()).then(selected).otherwise(unselected));
 
-    Button saveButton = new Button();
-    saveButton.setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.check, Color.WHITE)));
-    saveButton.setOnAction(event -> {
+    validationButton = new Button();
+    validationButton
+      .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.check, Color.WHITE)));
+    validationButton.setOnAction(event -> {
       if (metadata.getChildren().contains(metadataForm)) {
         saveMetadata();
       }
       StringBuilder message = new StringBuilder();
       ValidationPopOver popOver = new ValidationPopOver();
-      popOver.show(saveButton);
+      popOver.show(validationButton);
 
       Task<Boolean> validationTask = new Task<Boolean>() {
         @Override
         protected Boolean call() throws Exception {
           boolean result = false;
           try {
-            if (Utils.isEAD(metaText.getText())) {
-              result = true;
+            if (currentDescOb != null) {
+              List<DescObjMetadata> metadataList = currentDescOb.getMetadata();
+              if (metadataList != null && !metadataList.isEmpty()) {
+                DescObjMetadata metadata = metadataList.get(0);
+                if (Utils.validateSchema(metaText.getText(), metadata.getSchema())) {
+                  result = true;
+                }
+              }
             }
-          } catch (InvalidEADException e) {
+          } catch (InvalidMetadataException e) {
             message.append(e.getMessage());
           }
           return result;
@@ -180,11 +190,20 @@ public class InspectionPane extends BorderPane {
       validationTask.setOnSucceeded((Void) -> {
         if (validationTask.getValue()) {
           popOver.updateContent(true, message.toString());
-          toggleForm.setVisible(true);
-          if (metadata.getChildren().contains(metaText)) {
-            toggleForm.setSelected(false);
-          } else
-            toggleForm.setSelected(true);
+
+          if (currentDescOb != null) {
+            List<DescObjMetadata> metadataList = currentDescOb.getMetadata();
+            if (metadataList != null && !metadataList.isEmpty()) {
+              DescObjMetadata metadataObj = metadataList.get(0);
+              if (metadataObj.getTemplateType() != null && metadataObj.getTemplateType().equals("ead")) {
+                toggleForm.setVisible(true);
+                if (metadata.getChildren().contains(metaText)) {
+                  toggleForm.setSelected(false);
+                } else
+                  toggleForm.setSelected(true);
+              }
+            }
+          }
         } else {
           popOver.updateContent(false, message.toString());
           toggleForm.setVisible(false);
@@ -211,7 +230,7 @@ public class InspectionPane extends BorderPane {
       }
     });
 
-    metadataTopBox.getChildren().addAll(titleLabel, space, toggleForm, saveButton);
+    metadataTopBox.getChildren().addAll(titleLabel, space, toggleForm, validationButton);
 
     metaText = new CodeArea();
     VBox.setVgrow(metaText, Priority.ALWAYS);
@@ -695,23 +714,38 @@ public class InspectionPane extends BorderPane {
     topBox.getChildren().clear();
     topBox.getChildren().addAll(top, separatorTop);
 
+    List<DescObjMetadata> metadataList = currentDescOb.getMetadataWithReplaces();
+    if (metadataList != null && !metadataList.isEmpty()) {
+      String schema = metadataList.get(0).getSchema();
+      if (schema == null || "".equals(schema)) {
+        validationButton.setVisible(false);
+      } else
+        validationButton.setVisible(true);
+    }
+
     metadata.getChildren().clear();
     metadata.getChildren().addAll(metadataTopBox, metadataLoadingPane);
     metadataTask = new Task<Boolean>() {
       @Override
       protected Boolean call() throws Exception {
         // metadata
-        String meta = currentDescOb.getMetadataWithReplaces().get(0).getContentDecoded();
-        updateTextArea(meta);
         boolean result = false;
-        try {
-          result = Utils.isEAD(metaText.getText());
-        } catch (InvalidEADException e) {
+        List<DescObjMetadata> metadataList = currentDescOb.getMetadataWithReplaces();
+        if (metadataList != null && !metadataList.isEmpty()) {
+          String meta = metadataList.get(0).getContentDecoded();
+          updateTextArea(meta);
+          try {
+            result = Utils.isEAD(metaText.getText());
+          } catch (InvalidEADException e) {
+          }
         }
         return result;
       }
     };
-    metadataTask.setOnSucceeded((Void) -> showMetadataPane(metadataTask.getValue()));
+    metadataTask.setOnSucceeded((Void) -> {
+      if (metadataTask != null)
+        showMetadataPane(metadataTask.getValue());
+    });
     new Thread(metadataTask).start();
 
     /* Center */
@@ -770,6 +804,15 @@ public class InspectionPane extends BorderPane {
     metadata.getChildren().clear();
     metadata.getChildren().addAll(metadataTopBox, metadataLoadingPane);
 
+    List<DescObjMetadata> metadataList = currentDescOb.getMetadataWithReplaces();
+    if (metadataList != null && !metadataList.isEmpty()) {
+      String schema = metadataList.get(0).getSchema();
+      if (schema == null || "".equals(schema)) {
+        validationButton.setVisible(false);
+      } else
+        validationButton.setVisible(true);
+    }
+
     metadataTask = new Task<Boolean>() {
       @Override
       protected Boolean call() throws Exception {
@@ -788,7 +831,11 @@ public class InspectionPane extends BorderPane {
         return result;
       }
     };
-    metadataTask.setOnSucceeded((Void) -> showMetadataPane(metadataTask.getValue()));
+    metadataTask.setOnSucceeded((Void) -> {
+      if (metadataTask != null) {
+        showMetadataPane(metadataTask.getValue());
+      }
+    });
     new Thread(metadataTask).start();
 
     // rules
