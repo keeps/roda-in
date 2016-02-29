@@ -1,10 +1,5 @@
 package org.roda.rodain.core;
 
-/**
- * @author Andre Pereira apereira@keep.pt
- * @since 16-09-2015.
- */
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,6 +37,10 @@ import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author Andre Pereira apereira@keep.pt
+ * @since 16-09-2015.
+ */
 public class RodaIn extends Application {
   private static final Logger log = LoggerFactory.getLogger(RodaIn.class.getName());
   private static Stage stage;
@@ -49,9 +48,9 @@ public class RodaIn extends Application {
   private BorderPane mainPane;
   private double initialWidth = 1200, initialHeight = 700;
 
-  private static FileExplorerPane previewExplorer;
+  private static FileExplorerPane fileExplorer;
   private static InspectionPane inspectionPane;
-  private static SchemaPane schemaPane;
+  private static SchemaPane schemePane;
 
   /**
    * The entry point of the application.
@@ -147,12 +146,12 @@ public class RodaIn extends Application {
   private SplitPane createSplitPane() {
     // Divide center pane in 3
     SplitPane split = new SplitPane();
-    previewExplorer = new FileExplorerPane(stage);
-    schemaPane = new SchemaPane(stage);
+    fileExplorer = new FileExplorerPane(stage);
+    schemePane = new SchemaPane(stage);
     inspectionPane = new InspectionPane(stage);
 
     split.setDividerPositions(0.33, 0.67);
-    split.getItems().addAll(previewExplorer, schemaPane, inspectionPane);
+    split.getItems().addAll(fileExplorer, schemePane, inspectionPane);
 
     return split;
   }
@@ -175,7 +174,7 @@ public class RodaIn extends Application {
     langEN.setToggleGroup(languageGroup);
     language.getItems().addAll(langEN, langPT);
 
-    switch (AppProperties.locale.getLanguage()) {
+    switch (AppProperties.getLocale().getLanguage()) {
       case "en":
         langEN.setSelected(true);
         break;
@@ -209,7 +208,7 @@ public class RodaIn extends Application {
     openFolder.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent t) {
-        previewExplorer.chooseNewRoot();
+        fileExplorer.chooseNewRoot();
       }
     });
 
@@ -247,8 +246,8 @@ public class RodaIn extends Application {
         if (dlg.getResult().getButtonData() == ButtonBar.ButtonData.OK_DONE) {
           PathCollection.reset();
           inspectionPane = new InspectionPane(stage);
-          previewExplorer = new FileExplorerPane(stage);
-          schemaPane = new SchemaPane(stage);
+          fileExplorer = new FileExplorerPane(stage);
+          schemePane = new SchemaPane(stage);
           mainPane.setCenter(createSplitPane());
         }
       }
@@ -262,7 +261,7 @@ public class RodaIn extends Application {
     createCS.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent t) {
-        schemaPane.createClassificationScheme();
+        schemePane.createClassificationScheme();
       }
     });
 
@@ -271,7 +270,7 @@ public class RodaIn extends Application {
     updateCS.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent t) {
-        schemaPane.loadClassificationSchema();
+        schemePane.loadClassificationSchema();
       }
     });
 
@@ -287,7 +286,7 @@ public class RodaIn extends Application {
           return;
         String outputFile = selectedFile.toPath().toString();
 
-        Set<SchemaNode> nodes = schemaPane.getSchemaNodes();
+        Set<SchemaNode> nodes = schemePane.getSchemaNodes();
         List<DescriptionObject> dobjs = new ArrayList<>();
         for (SchemaNode sn : nodes) {
           dobjs.add(sn.getDob());
@@ -308,7 +307,7 @@ public class RodaIn extends Application {
     ignoreItems.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent t) {
-        previewExplorer.ignore();
+        fileExplorer.ignore();
       }
     });
 
@@ -320,7 +319,7 @@ public class RodaIn extends Application {
     showFiles.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent t) {
-        previewExplorer.toggleFilesShowing();
+        fileExplorer.toggleFilesShowing();
         if (FileExplorerPane.isShowFiles())
           showFiles.setText(AppProperties.getLocalizedString("Main.hideFiles"));
         else
@@ -332,7 +331,7 @@ public class RodaIn extends Application {
     showIgnored.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent t) {
-        previewExplorer.toggleIgnoredShowing();
+        fileExplorer.toggleIgnoredShowing();
         if (FileExplorerPane.isShowIgnored())
           showIgnored.setText(AppProperties.getLocalizedString("Main.hideIgnored"));
         else
@@ -344,7 +343,7 @@ public class RodaIn extends Application {
     showMapped.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent t) {
-        previewExplorer.toggleMappedShowing();
+        fileExplorer.toggleMappedShowing();
         if (FileExplorerPane.isShowMapped())
           showMapped.setText(AppProperties.getLocalizedString("Main.hideMapped"));
         else
@@ -358,27 +357,44 @@ public class RodaIn extends Application {
     mainPane.setTop(menu);
   }
 
+  /**
+   * @return The selected items in the file explorer
+   */
   public static Set<SourceTreeItem> getSourceSelectedItems() {
-    return previewExplorer.getSelectedItems();
+    return fileExplorer.getSelectedItems();
   }
 
+  /**
+   * @return The inspection pane object.
+   */
   public static InspectionPane getInspectionPane() {
     return inspectionPane;
   }
 
-
-  public static FileExplorerPane getPreviewExplorer() {
-    return previewExplorer;
+  /**
+   * @return The file explorer object.
+   */
+  public static FileExplorerPane getFileExplorer() {
+    return fileExplorer;
   }
 
-  public static SchemaPane getSchemaPane() {
-    return schemaPane;
+  /**
+   * @return The scheme pane object.
+   */
+  public static SchemaPane getSchemePane() {
+    return schemePane;
   }
 
+  /**
+   * @return The Map with the SIPs of all the SchemaNodes in the scheme pane
+   */
   public static Map<SipPreview, String> getSipPreviews() {
-    return schemaPane.getSipPreviews();
+    return schemePane.getSipPreviews();
   }
 
+  /**
+   * Shows a pane to start the export process of the created SIPs.
+   */
   public static void exportSIPs() {
     // force the edits to the metadata text area to be saved
     inspectionPane.saveMetadata();

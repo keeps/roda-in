@@ -60,7 +60,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
   }
 
   private void createEarkSip(String schemaId, SipPreview sip) {
-    Path rodainPath = AppProperties.rodainPath;
+    Path rodainPath = AppProperties.getRodainPath();
     String metadataName = "metadata.xml";
     try {
       SIP earkSip = new EARKSIP(sip.getId(), EARKEnums.ContentType.mixed, "RODA-in");

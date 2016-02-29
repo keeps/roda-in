@@ -156,7 +156,7 @@ public class RuleModalController {
           stage.setHeight(180);
           stage.setWidth(400);
           stage.centerOnScreen();
-          RodaIn.getSchemaPane().showTree();
+          RodaIn.getSchemePane().showTree();
         }
       });
     } catch (Exception e) {
@@ -186,6 +186,14 @@ public class RuleModalController {
     removing.addRule(r);
   }
 
+  /**
+   * Creates a new RuleModalRemoving pane and sets the stage's root scene as
+   * that pane.
+   *
+   * @param sip
+   *          The SIP to be removed
+   * @see RuleModalRemoving
+   */
   public static void removeSipPreview(SipPreview sip) {
     RuleModalRemoving removing = new RuleModalRemoving();
     sip.addObserver(removing);

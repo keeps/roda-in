@@ -655,7 +655,7 @@ public class InspectionPane extends BorderPane {
     });
 
     emptyRulesPane.setOnDragDropped(event -> {
-      RodaIn.getSchemaPane().startAssociation(currentSchema);
+      RodaIn.getSchemePane().startAssociation(currentSchema);
       event.consume();
     });
 
@@ -850,6 +850,9 @@ public class InspectionPane extends BorderPane {
     metaText.setStyleSpans(0, XMLEditor.computeHighlighting(content));
   }
 
+  /**
+   * Shows the help pane.
+   */
   public void showHelp(){
     setCenter(centerHelp);
     setTop(new HBox());

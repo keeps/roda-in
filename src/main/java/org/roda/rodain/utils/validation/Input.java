@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.ls.LSInput;
 
 /**
@@ -12,6 +14,7 @@ import org.w3c.dom.ls.LSInput;
  * @since 29-02-2016.
  */
 public class Input implements LSInput {
+  private static final Logger log = LoggerFactory.getLogger(Input.class.getName());
   private BufferedInputStream inputStream;
   private String publicId;
   private String systemId;
@@ -52,8 +55,7 @@ public class Input implements LSInput {
         String contents = new String(input);
         return contents;
       } catch (IOException e) {
-        e.printStackTrace();
-        System.out.println("Exception " + e);
+        log.error("Unable to get string", e);
         return null;
       }
     }

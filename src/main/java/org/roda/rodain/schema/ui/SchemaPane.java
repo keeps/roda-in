@@ -171,7 +171,7 @@ public class SchemaPane extends BorderPane {
     });
 
     dropBox.setOnDragDropped(event -> {
-      RodaIn.getSchemaPane().startAssociation(rootNode);
+      RodaIn.getSchemePane().startAssociation(rootNode);
       event.consume();
     });
 

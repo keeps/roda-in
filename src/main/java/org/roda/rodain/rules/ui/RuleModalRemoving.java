@@ -102,6 +102,11 @@ public class RuleModalRemoving extends BorderPane implements Observer {
     updateProgress(progressValue);
   }
 
+  /**
+   * Adds a rule to the removal task.
+   * 
+   * @param r
+   */
   public void addRule(Rule r) {
     rules.put(r.getId(), 0f);
   }

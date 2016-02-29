@@ -230,6 +230,15 @@ public class CreationModalProcessing extends BorderPane {
     setBottom(finishedBox);
   }
 
+  /**
+   * Shows an alert with the error message regarding an exception found when
+   * exporting a SIP.
+   * 
+   * @param sip
+   *          The SIP being exported when the exception was thrown
+   * @param ex
+   *          The thrown exception
+   */
   public static void showError(SipPreview sip, Exception ex) {
     Platform.runLater(new Runnable() {
       @Override

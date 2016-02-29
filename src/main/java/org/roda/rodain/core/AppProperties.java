@@ -23,14 +23,15 @@ import org.slf4j.LoggerFactory;
  * @since 28/12/2015.
  */
 public class AppProperties {
+  private static final Logger log = LoggerFactory.getLogger(AppProperties.class.getName());
+
+  private static final Path rodainPath = computeRodainPath();
   private static final String ENV_VARIABLE = "RODAIN_HOME";
   private static final String CONFIGFOLDER = "roda-in";
-  public static final Path rodainPath = computeRodainPath();
-  private static final Logger log = LoggerFactory.getLogger(AppProperties.class.getName());
   private static PropertiesConfiguration style = load("styles"), config = load("config"), ext_config,
     descLevels = load("roda-description-levels-hierarchy");
   private static ResourceBundle resourceBundle;
-  public static Locale locale;
+  private static Locale locale;
 
   private static Set<Path> allSchemas;
 
@@ -146,8 +147,18 @@ public class AppProperties {
     return documentsPath.resolve(CONFIGFOLDER);
   }
 
+  /**
+   * @return The path of the application folder.
+   */
   public static Path getRodainPath() {
     return rodainPath;
+  }
+
+  /**
+   * @return The locale of the application.
+   */
+  public static Locale getLocale() {
+    return locale;
   }
 
   private static PropertiesConfiguration load(String fileName) {
@@ -184,7 +195,7 @@ public class AppProperties {
           try {
             result = Utils.readFile(sch.toString(), Charset.defaultCharset());
           } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Unable to read schema file", e);
           }
         }
       }

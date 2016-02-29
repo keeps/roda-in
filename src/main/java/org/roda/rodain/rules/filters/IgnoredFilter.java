@@ -16,10 +16,24 @@ public class IgnoredFilter {
   private IgnoredFilter() {
   }
 
+  /**
+   * Adds a new ignore rule.
+   * 
+   * @param rule
+   *          The new ignore rule.
+   */
   public static void addIgnoreRule(String rule) {
     rules.add(rule);
   }
 
+  /**
+   * Checks if a value has been ignored by a rule set in the configuration file
+   * of the application.
+   * 
+   * @param value
+   *          The value to be filtered
+   * @return True if the value is ignored, false otherwise.
+   */
   public static boolean isIgnored(String value) {
     boolean result = false;
     for (String rule : rules) {

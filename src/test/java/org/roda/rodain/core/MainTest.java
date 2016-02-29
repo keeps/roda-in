@@ -35,8 +35,8 @@ public class MainTest extends ApplicationTest {
     RodaIn main = new RodaIn();
     main.start(stage);
 
-    schemaPane = RodaIn.getSchemaPane();
-    fileExplorer = RodaIn.getPreviewExplorer();
+    schemaPane = RodaIn.getSchemePane();
+    fileExplorer = RodaIn.getFileExplorer();
 
     Path path = Paths.get("src/test/resources/plan_with_errors.json");
     InputStream stream = new FileInputStream(path.toFile());
@@ -66,7 +66,7 @@ public class MainTest extends ApplicationTest {
     write("Node1");
     sleep(1000);
 
-    TreeItem<String> item = RodaIn.getSchemaPane().getTreeView().getSelectionModel().getSelectedItem();
+    TreeItem<String> item = RodaIn.getSchemePane().getTreeView().getSelectionModel().getSelectedItem();
     assert"Node1".equals(item.getValue());
 
     clickOn(AppProperties.getLocalizedString("SchemaPane.add"));
@@ -82,7 +82,7 @@ public class MainTest extends ApplicationTest {
 
     clickOn("Node2");
 
-    TreeItem<String> newItem = RodaIn.getSchemaPane().getTreeView().getSelectionModel().getSelectedItem();
+    TreeItem<String> newItem = RodaIn.getSchemePane().getTreeView().getSelectionModel().getSelectedItem();
     assert newItem instanceof SchemaNode;
     SchemaNode newNode = (SchemaNode) newItem;
     DescriptionObject dobj = newNode.getDob();
@@ -93,9 +93,9 @@ public class MainTest extends ApplicationTest {
     assert dobj != null;
 
     drag("Node2").dropTo(".tree-view");
-    assert RodaIn.getSchemaPane().getTreeView().getRoot().getChildren().size() == 2;
+    assert RodaIn.getSchemePane().getTreeView().getRoot().getChildren().size() == 2;
     clickOn("Node2").clickOn("#removeLevel");
-    assert RodaIn.getSchemaPane().getTreeView().getRoot().getChildren().size() == 1;
+    assert RodaIn.getSchemePane().getTreeView().getRoot().getChildren().size() == 1;
   }
 
   @Test

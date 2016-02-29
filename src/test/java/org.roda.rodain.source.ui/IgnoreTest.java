@@ -8,7 +8,6 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
 
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.roda.rodain.core.AppProperties;
@@ -32,7 +31,7 @@ public class IgnoreTest extends ApplicationTest {
     RodaIn main = new RodaIn();
     main.start(stage);
 
-    fileExplorer = RodaIn.getPreviewExplorer();
+    fileExplorer = RodaIn.getFileExplorer();
     fileExplorer.setFileExplorerRoot(testDir);
   }
 

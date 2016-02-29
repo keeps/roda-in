@@ -8,6 +8,10 @@ import java.util.regex.Pattern;
 import org.fxmisc.richtext.StyleSpans;
 import org.fxmisc.richtext.StyleSpansBuilder;
 
+/**
+ * @author Andre Pereira apereira@keep.pt
+ * @since 17-02-2016.
+ */
 public class XMLEditor {
 
   private static final Pattern XML_TAG = Pattern
@@ -24,6 +28,13 @@ public class XMLEditor {
   private static final int GROUP_EQUAL_SYMBOL = 2;
   private static final int GROUP_ATTRIBUTE_VALUE = 3;
 
+  /**
+   * Highlights tag marks, tags, comments and attributes of the XML text
+   * 
+   * @param text
+   *          The XML text to be highlighted
+   * @return A StyleSpans with the highlighted text.
+   */
   public static StyleSpans<Collection<String>> computeHighlighting(String text) {
     Matcher matcher = XML_TAG.matcher(text);
     int lastKwEnd = 0;

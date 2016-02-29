@@ -71,6 +71,9 @@ public class CreateSips {
     return (creator.getCreatedSipsCount() / (sipsCount * 1.0)) + creator.currentSipProgress;
   }
 
+  /**
+   * @return The time remaining estimate of the SIP creator.
+   */
   public double getTimeRemainingEstimate() {
     return creator.getTimeRemainingEstimate();
   }

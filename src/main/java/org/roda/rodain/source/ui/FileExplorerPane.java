@@ -60,6 +60,12 @@ public class FileExplorerPane extends BorderPane implements Observer {
   // periodically with the SIZE and file count
   private WalkFileTree computeThread;
 
+  /**
+   * Creates a new FileExplorerPane object.
+   * 
+   * @param stage
+   *          The stage of the application.
+   */
   public FileExplorerPane(Stage stage) {
     super();
     this.stage = stage;
@@ -74,14 +80,24 @@ public class FileExplorerPane extends BorderPane implements Observer {
     this.minWidthProperty().bind(stage.widthProperty().multiply(0.2));
   }
 
+  /**
+   * @return True if the file explorer is showing files, false otherwise.
+   */
   public static boolean isShowFiles() {
     return showFiles;
   }
 
+  /**
+   * @return True if the file explorer is showing ignored items, false
+   *         otherwise.
+   */
   public static boolean isShowIgnored() {
     return showIgnored;
   }
 
+  /**
+   * @return True if the file explorer is showing mapped items, false otherwise.
+   */
   public static boolean isShowMapped() {
     return showMapped;
   }
@@ -118,7 +134,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     associate.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent actionEvent) {
-        RodaIn.getSchemaPane().startAssociation();
+        RodaIn.getSchemePane().startAssociation();
       }
     });
 
@@ -190,6 +206,10 @@ public class FileExplorerPane extends BorderPane implements Observer {
     treeView.setOnMouseClicked(new SourceClickedEventHandler(this));
   }
 
+  /**
+   * Opens a DirectoryChooser so that the user can choose a new root for the
+   * file explorer.
+   */
   public void chooseNewRoot() {
     DirectoryChooser chooser = new DirectoryChooser();
     chooser.setTitle(AppProperties.getLocalizedString("directorychooser.title"));
@@ -200,6 +220,12 @@ public class FileExplorerPane extends BorderPane implements Observer {
     setFileExplorerRoot(path);
   }
 
+  /**
+   * Sets a new root to file explorer
+   * 
+   * @param rootPath
+   *          The new root path
+   */
   public void setFileExplorerRoot(Path rootPath) {
     this.setTop(top);
     this.setCenter(fileExplorer);
@@ -210,7 +236,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     PathCollection.addItem(rootNode);
     rootNode.setExpanded(true);
     treeView.setRoot(rootNode);
-    updateMetadata(rootPath);
+    updateAttributes(rootPath);
   }
 
   private SourceTreeDirectory getCastedRoot() {
@@ -222,7 +248,13 @@ public class FileExplorerPane extends BorderPane implements Observer {
     return (SourceTreeDirectory) root;
   }
 
-  public void updateMetadata(Path path) {
+  /**
+   * Updates the interface with the attributes of the path in argument.
+   * 
+   * @param path
+   *          The path to be used in the update
+   */
+  public void updateAttributes(Path path) {
     // we need to stop the directory size compute thread to avoid more than one
     // thread updating the ui at the same time
     stopComputeThread();
@@ -242,9 +274,15 @@ public class FileExplorerPane extends BorderPane implements Observer {
     }
   }
 
-  public void updateMetadata(String pathString) {
+  /**
+   * @param pathString
+   *          The path, in the form of a string, to be used to update the
+   *          interface.
+   * @see #updateAttributes(Path)
+   */
+  public void updateAttributes(String pathString) {
     Path path = Paths.get(pathString);
-    updateMetadata(path);
+    updateAttributes(path);
   }
 
   @Override
@@ -254,6 +292,11 @@ public class FileExplorerPane extends BorderPane implements Observer {
     }
   }
 
+  /**
+   * Returns the tree view of the file explorer pane.
+   * 
+   * @return
+   */
   public TreeView<String> getTreeView() {
     return treeView;
   }

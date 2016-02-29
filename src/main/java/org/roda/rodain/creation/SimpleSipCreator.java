@@ -1,14 +1,12 @@
 package org.roda.rodain.creation;
 
-import org.apache.commons.io.FileUtils;
-import org.roda.rodain.core.AppProperties;
-import org.roda.rodain.rules.sip.SipPreview;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
+import java.io.*;
+import java.nio.file.Path;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -18,13 +16,16 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.*;
-import java.nio.file.Path;
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+
+import org.apache.commons.io.FileUtils;
+import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.rules.sip.SipPreview;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -176,8 +177,9 @@ public class SimpleSipCreator extends Thread {
 
   }
 
-
-
+  /**
+   * @return The time remaining estimate of the SIP creator.
+   */
   public double getTimeRemainingEstimate() {
     return -1;
   }

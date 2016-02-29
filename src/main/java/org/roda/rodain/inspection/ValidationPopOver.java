@@ -27,6 +27,9 @@ public class ValidationPopOver extends PopOver {
   private static final Logger log = LoggerFactory.getLogger(ValidationPopOver.class.getName());
   private Image loadingGif;
 
+  /**
+   * Creates a new ValidationPopOver object.
+   */
   public ValidationPopOver() {
     super();
 
@@ -83,6 +86,14 @@ public class ValidationPopOver extends PopOver {
     return content;
   }
 
+  /**
+   * Updates the content of the PopOver.
+   * 
+   * @param state
+   *          The state of the task associated with the PopOver.
+   * @param message
+   *          The message to be displayed.
+   */
   public void updateContent(boolean state, String message) {
     if (state) {
       setContentNode(createSuccessNode(message));

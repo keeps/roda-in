@@ -31,6 +31,15 @@ import com.jcabi.xml.XMLDocument;
 public class XMLToMetadataValue {
   private static final Logger log = LoggerFactory.getLogger(XMLToMetadataValue.class.getName());
 
+  /**
+   * Creates the metadataValue map that can support a form for the EAD 2002
+   * metadata type.
+   * 
+   * @param content
+   *          The content of the metadata.
+   * @return The metadataValue map
+   * @throws InvalidEADException
+   */
   public static Map<String, MetadataValue> createEADMetadataValues(String content)
     throws InvalidEADException {
     if (!Utils.isEAD(content)) {

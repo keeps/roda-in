@@ -4,6 +4,7 @@ import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
+
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.source.ui.items.SourceTreeLoadMore;
@@ -35,10 +36,10 @@ public class SourceClickedEventHandler implements EventHandler<MouseEvent> {
         parent.loadMore();
       } else if (item instanceof SourceTreeDirectory) {
         SourceTreeDirectory directory = (SourceTreeDirectory) item;
-        fep.updateMetadata(directory.getPath());
+        fep.updateAttributes(directory.getPath());
       } else if (item instanceof SourceTreeFile) {
         SourceTreeFile directory = (SourceTreeFile) item;
-        fep.updateMetadata(directory.getPath());
+        fep.updateAttributes(directory.getPath());
       }
     }
   }
