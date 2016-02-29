@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.net.util.Base64;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.InvalidEADException;
@@ -183,6 +184,17 @@ public class DescObjMetadata {
    */
   public void setContentEncoding(String contentEncoding) {
     this.contentEncoding = contentEncoding;
+  }
+
+  public String getSchema() {
+    String result = null;
+    if (templateType != null) {
+      result = AppProperties.getSchemaFile(templateType);
+    } else {
+      if (path != null)
+        result = AppProperties.getSchemaFile(FilenameUtils.removeExtension(path.getFileName().toString()));
+    }
+    return result;
   }
 
   /**

@@ -46,7 +46,7 @@ public class ValidationPopOver extends PopOver {
     content.setPadding(new Insets(5, 15, 5, 15));
     content.setAlignment(Pos.CENTER);
     HBox.setHgrow(content, Priority.ALWAYS);
-    Label title = new Label("Valid EAD!");
+    Label title = new Label("Valid metadata!");
     title.setStyle("-fx-font-size: 16px");
     ImageView iv = new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.check, Color.GREEN, 32));
     content.getChildren().addAll(title, iv);
@@ -65,7 +65,7 @@ public class ValidationPopOver extends PopOver {
     HBox titleBox = new HBox(10);
     titleBox.setAlignment(Pos.CENTER);
     HBox.setHgrow(titleBox, Priority.ALWAYS);
-    Label title = new Label("Invalid EAD!");
+    Label title = new Label("Invalid metadata!");
     title.setStyle("-fx-font-size: 16px");
     ImageView iv = new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.times, Color.RED, 32));
     titleBox.getChildren().addAll(title, iv);

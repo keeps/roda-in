@@ -16,7 +16,9 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import org.apache.commons.io.IOUtils;
 import org.roda.rodain.rules.InvalidEADException;
+import org.roda.rodain.schema.InvalidMetadataException;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -61,18 +63,7 @@ public class Utils {
   public static boolean isEAD(String content) throws InvalidEADException {
     boolean isValid = false;
     try {
-      // build the schema
-      SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-      StreamSource streamSource = new StreamSource(ClassLoader.getSystemResourceAsStream("templates/ead2002.xsd"));
-      Schema schema = factory.newSchema(streamSource);
-      Validator validator = schema.newValidator();
-
-      // create a source from a string
-      Source source = new StreamSource(new StringReader(content));
-
-      // check input
-      validator.validate(source);
-      isValid = true;
+      isValid = validateSchemaWithoutCatch(content, ClassLoader.getSystemResourceAsStream("templates/ead2002.xsd"));
     } catch (IOException e) {
       log.error("Can't access the schema file", e);
     } catch (SAXException e) {
@@ -82,4 +73,35 @@ public class Utils {
 
     return isValid;
   }
+
+  public static boolean validateSchema(String content, String schemaString) throws InvalidMetadataException {
+    boolean isValid = false;
+    try {
+      isValid = validateSchemaWithoutCatch(content, IOUtils.toInputStream(schemaString, "UTF-8"));
+    } catch (IOException e) {
+      log.error("Can't access the schema file", e);
+    } catch (SAXException e) {
+      log.info("Error validating the XML with the EAD schema", e);
+      throw new InvalidMetadataException(e.getMessage());
+    }
+
+    return isValid;
+  }
+
+  private static boolean validateSchemaWithoutCatch(String content, InputStream schemaStream)
+    throws IOException, SAXException {
+    // build the schema
+    SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+    StreamSource streamSource = new StreamSource(schemaStream);
+    Schema schema = factory.newSchema(streamSource);
+    Validator validator = schema.newValidator();
+
+    // create a source from a string
+    Source source = new StreamSource(new StringReader(content));
+
+    // check input
+    validator.validate(source);
+    return true;
+  }
+
 }
