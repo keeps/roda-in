@@ -1,10 +1,10 @@
 package org.roda.rodain.core;
 
+import java.io.PrintStream;
+
 import org.roda.rodain.utils.LoggingOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.PrintStream;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -12,6 +12,12 @@ import java.io.PrintStream;
  */
 public class Main {
   private static final Logger log = LoggerFactory.getLogger(RodaIn.class.getName());
+
+  /**
+   * Starts the application.
+   * 
+   * @param args
+   */
   public static void main(String[] args) {
     // get the java version
     String javaString = Runtime.class.getPackage().getSpecificationVersion();

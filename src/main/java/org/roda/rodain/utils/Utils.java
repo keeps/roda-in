@@ -7,6 +7,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -17,8 +18,10 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.apache.commons.io.IOUtils;
+import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.InvalidEADException;
 import org.roda.rodain.schema.InvalidMetadataException;
+import org.roda.rodain.utils.validation.ResourceResolver;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -91,8 +94,9 @@ public class Utils {
   private static boolean validateSchemaWithoutCatch(String content, InputStream schemaStream)
     throws IOException, SAXException {
     // build the schema
-    SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-    StreamSource streamSource = new StreamSource(schemaStream);
+    SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+    factory.setResourceResolver(new ResourceResolver());
+    StreamSource streamSource = new StreamSource(schemaStream, AppProperties.getRodainPath().toString());
     Schema schema = factory.newSchema(streamSource);
     Validator validator = schema.newValidator();
 

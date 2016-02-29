@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 public class AppProperties {
   private static final String ENV_VARIABLE = "RODAIN_HOME";
   private static final String CONFIGFOLDER = "roda-in";
-  public static final Path rodainPath = getRodainPath();
+  public static final Path rodainPath = computeRodainPath();
   private static final Logger log = LoggerFactory.getLogger(AppProperties.class.getName());
   private static PropertiesConfiguration style = load("styles"), config = load("config"), ext_config,
     descLevels = load("roda-description-levels-hierarchy");
@@ -92,6 +92,9 @@ public class AppProperties {
         Files.copy(ClassLoader.getSystemResourceAsStream("templates/" + schemaFileName),
           rodainPath.resolve(schemaFileName), StandardCopyOption.REPLACE_EXISTING);
       }
+      // ensure that the xlink.xsd file is in the application home folder
+      Files.copy(ClassLoader.getSystemResourceAsStream("xlink.xsd"), rodainPath.resolve("xlink.xsd"),
+        StandardCopyOption.REPLACE_EXISTING);
 
       // get all schema files in the roda-in home directory
       allSchemas = new HashSet<>();
@@ -130,7 +133,7 @@ public class AppProperties {
     }
   }
 
-  private static Path getRodainPath() {
+  private static Path computeRodainPath() {
     String envString = System.getenv(ENV_VARIABLE);
     if (envString != null) {
       Path envPath = Paths.get(envString);
@@ -143,6 +146,10 @@ public class AppProperties {
     return documentsPath.resolve(CONFIGFOLDER);
   }
 
+  public static Path getRodainPath() {
+    return rodainPath;
+  }
+
   private static PropertiesConfiguration load(String fileName) {
     PropertiesConfiguration result = null;
     try {
@@ -153,17 +160,27 @@ public class AppProperties {
     return result;
   }
 
-  public static String getMetadataFile(String propertyName) {
-    String completeKey = "metadata.template." + propertyName + ".file";
+  /**
+   * @param templateName
+   *          The name of the template
+   * @return The content of the template file
+   */
+  public static String getMetadataFile(String templateName) {
+    String completeKey = "metadata.template." + templateName + ".file";
     return getFile(completeKey);
   }
 
-  public static String getSchemaFile(String propertyName) {
-    String completeKey = "metadata.template." + propertyName + ".schema";
+  /**
+   * @param templateName
+   *          The name of the template
+   * @return The content of the schema file associated to the template
+   */
+  public static String getSchemaFile(String templateName) {
+    String completeKey = "metadata.template." + templateName + ".schema";
     String result = getFile(completeKey);
     if (result == null || "".equals(result)) {
       for (Path sch : allSchemas) {
-        if (sch.getFileName().toString().contains(propertyName)) {
+        if (sch.getFileName().toString().contains(templateName)) {
           try {
             result = Utils.readFile(sch.toString(), Charset.defaultCharset());
           } catch (IOException e) {
@@ -175,8 +192,13 @@ public class AppProperties {
     return result;
   }
 
-  public static Path getSchemaPath(String propertyName) {
-    String completeKey = "metadata.template." + propertyName + ".schema";
+  /**
+   * @param templateName
+   *          The name of the template
+   * @return The path of the schema file associated to the template
+   */
+  public static Path getSchemaPath(String templateName) {
+    String completeKey = "metadata.template." + templateName + ".schema";
     if (ext_config.containsKey(completeKey)) {
       Path filePath = rodainPath.resolve(ext_config.getString(completeKey));
       if (Files.exists(filePath)) {
@@ -277,6 +299,9 @@ public class AppProperties {
     ext_config.setProperty(key, value);
   }
 
+  /**
+   * Saves the configuration to a file in the application home folder.
+   */
   public static void saveConfig() {
     try {
       ext_config.save(rodainPath.resolve("config.properties").toFile());
