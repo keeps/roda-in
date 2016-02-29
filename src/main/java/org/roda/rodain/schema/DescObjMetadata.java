@@ -53,7 +53,9 @@ public class DescObjMetadata {
     this.type = type;
     this.path = path;
     this.contentEncoding = "Base64";
-    this.id = path.getFileName().toString();
+    if (path != null) {
+      this.id = path.getFileName().toString();
+    }
   }
 
   /**
@@ -123,8 +125,11 @@ public class DescObjMetadata {
     if (!loaded) {
       loadMetadata();
     }
-    byte[] decoded = Base64.decodeBase64(content);
-    return new String(decoded);
+    if (content != null) {
+      byte[] decoded = Base64.decodeBase64(content);
+      return new String(decoded);
+    } else
+      return "";
   }
 
   private void loadMetadata() {
@@ -150,7 +155,8 @@ public class DescObjMetadata {
   /**
    * Sets the content of the description object metadata.
    *
-   * @param content The content enconded in Base64
+   * @param content
+   *          The content encoded in Base64
    */
   public void setContent(String content) {
     this.content = content;
