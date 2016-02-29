@@ -11,7 +11,8 @@ import java.util.ResourceBundle;
 import org.apache.commons.io.IOUtils;
 
 /**
- * Created by adrapereira on 05-01-2016.
+ * @author Andre Pereira apereira@keep.pt
+ * @since 05-01-2016.
  */
 public class FolderBasedUTF8Control extends ResourceBundle.Control {
   public FolderBasedUTF8Control() {

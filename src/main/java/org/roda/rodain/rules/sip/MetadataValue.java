@@ -6,7 +6,8 @@ import java.util.List;
 import org.roda.rodain.utils.UIPair;
 
 /**
- * Created by adrapereira on 08-02-2016.
+ * @author Andre Pereira apereira@keep.pt
+ * @since 08-02-2016.
  */
 public class MetadataValue {
   private String title, id, fieldType;

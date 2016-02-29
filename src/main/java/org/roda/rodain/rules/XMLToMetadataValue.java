@@ -25,7 +25,8 @@ import org.xml.sax.SAXException;
 import com.jcabi.xml.XMLDocument;
 
 /**
- * Created by adrapereira on 18-02-2016.
+ * @author Andre Pereira apereira@keep.pt
+ * @since 18-02-2016.
  */
 public class XMLToMetadataValue {
   private static final Logger log = LoggerFactory.getLogger(XMLToMetadataValue.class.getName());

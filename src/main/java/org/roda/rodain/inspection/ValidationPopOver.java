@@ -20,7 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Created by adrapereira on 24-02-2016.
+ * @author Andre Pereira apereira@keep.pt
+ * @since 24-02-2016.
  */
 public class ValidationPopOver extends PopOver {
   private static final Logger log = LoggerFactory.getLogger(ValidationPopOver.class.getName());

@@ -1,7 +1,8 @@
 package org.roda.rodain.schema;
 
 /**
- * Created by adrapereira on 29-02-2016.
+ * @author Andre Pereira apereira@keep.pt
+ * @since 29-02-2016.
  */
 public class InvalidMetadataException extends Exception {
   private String message;
