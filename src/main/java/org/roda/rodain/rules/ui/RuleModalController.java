@@ -195,12 +195,19 @@ public class RuleModalController {
    * @see RuleModalRemoving
    */
   public static void removeSipPreview(SipPreview sip) {
-    RuleModalRemoving removing = new RuleModalRemoving();
-    sip.addObserver(removing);
-    stage.setRoot(removing);
-    stage.setHeight(120);
-    stage.setWidth(400);
-    stage.centerOnScreen();
+    RuleModalRemoving removing;
+    if (stage.isShowing() && stage.getScene().getRoot() instanceof RuleModalRemoving) {
+      removing = (RuleModalRemoving) stage.getScene().getRoot();
+      sip.addObserver(removing);
+    } else {
+      removing = new RuleModalRemoving();
+      sip.addObserver(removing);
+      stage.setRoot(removing);
+      stage.setHeight(120);
+      stage.setWidth(400);
+      stage.centerOnScreen();
+    }
+    removing.addSIP(sip);
   }
 
   /**

@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
@@ -595,41 +596,43 @@ public class SourceTreeDirectory extends SourceTreeItem {
    * </p>
    */
   public void moveChildrenWrongState() {
-    Set<SourceTreeItem> toRemove = new HashSet<>();
-    boolean modified = false;
-    for (SourceTreeItem sti : mapped) {
-      if (sti.getState() == SourceTreeItemState.NORMAL) {
-        toRemove.add(sti);
-        getChildren().add(sti);
+    Platform.runLater(() -> {
+      Set<SourceTreeItem> toRemove = new HashSet<>();
+      boolean modified = false;
+      for (SourceTreeItem sti : mapped) {
+        if (sti.getState() == SourceTreeItemState.NORMAL) {
+          toRemove.add(sti);
+          getChildren().add(sti);
+        }
       }
-    }
-    mapped.removeAll(toRemove);
-    if (!toRemove.isEmpty())
-      modified = true;
+      mapped.removeAll(toRemove);
+      if (!toRemove.isEmpty())
+        modified = true;
 
-    if (!FileExplorerPane.isShowMapped()) {
-      toRemove = new HashSet<>();
-      for (TreeItem ti : getChildren()) {
-        SourceTreeItem sti = (SourceTreeItem) ti;
-        if (sti.getState() == SourceTreeItemState.MAPPED) {
-          toRemove.add(sti);
-          mapped.add(sti);
+      if (!FileExplorerPane.isShowMapped()) {
+        toRemove = new HashSet<>();
+        for (TreeItem ti : getChildren()) {
+          SourceTreeItem sti = (SourceTreeItem) ti;
+          if (sti.getState() == SourceTreeItemState.MAPPED) {
+            toRemove.add(sti);
+            mapped.add(sti);
+          }
         }
+        getChildren().removeAll(toRemove);
       }
-      getChildren().removeAll(toRemove);
-    }
-    if (!FileExplorerPane.isShowIgnored()) {
-      toRemove = new HashSet<>();
-      for (TreeItem ti : getChildren()) {
-        SourceTreeItem sti = (SourceTreeItem) ti;
-        if (sti.getState() == SourceTreeItemState.IGNORED) {
-          toRemove.add(sti);
-          ignored.add(sti);
+      if (!FileExplorerPane.isShowIgnored()) {
+        toRemove = new HashSet<>();
+        for (TreeItem ti : getChildren()) {
+          SourceTreeItem sti = (SourceTreeItem) ti;
+          if (sti.getState() == SourceTreeItemState.IGNORED) {
+            toRemove.add(sti);
+            ignored.add(sti);
+          }
         }
+        getChildren().removeAll(toRemove);
       }
-      getChildren().removeAll(toRemove);
-    }
-    if (!toRemove.isEmpty() || modified)
-      sortChildren();
+      if (!toRemove.isEmpty() || modified)
+        sortChildren();
+    });
   }
 }

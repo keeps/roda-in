@@ -24,6 +24,7 @@ import org.roda.rodain.rules.sip.SipPreview;
 public class RuleModalRemoving extends BorderPane implements Observer {
   // rule ID -> progress
   private Map<Integer, Float> rules;
+  private Map<String, Float> sips;
   // top
   private Label sipsRemovedLabel;
   // center
@@ -34,6 +35,7 @@ public class RuleModalRemoving extends BorderPane implements Observer {
    */
   public RuleModalRemoving() {
     rules = new HashMap<>();
+    sips = new HashMap<>();
 
     getStyleClass().add("sipcreator");
 
@@ -81,25 +83,37 @@ public class RuleModalRemoving extends BorderPane implements Observer {
         Rule r = (Rule) o;
         rules.remove(r.getId());
       }
-      if (rules.isEmpty()) {
+      if (o instanceof SipPreview) {
+        SipPreview s = (SipPreview) o;
+        sips.remove(s.getId());
+      }
+      if (rules.isEmpty() && sips.isEmpty()) {
         updateProgress(1f);
         close();
       }
       return;
     }
-    float progressValue = 0;
     if (o instanceof Rule) {
       Rule rule = (Rule) o;
       rules.put(rule.getId(), (float) args);
-      for (float f : rules.values()) {
-        progressValue += f;
-      }
-      progressValue /= rules.size();
     }
     if (o instanceof SipPreview) {
-      progressValue = (float) args;
+      SipPreview sip = (SipPreview) o;
+      sips.put(sip.getId(), (float) args);
     }
-    updateProgress(progressValue);
+    updateProgress(computeProgress());
+  }
+
+  private float computeProgress() {
+    float progressValue = 0f;
+    for (float f : rules.values()) {
+      progressValue += f;
+    }
+    for (float f : sips.values()) {
+      progressValue += f;
+    }
+    progressValue /= (rules.size() + sips.size());
+    return progressValue;
   }
 
   /**
@@ -109,6 +123,15 @@ public class RuleModalRemoving extends BorderPane implements Observer {
    */
   public void addRule(Rule r) {
     rules.put(r.getId(), 0f);
+  }
+
+  /**
+   * Adds a SIP to the removal task.
+   *
+   * @param s
+   */
+  public void addSIP(SipPreview s) {
+    sips.put(s.getId(), 0f);
   }
 
   private void updateProgress(float progressValue) {
