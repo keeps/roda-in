@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -744,11 +745,23 @@ public class SchemaPane extends BorderPane {
   /**
    * @return The Map with the SIPs of all the SchemaNodes in the TreeView
    */
-  public Map<SipPreview, String> getSipPreviews() {
+  public Map<SipPreview, String> getSelectedSipPreviews() {
     schemaNodes.add(rootNode);
     Map<SipPreview, String> result = new HashMap<>();
-    for (SchemaNode sn : schemaNodes) {
-      result.putAll(sn.getSipPreviews());
+
+    ObservableList<TreeItem<String>> selected = treeView.getSelectionModel().getSelectedItems();
+    if (selected != null && !selected.isEmpty()) {
+      for (TreeItem<String> item : selected) {
+        if (item instanceof SipPreviewNode) {
+          SipPreviewNode sip = (SipPreviewNode) item;
+          SchemaNode parent = (SchemaNode) sip.getParent();
+          result.put(sip.getSip(), parent.getDob().getId());
+        }
+      }
+    } else { // add all the SIPs to the result map
+      for (SchemaNode sn : schemaNodes) {
+        result.putAll(sn.getSipPreviews());
+      }
     }
     return result;
   }

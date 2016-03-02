@@ -31,7 +31,7 @@ public class CreateSips {
    * Starts the exportation process.
    */
   public void start() {
-    Map<SipPreview, String> sips = RodaIn.getSipPreviews();
+    Map<SipPreview, String> sips = RodaIn.getSelectedSipPreviews();
     sipsCount = sips.size();
     if (type == SipTypes.BAGIT) {
       creator = new BagitSipCreator(outputPath, sips);

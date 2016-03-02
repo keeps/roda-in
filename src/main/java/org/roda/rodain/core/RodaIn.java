@@ -386,10 +386,11 @@ public class RodaIn extends Application {
   }
 
   /**
-   * @return The Map with the SIPs of all the SchemaNodes in the scheme pane
+   * @return The Map with the selected SIPs of all the SchemaNodes in the scheme
+   *         pane
    */
-  public static Map<SipPreview, String> getSipPreviews() {
-    return schemePane.getSipPreviews();
+  public static Map<SipPreview, String> getSelectedSipPreviews() {
+    return schemePane.getSelectedSipPreviews();
   }
 
   /**
