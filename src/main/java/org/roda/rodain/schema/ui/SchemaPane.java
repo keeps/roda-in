@@ -291,6 +291,7 @@ public class SchemaPane extends BorderPane {
    */
   public void loadClassificationSchemeFromStream(InputStream stream) {
     try {
+      rootNode.getChildren().clear();
       // create ObjectMapper instance
       ObjectMapper objectMapper = new ObjectMapper();
       // convert stream to object

@@ -11,7 +11,7 @@
     </appender>
 
     <appender name="LOGFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>./debug.log</file>
+        <file>./roda-in.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <Pattern>
                 %d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n

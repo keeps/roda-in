@@ -105,7 +105,7 @@ public class DescriptionObject extends Observable {
    *
    * @return The descriptionLevel
    */
-  public String getDescriptionLevel() {
+  public String getDescriptionlevel() {
     return descriptionlevel;
   }
 

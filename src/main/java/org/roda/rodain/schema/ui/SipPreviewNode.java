@@ -64,7 +64,7 @@ public class SipPreviewNode extends TreeItem<String> implements Observer {
   public void setDescriptionLevel(String descLevel) {
     sip.setDescriptionlevel(descLevel);
     ResourceBundle hierarchyConfig = ResourceBundle.getBundle("properties/roda-description-levels-hierarchy");
-    String category = hierarchyConfig.getString("category." + sip.getDescriptionLevel());
+    String category = hierarchyConfig.getString("category." + sip.getDescriptionlevel());
     String unicode = hierarchyConfig.getString("icon." + category);
 
     iconBlack = FontAwesomeImageCreator.generate(unicode);

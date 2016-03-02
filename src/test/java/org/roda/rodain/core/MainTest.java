@@ -8,6 +8,8 @@ import java.nio.file.Paths;
 import javafx.application.Platform;
 import javafx.scene.control.TreeItem;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
 
 import org.junit.Before;
@@ -51,9 +53,7 @@ public class MainTest extends ApplicationTest {
   @Test
   public void newSchemePane() {
     sleep(5000);
-    clickOn(AppProperties.getLocalizedString("Main.file"));
-    sleep(1000);
-    clickOn(AppProperties.getLocalizedString("Main.createCS"));
+    push(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN));
     sleep(3000);
     clickOn("OK");
     sleep(1000);
@@ -61,7 +61,7 @@ public class MainTest extends ApplicationTest {
     sleep(1000);
     clickOn(".schemaNode");
     sleep(500);
-    clickOn("#schemeNodeTitle");
+    clickOn("#descObjTitle");
     eraseText(50);
     write("Node1");
     sleep(1000);
@@ -73,7 +73,7 @@ public class MainTest extends ApplicationTest {
     sleep(500);
     clickOn(AppProperties.getLocalizedString("SchemaPane.newNode"));
     sleep(500);
-    clickOn("#schemeNodeTitle");
+    clickOn("#descObjTitle");
     eraseText(50);
     write("Node2");
     sleep(500);
@@ -87,13 +87,15 @@ public class MainTest extends ApplicationTest {
     SchemaNode newNode = (SchemaNode) newItem;
     DescriptionObject dobj = newNode.getDob();
     assert dobj != null;
-    assert dobj.getDescriptionLevel() != null;
+    assert dobj.getDescriptionlevel() != null;
 
+    sleep(2000);
     clickOn("#itemLevels").clickOn("Sub-fonds");
     assert dobj != null;
 
     drag("Node2").dropTo(".tree-view");
     assert RodaIn.getSchemePane().getTreeView().getRoot().getChildren().size() == 2;
+    sleep(1000);
     clickOn("Node2").clickOn("#removeLevel");
     assert RodaIn.getSchemePane().getTreeView().getRoot().getChildren().size() == 1;
   }

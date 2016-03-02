@@ -354,6 +354,7 @@ public class InspectionPane extends BorderPane {
             metadataValue.setValue(newValue2);
           });
           if (metadataValue.getId().equals("title")) {
+            textField.setId("descObjTitle");
             titleTextField = textField;
             paneTitle.textProperty().bind(textField.textProperty());
             if (currentSIPNode != null) {

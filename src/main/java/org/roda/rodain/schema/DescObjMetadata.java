@@ -192,6 +192,7 @@ public class DescObjMetadata {
     this.contentEncoding = contentEncoding;
   }
 
+  @JsonIgnore
   public String getSchema() {
     String result = null;
     if (templateType != null) {
