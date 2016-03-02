@@ -26,6 +26,7 @@ public class SourceClickedEventHandler implements EventHandler<MouseEvent> {
   @Override
   public void handle(MouseEvent mouseEvent) {
     if (mouseEvent.getClickCount() == 1) {
+      fep.rootSelected(false);
       TreeItem<String> item = treeView.getSelectionModel().getSelectedItem();
       if (item instanceof SourceTreeLoadMore) {
         final SourceTreeDirectory parent = (SourceTreeDirectory) item.getParent();
@@ -37,6 +38,9 @@ public class SourceClickedEventHandler implements EventHandler<MouseEvent> {
       } else if (item instanceof SourceTreeDirectory) {
         SourceTreeDirectory directory = (SourceTreeDirectory) item;
         fep.updateAttributes(directory.getPath());
+        if (directory.getParentDir() == null) {
+          fep.rootSelected(true);
+        }
       } else if (item instanceof SourceTreeFile) {
         SourceTreeFile directory = (SourceTreeFile) item;
         fep.updateAttributes(directory.getPath());

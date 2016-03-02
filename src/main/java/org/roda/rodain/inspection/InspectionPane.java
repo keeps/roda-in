@@ -359,10 +359,10 @@ public class InspectionPane extends BorderPane {
             titleTextField = textField;
             paneTitle.textProperty().bind(textField.textProperty());
             if (currentSIPNode != null) {
-              currentSIPNode.valueProperty().bind(textField.textProperty());
+              textField.textProperty().bindBidirectional(currentSIPNode.valueProperty());
             } else {
               if (currentSchema != null) {
-                currentSchema.valueProperty().bind(textField.textProperty());
+                textField.textProperty().bindBidirectional(currentSchema.valueProperty());
               }
             }
           }

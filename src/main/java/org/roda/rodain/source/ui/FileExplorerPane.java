@@ -44,6 +44,11 @@ public class FileExplorerPane extends BorderPane implements Observer {
   private TreeView<String> treeView;
   private HBox bottom;
   private VBox centerHelp;
+  private Button ignore;
+
+  private TreeItem<String> dummyRoot;
+  private Map<String, SourceTreeDirectory> realRoots;
+  private boolean rootSelected;
 
   private ComputeDirectorySize computeSize;
 
@@ -112,11 +117,25 @@ public class FileExplorerPane extends BorderPane implements Observer {
     bottom = new HBox(10);
     bottom.setPadding(new Insets(10, 10, 10, 10));
 
-    Button ignore = new Button(AppProperties.getLocalizedString("ignore"));
+    ignore = new Button(AppProperties.getLocalizedString("ignore"));
     ignore.setId("bt_ignore");
     ignore.setMinWidth(100);
     ignore.setOnAction(event -> {
-      ignore();
+      if (rootSelected) {
+        SourceTreeDirectory selectedItem = (SourceTreeDirectory) treeView.getSelectionModel().getSelectedItem();
+        if (selectedItem == null)
+          return;
+
+        dummyRoot.getChildren().remove(selectedItem);
+        realRoots.remove(selectedItem.getPath());
+        if (realRoots.isEmpty()) {
+          this.setTop(new HBox());
+          this.setCenter(centerHelp);
+          this.setBottom(new HBox());
+        }
+      } else {
+        ignore();
+      }
     });
 
     HBox space = new HBox();
@@ -124,9 +143,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
     Button associate = new Button(AppProperties.getLocalizedString("associate"));
     associate.setMinWidth(100);
-    associate.setOnAction(event -> {
-      RodaIn.getSchemePane().startAssociation();
-    });
+    associate.setOnAction(event -> RodaIn.getSchemePane().startAssociation());
 
     bottom.getChildren().addAll(ignore, space, associate);
   }
@@ -172,8 +189,13 @@ public class FileExplorerPane extends BorderPane implements Observer {
     Separator separatorTop = new Separator();
     Separator separatorBottom = new Separator();
 
+    dummyRoot = new TreeItem<>();
+    realRoots = new HashMap<>();
+
     treeView = new TreeView<>();
     treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+    treeView.setShowRoot(false);
+    treeView.setRoot(dummyRoot);
     // add everything to the tree pane
     treeBox.getChildren().addAll(separatorTop, treeView, separatorBottom);
     VBox.setVgrow(treeView, Priority.ALWAYS);
@@ -188,6 +210,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     fileExplorer.getChildren().add(treeBox);
 
     treeView.setOnMouseClicked(new SourceClickedEventHandler(this));
+
   }
 
   /**
@@ -211,25 +234,21 @@ public class FileExplorerPane extends BorderPane implements Observer {
    *          The new root path
    */
   public void setFileExplorerRoot(Path rootPath) {
+    if (realRoots.containsKey(rootPath.toString())) {
+      return;
+    }
+
     this.setTop(top);
     this.setCenter(fileExplorer);
     this.setBottom(bottom);
 
     SourceTreeDirectory rootNode = new SourceTreeDirectory(rootPath, new SourceDirectory(rootPath, isShowFiles()),
         null);
+    realRoots.put(rootPath.toString(), rootNode);
     PathCollection.addItem(rootNode);
     rootNode.setExpanded(true);
-    treeView.setRoot(rootNode);
+    dummyRoot.getChildren().add(rootNode);
     updateAttributes(rootPath);
-  }
-
-  private SourceTreeDirectory getCastedRoot() {
-    TreeItem<String> root = treeView.getRoot();
-    if (root == null)
-      return null;
-    if (!(root instanceof SourceTreeDirectory))
-      return null;
-    return (SourceTreeDirectory) root;
   }
 
   /**
@@ -376,15 +395,16 @@ public class FileExplorerPane extends BorderPane implements Observer {
   }
 
   public void toggleFilesShowing() {
-    SourceTreeDirectory root = getCastedRoot();
-    if (root == null)
+    if (realRoots == null || realRoots.isEmpty())
       return;
 
-    showFiles = !isShowFiles();
-    if (isShowFiles()) {
-      root.showFiles();
-    } else {
-      root.hideFiles();
+    for (SourceTreeDirectory root : realRoots.values()) {
+      showFiles = !isShowFiles();
+      if (isShowFiles()) {
+        root.showFiles();
+      } else {
+        root.hideFiles();
+      }
     }
 
     // force update
@@ -393,15 +413,16 @@ public class FileExplorerPane extends BorderPane implements Observer {
   }
 
   public void toggleIgnoredShowing() {
-    SourceTreeDirectory root = getCastedRoot();
-    if (root == null)
+    if (realRoots == null || realRoots.isEmpty())
       return;
 
-    showIgnored = !isShowIgnored();
-    if (isShowIgnored()) {
-      root.showIgnored();
-    } else {
-      root.hideIgnored();
+    for (SourceTreeDirectory root : realRoots.values()) {
+      showIgnored = !isShowIgnored();
+      if (isShowIgnored()) {
+        root.showIgnored();
+      } else {
+        root.hideIgnored();
+      }
     }
 
     // force update
@@ -410,19 +431,29 @@ public class FileExplorerPane extends BorderPane implements Observer {
   }
 
   public void toggleMappedShowing() {
-    SourceTreeDirectory root = getCastedRoot();
-    if (root == null)
+    if (realRoots == null || realRoots.isEmpty())
       return;
 
-    showMapped = !isShowMapped();
-    if (isShowMapped()) {
-      root.showMapped();
-    } else {
-      root.hideMapped();
+    for (SourceTreeDirectory root : realRoots.values()) {
+      showMapped = !isShowMapped();
+      if (isShowMapped()) {
+        root.showMapped();
+      } else {
+        root.hideMapped();
+      }
     }
 
     // force update
     treeView.getRoot().setExpanded(false);
     treeView.getRoot().setExpanded(true);
+  }
+
+  public void rootSelected(boolean b) {
+    rootSelected = b;
+    if (b) {
+      ignore.setText(AppProperties.getLocalizedString("FileExplorerPane.removeFolder"));
+    } else {
+      ignore.setText(AppProperties.getLocalizedString("ignore"));
+    }
   }
 }

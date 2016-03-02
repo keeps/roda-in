@@ -203,7 +203,7 @@ public class RodaIn extends Application {
       }
     });
 
-    final MenuItem openFolder = new MenuItem(AppProperties.getLocalizedString("Main.openFolder"));
+    final MenuItem openFolder = new MenuItem(AppProperties.getLocalizedString("Main.addFolder"));
     openFolder.setAccelerator(KeyCombination.keyCombination("Ctrl+O"));
     openFolder.setOnAction(new EventHandler<ActionEvent>() {
       @Override
