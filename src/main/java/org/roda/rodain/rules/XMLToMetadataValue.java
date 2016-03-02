@@ -38,12 +38,12 @@ public class XMLToMetadataValue {
    * @param content
    *          The content of the metadata.
    * @return The metadataValue map
-   * @throws InvalidEADException
+   * @throws SAXException
    */
   public static Map<String, MetadataValue> createEADMetadataValues(String content)
-    throws InvalidEADException {
+ throws SAXException {
     if (!Utils.isEAD(content)) {
-      throw new InvalidEADException("Invalid EAD");
+      return null;
     }
     Map<String, MetadataValue> metadataValues = createEADForm();
 

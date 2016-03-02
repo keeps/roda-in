@@ -37,14 +37,12 @@ import org.apache.commons.lang.StringUtils;
 import org.fxmisc.richtext.CodeArea;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.RodaIn;
-import org.roda.rodain.rules.InvalidEADException;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.MetadataValue;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.DescriptionObject;
-import org.roda.rodain.schema.InvalidMetadataException;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SipPreviewNode;
 import org.roda.rodain.source.ui.SourceTreeCell;
@@ -52,6 +50,7 @@ import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.UIPair;
 import org.roda.rodain.utils.Utils;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -181,7 +180,8 @@ public class InspectionPane extends BorderPane {
                 }
               }
             }
-          } catch (InvalidMetadataException e) {
+          } catch (SAXException e) {
+            log.error("Error validating schema", e);
             message.append(e.getMessage());
           }
           return result;
@@ -267,7 +267,8 @@ public class InspectionPane extends BorderPane {
     Map<String, MetadataValue> metadataValues;
     try {
       metadataValues = getMetadataValues();
-    } catch (InvalidEADException e) {
+    } catch (SAXException e) {
+      log.error("Error validating metadata with the EAD2002 schema", e);
       noForm();
       return;
     }
@@ -379,7 +380,7 @@ public class InspectionPane extends BorderPane {
     toggleForm.setVisible(false);
   }
 
-  private Map<String, MetadataValue> getMetadataValues() throws InvalidEADException {
+  private Map<String, MetadataValue> getMetadataValues() throws SAXException {
     if (currentDescOb != null) {
       return currentDescOb.getMetadataValues();
     } else {
@@ -737,7 +738,8 @@ public class InspectionPane extends BorderPane {
           updateTextArea(meta);
           try {
             result = Utils.isEAD(metaText.getText());
-          } catch (InvalidEADException e) {
+          } catch (SAXException e) {
+            log.error("Error validating metadata with the EAD2002 schema", e);
           }
         }
         return result;
@@ -827,7 +829,8 @@ public class InspectionPane extends BorderPane {
         boolean result = false;
         try {
           result = Utils.isEAD(metaText.getText());
-        } catch (InvalidEADException e) {
+        } catch (SAXException e) {
+          log.error("Error validating metadata with the EAD2002 schema", e);
         }
         return result;
       }

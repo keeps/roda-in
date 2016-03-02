@@ -19,8 +19,6 @@ import javax.xml.validation.Validator;
 
 import org.apache.commons.io.IOUtils;
 import org.roda.rodain.core.AppProperties;
-import org.roda.rodain.rules.InvalidEADException;
-import org.roda.rodain.schema.InvalidMetadataException;
 import org.roda.rodain.utils.validation.ResourceResolver;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -63,29 +61,23 @@ public class Utils {
     return builder.parse(new InputSource(new StringReader(xml)));
   }
 
-  public static boolean isEAD(String content) throws InvalidEADException {
+  public static boolean isEAD(String content) throws SAXException {
     boolean isValid = false;
     try {
       isValid = validateSchemaWithoutCatch(content, ClassLoader.getSystemResourceAsStream("templates/ead2002.xsd"));
     } catch (IOException e) {
       log.error("Can't access the schema file", e);
-    } catch (SAXException e) {
-      log.info("Error validating the XML with the EAD schema", e);
-      throw new InvalidEADException(e.getMessage());
     }
 
     return isValid;
   }
 
-  public static boolean validateSchema(String content, String schemaString) throws InvalidMetadataException {
+  public static boolean validateSchema(String content, String schemaString) throws SAXException {
     boolean isValid = false;
     try {
       isValid = validateSchemaWithoutCatch(content, IOUtils.toInputStream(schemaString, "UTF-8"));
     } catch (IOException e) {
       log.error("Can't access the schema file", e);
-    } catch (SAXException e) {
-      log.info("Error validating the XML with the EAD schema", e);
-      throw new InvalidMetadataException(e.getMessage());
     }
 
     return isValid;
