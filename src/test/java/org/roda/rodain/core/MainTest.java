@@ -135,7 +135,7 @@ public class MainTest extends ApplicationTest {
     clickOn("#btConfirm");
     sleep(2000); // wait for the modal to update
     clickOn("#btConfirm");
-    sleep(6000); // wait for the SIPs creation
+    sleep(10000); // wait for the SIPs creation
 
     clickOn("file1.txt");
     TreeItem selected = schemaPane.getTreeView().getSelectionModel().getSelectedItem();
@@ -169,7 +169,7 @@ public class MainTest extends ApplicationTest {
     sleep(1000); // wait for the modal to update
     clickOn("#meta4");
     clickOn(AppProperties.getLocalizedString("confirm"));
-    sleep(2000); // wait for the SIPs creation
+    sleep(5000); // wait for the SIPs creation
 
     clickOn(AppProperties.getLocalizedString("Main.file"));
     clickOn(AppProperties.getLocalizedString("Main.exportSips"));
