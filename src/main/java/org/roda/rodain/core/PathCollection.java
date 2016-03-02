@@ -1,15 +1,15 @@
 package org.roda.rodain.core;
 
-import org.apache.commons.lang.StringUtils;
-import org.roda.rodain.source.ui.items.SourceTreeDirectory;
-import org.roda.rodain.source.ui.items.SourceTreeItem;
-import org.roda.rodain.source.ui.items.SourceTreeItemState;
-
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang.StringUtils;
+import org.roda.rodain.source.ui.items.SourceTreeDirectory;
+import org.roda.rodain.source.ui.items.SourceTreeItem;
+import org.roda.rodain.source.ui.items.SourceTreeItemState;
 
 /**
  * A collection of paths and it's associated state and SourceTreeItem.
@@ -156,6 +156,7 @@ public class PathCollection {
       if (index > 0) {
         String parent = path.substring(0, index);
         result = getState(parent);
+        addPath(path, result);
       }
     }
     return result;
