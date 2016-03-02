@@ -750,7 +750,7 @@ public class SchemaPane extends BorderPane {
     Map<SipPreview, String> result = new HashMap<>();
 
     ObservableList<TreeItem<String>> selected = treeView.getSelectionModel().getSelectedItems();
-    if (selected != null && !selected.isEmpty()) {
+    if (selected != null) {
       for (TreeItem<String> item : selected) {
         if (item instanceof SipPreviewNode) {
           SipPreviewNode sip = (SipPreviewNode) item;
@@ -758,7 +758,8 @@ public class SchemaPane extends BorderPane {
           result.put(sip.getSip(), parent.getDob().getId());
         }
       }
-    } else { // add all the SIPs to the result map
+    }
+    if (result.isEmpty()) {// add all the SIPs to the result map
       for (SchemaNode sn : schemaNodes) {
         result.putAll(sn.getSipPreviews());
       }

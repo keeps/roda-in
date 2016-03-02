@@ -43,7 +43,7 @@ public class IgnoreTest extends ApplicationTest {
   @Test
   public void ignore() {
     sleep(1000);
-    TreeItem<String> root = fileExplorer.getTreeView().getRoot();
+    TreeItem<String> root = fileExplorer.getTreeView().getRoot().getChildren().get(0);
 
     clickOn("dir4");
     sleep(1000);

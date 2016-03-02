@@ -10,7 +10,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.TreeItem;
 import javafx.stage.Stage;
 
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.roda.rodain.core.AppProperties;
@@ -49,7 +48,7 @@ public class FileExplorerPaneTest extends ApplicationTest {
   @Test
   public void root() {
     sleep(1000);
-    TreeItem<String> root = fileExplorer.getTreeView().getRoot();
+    TreeItem<String> root = fileExplorer.getTreeView().getRoot().getChildren().get(0);
     // Root exists, is a SourceTreeDirectory and its path is testDir
     assert root != null;
     assert root instanceof SourceTreeDirectory;
@@ -61,7 +60,7 @@ public class FileExplorerPaneTest extends ApplicationTest {
   @Test
   public void dir1() {
     sleep(1000);
-    TreeItem<String> root = fileExplorer.getTreeView().getRoot();
+    TreeItem<String> root = fileExplorer.getTreeView().getRoot().getChildren().get(0);
     TreeItem<String> dir1 = root.getChildren().get(0);
     assert dir1 != null;
     assert "dir1".equals(dir1.getValue());
@@ -90,7 +89,7 @@ public class FileExplorerPaneTest extends ApplicationTest {
   @Test
   public void dir2() {
     sleep(1000);
-    TreeItem<String> root = fileExplorer.getTreeView().getRoot();
+    TreeItem<String> root = fileExplorer.getTreeView().getRoot().getChildren().get(0);
     TreeItem<String> dir2 = root.getChildren().get(1);
     assert dir2 != null;
     assert "dir2".equals(dir2.getValue());
@@ -111,7 +110,7 @@ public class FileExplorerPaneTest extends ApplicationTest {
   @Test
   public void dir3() {
     sleep(1000);
-    TreeItem<String> root = fileExplorer.getTreeView().getRoot();
+    TreeItem<String> root = fileExplorer.getTreeView().getRoot().getChildren().get(0);
     TreeItem<String> dir3 = root.getChildren().get(2);
     assert dir3 != null;
     assert "dir3".equals(dir3.getValue());
@@ -141,7 +140,7 @@ public class FileExplorerPaneTest extends ApplicationTest {
   @Test
   public void dir4() {
     sleep(1000);
-    TreeItem<String> root = fileExplorer.getTreeView().getRoot();
+    TreeItem<String> root = fileExplorer.getTreeView().getRoot().getChildren().get(0);
     TreeItem<String> dir4 = root.getChildren().get(3);
     assert dir4 != null;
     assert "dir4".equals(dir4.getValue());
