@@ -42,6 +42,7 @@ public class SourceTreeCell extends TreeCell<String> {
     if (!empty) {
       HBox hbox = new HBox(5);
       Label lab = new Label(item);
+      Label optionalLabel = null;
       lab.getStyleClass().add("cellText");
       lab.setId("");
       Image icon = null;
@@ -78,6 +79,10 @@ public class SourceTreeCell extends TreeCell<String> {
           icon = SourceTreeDirectory.folderExpandImage;
         else
           icon = SourceTreeDirectory.folderCollapseImage;
+        if (((SourceTreeDirectory) treeItem).getParentDir() == null) {
+          optionalLabel = new Label(((SourceTreeDirectory) treeItem).getPath());
+          optionalLabel.setStyle(AppProperties.getStyle("source.cell.mapped"));
+        }
       } else {
         if (treeItem instanceof SourceTreeFile)
           icon = SourceTreeFile.fileImage;
@@ -93,6 +98,8 @@ public class SourceTreeCell extends TreeCell<String> {
       }
 
       hbox.getChildren().addAll(new ImageView(icon), lab);
+      if (optionalLabel != null)
+        hbox.getChildren().add(optionalLabel);
       setGraphic(hbox);
     } else
       empty();

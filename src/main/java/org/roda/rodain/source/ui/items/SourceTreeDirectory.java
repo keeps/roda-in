@@ -9,8 +9,6 @@ import java.util.stream.Collectors;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 
@@ -70,13 +68,10 @@ public class SourceTreeDirectory extends SourceTreeItem {
 
     this.addEventHandler(SourceTreeDirectory.branchExpandedEvent(), new ExpandedEventHandler());
 
-    this.addEventHandler(TreeItem.branchCollapsedEvent(), new EventHandler<TreeModificationEvent<Object>>() {
-      @Override
-      public void handle(TreeItem.TreeModificationEvent<Object> e) {
-        SourceTreeDirectory source = SourceTreeDirectory.class.cast(e.getSource());
-        if (!source.isExpanded()) {
-          source.expanded = false;
-        }
+    this.addEventHandler(TreeItem.branchCollapsedEvent(), event -> {
+      SourceTreeDirectory source = SourceTreeDirectory.class.cast(event.getSource());
+      if (!source.isExpanded()) {
+        source.expanded = false;
       }
     });
   }
@@ -111,11 +106,8 @@ public class SourceTreeDirectory extends SourceTreeItem {
         return null;
       }
     };
-    task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-      @Override
-      public void handle(WorkerStateEvent workerStateEvent) {
-        getChildren().setAll(newChildren);
-      }
+    task.setOnSucceeded(event -> {
+      getChildren().setAll(newChildren);
     });
 
     new Thread(task).start();
@@ -159,12 +151,9 @@ public class SourceTreeDirectory extends SourceTreeItem {
       }
     };
 
-    task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-      @Override
-      public void handle(WorkerStateEvent workerStateEvent) {
-        getChildren().setAll(newChildren);
-        sortChildren();
-      }
+    task.setOnSucceeded(event -> {
+      getChildren().setAll(newChildren);
+      sortChildren();
     });
 
     new Thread(task).start();
@@ -205,11 +194,8 @@ public class SourceTreeDirectory extends SourceTreeItem {
         return null;
       }
     };
-    task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-      @Override
-      public void handle(WorkerStateEvent workerStateEvent) {
-        getChildren().setAll(children);
-      }
+    task.setOnSucceeded(event -> {
+      getChildren().setAll(children);
     });
 
     new Thread(task).start();
@@ -252,12 +238,9 @@ public class SourceTreeDirectory extends SourceTreeItem {
         return null;
       }
     };
-    task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-      @Override
-      public void handle(WorkerStateEvent workerStateEvent) {
-        getChildren().setAll(newChildren);
-        sortChildren();
-      }
+    task.setOnSucceeded(event -> {
+      getChildren().setAll(newChildren);
+      sortChildren();
     });
     new Thread(task).start();
   }
@@ -293,11 +276,8 @@ public class SourceTreeDirectory extends SourceTreeItem {
         return null;
       }
     };
-    task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-      @Override
-      public void handle(WorkerStateEvent workerStateEvent) {
-        getChildren().setAll(children);
-      }
+    task.setOnSucceeded(event -> {
+      getChildren().setAll(children);
     });
     new Thread(task).start();
   }
@@ -338,12 +318,9 @@ public class SourceTreeDirectory extends SourceTreeItem {
         return null;
       }
     };
-    task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-      @Override
-      public void handle(WorkerStateEvent workerStateEvent) {
-        getChildren().setAll(newChildren);
-        sortChildren();
-      }
+    task.setOnSucceeded(event -> {
+      getChildren().setAll(newChildren);
+      sortChildren();
     });
     new Thread(task).start();
   }
@@ -516,12 +493,9 @@ public class SourceTreeDirectory extends SourceTreeItem {
     };
 
     // After everything is loaded, we add all the items to the TreeView at once.
-    task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-      @Override
-      public void handle(WorkerStateEvent workerStateEvent) {
-        // Set the children
-        getChildren().setAll(children);
-      }
+    task.setOnSucceeded(event -> {
+      // Set the children
+      getChildren().setAll(children);
     });
 
     new Thread(task).start();

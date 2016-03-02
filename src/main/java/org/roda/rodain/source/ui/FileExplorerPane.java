@@ -9,20 +9,16 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.Footer;
@@ -119,11 +115,8 @@ public class FileExplorerPane extends BorderPane implements Observer {
     Button ignore = new Button(AppProperties.getLocalizedString("ignore"));
     ignore.setId("bt_ignore");
     ignore.setMinWidth(100);
-    ignore.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent actionEvent) {
-        ignore();
-      }
+    ignore.setOnAction(event -> {
+      ignore();
     });
 
     HBox space = new HBox();
@@ -131,11 +124,8 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
     Button associate = new Button(AppProperties.getLocalizedString("associate"));
     associate.setMinWidth(100);
-    associate.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent actionEvent) {
-        RodaIn.getSchemePane().startAssociation();
-      }
+    associate.setOnAction(event -> {
+      RodaIn.getSchemePane().startAssociation();
     });
 
     bottom.getChildren().addAll(ignore, space, associate);
@@ -163,11 +153,8 @@ public class FileExplorerPane extends BorderPane implements Observer {
     HBox loadBox = new HBox();
     loadBox.setAlignment(Pos.CENTER);
     Button load = new Button(AppProperties.getLocalizedString("FileExplorerPane.chooseDir"));
-    load.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        chooseNewRoot();
-      }
+    load.setOnAction(event -> {
+      chooseNewRoot();
     });
     load.setMinHeight(65);
     load.setMinWidth(220);
@@ -190,13 +177,10 @@ public class FileExplorerPane extends BorderPane implements Observer {
     // add everything to the tree pane
     treeBox.getChildren().addAll(separatorTop, treeView, separatorBottom);
     VBox.setVgrow(treeView, Priority.ALWAYS);
-    treeView.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
-      @Override
-      public TreeCell<String> call(TreeView<String> p) {
-        SourceTreeCell cell = new SourceTreeCell();
-        setDragEvent(cell);
-        return cell;
-      }
+    treeView.setCellFactory(param -> {
+      SourceTreeCell cell = new SourceTreeCell();
+      setDragEvent(cell);
+      return cell;
     });
     treeView.getSelectionModel().clearSelection();
 
@@ -307,48 +291,42 @@ public class FileExplorerPane extends BorderPane implements Observer {
   }
 
   public void updateSize(final long fileCount, final long dirCount, final long size) {
-    Platform.runLater(new Runnable() {
-      @Override
-      public void run() {
-        StringBuilder result = new StringBuilder();
-        if (dirCount != 0) {
-          result.append(dirCount + " ");
-          if (dirCount == 1)
-            result.append(AppProperties.getLocalizedString("directory"));
-          else
-            result.append(AppProperties.getLocalizedString("directories"));
-          result.append(", ");
-        }
-
-        result.append(fileCount).append(" ");
-        if (fileCount == 1)
-          result.append(AppProperties.getLocalizedString("file"));
+    Platform.runLater(() -> {
+      StringBuilder result = new StringBuilder();
+      if (dirCount != 0) {
+        result.append(dirCount + " ");
+        if (dirCount == 1)
+          result.append(AppProperties.getLocalizedString("directory"));
         else
-          result.append(AppProperties.getLocalizedString("files"));
-
+          result.append(AppProperties.getLocalizedString("directories"));
         result.append(", ");
-        result.append(Utils.formatSize(size));
-        Footer.setStatus(result.toString());
       }
+
+      result.append(fileCount).append(" ");
+      if (fileCount == 1)
+        result.append(AppProperties.getLocalizedString("file"));
+      else
+        result.append(AppProperties.getLocalizedString("files"));
+
+      result.append(", ");
+      result.append(Utils.formatSize(size));
+      Footer.setStatus(result.toString());
     });
   }
 
   private void setDragEvent(final SourceTreeCell cell) {
     // The drag starts on a gesture source
-    cell.setOnDragDetected(new EventHandler<MouseEvent>() {
-      @Override
-      public void handle(MouseEvent event) {
-        SourceTreeItem item = (SourceTreeItem) cell.getTreeItem();
-        if (item != null && item.getState() == SourceTreeItemState.NORMAL) {
-          Dragboard db = cell.startDragAndDrop(TransferMode.COPY);
-          ClipboardContent content = new ClipboardContent();
-          String s = "source node - " + item.getPath();
-          if (s != null) {
-            content.putString(s);
-            db.setContent(content);
-          }
-          event.consume();
+    cell.setOnDragDetected(event -> {
+      SourceTreeItem item = (SourceTreeItem) cell.getTreeItem();
+      if (item != null && item.getState() == SourceTreeItemState.NORMAL) {
+        Dragboard db = cell.startDragAndDrop(TransferMode.COPY);
+        ClipboardContent content = new ClipboardContent();
+        String s = "source node - " + item.getPath();
+        if (s != null) {
+          content.putString(s);
+          db.setContent(content);
         }
+        event.consume();
       }
     });
   }
