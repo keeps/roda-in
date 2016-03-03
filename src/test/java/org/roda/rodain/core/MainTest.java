@@ -55,7 +55,10 @@ public class MainTest extends ApplicationTest {
     sleep(5000);
     push(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN));
     sleep(3000);
-    clickOn("OK");
+    try {
+      clickOn("OK");
+    } catch (Exception e) {
+    }
     sleep(1000);
     clickOn(AppProperties.getLocalizedString("SchemaPane.add"));
     sleep(1000);
@@ -91,7 +94,6 @@ public class MainTest extends ApplicationTest {
 
     sleep(2000);
     clickOn("#itemLevels").clickOn("Sub-fonds");
-    assert dobj != null;
 
     drag("Node2").dropTo(".tree-view");
     assert RodaIn.getSchemePane().getTreeView().getRoot().getChildren().size() == 2;
@@ -119,12 +121,7 @@ public class MainTest extends ApplicationTest {
 
   @Test
   public void association() {
-    Platform.runLater(new Runnable() {
-      @Override
-      public void run() {
-        fileExplorer.setFileExplorerRoot(testDir);
-      }
-    });
+    Platform.runLater(() -> fileExplorer.setFileExplorerRoot(testDir));
 
     sleep(5000); // wait for the tree to be created
     doubleClickOn("dir4");
