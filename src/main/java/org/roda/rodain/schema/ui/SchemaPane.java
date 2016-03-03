@@ -415,37 +415,35 @@ public class SchemaPane extends BorderPane {
     removeLevel.setMinWidth(100);
     removeLevel.setOnAction(event -> {
       List<TreeItem<String>> selectedItems = new ArrayList<>(treeView.getSelectionModel().getSelectedItems());
-      if (selectedItems != null) {
-        for (TreeItem<String> selected : selectedItems) {
-          if (selected instanceof SchemaNode) {
-            SchemaNode node = (SchemaNode) selected;
-            int fullSipCount = node.fullSipCount();
-            if (fullSipCount != 0) {
-              String content = String.format(AppProperties.getLocalizedString("SchemaPane.confirmRemove.content"),
-                fullSipCount);
-              Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
-              dlg.initStyle(StageStyle.UNDECORATED);
-              dlg.setHeaderText(AppProperties.getLocalizedString("SchemaPane.confirmRemove.header"));
-              dlg.setTitle(AppProperties.getLocalizedString("SchemaPane.confirmRemove.title"));
-              dlg.setContentText(content);
-              dlg.initModality(Modality.APPLICATION_MODAL);
-              dlg.initOwner(primaryStage);
-              dlg.show();
-              dlg.resultProperty().addListener(o -> confirmRemove(selected, dlg.getResult()));
-            } else
-              removeNode(selected);
-          } else if (selected instanceof SipPreviewNode) {
-            SipPreview currentSIP = ((SipPreviewNode) selected).getSip();
-            RuleModalController.removeSipPreview(currentSIP);
-            Task<Void> removeTask = new Task<Void>() {
-              @Override
-              protected Void call() throws Exception {
-                currentSIP.removeSIP();
-                return null;
-              }
-            };
-            new Thread(removeTask).start();
-          }
+      for (TreeItem<String> selected : selectedItems) {
+        if (selected instanceof SchemaNode) {
+          SchemaNode node = (SchemaNode) selected;
+          int fullSipCount = node.fullSipCount();
+          if (fullSipCount != 0) {
+            String content = String.format(AppProperties.getLocalizedString("SchemaPane.confirmRemove.content"),
+              fullSipCount);
+            Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
+            dlg.initStyle(StageStyle.UNDECORATED);
+            dlg.setHeaderText(AppProperties.getLocalizedString("SchemaPane.confirmRemove.header"));
+            dlg.setTitle(AppProperties.getLocalizedString("SchemaPane.confirmRemove.title"));
+            dlg.setContentText(content);
+            dlg.initModality(Modality.APPLICATION_MODAL);
+            dlg.initOwner(primaryStage);
+            dlg.show();
+            dlg.resultProperty().addListener(o -> confirmRemove(selected, dlg.getResult()));
+          } else
+            removeNode(selected);
+        } else if (selected instanceof SipPreviewNode) {
+          SipPreview currentSIP = ((SipPreviewNode) selected).getSip();
+          RuleModalController.removeSipPreview(currentSIP);
+          Task<Void> removeTask = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+              currentSIP.removeSIP();
+              return null;
+            }
+          };
+          new Thread(removeTask).start();
         }
       }
     });

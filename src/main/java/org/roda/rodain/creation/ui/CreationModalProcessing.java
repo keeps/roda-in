@@ -245,6 +245,7 @@ public class CreationModalProcessing extends BorderPane {
     Platform.runLater(() -> {
       Alert alert = new Alert(Alert.AlertType.ERROR);
       alert.initStyle(StageStyle.UNDECORATED);
+      alert.initOwner(stage);
       alert.setTitle(AppProperties.getLocalizedString("CreationModalProcessing.alert.title"));
       String header = String.format(AppProperties.getLocalizedString("CreationModalProcessing.alert.header"),
         sip.getTitle());
@@ -259,7 +260,10 @@ public class CreationModalProcessing extends BorderPane {
       // Create expandable Exception.
       StringWriter sw = new StringWriter();
       PrintWriter pw = new PrintWriter(sw);
-      ex.printStackTrace(pw);
+      pw.println(ex.getMessage());
+      for (StackTraceElement ste : ex.getStackTrace()) {
+        pw.println("\t" + ste);
+      }
       String exceptionText = sw.toString();
 
       Label label = new Label(AppProperties.getLocalizedString("CreationModalProcessing.alert.stacktrace"));
@@ -274,8 +278,14 @@ public class CreationModalProcessing extends BorderPane {
       expContent.add(label, 0, 0);
       expContent.add(textArea, 0, 1);
 
+      textArea.minHeightProperty().bind(expContent.heightProperty().subtract(20));
       // Set expandable Exception into the dialog pane.
       alert.getDialogPane().setExpandableContent(expContent);
+      alert.getDialogPane().minWidthProperty().bind(stage.widthProperty());
+      alert.getDialogPane().minHeightProperty().bind(stage.heightProperty());
+
+      // Without this setStyle the pane won't resize correctly. Black magic...
+      alert.getDialogPane().setStyle(AppProperties.getStyle("creationmodalprocessing.blackmagic"));
 
       alert.show();
     });

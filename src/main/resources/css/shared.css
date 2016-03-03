@@ -14,18 +14,18 @@
     -fx-font-weight: bold;
 }
 
-.dialog-pane {
+.alert {
     -fx-border-color: #089de3;
     -fx-border-width: 2px;
     -fx-background-color: white;
     -fx-text-fill: black;
 }
 
-.dialog-pane:header *.header-panel {
+.alert:header *.header-panel {
     -fx-background-color: #089de3;
 }
 
-.dialog-pane:header *.header-panel *.label {
+.alert:header *.header-panel *.label {
     -fx-text-fill: white;
 }
 
