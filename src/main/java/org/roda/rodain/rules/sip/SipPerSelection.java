@@ -1,11 +1,12 @@
 package org.roda.rodain.rules.sip;
 
 import java.io.File;
+import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
+import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.TreeNode;
@@ -109,9 +110,8 @@ public class SipPerSelection extends Observable implements TreeVisitor, SipPrevi
       return true;
     }
     if (templateType != null) {
-      Pattern p = Pattern.compile(templateType);
-      Matcher m = p.matcher(path.getFileName().toString());
-      return m.matches();
+      PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + templateType);
+      return matcher.matches(path.getFileName());
     }
     return false;
   }
@@ -237,10 +237,9 @@ public class SipPerSelection extends Observable implements TreeVisitor, SipPrevi
     if (!dir.isDirectory())
       dir = sipPath.getParent().toFile();
 
-    Pattern p = Pattern.compile(templateType);
+    PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + templateType);
     File[] foundFiles = dir.listFiles((dir1, name) -> {
-      Matcher m = p.matcher(name);
-      return m.matches();
+      return matcher.matches(Paths.get(name));
     });
 
     if (foundFiles != null && foundFiles.length > 0) {

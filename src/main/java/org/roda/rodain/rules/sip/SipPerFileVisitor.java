@@ -1,7 +1,6 @@
 package org.roda.rodain.rules.sip;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -15,6 +14,7 @@ import org.roda.rodain.rules.filters.ContentFilter;
 import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.TreeVisitor;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  * @since 05-10-2015.
  */
 public class SipPerFileVisitor extends Observable implements TreeVisitor, SipPreviewCreator {
-  private static final org.slf4j.Logger log = LoggerFactory.getLogger(SipPerFileVisitor.class.getName());
+  private static final Logger log = LoggerFactory.getLogger(SipPerFileVisitor.class.getName());
   private static final int UPDATEFREQUENCY = 500; // in milliseconds
   // This map is returned, in full, to the SipPreviewNode when there's an update
   private Map<String, SipPreview> sipsMap;
@@ -169,6 +169,13 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipPre
       if (cf.filter(pathString))
         return true;
     }
+    if (path.getFileName() == null) {
+      return true;
+    }
+    if (templateType != null) {
+      PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + templateType);
+      return matcher.matches(path.getFileName());
+    }
     return false;
   }
 
@@ -218,19 +225,36 @@ public class SipPerFileVisitor extends Observable implements TreeVisitor, SipPre
       case DIFF_DIRECTORY:
         result = getFileFromDir(path);
         break;
+      case SAME_DIRECTORY:
+        result = searchMetadata(path);
+        break;
       default:
         return null;
     }
     return result;
   }
 
+  private Path searchMetadata(Path sipPath) {
+    File dir = sipPath.toFile();
+    if (!dir.isDirectory())
+      dir = sipPath.getParent().toFile();
+
+    PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + templateType);
+    File[] foundFiles = dir.listFiles((dir1, name) -> {
+      return matcher.matches(Paths.get(name));
+    });
+
+    if (foundFiles != null && foundFiles.length > 0) {
+      return foundFiles[0].toPath();
+    }
+    return null;
+  }
+
   private Path getFileFromDir(Path path) {
     String fileName = FilenameUtils.removeExtension(path.getFileName().toString());
     File dir = new File(metadataPath.toString());
-    File[] foundFiles = dir.listFiles(new FilenameFilter() {
-      public boolean accept(File dir, String name) {
-        return name.startsWith(fileName + ".");
-      }
+    File[] foundFiles = dir.listFiles((dir1, name) -> {
+      return name.startsWith(fileName + ".");
     });
 
     if (foundFiles.length > 0) {
