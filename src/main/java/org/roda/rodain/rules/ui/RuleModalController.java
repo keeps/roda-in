@@ -45,9 +45,12 @@ public class RuleModalController {
    * Creates the scene to show the modal window with the options to create a new
    * Rule.
    *
-   * @param primStage  The main stage of the application.
-   * @param source     The set of items chosen by the user to create the new association.
-   * @param schemaNode The destination of the SIPs that will be created.
+   * @param primStage
+   *          The main stage of the application.
+   * @param source
+   *          The set of items chosen by the user to create the new association.
+   * @param schemaNode
+   *          The destination of the SIPs that will be created.
    */
   public static void newAssociation(final Stage primStage, Set<SourceTreeItem> source, SchemaNode schemaNode) {
     if (stage == null)
@@ -165,9 +168,11 @@ public class RuleModalController {
   }
 
   /**
-   * Creates a new RuleModalRemoving pane and sets the stage's root scene as that pane.
+   * Creates a new RuleModalRemoving pane and sets the stage's root scene as
+   * that pane.
    *
-   * @param r The rule to be removed
+   * @param r
+   *          The rule to be removed
    * @see RuleModalRemoving
    */
   public static void removeRule(Rule r) {

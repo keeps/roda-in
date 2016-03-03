@@ -74,8 +74,10 @@ public class RuleModalRemoving extends BorderPane implements Observer {
   /**
    * Updates the progress of the rule removal.
    *
-   * @param o    The Observable object, should be a Rule.
-   * @param args The arguments of the update.
+   * @param o
+   *          The Observable object, should be a Rule.
+   * @param args
+   *          The arguments of the update.
    */
   public void update(Observable o, Object args) {
     if (!(args instanceof Float)) {

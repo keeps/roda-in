@@ -13,14 +13,16 @@ public class SchemaComparator implements Comparator<TreeItem<String>> {
    * Compares two TreeItems.
    * <p/>
    * <p>
-   * If the items are of the same class, compares its titles/names.
-   * Otherwise, puts the SchemaNodes in the top.
+   * If the items are of the same class, compares its titles/names. Otherwise,
+   * puts the SchemaNodes in the top.
    * </p>
    *
-   * @param o1 The first TreeItem in the comparison.
-   * @param o2 The second TreeItem in the comparison.
-   * @return A value smaller than 0 if the o1 should appear first, 0 if they are equal
-   * and bigger than 0 if o2 should appear first.
+   * @param o1
+   *          The first TreeItem in the comparison.
+   * @param o2
+   *          The second TreeItem in the comparison.
+   * @return A value smaller than 0 if the o1 should appear first, 0 if they are
+   *         equal and bigger than 0 if o2 should appear first.
    */
   @Override
   public int compare(TreeItem o1, TreeItem o2) {

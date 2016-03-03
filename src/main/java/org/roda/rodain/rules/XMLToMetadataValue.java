@@ -40,8 +40,7 @@ public class XMLToMetadataValue {
    * @return The metadataValue map
    * @throws SAXException
    */
-  public static Map<String, MetadataValue> createEADMetadataValues(String content)
- throws SAXException {
+  public static Map<String, MetadataValue> createEADMetadataValues(String content) throws SAXException {
     if (!Utils.isEAD(content)) {
       return null;
     }

@@ -92,11 +92,11 @@ public class InspectionPane extends BorderPane {
   private ListView<RuleCell> ruleList;
   private VBox emptyRulesPane;
 
-
   /**
    * Creates a new inspection pane.
    *
-   * @param stage The primary stage of the application
+   * @param stage
+   *          The primary stage of the application
    */
   public InspectionPane(Stage stage) {
     createCenterHelp();
@@ -666,7 +666,6 @@ public class InspectionPane extends BorderPane {
       event.consume();
     });
 
-
     box.getChildren().addAll(titleBox);
     emptyRulesPane.getChildren().add(box);
     rules.setCenter(emptyRulesPane);
@@ -682,7 +681,8 @@ public class InspectionPane extends BorderPane {
    * TreeView.
    * </p>
    *
-   * @param sip The SipPreviewNode used to update the UI.
+   * @param sip
+   *          The SipPreviewNode used to update the UI.
    * @see SipPreviewNode
    * @see SipContentDirectory
    * @see SipContentFile
@@ -693,7 +693,7 @@ public class InspectionPane extends BorderPane {
     currentSIPNode = sip;
     currentDescOb = sip.getSip();
     currentSchema = null;
-    if(contentTask != null && contentTask.isRunning()){
+    if (contentTask != null && contentTask.isRunning()) {
       contentTask.cancel(true);
     }
     if (metadataTask != null && metadataTask.isRunning()) {
@@ -769,7 +769,8 @@ public class InspectionPane extends BorderPane {
    * create a ListView of RuleCell.
    * </p>
    *
-   * @param node The SchemaNode used to update the UI.
+   * @param node
+   *          The SchemaNode used to update the UI.
    * @see RuleCell
    * @see SchemaNode
    */
@@ -778,7 +779,7 @@ public class InspectionPane extends BorderPane {
     currentDescOb = node.getDob();
     currentSIPNode = null;
     currentSchema = node;
-    if(contentTask != null && contentTask.isRunning()){
+    if (contentTask != null && contentTask.isRunning()) {
       contentTask.cancel(true);
     }
     if (metadataTask != null && metadataTask.isRunning()) {
@@ -857,7 +858,7 @@ public class InspectionPane extends BorderPane {
   /**
    * Shows the help pane.
    */
-  public void showHelp(){
+  public void showHelp() {
     setCenter(centerHelp);
     setTop(new HBox());
   }
@@ -880,7 +881,7 @@ public class InspectionPane extends BorderPane {
    * Updates the rule list of the currently selected scheme node.
    */
   public void updateRuleList() {
-    if(currentSchema != null) {
+    if (currentSchema != null) {
       ruleList.getItems().clear();
       Set<Rule> currentRules = currentSchema.getRules();
 
@@ -916,7 +917,8 @@ public class InspectionPane extends BorderPane {
    * buttons, since they are only enabled when a directory is selected.
    * </p>
    *
-   * @param state The new state of the buttons.
+   * @param state
+   *          The new state of the buttons.
    */
   public void setStateContentButtons(boolean state) {
     flatten.setDisable(state);

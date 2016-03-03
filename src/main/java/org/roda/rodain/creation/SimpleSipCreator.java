@@ -36,10 +36,13 @@ public class SimpleSipCreator extends Thread {
   protected final Path outputPath;
   protected final Map<SipPreview, String> previews;
   protected final int sipPreviewCount;
-  protected final static String actionCreatingFolders = AppProperties.getLocalizedString("SimpleSipCreator.creatingStructure");
+  protected final static String actionCreatingFolders = AppProperties
+    .getLocalizedString("SimpleSipCreator.creatingStructure");
   protected final static String actionCopyingData = AppProperties.getLocalizedString("SimpleSipCreator.copyingData");
-  protected final static String actionCopyingMetadata = AppProperties.getLocalizedString("SimpleSipCreator.copyingMetadata");
-  protected final static String actionFinalizingSip = AppProperties.getLocalizedString("SimpleSipCreator.finalizingSip");
+  protected final static String actionCopyingMetadata = AppProperties
+    .getLocalizedString("SimpleSipCreator.copyingMetadata");
+  protected final static String actionFinalizingSip = AppProperties
+    .getLocalizedString("SimpleSipCreator.finalizingSip");
 
   protected int createdSipsCount = 0;
   protected String currentSipName;
@@ -64,11 +67,14 @@ public class SimpleSipCreator extends Thread {
    * Creates a simple SIP exporter.
    * <p/>
    * <p>
-   * This object doesn't export any SIPs, it must be extended and the run() method overridden.
+   * This object doesn't export any SIPs, it must be extended and the run()
+   * method overridden.
    * </p>
    *
-   * @param outputPath The path to the output folder of the SIP exportation
-   * @param previews   The map with the SIPs that will be exported
+   * @param outputPath
+   *          The path to the output folder of the SIP exportation
+   * @param previews
+   *          The map with the SIPs that will be exported
    */
   public SimpleSipCreator(Path outputPath, Map<SipPreview, String> previews) {
     this.outputPath = outputPath;

@@ -2,6 +2,7 @@ package org.roda.rodain.source.ui;
 
 import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
+
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 
 /**

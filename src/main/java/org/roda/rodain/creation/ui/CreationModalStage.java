@@ -26,7 +26,8 @@ public class CreationModalStage extends Stage {
   /**
    * The stage of the SIP exportation panels
    *
-   * @param primaryStage The primary stage of the application
+   * @param primaryStage
+   *          The primary stage of the application
    */
   public CreationModalStage(Stage primaryStage) {
     super(StageStyle.TRANSPARENT);
@@ -46,10 +47,13 @@ public class CreationModalStage extends Stage {
   }
 
   /**
-   * Starts the CreateSips thread and changes the scene to CreationModalProcessing.
+   * Starts the CreateSips thread and changes the scene to
+   * CreationModalProcessing.
    *
-   * @param outputFolder The output folder for the SIP exportation
-   * @param type         The format of the SIPs
+   * @param outputFolder
+   *          The output folder for the SIP exportation
+   * @param type
+   *          The format of the SIPs
    */
   public void startCreation(Path outputFolder, SipTypes type) {
     CreateSips creator = new CreateSips(outputFolder, type);
@@ -72,7 +76,8 @@ public class CreationModalStage extends Stage {
    * Sets the root Scene of this Stage, applies a color adjustment effect and
    * enables dragging of the window.
    *
-   * @param root The pane to be set as root
+   * @param root
+   *          The pane to be set as root
    */
   public void setRoot(Parent root) {
     this.getScene().setRoot(root);

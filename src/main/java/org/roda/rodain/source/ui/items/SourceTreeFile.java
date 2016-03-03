@@ -47,7 +47,6 @@ public class SourceTreeFile extends SourceTreeItem {
     state = SourceTreeItemState.NORMAL;
   }
 
-
   @Override
   public void setState(SourceTreeItemState st) {
     if (state != st) {

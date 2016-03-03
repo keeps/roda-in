@@ -41,8 +41,10 @@ public class VisitorStack extends Observable {
    * as parameter. Wraps it in a Task and adds the Task to an ExecutorService.
    * </p>
    *
-   * @param paths The set of paths associated in the Rule
-   * @param vis   The TreeVisitor created by the Rule
+   * @param paths
+   *          The set of paths associated in the Rule
+   * @param vis
+   *          The TreeVisitor created by the Rule
    * @see TreeVisitor
    * @see ExecutorService
    */
@@ -100,7 +102,8 @@ public class VisitorStack extends Observable {
   }
 
   /**
-   * @param visitorId The id of the TreeVisitor we want to know the state of.
+   * @param visitorId
+   *          The id of the TreeVisitor we want to know the state of.
    * @return The state of the TreeVisitor.
    * @see TreeVisitor
    */
@@ -121,7 +124,8 @@ public class VisitorStack extends Observable {
   /**
    * Cancels the execution of the TreeVisitor received as parameter.
    *
-   * @param vis The TreeVisitor to be canceled
+   * @param vis
+   *          The TreeVisitor to be canceled
    * @return True if the TreeVisitor has been canceled, false otherwise.
    * @see TreeVisitor
    */

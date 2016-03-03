@@ -22,7 +22,7 @@ public class DescriptionObject extends Observable {
   private List<DescObjMetadata> metadata = new ArrayList<>();
   private Map<String, Object> additionalProperties = new TreeMap<>();
 
-  public DescriptionObject(){
+  public DescriptionObject() {
     title = AppProperties.getLocalizedString("root");
     id = UUID.randomUUID().toString();
     metadata.add(new DescObjMetadata(MetadataTypes.TEMPLATE, "ead", "2002"));
@@ -58,7 +58,8 @@ public class DescriptionObject extends Observable {
   /**
    * Sets the title of the description object
    *
-   * @param title The title
+   * @param title
+   *          The title
    */
   public void setTitle(String title) {
     this.title = title;
@@ -76,7 +77,8 @@ public class DescriptionObject extends Observable {
   /**
    * Sets the id of the description object
    *
-   * @param id The id
+   * @param id
+   *          The id
    */
   public void setId(String id) {
     this.id = id;
@@ -94,7 +96,8 @@ public class DescriptionObject extends Observable {
   /**
    * Sets the parentId of the description object
    *
-   * @param parentId The parentId
+   * @param parentId
+   *          The parentId
    */
   public void setParentId(String parentId) {
     this.parentId = parentId;
@@ -196,7 +199,8 @@ public class DescriptionObject extends Observable {
   /**
    * Sets the metadata list of the description object
    *
-   * @param metadata The metadata list
+   * @param metadata
+   *          The metadata list
    */
   public void setMetadata(List<DescObjMetadata> metadata) {
     this.metadata = metadata;
@@ -214,8 +218,10 @@ public class DescriptionObject extends Observable {
   /**
    * Sets an additional property.
    *
-   * @param name  The name of the property.
-   * @param value The value of the property.
+   * @param name
+   *          The name of the property.
+   * @param value
+   *          The value of the property.
    */
   public void setAdditionalProperty(String name, Object value) {
     this.additionalProperties.put(name, value);

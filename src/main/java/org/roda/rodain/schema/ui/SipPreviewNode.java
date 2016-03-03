@@ -4,6 +4,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.ResourceBundle;
 
+import javafx.application.Platform;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -92,8 +93,10 @@ public class SipPreviewNode extends TreeItem<String> implements Observer {
    */
   @Override
   public void update(Observable o, Object arg) {
-    String value = getValue();
-    setValue("");
-    setValue(value); // this forces a redraw of the item
+    Platform.runLater(() -> {
+      String value = getValue();
+      setValue("");
+      setValue(value); // this forces a redraw of the item
+    });
   }
 }

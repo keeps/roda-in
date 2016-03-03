@@ -40,8 +40,10 @@ public class CreationModalProcessing extends BorderPane {
   /**
    * Creates a pane to show the progress of the SIP exportation.
    *
-   * @param creator The SIP creator object
-   * @param stage   The stage of the pane
+   * @param creator
+   *          The SIP creator object
+   * @param stage
+   *          The stage of the pane
    */
   public CreationModalProcessing(CreateSips creator, CreationModalStage stage) {
     this.creator = creator;

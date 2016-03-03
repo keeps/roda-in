@@ -1,10 +1,11 @@
 package org.roda.rodain.source.ui.items;
 
-import javafx.scene.control.TreeItem;
-import org.roda.rodain.rules.Rule;
-
 import java.util.Observable;
 import java.util.Observer;
+
+import javafx.scene.control.TreeItem;
+
+import org.roda.rodain.rules.Rule;
 
 /**
  * @author Andre Pereira apereira@keep.pt

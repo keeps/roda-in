@@ -14,7 +14,8 @@ public class SchemaClickedEventHandler implements EventHandler<MouseEvent> {
   /**
    * Creates a new SchemaClickedEventHandler
    *
-   * @param pane The SchemaPane that contains the tree of SchemaNodes
+   * @param pane
+   *          The SchemaPane that contains the tree of SchemaNodes
    */
   public SchemaClickedEventHandler(SchemaPane pane) {
     this.treeView = pane.getTreeView();
@@ -24,7 +25,8 @@ public class SchemaClickedEventHandler implements EventHandler<MouseEvent> {
    * Updates the InspectionPane with the item that has received the clicked
    * event.
    *
-   * @param mouseEvent The mouse event triggered.
+   * @param mouseEvent
+   *          The mouse event triggered.
    */
   @Override
   public void handle(MouseEvent mouseEvent) {

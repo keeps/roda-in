@@ -42,14 +42,19 @@ public class RuleModalProcessing extends BorderPane {
 
   private Timer timer;
 
-
   /**
-   * Creates a new RuleModalProcessing object, that indicates the progress of the SipPreview creation.
+   * Creates a new RuleModalProcessing object, that indicates the progress of
+   * the SipPreview creation.
    *
-   * @param creator      The SipPreviewCreator object
-   * @param visitor      The TreeVisitor object
-   * @param visitorStack The VisitorStack, so the process can be cancelled
-   * @param fileWalker   The WalkFileTree object, to get the processed files and directories
+   * @param creator
+   *          The SipPreviewCreator object
+   * @param visitor
+   *          The TreeVisitor object
+   * @param visitorStack
+   *          The VisitorStack, so the process can be cancelled
+   * @param fileWalker
+   *          The WalkFileTree object, to get the processed files and
+   *          directories
    */
   public RuleModalProcessing(Rule rule, SipPreviewCreator creator, TreeVisitor visitor, VisitorStack visitorStack,
     WalkFileTree fileWalker) {

@@ -61,15 +61,15 @@
                     </descriptors>
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
-               <executions>
-                   <execution>
-                       <id>make-assembly</id>
-                       <phase>package</phase>
-                       <goals>
-                           <goal>single</goal>
-                       </goals>
-                   </execution>
-               </executions>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>com.akathist.maven.plugins.launch4j</groupId>
@@ -207,13 +207,13 @@
         <dependency>
             <groupId>org.testfx</groupId>
             <artifactId>testfx-core</artifactId>
-            <version>4.0.1-alpha</version>
+            <version>4.0.2-alpha</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testfx</groupId>
             <artifactId>testfx-junit</artifactId>
-            <version>4.0.1-alpha</version>
+            <version>4.0.2-alpha</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

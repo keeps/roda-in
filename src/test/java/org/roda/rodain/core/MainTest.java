@@ -70,7 +70,7 @@ public class MainTest extends ApplicationTest {
     sleep(1000);
 
     TreeItem<String> item = RodaIn.getSchemePane().getTreeView().getSelectionModel().getSelectedItem();
-    assert"Node1".equals(item.getValue());
+    assert "Node1".equals(item.getValue());
 
     clickOn(AppProperties.getLocalizedString("SchemaPane.add"));
     sleep(500);
@@ -109,7 +109,7 @@ public class MainTest extends ApplicationTest {
     clickOn("UCP");
     TreeItem selected = schemaPane.getTreeView().getSelectionModel().getSelectedItem();
     int selectedIndex = schemaPane.getTreeView().getSelectionModel().getSelectedIndex();
-    assert"UCP".equals(selected.getValue());
+    assert "UCP".equals(selected.getValue());
     assert selectedIndex == 7;
 
     doubleClickOn(".tree-view");
@@ -125,26 +125,26 @@ public class MainTest extends ApplicationTest {
 
     sleep(5000); // wait for the tree to be created
     doubleClickOn("dir4");
-    sleep(1000); //wait for the node to expand
+    sleep(1000); // wait for the node to expand
     drag("dirB").dropTo("UCP");
-    sleep(1000); //wait for the modal to open
+    sleep(1000); // wait for the modal to open
     clickOn("#assoc3");
     clickOn("#btConfirm");
     sleep(2000); // wait for the modal to update
     clickOn("#btConfirm");
-    sleep(10000); // wait for the SIPs creation
+    sleep(6000); // wait for the SIPs creation
 
     clickOn("file1.txt");
     TreeItem selected = schemaPane.getTreeView().getSelectionModel().getSelectedItem();
     assert selected instanceof SipPreviewNode;
     TreeItem parent = selected.getParent();
     assert parent instanceof SchemaNode;
-    assert"UCP".equals(((SchemaNode) parent).getDob().getTitle());
+    assert "UCP".equals(((SchemaNode) parent).getDob().getTitle());
 
     assert parent.getChildren().size() == 14;
 
     clickOn("#removeLevel");
-    sleep(1000); //wait for the SIP removal
+    sleep(1000); // wait for the SIP removal
     assert parent.getChildren().size() == 13;
 
     clickOn("UCP");

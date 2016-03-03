@@ -27,7 +27,7 @@ import org.roda.rodain.source.ui.FileExplorerPane;
 public class SourceTreeDirectory extends SourceTreeItem {
   public static final Image folderCollapseImage = new Image(ClassLoader.getSystemResourceAsStream("icons/folder.png"));
   public static final Image folderExpandImage = new Image(
-      ClassLoader.getSystemResourceAsStream("icons/folder-open.png"));
+    ClassLoader.getSystemResourceAsStream("icons/folder-open.png"));
   public static final Comparator<? super TreeItem> comparator = createComparator();
 
   public boolean expanded = false;
@@ -407,7 +407,8 @@ public class SourceTreeDirectory extends SourceTreeItem {
   /**
    * Sets the state of the directory and forces an update of the item
    *
-   * @param st The new state
+   * @param st
+   *          The new state
    */
   @Override
   public void setState(SourceTreeItemState st) {
@@ -458,16 +459,16 @@ public class SourceTreeDirectory extends SourceTreeItem {
   }
 
   /**
-   * Creates a task to load the items to a temporary collection, otherwise the UI will hang while accessing the disk.
-   * Then, sets the new collection as the item's children.
+   * Creates a task to load the items to a temporary collection, otherwise the
+   * UI will hang while accessing the disk. Then, sets the new collection as the
+   * item's children.
    */
   public void loadMore() {
     final ArrayList<TreeItem<String>> children = new ArrayList<>(getChildren());
 
     // Remove "loading" items
-    List<Object> toRemove = children.stream().
-        filter(p -> p instanceof SourceTreeLoading || p instanceof SourceTreeLoadMore).
-        collect(Collectors.toList());
+    List<Object> toRemove = children.stream()
+      .filter(p -> p instanceof SourceTreeLoading || p instanceof SourceTreeLoadMore).collect(Collectors.toList());
     children.removeAll(toRemove);
 
     // First we access the disk and save the loaded items to a temporary
@@ -559,14 +560,17 @@ public class SourceTreeDirectory extends SourceTreeItem {
    * Moves the children with the wrong state to the correct collection.
    *
    * <p>
-   *   The normal items in the mapped collection are moved to the children collection.
+   * The normal items in the mapped collection are moved to the children
+   * collection.
    * </p>
    *
    * <p>
-   *   If the mapped items are hidden, moves the mapped items in the children collection to the mapped collection.
+   * If the mapped items are hidden, moves the mapped items in the children
+   * collection to the mapped collection.
    * </p>
    * <p>
-   *   If the ignored items are hidden, moves the ignored items in the children collection to the ignored collection.
+   * If the ignored items are hidden, moves the ignored items in the children
+   * collection to the ignored collection.
    * </p>
    */
   public void moveChildrenWrongState() {

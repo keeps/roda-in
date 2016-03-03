@@ -34,7 +34,8 @@ public class PathCollection {
   /**
    * If the path isn't in the collection, adds it and sets its state as NORMAL.
    *
-   * @param path The path to be added to the collection
+   * @param path
+   *          The path to be added to the collection
    */
   public static void simpleAddPath(String path) {
     if (!states.containsKey(path)) {
@@ -56,8 +57,10 @@ public class PathCollection {
    * and finally "a".
    * </p>
    *
-   * @param path The path to be added to the collection.
-   * @param st   The state of the item.
+   * @param path
+   *          The path to be added to the collection.
+   * @param st
+   *          The state of the item.
    */
   public static void addPath(String path, SourceTreeItemState st) {
     // ignoring or removing the ignore of an item
@@ -95,7 +98,7 @@ public class PathCollection {
   }
 
   private static void applySameStateAllChildren(String path, SourceTreeItemState previousState,
-                                                SourceTreeItemState state) {
+    SourceTreeItemState state) {
     states.put(path, state);
 
     Map<String, SourceTreeItemState> children = getAllChildren(path);
@@ -113,8 +116,10 @@ public class PathCollection {
   /**
    * Adds a set of paths to the collection, mapping them to a state.
    *
-   * @param paths The set of paths to be added to the collection.
-   * @param st    The state of the items.
+   * @param paths
+   *          The set of paths to be added to the collection.
+   * @param st
+   *          The state of the items.
    * @see #addPath(String, SourceTreeItemState)
    */
   public static void addPaths(Set<String> paths, SourceTreeItemState st) {
@@ -129,7 +134,8 @@ public class PathCollection {
    * If the item's path isn't in the collection, it's also added.
    * </p>
    *
-   * @param item The item to be added to the collection.
+   * @param item
+   *          The item to be added to the collection.
    */
   public static void addItem(SourceTreeItem item) {
     String path = item.getPath();
@@ -142,9 +148,10 @@ public class PathCollection {
   /**
    * Used to get the state associated with a path.
    *
-   * @param path The path used to get the state.
+   * @param path
+   *          The path used to get the state.
    * @return The path's associated state if the path is in the collection,
-   * otherwise NORMAL.
+   *         otherwise NORMAL.
    */
   public static SourceTreeItemState getState(String path) {
     SourceTreeItemState result = SourceTreeItemState.NORMAL;
@@ -165,9 +172,10 @@ public class PathCollection {
   /**
    * Used to get the SourceTreeItem associated to a path.
    *
-   * @param path The path used to get the item.
+   * @param path
+   *          The path used to get the item.
    * @return The associated item if the path is in the collection, null
-   * otherwise.
+   *         otherwise.
    */
   public static SourceTreeItem getItem(String path) {
     return items.get(path);
@@ -186,7 +194,7 @@ public class PathCollection {
       } else {
         String sub = path.substring(0, index);
         // avoid "C:", "D:", etc in Windows
-        if(sub.matches("[A-Z]:")){
+        if (sub.matches("[A-Z]:")) {
           sub += separator;
         }
         // move the starting index for the next iteration so it's before the
@@ -246,14 +254,14 @@ public class PathCollection {
   private static Map<String, SourceTreeItemState> getDirectChildren(String path) {
     int countSeparators = StringUtils.countMatches(path, File.separator) + 1;
     return states.entrySet().stream().parallel()
-        .filter(
-            p -> p.getKey().startsWith(path) && StringUtils.countMatches(p.getKey(), File.separator) == countSeparators)
-        .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
+      .filter(
+        p -> p.getKey().startsWith(path) && StringUtils.countMatches(p.getKey(), File.separator) == countSeparators)
+      .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
   }
 
   private static Map<String, SourceTreeItemState> getAllChildren(String path) {
     return states.entrySet().stream().parallel().filter(p -> p.getKey().startsWith(path))
-        .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
+      .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
   }
 
   protected static void reset() {

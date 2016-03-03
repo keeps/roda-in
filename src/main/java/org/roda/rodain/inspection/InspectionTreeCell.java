@@ -17,8 +17,10 @@ public class InspectionTreeCell extends TreeCell<String> {
   /**
    * Updates the item with the text and icon.
    *
-   * @param item  The value of the item
-   * @param empty Flag to check whether the item is empty or not
+   * @param item
+   *          The value of the item
+   * @param empty
+   *          Flag to check whether the item is empty or not
    */
   @Override
   public void updateItem(String item, boolean empty) {

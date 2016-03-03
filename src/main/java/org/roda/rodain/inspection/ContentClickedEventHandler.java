@@ -1,12 +1,13 @@
 package org.roda.rodain.inspection;
 
+import java.io.IOException;
+
 import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
-import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -19,10 +20,13 @@ public class ContentClickedEventHandler implements EventHandler<MouseEvent> {
   private InspectionPane ipane;
 
   /**
-   * Creates an EventHandler to handle mouse events on the items of the SIP's content.
+   * Creates an EventHandler to handle mouse events on the items of the SIP's
+   * content.
    *
-   * @param tree The TreeView with the SIP's content
-   * @param pane A reference to the InspectionPane
+   * @param tree
+   *          The TreeView with the SIP's content
+   * @param pane
+   *          A reference to the InspectionPane
    */
   public ContentClickedEventHandler(TreeView<Object> tree, InspectionPane pane) {
     this.treeView = tree;
@@ -30,10 +34,11 @@ public class ContentClickedEventHandler implements EventHandler<MouseEvent> {
   }
 
   /**
-   * Enables or disables the content buttons when an item is selected.
-   * Attempts to open the file when an item is double-clicked.
+   * Enables or disables the content buttons when an item is selected. Attempts
+   * to open the file when an item is double-clicked.
    *
-   * @param mouseEvent The mouse event.
+   * @param mouseEvent
+   *          The mouse event.
    */
   @Override
   public void handle(MouseEvent mouseEvent) {

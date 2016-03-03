@@ -65,7 +65,8 @@ public class SipPreview extends DescriptionObject implements Observer {
   /**
    * Removes from the SIP's content the set of paths received as parameter.
    *
-   * @param paths The set of paths to be removed
+   * @param paths
+   *          The set of paths to be removed
    */
   public void ignoreContent(Set<Path> paths) {
     Set<String> ignored = new HashSet<>();
@@ -81,7 +82,7 @@ public class SipPreview extends DescriptionObject implements Observer {
 
   /**
    * @return True if the content has been modified (nodes removed, flattened or
-   * skipped), false otherwise.
+   *         skipped), false otherwise.
    */
   public boolean isContentModified() {
     return contentModified;
@@ -133,8 +134,10 @@ public class SipPreview extends DescriptionObject implements Observer {
    * Sets the content modified state as true if it receives a notification from
    * any TreeNode in the files Set.
    *
-   * @param o   The observable object that is modified.
-   * @param arg The arguments sent by the observable object.
+   * @param o
+   *          The observable object that is modified.
+   * @param arg
+   *          The arguments sent by the observable object.
    */
   @Override
   public void update(Observable o, Object arg) {

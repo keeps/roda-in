@@ -100,7 +100,8 @@ public class DescObjMetadata {
   /**
    * Sets the id of the description object metadata.
    *
-   * @param id The id
+   * @param id
+   *          The id
    */
   public void setId(String id) {
     this.id = id;
@@ -165,7 +166,8 @@ public class DescObjMetadata {
   /**
    * Sets the content of the description object metadata.
    *
-   * @param content The decoded content
+   * @param content
+   *          The decoded content
    */
   public void setContentDecoded(String content) {
     if (content != null) {
@@ -186,7 +188,8 @@ public class DescObjMetadata {
   /**
    * Sets the content encoding of the description object metadata.
    *
-   * @param contentEncoding The contentEncoding
+   * @param contentEncoding
+   *          The contentEncoding
    */
   public void setContentEncoding(String contentEncoding) {
     this.contentEncoding = contentEncoding;
@@ -216,8 +219,10 @@ public class DescObjMetadata {
   /**
    * Sets an additional property.
    *
-   * @param name  The name of the property.
-   * @param value The value of the property.
+   * @param name
+   *          The name of the property.
+   * @param value
+   *          The value of the property.
    */
   public void setAdditionalProperty(String name, Object value) {
     this.additionalProperties.put(name, value);

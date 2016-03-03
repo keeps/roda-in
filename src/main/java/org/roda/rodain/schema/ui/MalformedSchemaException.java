@@ -8,7 +8,8 @@ public class MalformedSchemaException extends Exception {
   /**
    * Creates a new MalformedSchemaException object.
    *
-   * @param message The message to be used in the exception.
+   * @param message
+   *          The message to be used in the exception.
    */
   public MalformedSchemaException(String message) {
     super(message);

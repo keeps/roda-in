@@ -8,9 +8,9 @@ import java.util.*;
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 05-10-2015.
- * <p/>
- * Used in the Handlers to make a representation of the documents tree in
- * a SIP
+ *        <p/>
+ *        Used in the Handlers to make a representation of the documents tree in
+ *        a SIP
  */
 public class TreeNode extends Observable {
   private Path path;
@@ -19,7 +19,8 @@ public class TreeNode extends Observable {
   /**
    * Creates a new TreeNode object.
    *
-   * @param path The path to be associated to the TreeNode.
+   * @param path
+   *          The path to be associated to the TreeNode.
    */
   public TreeNode(Path path) {
     this.path = path;
@@ -46,7 +47,7 @@ public class TreeNode extends Observable {
 
   /**
    * @return A set with all the paths from the tree that starts in the TreeNode
-   * where this method is called.
+   *         where this method is called.
    */
   public Set<String> getFullTreePaths() {
     Set<String> result = new HashSet<>();
@@ -65,7 +66,7 @@ public class TreeNode extends Observable {
 
   /**
    * @return The direct children of the TreeNode that are files (not
-   * directories)
+   *         directories)
    */
   public Map<String, TreeNode> getOnlyFiles() {
     Map<String, TreeNode> result = new HashMap<>();
@@ -81,7 +82,8 @@ public class TreeNode extends Observable {
    * returns a set of the item's full tree. Else, calls this method in all its
    * children, returning all the paths removed in the children.
    *
-   * @param paths is a Set of the selected paths to be ignored
+   * @param paths
+   *          is a Set of the selected paths to be ignored
    * @return a Set of all the paths removed
    */
   public Set<String> ignoreContent(Set<Path> paths) {
@@ -107,7 +109,8 @@ public class TreeNode extends Observable {
   /**
    * Adds new TreeNodes to the node's children.
    *
-   * @param map The map with the new TreeNodes
+   * @param map
+   *          The map with the new TreeNodes
    */
   public void addAll(Map<String, TreeNode> map) {
     files.putAll(map);
@@ -117,7 +120,8 @@ public class TreeNode extends Observable {
   /**
    * Adds a new TreeNode to the node's children
    *
-   * @param node The new TreeNode to be added
+   * @param node
+   *          The new TreeNode to be added
    */
   public void add(TreeNode node) {
     files.put(node.getPath().toString(), node);
@@ -127,8 +131,9 @@ public class TreeNode extends Observable {
   /**
    * Adds a new TreeNode to the node's children
    *
-   * @param node The path of the file to be added to the children. Before being
-   *             added, the method creates a new TreeNode with this path.
+   * @param node
+   *          The path of the file to be added to the children. Before being
+   *          added, the method creates a new TreeNode with this path.
    */
   public void add(Path node) {
     files.put(node.toString(), new TreeNode(node));
@@ -138,7 +143,8 @@ public class TreeNode extends Observable {
   /**
    * Removes the TreeNode with the path received as parameter.
    *
-   * @param path The path of the TreeNode to be removed
+   * @param path
+   *          The path of the TreeNode to be removed
    * @return The removed TreeNode
    */
   public TreeNode remove(Path path) {
@@ -163,7 +169,8 @@ public class TreeNode extends Observable {
   }
 
   /**
-   * @param key The path of the TreeNode we want to get.
+   * @param key
+   *          The path of the TreeNode we want to get.
    * @return The TreeNode with the path received as parameter
    */
   public TreeNode get(String key) {
@@ -178,7 +185,8 @@ public class TreeNode extends Observable {
   /**
    * Adds a new observer to the TreeNode and all its children
    *
-   * @param o The Observer to be added
+   * @param o
+   *          The Observer to be added
    */
   @Override
   public void addObserver(Observer o) {

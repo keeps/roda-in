@@ -73,9 +73,12 @@ public class RuleModalPane extends BorderPane {
   /**
    * Creates a new RuleModalPane, used to create a new Rule.
    *
-   * @param stage      The stage of the pane
-   * @param sourceSet  The set of selected SourceTreeItems
-   * @param schemaNode The destination SchemaNode, where the SIPs will be created
+   * @param stage
+   *          The stage of the pane
+   * @param sourceSet
+   *          The set of selected SourceTreeItems
+   * @param schemaNode
+   *          The destination SchemaNode, where the SIPs will be created
    */
   public RuleModalPane(Stage stage, Set<SourceTreeItem> sourceSet, SchemaNode schemaNode) {
     super();
@@ -101,7 +104,8 @@ public class RuleModalPane extends BorderPane {
     box.setPadding(new Insets(10, 10, 10, 10));
     pane.getChildren().add(box);
 
-    Label title = new Label(AppProperties.getLocalizedString("LoadingPane.createAssociation") + " \"" + schema.getDob().getTitle() + "\"");
+    Label title = new Label(
+      AppProperties.getLocalizedString("LoadingPane.createAssociation") + " \"" + schema.getDob().getTitle() + "\"");
     title.setId("title");
 
     ArrayList<String> dirs = new ArrayList<>();
@@ -495,7 +499,7 @@ public class RuleModalPane extends BorderPane {
 
   /**
    * @return The association type of the item the user selected or null if there
-   * was no selection.
+   *         was no selection.
    * @throws UnexpectedDataTypeException
    */
   public RuleTypes getAssociationType() throws UnexpectedDataTypeException {
@@ -517,7 +521,7 @@ public class RuleModalPane extends BorderPane {
 
   /**
    * @return The metadata type of the item the user selected or null if there
-   * was no selection.
+   *         was no selection.
    * @throws UnexpectedDataTypeException
    */
   public MetadataTypes getMetadataType() throws UnexpectedDataTypeException {
@@ -532,7 +536,7 @@ public class RuleModalPane extends BorderPane {
 
   /**
    * @return The path of the file selected by the user in the metadata option
-   * SINGLE_FILE
+   *         SINGLE_FILE
    */
   public Path getFromFile() {
     return Paths.get(fromFile);
@@ -540,7 +544,7 @@ public class RuleModalPane extends BorderPane {
 
   /**
    * @return The path of the directory selected by the user in the metadata
-   * option DIFF_DIRECTORY
+   *         option DIFF_DIRECTORY
    */
   public Path getDiffDir() {
     return Paths.get(diffDir);

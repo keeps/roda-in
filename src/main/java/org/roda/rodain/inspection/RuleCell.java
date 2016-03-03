@@ -57,8 +57,10 @@ public class RuleCell extends HBox implements Observer {
   /**
    * Creates a new RuleCell, associating it to a Rule.
    *
-   * @param node The SchemaNode being inspected
-   * @param rule The rule to be associated to the cell
+   * @param node
+   *          The SchemaNode being inspected
+   * @param rule
+   *          The rule to be associated to the cell
    */
   public RuleCell(SchemaNode node, Rule rule) {
     this.rule = rule;
@@ -210,10 +212,9 @@ public class RuleCell extends HBox implements Observer {
     expanding = true;
     sourceBoxWrapper.getChildren().add(sourceBox);
     Timeline animation = new Timeline();
-    animation.getKeyFrames().add(new KeyFrame(Duration.millis(ANIMATION_DURATION),
-        new KeyValue(minHeightProperty(), expandedHeight),
-        new KeyValue(maxHeightProperty(), expandedHeight),
-        new KeyValue(prefHeightProperty(), expandedHeight)));
+    animation.getKeyFrames()
+      .add(new KeyFrame(Duration.millis(ANIMATION_DURATION), new KeyValue(minHeightProperty(), expandedHeight),
+        new KeyValue(maxHeightProperty(), expandedHeight), new KeyValue(prefHeightProperty(), expandedHeight)));
     animation.setOnFinished(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent event) {
@@ -228,10 +229,9 @@ public class RuleCell extends HBox implements Observer {
   private void collapse() {
     expanding = true;
     Timeline animation = new Timeline();
-    animation.getKeyFrames().add(new KeyFrame(Duration.millis(ANIMATION_DURATION),
-        new KeyValue(minHeightProperty(), collapsedHeight),
-        new KeyValue(maxHeightProperty(), collapsedHeight),
-        new KeyValue(prefHeightProperty(), collapsedHeight)));
+    animation.getKeyFrames()
+      .add(new KeyFrame(Duration.millis(ANIMATION_DURATION), new KeyValue(minHeightProperty(), collapsedHeight),
+        new KeyValue(maxHeightProperty(), collapsedHeight), new KeyValue(prefHeightProperty(), collapsedHeight)));
     animation.setOnFinished(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent event) {
@@ -251,7 +251,8 @@ public class RuleCell extends HBox implements Observer {
       sb.append(dirs.size());
       if (dirs.size() == 1)
         sb.append(AppProperties.getLocalizedString("directory"));
-      else sb.append(AppProperties.getLocalizedString("directories"));
+      else
+        sb.append(AppProperties.getLocalizedString("directories"));
       Label dirsLabel = new Label(sb.toString());
       dirsLabel.setGraphic(new ImageView(SourceTreeDirectory.folderCollapseImage));
       result.getChildren().add(dirsLabel);
@@ -261,7 +262,8 @@ public class RuleCell extends HBox implements Observer {
       sb.append(fil.size());
       if (fil.size() == 1)
         sb.append(AppProperties.getLocalizedString("file"));
-      else sb.append(AppProperties.getLocalizedString("files"));
+      else
+        sb.append(AppProperties.getLocalizedString("files"));
       Label filLabel = new Label(sb.toString());
       filLabel.setGraphic(new ImageView(SourceTreeFile.fileImage));
       result.getChildren().add(filLabel);
@@ -272,8 +274,10 @@ public class RuleCell extends HBox implements Observer {
   /**
    * Updates the created SIPs count label
    *
-   * @param o   The Observable object. Should be a Rule.
-   * @param arg The arguments of the update.
+   * @param o
+   *          The Observable object. Should be a Rule.
+   * @param arg
+   *          The arguments of the update.
    */
   @Override
   public void update(Observable o, Object arg) {

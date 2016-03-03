@@ -27,8 +27,10 @@ public class SourceDirectory implements SourceItem {
   /**
    * Creates a new SourceDirectory object.
    *
-   * @param path      The path associated to the object
-   * @param showFiles Whether to show the files or not
+   * @param path
+   *          The path associated to the object
+   * @param showFiles
+   *          Whether to show the files or not
    */
   public SourceDirectory(Path path, boolean showFiles) {
     this.path = path;
@@ -57,7 +59,8 @@ public class SourceDirectory implements SourceItem {
   /**
    * Gets a single child
    *
-   * @param p The path of the child
+   * @param p
+   *          The path of the child
    * @return The child
    */
   public SourceItem getChild(Path p) {
@@ -67,8 +70,10 @@ public class SourceDirectory implements SourceItem {
   /**
    * Only returns an object if the path is a directory, casting the result.
    *
-   * @param p The path of the child
-   * @return The casted object of the child or null if the path isn't a directory.
+   * @param p
+   *          The path of the child
+   * @return The casted object of the child or null if the path isn't a
+   *         directory.
    */
   public SourceDirectory getChildDirectory(Path p) {
     if (Files.isDirectory(p))
@@ -86,8 +91,10 @@ public class SourceDirectory implements SourceItem {
   /**
    * Adds a new child to the map.
    *
-   * @param p    The path of the child
-   * @param item The object of the child
+   * @param p
+   *          The path of the child
+   * @param item
+   *          The object of the child
    */
   public void addChild(Path p, SourceItem item) {
     children.put(p.toString(), item);
@@ -120,7 +127,8 @@ public class SourceDirectory implements SourceItem {
   }
 
   /**
-   * @return True if the diretory has been loaded at least once, false otherwise.
+   * @return True if the diretory has been loaded at least once, false
+   *         otherwise.
    */
   public boolean isFirstLoaded() {
     return iterator != null;

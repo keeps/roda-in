@@ -37,8 +37,10 @@ public class BagitSipCreator extends SimpleSipCreator {
   /**
    * Creates a new BagIt exporter.
    *
-   * @param outputPath The path to the output folder of the SIP exportation
-   * @param previews   The map with the SIPs that will be exported
+   * @param outputPath
+   *          The path to the output folder of the SIP exportation
+   * @param previews
+   *          The map with the SIPs that will be exported
    */
   public BagitSipCreator(Path outputPath, Map<SipPreview, String> previews) {
     super(outputPath, previews);

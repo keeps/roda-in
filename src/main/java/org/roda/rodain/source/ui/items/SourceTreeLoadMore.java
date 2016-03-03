@@ -2,6 +2,7 @@ package org.roda.rodain.source.ui.items;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+
 import org.roda.rodain.core.AppProperties;
 
 /**

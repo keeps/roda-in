@@ -1,16 +1,17 @@
 package org.roda.rodain.inspection;
 
-import javafx.event.EventHandler;
-import javafx.scene.control.TreeItem;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import org.roda.rodain.rules.TreeNode;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+
+import javafx.event.EventHandler;
+import javafx.scene.control.TreeItem;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+
+import org.roda.rodain.rules.TreeNode;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -19,7 +20,7 @@ import java.util.Comparator;
 public class SipContentDirectory extends TreeItem<Object> implements InspectionTreeItem {
   public static final Image folderCollapseImage = new Image(ClassLoader.getSystemResourceAsStream("icons/folder.png"));
   public static final Image folderExpandImage = new Image(
-      ClassLoader.getSystemResourceAsStream("icons/folder-open.png"));
+    ClassLoader.getSystemResourceAsStream("icons/folder-open.png"));
   private static final Comparator comparator = createComparator();
   // this stores the full path to the file or directory
   private Path fullPath;
@@ -29,8 +30,10 @@ public class SipContentDirectory extends TreeItem<Object> implements InspectionT
   /**
    * Creates a new TreeItem, representing a directory.
    *
-   * @param treeNode The TreeNode that will be associated to the item.
-   * @param parent   The item's parent.
+   * @param treeNode
+   *          The TreeNode that will be associated to the item.
+   * @param parent
+   *          The item's parent.
    */
   public SipContentDirectory(TreeNode treeNode, TreeItem parent) {
     super(treeNode.getPath());

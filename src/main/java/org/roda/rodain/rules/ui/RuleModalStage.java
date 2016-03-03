@@ -21,7 +21,8 @@ public class RuleModalStage extends Stage {
   /**
    * Creates a new RuleModalStage to be used in the Rule creation and removal.
    *
-   * @param primaryStage The primary stage of the application.
+   * @param primaryStage
+   *          The primary stage of the application.
    */
   public RuleModalStage(Stage primaryStage) {
     super(StageStyle.TRANSPARENT);
@@ -52,7 +53,8 @@ public class RuleModalStage extends Stage {
   /**
    * Sets the root pane of the stage.
    *
-   * @param root The pane to be set as root.
+   * @param root
+   *          The pane to be set as root.
    */
   public void setRoot(Parent root) {
     this.getScene().setRoot(root);

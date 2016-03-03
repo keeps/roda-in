@@ -12,7 +12,8 @@ public class SourceFile implements SourceItem {
   /**
    * Creates a new SourceFile object.
    *
-   * @param path The path to be associated to the object.
+   * @param path
+   *          The path to be associated to the object.
    */
   public SourceFile(Path path) {
     this.path = path;

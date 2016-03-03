@@ -26,6 +26,7 @@ public class FontAwesomeImageCreator {
   public static final String check = "\uf00c";
 
   public static final Font font = loadFont();
+
   private FontAwesomeImageCreator() {
 
   }
@@ -39,7 +40,8 @@ public class FontAwesomeImageCreator {
    * Converts an unicode char to an Image using the FontAwesome font with the
    * color Black.
    *
-   * @param unicode The String with the unicode which will be turned into an image.
+   * @param unicode
+   *          The String with the unicode which will be turned into an image.
    * @return An Image with the unicode char converted to an image.
    * @see #generate(String, Paint)
    */
@@ -56,8 +58,10 @@ public class FontAwesomeImageCreator {
    * javafx-text-icons-as-images-files </a>
    * </p>
    *
-   * @param unicode The String with the unicode which will be turned into an image.
-   * @param color   The color of the font.
+   * @param unicode
+   *          The String with the unicode which will be turned into an image.
+   * @param color
+   *          The color of the font.
    * @return An Image with the unicode char converted to an image.
    */
   public static Image generate(String unicode, Paint color) {

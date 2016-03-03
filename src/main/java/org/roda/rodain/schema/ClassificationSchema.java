@@ -36,7 +36,8 @@ public class ClassificationSchema {
   /**
    * Sets the list of DescriptionObjects.
    *
-   * @param dos The description objects list
+   * @param dos
+   *          The description objects list
    */
   public void setDos(List<DescriptionObject> dos) {
     this.dos = dos;
@@ -54,8 +55,10 @@ public class ClassificationSchema {
   /**
    * Sets an additional property.
    *
-   * @param name  The name of the property.
-   * @param value The value of the property.
+   * @param name
+   *          The name of the property.
+   * @param value
+   *          The value of the property.
    */
   public void setAdditionalProperty(String name, Object value) {
     this.additionalProperties.put(name, value);

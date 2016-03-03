@@ -55,7 +55,8 @@ public class RodaIn extends Application {
   /**
    * The entry point of the application.
    *
-   * @param args The arguments passed to the application.
+   * @param args
+   *          The arguments passed to the application.
    */
   public static void startApp(String[] args) {
     launch(args);

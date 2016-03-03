@@ -234,8 +234,15 @@ public class FileExplorerPane extends BorderPane implements Observer {
    *          The new root path
    */
   public void setFileExplorerRoot(Path rootPath) {
+    // check if the path or a parent path haven't been added yet
     if (realRoots.containsKey(rootPath.toString())) {
       return;
+    }
+    for (String pathString : realRoots.keySet()) {
+      Path path = Paths.get(pathString);
+      if (rootPath.startsWith(path)) {
+        return;
+      }
     }
 
     this.setTop(top);
@@ -243,7 +250,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     this.setBottom(bottom);
 
     SourceTreeDirectory rootNode = new SourceTreeDirectory(rootPath, new SourceDirectory(rootPath, isShowFiles()),
-        null);
+      null);
     realRoots.put(rootPath.toString(), rootNode);
     PathCollection.addItem(rootNode);
     rootNode.setExpanded(true);
@@ -361,11 +368,12 @@ public class FileExplorerPane extends BorderPane implements Observer {
   }
 
   /**
-   * Ignores the items received in parameter.
-   * If an item is normal, this method ignores it.
-   * Depending on the state of the showIgnored flag, it shows or hides the
-   * ignored items.
-   * @param items The set of items to be ignored
+   * Ignores the items received in parameter. If an item is normal, this method
+   * ignores it. Depending on the state of the showIgnored flag, it shows or
+   * hides the ignored items.
+   * 
+   * @param items
+   *          The set of items to be ignored
    */
   public void ignore(Set<SourceTreeItem> items) {
     for (SourceTreeItem item : items) {
