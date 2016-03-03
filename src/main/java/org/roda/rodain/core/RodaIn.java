@@ -1,18 +1,7 @@
 package org.roda.rodain.core;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -21,7 +10,6 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.stage.*;
-
 import org.roda.rodain.creation.ui.CreationModalPreparation;
 import org.roda.rodain.creation.ui.CreationModalStage;
 import org.roda.rodain.inspection.InspectionPane;
@@ -36,6 +24,13 @@ import org.roda.rodain.source.ui.FileExplorerPane;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -80,12 +75,9 @@ public class RodaIn extends Application {
     stage.setMinWidth(1024);
     stage.setMinHeight(600);
 
-    stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-      @Override
-      public void handle(WindowEvent e) {
-        VisitorStack.end();
-        Platform.exit();
-      }
+    stage.setOnCloseRequest(event -> {
+      VisitorStack.end();
+      Platform.exit();
     });
 
     try {
@@ -187,70 +179,54 @@ public class RodaIn extends Application {
         break;
     }
 
-    languageGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
-      public void changed(ObservableValue<? extends Toggle> ov, Toggle old_toggle, Toggle new_toggle) {
-        if (languageGroup.getSelectedToggle() != null) {
-          String lang = (String) languageGroup.getSelectedToggle().getUserData();
-          AppProperties.setConfig("app.language", lang);
-          AppProperties.saveConfig();
-          Alert dlg = new Alert(Alert.AlertType.INFORMATION);
-          dlg.setHeaderText(AppProperties.getLocalizedString("Main.updateLang.header"));
-          dlg.setTitle(AppProperties.getLocalizedString("Main.updateLang.title"));
-          dlg.setContentText(AppProperties.getLocalizedString("Main.updateLang.content"));
-          dlg.initModality(Modality.APPLICATION_MODAL);
-          dlg.initOwner(stage);
-          dlg.show();
-        }
+    languageGroup.selectedToggleProperty().addListener(observable -> {
+      if (languageGroup.getSelectedToggle() != null) {
+        String lang = (String) languageGroup.getSelectedToggle().getUserData();
+        AppProperties.setConfig("app.language", lang);
+        AppProperties.saveConfig();
+        Alert dlg = new Alert(Alert.AlertType.INFORMATION);
+        dlg.initStyle(StageStyle.UNDECORATED);
+        dlg.setHeaderText(AppProperties.getLocalizedString("Main.updateLang.header"));
+        dlg.setTitle(AppProperties.getLocalizedString("Main.updateLang.title"));
+        dlg.setContentText(AppProperties.getLocalizedString("Main.updateLang.content"));
+        dlg.initModality(Modality.APPLICATION_MODAL);
+        dlg.initOwner(stage);
+        dlg.show();
       }
     });
 
     final MenuItem openFolder = new MenuItem(AppProperties.getLocalizedString("Main.addFolder"));
     openFolder.setAccelerator(KeyCombination.keyCombination("Ctrl+O"));
-    openFolder.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent t) {
-        fileExplorer.chooseNewRoot();
-      }
-    });
+    openFolder.setOnAction(event -> fileExplorer.chooseNewRoot());
 
     final MenuItem createSIPs = new MenuItem(AppProperties.getLocalizedString("Main.exportSips"));
     createSIPs.setAccelerator(KeyCombination.keyCombination("Ctrl+X"));
-    createSIPs.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent t) {
-        exportSIPs();
-      }
-    });
+    createSIPs.setOnAction(event -> exportSIPs());
 
     final MenuItem quit = new MenuItem(AppProperties.getLocalizedString("Main.quit"));
     quit.setAccelerator(KeyCombination.keyCombination("Ctrl+Q"));
-    quit.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent t) {
-        VisitorStack.end();
-        Platform.exit();
-      }
+    quit.setOnAction(event -> {
+      VisitorStack.end();
+      Platform.exit();
     });
     final MenuItem reset = new MenuItem(AppProperties.getLocalizedString("Main.reset"));
     reset.setAccelerator(KeyCombination.keyCombination("Ctrl+N"));
-    reset.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent t) {
-        Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
-        dlg.setHeaderText(AppProperties.getLocalizedString("Main.confirmReset.header"));
-        dlg.setTitle(AppProperties.getLocalizedString("Main.reset"));
-        dlg.setContentText(AppProperties.getLocalizedString("Main.confirmReset.content"));
-        dlg.initModality(Modality.APPLICATION_MODAL);
-        dlg.initOwner(stage);
-        dlg.showAndWait();
+    reset.setOnAction(event -> {
+      Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
+      dlg.initStyle(StageStyle.UNDECORATED);
+      dlg.setHeaderText(AppProperties.getLocalizedString("Main.confirmReset.header"));
+      dlg.setTitle(AppProperties.getLocalizedString("Main.reset"));
+      dlg.setContentText(AppProperties.getLocalizedString("Main.confirmReset.content"));
+      dlg.initModality(Modality.APPLICATION_MODAL);
+      dlg.initOwner(stage);
+      dlg.showAndWait();
 
-        if (dlg.getResult().getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-          PathCollection.reset();
-          inspectionPane = new InspectionPane(stage);
-          fileExplorer = new FileExplorerPane(stage);
-          schemePane = new SchemaPane(stage);
-          mainPane.setCenter(createSplitPane());
-        }
+      if (dlg.getResult().getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+        PathCollection.reset();
+        inspectionPane = new InspectionPane(stage);
+        fileExplorer = new FileExplorerPane(stage);
+        schemePane = new SchemaPane(stage);
+        mainPane.setCenter(createSplitPane());
       }
     });
 
@@ -259,45 +235,32 @@ public class RodaIn extends Application {
     // Classification scheme
     final MenuItem createCS = new MenuItem(AppProperties.getLocalizedString("Main.createCS"));
     createCS.setAccelerator(KeyCombination.keyCombination("Ctrl+R"));
-    createCS.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent t) {
-        schemePane.createClassificationScheme();
-      }
-    });
+    createCS.setOnAction(event -> schemePane.createClassificationScheme());
 
     final MenuItem updateCS = new MenuItem(AppProperties.getLocalizedString("Main.loadCS"));
     updateCS.setAccelerator(KeyCombination.keyCombination("Ctrl+L"));
-    updateCS.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent t) {
-        schemePane.loadClassificationSchema();
-      }
-    });
+    updateCS.setOnAction(event -> schemePane.loadClassificationSchema());
 
     final MenuItem exportCS = new MenuItem(AppProperties.getLocalizedString("Main.exportCS"));
     exportCS.setAccelerator(KeyCombination.keyCombination("Ctrl+E"));
-    exportCS.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent t) {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle(AppProperties.getLocalizedString("filechooser.title"));
-        File selectedFile = chooser.showSaveDialog(stage);
-        if (selectedFile == null)
-          return;
-        String outputFile = selectedFile.toPath().toString();
+    exportCS.setOnAction(event -> {
+      FileChooser chooser = new FileChooser();
+      chooser.setTitle(AppProperties.getLocalizedString("filechooser.title"));
+      File selectedFile = chooser.showSaveDialog(stage);
+      if (selectedFile == null)
+        return;
+      String outputFile = selectedFile.toPath().toString();
 
-        Set<SchemaNode> nodes = schemePane.getSchemaNodes();
-        List<DescriptionObject> dobjs = new ArrayList<>();
-        for (SchemaNode sn : nodes) {
-          dobjs.add(sn.getDob());
-        }
-        ClassificationSchema cs = new ClassificationSchema();
-        cs.setDos(dobjs);
-        cs.export(outputFile);
-        AppProperties.setConfig("lastClassificationScheme", outputFile);
-        AppProperties.saveConfig();
+      Set<SchemaNode> nodes = schemePane.getSchemaNodes();
+      List<DescriptionObject> dobjs = new ArrayList<>();
+      for (SchemaNode sn : nodes) {
+        dobjs.add(sn.getDob());
       }
+      ClassificationSchema cs = new ClassificationSchema();
+      cs.setDos(dobjs);
+      cs.export(outputFile);
+      AppProperties.setConfig("lastClassificationScheme", outputFile);
+      AppProperties.saveConfig();
     });
 
     menuClassScheme.getItems().addAll(createCS, updateCS, exportCS);
@@ -305,51 +268,37 @@ public class RodaIn extends Application {
     // Edit
     final MenuItem ignoreItems = new MenuItem(AppProperties.getLocalizedString("Main.ignoreItems"));
     ignoreItems.setAccelerator(KeyCombination.keyCombination("DELETE"));
-    ignoreItems.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent t) {
-        fileExplorer.ignore();
-      }
-    });
+    ignoreItems.setOnAction(event -> fileExplorer.ignore());
 
     menuEdit.getItems().addAll(ignoreItems);
 
     // View
     final MenuItem showFiles = new MenuItem(AppProperties.getLocalizedString("Main.hideFiles"));
     showFiles.setAccelerator(KeyCombination.keyCombination("Ctrl+F"));
-    showFiles.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent t) {
-        fileExplorer.toggleFilesShowing();
-        if (FileExplorerPane.isShowFiles())
-          showFiles.setText(AppProperties.getLocalizedString("Main.hideFiles"));
-        else
-          showFiles.setText(AppProperties.getLocalizedString("Main.showFiles"));
-      }
+    showFiles.setOnAction(event -> {
+      fileExplorer.toggleFilesShowing();
+      if (FileExplorerPane.isShowFiles())
+        showFiles.setText(AppProperties.getLocalizedString("Main.hideFiles"));
+      else
+        showFiles.setText(AppProperties.getLocalizedString("Main.showFiles"));
     });
     final MenuItem showIgnored = new MenuItem(AppProperties.getLocalizedString("Main.showIgnored"));
     showIgnored.setAccelerator(KeyCombination.keyCombination("Ctrl+I"));
-    showIgnored.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent t) {
-        fileExplorer.toggleIgnoredShowing();
-        if (FileExplorerPane.isShowIgnored())
-          showIgnored.setText(AppProperties.getLocalizedString("Main.hideIgnored"));
-        else
-          showIgnored.setText(AppProperties.getLocalizedString("Main.showIgnored"));
-      }
+    showIgnored.setOnAction(event -> {
+      fileExplorer.toggleIgnoredShowing();
+      if (FileExplorerPane.isShowIgnored())
+        showIgnored.setText(AppProperties.getLocalizedString("Main.hideIgnored"));
+      else
+        showIgnored.setText(AppProperties.getLocalizedString("Main.showIgnored"));
     });
     final MenuItem showMapped = new MenuItem(AppProperties.getLocalizedString("Main.showMapped"));
     showMapped.setAccelerator(KeyCombination.keyCombination("Ctrl+M"));
-    showMapped.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent t) {
-        fileExplorer.toggleMappedShowing();
-        if (FileExplorerPane.isShowMapped())
-          showMapped.setText(AppProperties.getLocalizedString("Main.hideMapped"));
-        else
-          showMapped.setText(AppProperties.getLocalizedString("Main.showMapped"));
-      }
+    showMapped.setOnAction(event -> {
+      fileExplorer.toggleMappedShowing();
+      if (FileExplorerPane.isShowMapped())
+        showMapped.setText(AppProperties.getLocalizedString("Main.hideMapped"));
+      else
+        showMapped.setText(AppProperties.getLocalizedString("Main.showMapped"));
     });
 
     menuView.getItems().addAll(showFiles, showIgnored, showMapped);

@@ -1,10 +1,5 @@
 package org.roda.rodain.creation.ui;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -12,10 +7,15 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-
+import javafx.stage.StageStyle;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.creation.CreateSips;
 import org.roda.rodain.rules.sip.SipPreview;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -242,46 +242,42 @@ public class CreationModalProcessing extends BorderPane {
    *          The thrown exception
    */
   public static void showError(SipPreview sip, Exception ex) {
-    Platform.runLater(new Runnable() {
-      @Override
-      public void run() {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(AppProperties.getLocalizedString("CreationModalProcessing.alert.title"));
-        String header = String.format(AppProperties.getLocalizedString("CreationModalProcessing.alert.header"),
-          sip.getTitle());
-        alert.setHeaderText(header);
-        StringBuilder content = new StringBuilder(ex.getLocalizedMessage());
-        content.append("\n");
-        content.append(AppProperties.getLocalizedString("CreationModalProcessing.cause"));
-        content.append(": ").append(ex.getCause().getLocalizedMessage());
-        alert.setContentText(content.toString());
-        alert.getDialogPane().setStyle(AppProperties.getStyle("export.alert"));
-        HBox.setHgrow(alert.getDialogPane(), Priority.ALWAYS);
+    Platform.runLater(() -> {
+      Alert alert = new Alert(Alert.AlertType.ERROR);
+      alert.initStyle(StageStyle.UNDECORATED);
+      alert.setTitle(AppProperties.getLocalizedString("CreationModalProcessing.alert.title"));
+      String header = String.format(AppProperties.getLocalizedString("CreationModalProcessing.alert.header"),
+        sip.getTitle());
+      alert.setHeaderText(header);
+      StringBuilder content = new StringBuilder(ex.getLocalizedMessage());
+      content.append("\n");
+      content.append(AppProperties.getLocalizedString("CreationModalProcessing.cause"));
+      content.append(": ").append(ex.getCause().getLocalizedMessage());
+      alert.setContentText(content.toString());
+      alert.getDialogPane().setStyle(AppProperties.getStyle("export.alert"));
 
-        // Create expandable Exception.
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        ex.printStackTrace(pw);
-        String exceptionText = sw.toString();
+      // Create expandable Exception.
+      StringWriter sw = new StringWriter();
+      PrintWriter pw = new PrintWriter(sw);
+      ex.printStackTrace(pw);
+      String exceptionText = sw.toString();
 
-        Label label = new Label(AppProperties.getLocalizedString("CreationModalProcessing.alert.stacktrace"));
+      Label label = new Label(AppProperties.getLocalizedString("CreationModalProcessing.alert.stacktrace"));
 
-        TextArea textArea = new TextArea(exceptionText);
-        textArea.setEditable(false);
-        textArea.minWidthProperty().bind(alert.getDialogPane().widthProperty().subtract(20));
-        textArea.maxWidthProperty().bind(alert.getDialogPane().widthProperty().subtract(20));
+      TextArea textArea = new TextArea(exceptionText);
+      textArea.setEditable(false);
+      textArea.minWidthProperty().bind(alert.getDialogPane().widthProperty().subtract(20));
+      textArea.maxWidthProperty().bind(alert.getDialogPane().widthProperty().subtract(20));
 
-        GridPane expContent = new GridPane();
-        expContent.setMaxWidth(Double.MAX_VALUE);
-        GridPane.setHgrow(expContent, Priority.ALWAYS);
-        expContent.add(label, 0, 0);
-        expContent.add(textArea, 0, 1);
+      GridPane expContent = new GridPane();
+      expContent.setMaxWidth(Double.MAX_VALUE);
+      expContent.add(label, 0, 0);
+      expContent.add(textArea, 0, 1);
 
-        // Set expandable Exception into the dialog pane.
-        alert.getDialogPane().setExpandableContent(expContent);
+      // Set expandable Exception into the dialog pane.
+      alert.getDialogPane().setExpandableContent(expContent);
 
-        alert.show();
-      }
+      alert.show();
     });
   }
 }

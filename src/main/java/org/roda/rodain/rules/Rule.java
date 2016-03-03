@@ -1,14 +1,10 @@
 package org.roda.rodain.rules;
 
-import java.nio.file.Path;
-import java.util.*;
-
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
-
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.filters.ContentFilter;
 import org.roda.rodain.rules.sip.*;
@@ -18,6 +14,9 @@ import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.TreeVisitor;
+
+import java.nio.file.Path;
+import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
