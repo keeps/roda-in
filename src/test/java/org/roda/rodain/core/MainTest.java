@@ -55,7 +55,7 @@ public class MainTest extends ApplicationTest {
     push(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN));
     sleep(3000);
     try {
-      clickOn("OK");
+      press(KeyCode.ENTER);
     } catch (Exception e) {
     }
     sleep(1000);
