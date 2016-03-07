@@ -8,9 +8,11 @@ import java.util.*;
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 05-10-2015.
- *        <p/>
+ *
+ *        <p>
  *        Used in the Handlers to make a representation of the documents tree in
  *        a SIP
+ *        </p>
  */
 public class TreeNode extends Observable {
   private Path path;

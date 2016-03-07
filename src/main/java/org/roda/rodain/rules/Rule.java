@@ -260,20 +260,24 @@ public class Rule extends Observable implements Observer, Comparable {
         int paths = 0, removedPaths = 0;
         for (SipPreview sip : sips.values()) {
           sip.setRemoved();
-          for (TreeNode tn : sip.getFiles()) {
-            paths += tn.getFullTreePaths().size();
+          for (SipRepresentation sr : sip.getRepresentations()) {
+            for (TreeNode tn : sr.getFiles()) {
+              paths += tn.getFullTreePaths().size();
+            }
           }
         }
 
         sipNodes.clear();
         for (SipPreview sip : sips.values()) {
-          for (TreeNode tn : sip.getFiles()) {
-            for (String path : tn.getFullTreePaths()) {
-              PathCollection.addPath(path, SourceTreeItemState.NORMAL);
-              removedPaths++;
-              float result = (float) removedPaths / paths;
-              setChanged();
-              notifyObservers(result);
+          for (SipRepresentation sr : sip.getRepresentations()) {
+            for (TreeNode tn : sr.getFiles()) {
+              for (String path : tn.getFullTreePaths()) {
+                PathCollection.addPath(path, SourceTreeItemState.NORMAL);
+                removedPaths++;
+                float result = (float) removedPaths / paths;
+                setChanged();
+                notifyObservers(result);
+              }
             }
           }
         }

@@ -1,5 +1,18 @@
 package org.roda.rodain.creation;
 
+import gov.loc.repository.bagit.Bag;
+import gov.loc.repository.bagit.BagFactory;
+import gov.loc.repository.bagit.PreBag;
+import gov.loc.repository.bagit.writer.impl.ZipWriter;
+import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.creation.ui.CreationModalProcessing;
+import org.roda.rodain.rules.TreeNode;
+import org.roda.rodain.rules.sip.SipPreview;
+import org.roda.rodain.rules.sip.SipRepresentation;
+import org.roda.rodain.schema.DescObjMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,19 +23,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.roda.rodain.core.AppProperties;
-import org.roda.rodain.creation.ui.CreationModalProcessing;
-import org.roda.rodain.rules.TreeNode;
-import org.roda.rodain.rules.sip.SipPreview;
-import org.roda.rodain.schema.DescObjMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import gov.loc.repository.bagit.Bag;
-import gov.loc.repository.bagit.BagFactory;
-import gov.loc.repository.bagit.PreBag;
-import gov.loc.repository.bagit.writer.impl.ZipWriter;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -46,11 +46,13 @@ public class BagitSipCreator extends SimpleSipCreator {
     super(outputPath, previews);
 
     for (SipPreview sip : previews.keySet()) {
-      for (TreeNode tn : sip.getFiles()) {
-        try {
-          allSipsSize += nodeSize(tn);
-        } catch (IOException e) {
-          log.error("Can't access file: " + tn.getPath(), e);
+      for (SipRepresentation sr : sip.getRepresentations()) {
+        for (TreeNode tn : sr.getFiles()) {
+          try {
+            allSipsSize += nodeSize(tn);
+          } catch (IOException e) {
+            log.error("Can't access file: " + tn.getPath(), e);
+          }
         }
       }
     }
@@ -85,10 +87,12 @@ public class BagitSipCreator extends SimpleSipCreator {
     new File(data.toString()).mkdirs();
 
     try {
-      Set<TreeNode> files = sip.getFiles();
-      currentAction = actionCopyingData;
-      for (TreeNode tn : files)
-        createFiles(tn, data);
+      for (SipRepresentation sr : sip.getRepresentations()) {
+        Set<TreeNode> files = sr.getFiles();
+        currentAction = actionCopyingData;
+        for (TreeNode tn : files)
+          createFiles(tn, data);
+      }
 
       BagFactory bf = new BagFactory();
       PreBag pb = bf.createPreBag(new File(name.toString()));

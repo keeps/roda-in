@@ -1,15 +1,15 @@
 package org.roda.rodain.rules.sip;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
-
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.filters.ContentFilter;
 import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.utils.TreeVisitor;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -204,7 +204,11 @@ public class SipSingle extends Observable implements TreeVisitor, SipPreviewCrea
     else
       metadata = new DescObjMetadata(metaType, metaPath);
 
-    SipPreview sipPreview = new SipPreview(path.getFileName().toString(), files, metadata);
+    SipRepresentation rep = new SipRepresentation("rep1");
+    rep.setFiles(files);
+    Set<SipRepresentation> repSet = new HashSet<>();
+    repSet.add(rep);
+    SipPreview sipPreview = new SipPreview(path.getFileName().toString(), repSet, metadata);
 
     for (TreeNode tn : files) {
       tn.addObserver(sipPreview);

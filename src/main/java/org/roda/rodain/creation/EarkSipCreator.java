@@ -1,18 +1,11 @@
 package org.roda.rodain.creation;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.io.FileUtils;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.creation.ui.CreationModalProcessing;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
+import org.roda.rodain.rules.sip.SipRepresentation;
 import org.roda.rodain.schema.DescObjMetadata;
 import org.roda_project.commons_ip.model.*;
 import org.roda_project.commons_ip.model.impl.eark.EARKSIP;
@@ -21,6 +14,14 @@ import org.roda_project.commons_ip.utils.METSEnums;
 import org.roda_project.commons_ip.utils.SIPException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -66,7 +67,6 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
       SIP earkSip = new EARKSIP(sip.getId(), EARKEnums.ContentType.mixed, "RODA-in");
       earkSip.addObserver(this);
       earkSip.setParent(schemaId);
-      IPRepresentation rep = new IPRepresentation("rep1");
 
       currentSipProgress = 0;
       currentSipName = sip.getTitle();
@@ -108,19 +108,22 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
       }
 
       currentAction = actionCopyingData;
-      Set<TreeNode> files = sip.getFiles();
-      currentSIPadded = 0;
-      currentSIPsize = 0;
-      // count files
-      for (TreeNode tn : files) {
-        currentSIPsize += tn.getFullTreePaths().size();
-      }
-      // add files to representation
-      for (TreeNode tn : files) {
-        addFileToRepresentation(tn, new ArrayList<>(), rep);
-      }
+      for (SipRepresentation sr : sip.getRepresentations()) {
+        IPRepresentation rep = new IPRepresentation(sr.getName());
+        Set<TreeNode> files = sr.getFiles();
+        currentSIPadded = 0;
+        currentSIPsize = 0;
+        // count files
+        for (TreeNode tn : files) {
+          currentSIPsize += tn.getFullTreePaths().size();
+        }
+        // add files to representation
+        for (TreeNode tn : files) {
+          addFileToRepresentation(tn, new ArrayList<>(), rep);
+        }
 
-      earkSip.addRepresentation(rep);
+        earkSip.addRepresentation(rep);
+      }
 
       currentAction = "Initializing zip file";
 

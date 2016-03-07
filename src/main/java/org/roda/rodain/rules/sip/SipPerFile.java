@@ -1,11 +1,5 @@
 package org.roda.rodain.rules.sip;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
-
 import org.apache.commons.io.FilenameUtils;
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.MetadataTypes;
@@ -16,6 +10,12 @@ import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.TreeVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -211,7 +211,11 @@ public class SipPerFile extends Observable implements TreeVisitor, SipPreviewCre
     else
       metadata = new DescObjMetadata(metaType, metaPath);
 
-    SipPreview sipPreview = new SipPreview(path.getFileName().toString(), files, metadata);
+    SipRepresentation rep = new SipRepresentation("rep1");
+    rep.setFiles(files);
+    Set<SipRepresentation> repSet = new HashSet<>();
+    repSet.add(rep);
+    SipPreview sipPreview = new SipPreview(path.getFileName().toString(), repSet, metadata);
     node.addObserver(sipPreview);
 
     sips.add(sipPreview);

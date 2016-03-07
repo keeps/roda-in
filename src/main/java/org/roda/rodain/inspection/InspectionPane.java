@@ -16,7 +16,6 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import javafx.util.StringConverter;
 import javafx.util.converter.LocalDateStringConverter;
 import org.apache.commons.lang.StringUtils;
@@ -27,6 +26,7 @@ import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.MetadataValue;
 import org.roda.rodain.rules.sip.SipPreview;
+import org.roda.rodain.rules.sip.SipRepresentation;
 import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.schema.ui.SchemaNode;
@@ -78,9 +78,8 @@ public class InspectionPane extends BorderPane {
   // SIP Content
   private BorderPane content;
   private VBox treeBox;
-  private TreeView sipFiles;
+  private SipDataTreeView sipFiles;
   private SipContentDirectory sipRoot;
-  private Button flatten, skip;
   private HBox loadingPane, contentBottom;
   private static Image loadingGif;
   private Task<Void> contentTask;
@@ -475,24 +474,14 @@ public class InspectionPane extends BorderPane {
     treeBox.setPadding(new Insets(5, 5, 5, 5));
     treeBox.setSpacing(10);
 
-    sipFiles = new TreeView<>();
+    sipFiles = new SipDataTreeView();
     // add everything to the tree pane
     treeBox.getChildren().addAll(sipFiles);
     VBox.setVgrow(sipFiles, Priority.ALWAYS);
 
-    sipFiles.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
-      @Override
-      public TreeCell<String> call(TreeView<String> p) {
-        return new InspectionTreeCell();
-      }
-    });
-
-    sipFiles.setOnMouseClicked(new ContentClickedEventHandler(sipFiles, this));
-
     sipRoot = new SipContentDirectory(new TreeNode(Paths.get("")), null);
     sipRoot.setExpanded(true);
     sipFiles.setRoot(sipRoot);
-    sipFiles.setShowRoot(false);
     content.setCenter(treeBox);
     createContentBottom();
   }
@@ -532,47 +521,10 @@ public class InspectionPane extends BorderPane {
         parent.getChildren().remove(child);
       }
     });
-    flatten = new Button(AppProperties.getLocalizedString("InspectionPane.flatten"));
-    flatten.setOnAction(event -> {
-      Object selected = sipFiles.getSelectionModel().getSelectedItem();
-      if (selected instanceof SipContentDirectory) {
-        SipContentDirectory dir = (SipContentDirectory) selected;
-        dir.flatten();
-      }
-    });
-    skip = new Button(AppProperties.getLocalizedString("InspectionPane.skip"));
-    skip.setOnAction(event -> {
-      Object selected = sipFiles.getSelectionModel().getSelectedItem();
-      if (selected instanceof SipContentDirectory) {
-        SipContentDirectory dir = (SipContentDirectory) selected;
-        SipContentDirectory parent = (SipContentDirectory) dir.getParent();
-        dir.skip();
-        // update the SIP's internal content representation
-        Set<TreeNode> newFiles = new HashSet<>();
-        for (String s : sipRoot.getTreeNode().getKeys())
-          newFiles.add(sipRoot.getTreeNode().get(s));
-
-        ((SipPreview) currentDescOb).setFiles(newFiles);
-        // clear the parent and recreate the children based on the updated
-        // tree nodes
-        TreeItem grandparent = parent.getParent();
-        if (grandparent == null) {
-          grandparent = parent;
-        }
-        TreeItem newParent = recCreateSipContent(parent.getTreeNode(), grandparent);
-        parent.getChildren().clear();
-        parent.getChildren().addAll(newParent.getChildren());
-        parent.sortChildren();
-      }
-    });
 
     ignore.minWidthProperty().bind(this.widthProperty().multiply(0.25));
-    flatten.minWidthProperty().bind(this.widthProperty().multiply(0.25));
-    skip.minWidthProperty().bind(this.widthProperty().multiply(0.25));
 
-    setStateContentButtons(true);
-
-    contentBottom.getChildren().addAll(ignore, flatten, skip);
+    contentBottom.getChildren().addAll(ignore);
     content.setBottom(contentBottom);
   }
 
@@ -584,13 +536,20 @@ public class InspectionPane extends BorderPane {
     contentTask = new Task<Void>() {
       @Override
       protected Void call() throws Exception {
-        Set<TreeNode> files = node.getSip().getFiles();
-        for (TreeNode treeNode : files) {
-          TreeItem<Object> startingItem = recCreateSipContent(treeNode, newRoot);
-          startingItem.setExpanded(true);
-          newRoot.getChildren().add(startingItem);
+        Set<SipRepresentation> representations = node.getSip().getRepresentations();
+        for (SipRepresentation sr : representations) {
+          sr.setName("Banana");
+          SipContentRepresentation scr = new SipContentRepresentation(sr);
+          // SipContentDirectory scr = new SipContentDirectory(new
+          // TreeNode(Paths.get("/")), newRoot);
+          for (TreeNode treeNode : sr.getFiles()) {
+            TreeItem<Object> startingItem = recCreateSipContent(treeNode, scr);
+            startingItem.setExpanded(true);
+            scr.getChildren().add(startingItem);
+          }
+          // scr.sortChildren();
+          newRoot.getChildren().add(scr);
         }
-        newRoot.sortChildren();
         return null;
       }
     };
@@ -908,22 +867,5 @@ public class InspectionPane extends BorderPane {
     if (ruleList != null && currentSchema != null && ruleList.getItems().size() != currentSchema.getRules().size()) {
       updateRuleList();
     }
-  }
-
-  /**
-   * Sets the state of the SIP content buttons: "Flatten directory" and
-   * "Skip directory".
-   * <p/>
-   * <p>
-   * Used by ContentClickedEventHandler to set the state of the SIP content
-   * buttons, since they are only enabled when a directory is selected.
-   * </p>
-   *
-   * @param state
-   *          The new state of the buttons.
-   */
-  public void setStateContentButtons(boolean state) {
-    flatten.setDisable(state);
-    skip.setDisable(state);
   }
 }

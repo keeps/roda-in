@@ -12,6 +12,7 @@ public class InspectionTreeCell extends TreeCell<String> {
    * Creates a new InspectionTreeCell
    */
   public InspectionTreeCell() {
+    super();
   }
 
   /**
@@ -26,10 +27,16 @@ public class InspectionTreeCell extends TreeCell<String> {
   public void updateItem(String item, boolean empty) {
     super.updateItem(item, empty);
 
-    if (empty) {
+    if (empty || item == null) {
       setText(null);
       setGraphic(null);
+
+      // To hide the hover color in the empty nodes
+      if (!getStyleClass().isEmpty())
+        getStyleClass().clear();
     } else {
+      if (!getStyleClass().contains("tree-cell"))
+        getStyleClass().addAll("cell", "indexed-cell", "tree-cell");
       setText(item);
       TreeItem treeItem = getTreeItem();
       if (treeItem != null) {
