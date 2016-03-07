@@ -2,14 +2,16 @@ package org.roda.rodain.core;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
-import javafx.stage.*;
+import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.roda.rodain.creation.ui.CreationModalPreparation;
 import org.roda.rodain.creation.ui.CreationModalStage;
 import org.roda.rodain.inspection.InspectionPane;
@@ -110,23 +112,12 @@ public class RodaIn extends Application {
     scene.getStylesheets().add(ClassLoader.getSystemResource("css/xml-highlighting.css").toExternalForm());
     stage.setScene(scene);
 
-    stage.setMaximized(true);
     stage.show();
+    stage.centerOnScreen();
+    stage.setMaximized(true);
   }
 
   private void createFrameStructure() {
-    // Maximize window
-    Screen screen = Screen.getPrimary();
-    Rectangle2D bounds = screen.getVisualBounds();
-
-    stage.setX(bounds.getMinX());
-    stage.setY(bounds.getMinY());
-    stage.setWidth(bounds.getWidth());
-    stage.setHeight(bounds.getHeight());
-
-    initialHeight = bounds.getHeight();
-    initialWidth = bounds.getWidth();
-
     // Create Footer
     Footer footer = new Footer();
 

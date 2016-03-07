@@ -12,7 +12,7 @@
     -fx-background-color: #089de3;
 }
 
-.inspectionPart .label{
+.inspectionPart .label {
     -fx-font-size: large;
     -fx-text-fill: white;
 }
@@ -26,7 +26,7 @@
     -fx-font-size: medium;
 }
 
-.hiddenTextField{
+.hiddenTextField {
     -fx-background-color: transparent;
     -fx-background-insets: 0;
     -fx-background-radius: 0;
@@ -143,7 +143,7 @@
     -fx-font-weight: bold;
 }
 
-#ignored .text{
+#ignored .text {
     -fx-strikethrough: true;
 }
 
@@ -152,12 +152,12 @@
     -fx-opacity: 70%;
 }
 
-.schemaNode:focused:selected{
+.schemaNode:focused:selected {
     -fx-background-color: #089de3;
     -fx-text-fill: white;
 }
 
-.schemaNodeHovered{
+.schemaNodeHovered {
     -fx-background-color: lightgray;
 }
 
@@ -173,6 +173,7 @@
     -fx-background-color: #089de3;
     -fx-text-fill: white;
 }
+
 /* List-cell */
 
 .list-view {
@@ -181,7 +182,7 @@
     -fx-border-color: transparent;
 }
 
-.list-cell{
+.list-cell {
     -fx-padding: 5px;
 }
 
@@ -189,13 +190,13 @@
     -fx-background-color: white;
 }
 
-.ruleCell{
+.ruleCell {
     -fx-border-color: lightgray;
     -fx-border-width: 2;
     -fx-background-color: white;
 }
 
-.ruleCell .label{
+.ruleCell .label {
     -fx-font-size: medium;
     -fx-text-fill: black;
 }
@@ -224,7 +225,7 @@
     -fx-border-color: #089de3;
 }
 
-.list-cell:focused:selected .ruleCell .top{
+.list-cell:focused:selected .ruleCell .top {
     -fx-background-color: #089de3;
 }
 
@@ -236,7 +237,7 @@
     -fx-text-fill: white;
 }
 
-.ruleCell .top .button{
+.ruleCell .top .button {
     -fx-border-color: transparent;
     -fx-background-color: transparent;
     -fx-text-fill: black;
@@ -257,6 +258,12 @@
 
 .list-cell:focused:selected .top .button:pressed {
     -fx-text-fill: black;
+}
+
+/* ScrollPane */
+.scroll-pane {
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
 }
 
 

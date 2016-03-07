@@ -1,19 +1,6 @@
 package org.roda.rodain.inspection;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import javafx.beans.binding.Bindings;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -32,7 +19,6 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import javafx.util.converter.LocalDateStringConverter;
-
 import org.apache.commons.lang.StringUtils;
 import org.fxmisc.richtext.CodeArea;
 import org.roda.rodain.core.AppProperties;
@@ -51,6 +37,17 @@ import org.roda.rodain.utils.UIPair;
 import org.roda.rodain.utils.Utils;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -72,7 +69,8 @@ public class InspectionPane extends BorderPane {
   // Metadata
   private VBox metadata;
   private CodeArea metaText;
-  private GridPane metadataForm;
+  private GridPane metadataGrid;
+  private ScrollPane metadataFormWrapper;
   private ToggleButton toggleForm;
   private HBox metadataLoadingPane, metadataTopBox;
   private TextField titleTextField;
@@ -130,14 +128,19 @@ public class InspectionPane extends BorderPane {
     metadata = new VBox();
     metadata.getStyleClass().add("inspectionPart");
 
-    metadataForm = new GridPane();
-    metadataForm.setVgap(5);
-    metadataForm.setPadding(new Insets(5, 5, 5, 5));
+    metadataGrid = new GridPane();
+    metadataGrid.setVgap(5);
+    metadataGrid.setPadding(new Insets(5, 5, 5, 5));
     ColumnConstraints column1 = new ColumnConstraints();
     column1.setPercentWidth(20);
     ColumnConstraints column2 = new ColumnConstraints();
     column2.setPercentWidth(80);
-    metadataForm.getColumnConstraints().addAll(column1, column2);
+    metadataGrid.getColumnConstraints().addAll(column1, column2);
+
+    metadataFormWrapper = new ScrollPane();
+    metadataFormWrapper.setContent(metadataGrid);
+    metadataFormWrapper.setFitToWidth(true);
+    // VBox.setVgrow(metadataFormWrapper, Priority.ALWAYS);
 
     metadataTopBox = new HBox();
     metadataTopBox.getStyleClass().add("hbox");
@@ -159,7 +162,7 @@ public class InspectionPane extends BorderPane {
     validationButton
       .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.check, Color.WHITE)));
     validationButton.setOnAction(event -> {
-      if (metadata.getChildren().contains(metadataForm)) {
+      if (metadata.getChildren().contains(metadataFormWrapper)) {
         saveMetadata();
       }
       StringBuilder message = new StringBuilder();
@@ -218,13 +221,13 @@ public class InspectionPane extends BorderPane {
       // newValue == true means that the form will be displayed
       if (newValue) {
         metadata.getChildren().remove(metaText);
-        metadataForm.getChildren().clear();
+        metadataGrid.getChildren().clear();
         updateForm();
-        if (!metadata.getChildren().contains(metadataForm)) {
-          metadata.getChildren().add(metadataForm);
+        if (!metadata.getChildren().contains(metadataFormWrapper)) {
+          metadata.getChildren().add(metadataFormWrapper);
         }
       } else { // from the form to the metadata text
-        metadata.getChildren().remove(metadataForm);
+        metadata.getChildren().remove(metadataFormWrapper);
         if (!metadata.getChildren().contains(metaText))
           metadata.getChildren().add(metaText);
       }
@@ -253,12 +256,9 @@ public class InspectionPane extends BorderPane {
      * we would update after every single character modification, making the
      * application slower
      */
-    metaText.focusedProperty().addListener(new ChangeListener<Boolean>() {
-      @Override
-      public void changed(ObservableValue<? extends Boolean> observableValue, Boolean aBoolean, Boolean t1) {
-        if (!t1) { // lost focus, so update
-          saveMetadata();
-        }
+    metaText.focusedProperty().addListener((observable, oldValue, newValue) -> {
+      if (!newValue) { // lost focus, so update
+        saveMetadata();
       }
     });
   }
@@ -368,8 +368,8 @@ public class InspectionPane extends BorderPane {
           }
           break;
       }
-      metadataForm.add(label, 0, i);
-      metadataForm.add(control, 1, i);
+      metadataGrid.add(label, 0, i);
+      metadataGrid.add(control, 1, i);
       i++;
     }
   }
@@ -393,7 +393,7 @@ public class InspectionPane extends BorderPane {
    * Saves the metadata from the text area in the SIP.
    */
   public void saveMetadata() {
-    if (metadata.getChildren().contains(metadataForm)) {
+    if (metadata.getChildren().contains(metadataFormWrapper)) {
       if (currentDescOb != null) {
         currentDescOb.applyMetadataValues();
         updateTextArea(currentDescOb.getMetadataWithReplaces().get(0).getContentDecoded());
@@ -460,12 +460,13 @@ public class InspectionPane extends BorderPane {
     content = new BorderPane();
     content.getStyleClass().add("inspectionPart");
     VBox.setVgrow(content, Priority.ALWAYS);
+    content.setMinHeight(200);
 
     HBox top = new HBox();
     top.getStyleClass().add("hbox");
     top.setPadding(new Insets(10, 10, 10, 10));
 
-    Label title = new Label(AppProperties.getLocalizedString("content"));
+    Label title = new Label(AppProperties.getLocalizedString("data"));
     top.getChildren().add(title);
     content.setTop(top);
 
@@ -623,6 +624,7 @@ public class InspectionPane extends BorderPane {
     rules = new BorderPane();
     rules.getStyleClass().add("inspectionPart");
     VBox.setVgrow(rules, Priority.ALWAYS);
+    rules.setMinHeight(200);
 
     HBox top = new HBox();
     top.getStyleClass().add("hbox");
