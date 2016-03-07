@@ -98,7 +98,7 @@ alt="Tutorial" width="240" height="180" border="1" /></a>
 1. Make sure you have installed Java 8 and Maven.
 2. Clone the repository by issuing the command `git clone https://github.com/keeps/roda-in.git`
 3. Change directory to "roda-in"
-4. Install by running the following command: `mvn install`
+4. Install by running the following command: `mvn -Dmaven.test.skip=true clean package`
 
 That's it! Binaries will be on the target folder. To run the application just double click on the file or run the following command on the console/terminal:
 
@@ -146,7 +146,6 @@ For more information or commercial support, contact [KEEP SOLUTIONS](http://www.
 3. Commit your changes: `git commit -am 'Add some feature'`
 4. Push to the branch: `git push origin my-new-feature`
 5. Submit a pull request :D
-6. 
 
 ### Translating
 To help make RODA-in better you can translate it to your language. 
