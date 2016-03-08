@@ -168,6 +168,17 @@ public class SipPreview extends DescriptionObject implements Observer {
     documentation.addAll(docs);
   }
 
+  public void removeDocumentation(Set<Path> paths) {
+    Set<String> ignored = new HashSet<>();
+    Set<TreeNode> toRemove = new HashSet<>();
+    for (TreeNode tn : documentation) {
+      ignored.addAll(tn.ignoreContent(paths));
+      if (paths.contains(tn.getPath()))
+        toRemove.add(tn);
+    }
+    documentation.removeAll(toRemove);
+  }
+
   private FileVisitResult isTerminated() {
     // terminate if the thread has been interrupted
     if (Thread.interrupted()) {

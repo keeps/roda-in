@@ -81,11 +81,11 @@ public class InspectionPane extends BorderPane {
   private Button validationButton;
   // SIP Content
   private BorderPane content;
-  private VBox dataBox;
+  private VBox dataBox, documentationHelp;
   private SipDataTreeView sipFiles;
   private SipDocumentationTreeView sipDocumentation;
   private SipContentDirectory sipRoot, docsRoot;
-  private HBox loadingPane, contentBottom;
+  private HBox loadingPane, contentBottom, docsBottom;
   private static Image loadingGif;
   private Task<Void> contentTask, docsTask;
   private Task<Boolean> metadataTask;
@@ -103,6 +103,7 @@ public class InspectionPane extends BorderPane {
    */
   public InspectionPane(Stage stage) {
     createCenterHelp();
+    createDocumentationHelp();
     createTop();
     createMetadata();
     createContent();
@@ -145,7 +146,6 @@ public class InspectionPane extends BorderPane {
     metadataFormWrapper = new ScrollPane();
     metadataFormWrapper.setContent(metadataGrid);
     metadataFormWrapper.setFitToWidth(true);
-    // VBox.setVgrow(metadataFormWrapper, Priority.ALWAYS);
 
     metadataTopBox = new HBox();
     metadataTopBox.getStyleClass().add("hbox");
@@ -461,6 +461,52 @@ public class InspectionPane extends BorderPane {
     centerHelp.getChildren().add(box);
   }
 
+  private void createDocumentationHelp() {
+    documentationHelp = new VBox();
+    documentationHelp.setPadding(new Insets(0, 10, 0, 10));
+    VBox.setVgrow(documentationHelp, Priority.ALWAYS);
+    documentationHelp.setAlignment(Pos.CENTER);
+
+    VBox box = new VBox(40);
+    box.setAlignment(Pos.CENTER);
+    box.setPadding(new Insets(10, 10, 10, 10));
+    box.setMaxWidth(355);
+    box.setMaxHeight(150);
+    box.setMinHeight(150);
+
+    HBox titleBox = new HBox();
+    titleBox.setAlignment(Pos.CENTER);
+    Label title = new Label(AppProperties.getLocalizedString("InspectionPane.docsHelp.title"));
+    title.getStyleClass().add("helpTitle");
+    title.setTextAlignment(TextAlignment.CENTER);
+    titleBox.getChildren().add(title);
+
+    box.getChildren().addAll(titleBox);
+    documentationHelp.getChildren().add(box);
+
+    documentationHelp.setOnDragOver(event -> {
+      if (event.getGestureSource() instanceof SourceTreeCell) {
+        event.acceptTransferModes(TransferMode.COPY);
+        title.setText(AppProperties.getLocalizedString("InspectionPane.onDropDocs"));
+      }
+      event.consume();
+    });
+
+    documentationHelp.setOnDragDropped(event -> {
+      addDocumentationToSIP(null);
+      dataBox.getChildren().clear();
+      sipDocumentation.setRoot(docsRoot);
+      dataBox.getChildren().add(sipDocumentation);
+      content.setBottom(docsBottom);
+      event.consume();
+    });
+
+    documentationHelp.setOnDragExited(event -> {
+      title.setText(AppProperties.getLocalizedString("InspectionPane.docsHelp.title"));
+      event.consume();
+    });
+  }
+
   private void createContent() {
     content = new BorderPane();
     content.getStyleClass().add("inspectionPart");
@@ -513,11 +559,19 @@ public class InspectionPane extends BorderPane {
       dataBox.getChildren().clear();
       // newValue == true means that the documentation will be displayed
       if (newValue) {
-        dataBox.getChildren().add(sipDocumentation);
+        if (docsRoot.getChildren().isEmpty()) {
+          dataBox.getChildren().add(documentationHelp);
+          content.setBottom(new HBox());
+        } else {
+          dataBox.getChildren().add(sipDocumentation);
+          content.setBottom(docsBottom);
+        }
       } else { // from the documentation to the representations
         dataBox.getChildren().add(sipFiles);
+        content.setBottom(contentBottom);
       }
     });
+    createDocsBottom();
 
     top.getChildren().addAll(space, toggleDocumentation);
   }
@@ -581,7 +635,30 @@ public class InspectionPane extends BorderPane {
     removeRepresentation.minWidthProperty().bind(this.widthProperty().multiply(0.25));
 
     contentBottom.getChildren().addAll(addRepresentation, removeRepresentation, ignore);
-    content.setBottom(contentBottom);
+  }
+
+  private void createDocsBottom() {
+    docsBottom = new HBox(10);
+    docsBottom.setPadding(new Insets(10, 10, 10, 10));
+    docsBottom.setAlignment(Pos.CENTER);
+
+    Button remove = new Button(AppProperties.getLocalizedString("ignore"));
+    remove.setOnAction(event -> {
+      InspectionTreeItem selected = (InspectionTreeItem) sipDocumentation.getSelectionModel().getSelectedItem();
+      if (selected == null)
+        return;
+      Set<Path> paths = new HashSet<>();
+      paths.add(selected.getPath());
+      if (currentDescOb != null && currentDescOb instanceof SipPreview) {
+        ((SipPreview) currentDescOb).removeDocumentation(paths);
+        TreeItem parent = selected.getParentDir();
+        TreeItem child = (TreeItem) selected;
+        parent.getChildren().remove(child);
+      }
+    });
+    remove.minWidthProperty().bind(this.widthProperty().multiply(0.25));
+
+    docsBottom.getChildren().addAll(remove);
   }
 
   private void createContent(SipPreviewNode node, boolean active) {
@@ -642,9 +719,11 @@ public class InspectionPane extends BorderPane {
     };
     docsTask.setOnSucceeded(event -> {
       docsRoot = newRoot;
-      sipDocumentation.setRoot(docsRoot);
-      content.setCenter(dataBox);
-      content.setBottom(contentBottom);
+      if (active) {
+        sipDocumentation.setRoot(docsRoot);
+        content.setCenter(dataBox);
+        content.setBottom(contentBottom);
+      }
     });
     new Thread(docsTask).start();
   }
@@ -801,8 +880,12 @@ public class InspectionPane extends BorderPane {
     center.getChildren().clear();
 
     // content tree
-    createContent(sip, !toggleDocumentation.isSelected());
-    createDocumentation(sip, toggleDocumentation.isSelected());
+    boolean documentation = toggleDocumentation.isSelected();
+    createContent(sip, !documentation);
+    createDocumentation(sip, documentation);
+    if (documentation) {
+      content.setBottom(contentBottom);
+    } else content.setBottom(docsBottom);
 
     center.getChildren().addAll(metadata, content);
     setCenter(center);
