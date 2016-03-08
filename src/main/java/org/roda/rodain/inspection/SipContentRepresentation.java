@@ -3,6 +3,7 @@ package org.roda.rodain.inspection;
 import javafx.scene.control.TreeItem;
 import org.roda.rodain.rules.sip.SipRepresentation;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -11,7 +12,7 @@ import java.util.Comparator;
  * @author Andre Pereira apereira@keep.pt
  * @since 07-03-2016.
  */
-public class SipContentRepresentation extends TreeItem<Object> {
+public class SipContentRepresentation extends TreeItem<Object> implements InspectionTreeItem {
   private static final Comparator comparator = createComparator();
   private SipRepresentation representation;
 
@@ -24,6 +25,10 @@ public class SipContentRepresentation extends TreeItem<Object> {
   public SipContentRepresentation(SipRepresentation representation) {
     this.representation = representation;
     this.setValue(representation.getName());
+  }
+
+  public SipRepresentation getRepresentation() {
+    return representation;
   }
 
   /**
@@ -62,5 +67,15 @@ public class SipContentRepresentation extends TreeItem<Object> {
         return 1;
       }
     };
+  }
+
+  @Override
+  public Path getPath() {
+    return null;
+  }
+
+  @Override
+  public TreeItem getParentDir() {
+    return null;
   }
 }
