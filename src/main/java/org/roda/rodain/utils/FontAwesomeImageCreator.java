@@ -24,7 +24,7 @@ public class FontAwesomeImageCreator {
   public static final String code = "\uf121";
   public static final String list = "\uf022";
   public static final String check = "\uf00c";
-  // public static final String circle = "\uf10c";
+  public static final String square = "\uf096";
 
   public static final Font font = loadFont();
 

@@ -1,5 +1,6 @@
 package org.roda.rodain.inspection;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -538,17 +539,17 @@ public class InspectionPane extends BorderPane {
       protected Void call() throws Exception {
         Set<SipRepresentation> representations = node.getSip().getRepresentations();
         for (SipRepresentation sr : representations) {
-          sr.setName("Banana");
           SipContentRepresentation scr = new SipContentRepresentation(sr);
-          // SipContentDirectory scr = new SipContentDirectory(new
-          // TreeNode(Paths.get("/")), newRoot);
           for (TreeNode treeNode : sr.getFiles()) {
             TreeItem<Object> startingItem = recCreateSipContent(treeNode, scr);
             startingItem.setExpanded(true);
             scr.getChildren().add(startingItem);
           }
-          // scr.sortChildren();
+          scr.sortChildren();
+          scr.setExpanded(true);
           newRoot.getChildren().add(scr);
+          Platform.runLater(() -> scr.setGraphic(new ImageView(FontAwesomeImageCreator
+            .generate(FontAwesomeImageCreator.square, Color.color(8f / 255, 157f / 255, 227f / 255)))));
         }
         return null;
       }

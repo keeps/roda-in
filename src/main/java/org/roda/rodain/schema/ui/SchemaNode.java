@@ -1,18 +1,17 @@
 package org.roda.rodain.schema.ui;
 
-import java.util.*;
-
 import javafx.application.Platform;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
-
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.rules.ui.RuleModalController;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
+
+import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -64,18 +63,15 @@ public class SchemaNode extends TreeItem<String> implements Observer {
       int count = rule.getSipCount();
       rules.put(id, count);
 
-      Platform.runLater(new Runnable() {
-        @Override
-        public void run() {
-          // replace the SIPs
-          if (sips.get(id) != null) {
-            getChildren().removeAll(sips.get(id));
-          }
-          Set<SipPreviewNode> nodes = new HashSet<>(rule.getSipNodes());
-          sips.put(id, nodes);
-          getChildren().addAll(nodes);
-          sortChildren();
+      Platform.runLater(() -> {
+        // replace the SIPs
+        if (sips.get(id) != null) {
+          getChildren().removeAll(sips.get(id));
         }
+        Set<SipPreviewNode> nodes = new HashSet<>(rule.getSipNodes());
+        sips.put(id, nodes);
+        getChildren().addAll(nodes);
+        sortChildren();
       });
     }
   }

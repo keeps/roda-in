@@ -22,11 +22,7 @@ public class SipContentRepresentation extends TreeItem<Object> {
    *          The SipRepresentation that will be associated to the item.
    */
   public SipContentRepresentation(SipRepresentation representation) {
-    // super();
     this.representation = representation;
-    // this.setGraphic(new
-    // ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.times)));
-
     this.setValue(representation.getName());
   }
 

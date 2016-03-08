@@ -1,17 +1,16 @@
 package org.roda.rodain.inspection;
 
+import javafx.event.EventHandler;
+import javafx.scene.control.TreeItem;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import org.roda.rodain.rules.TreeNode;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-
-import javafx.event.EventHandler;
-import javafx.scene.control.TreeItem;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-
-import org.roda.rodain.rules.TreeNode;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -52,10 +51,13 @@ public class SipContentDirectory extends TreeItem<Object> implements InspectionT
     this.addEventHandler(TreeItem.branchExpandedEvent(), new EventHandler<TreeModificationEvent<Object>>() {
       @Override
       public void handle(TreeModificationEvent<Object> e) {
-        SipContentDirectory source = (SipContentDirectory) e.getSource();
-        if (source.isExpanded()) {
-          ImageView iv = (ImageView) source.getGraphic();
-          iv.setImage(folderExpandImage);
+        Object sourceObject = e.getSource();
+        if (sourceObject instanceof SipContentDirectory) {
+          SipContentDirectory source = (SipContentDirectory) sourceObject;
+          if (source.isExpanded()) {
+            ImageView iv = (ImageView) source.getGraphic();
+            iv.setImage(folderExpandImage);
+          }
         }
       }
     });
@@ -63,10 +65,13 @@ public class SipContentDirectory extends TreeItem<Object> implements InspectionT
     this.addEventHandler(TreeItem.branchCollapsedEvent(), new EventHandler<TreeModificationEvent<Object>>() {
       @Override
       public void handle(TreeModificationEvent<Object> e) {
-        SipContentDirectory source = (SipContentDirectory) e.getSource();
-        if (!source.isExpanded()) {
-          ImageView iv = (ImageView) source.getGraphic();
-          iv.setImage(folderCollapseImage);
+        Object sourceObject = e.getSource();
+        if (sourceObject instanceof SipContentDirectory) {
+          SipContentDirectory source = (SipContentDirectory) sourceObject;
+          if (!source.isExpanded()) {
+            ImageView iv = (ImageView) source.getGraphic();
+            iv.setImage(folderCollapseImage);
+          }
         }
       }
     });
