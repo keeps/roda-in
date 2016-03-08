@@ -6,6 +6,7 @@ import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 
+import java.nio.file.FileVisitResult;
 import java.nio.file.Path;
 import java.util.*;
 
@@ -15,24 +16,28 @@ import java.util.*;
  */
 public class SipPreview extends DescriptionObject implements Observer {
   private Set<SipRepresentation> representations;
+  private Set<TreeNode> documentation;
   private boolean contentModified = false;
   private boolean removed = false;
 
   /**
    * Creates a new SipPreview object.
    *
-   * @param name            The name of the SIP
-   * @param representations The set of representations to be added to the SIP
-   * @param metadata        The metadata of the SIP
+   * @param name
+   *          The name of the SIP
+   * @param representations
+   *          The set of representations to be added to the SIP
+   * @param metadata
+   *          The metadata of the SIP
    */
   public SipPreview(String name, Set<SipRepresentation> representations, DescObjMetadata metadata) {
     this.representations = representations;
+    documentation = new HashSet<>();
     setTitle(name);
     List<DescObjMetadata> tempList = new ArrayList<>();
     tempList.add(metadata);
     setMetadata(tempList);
     setDescriptionlevel("item");
-    // metadata = new SipMetadata(metaType, metadataPath, templateType);
     setId(UUID.randomUUID().toString());
 
     // set paths as mapped
@@ -44,16 +49,21 @@ public class SipPreview extends DescriptionObject implements Observer {
   }
 
   /**
-   * @return The paths of the files of the SIP.
+   * @return All the representations of the SIP.
    */
   public Set<SipRepresentation> getRepresentations() {
     return representations;
   }
 
+  public Set<TreeNode> getDocumentation() {
+    return documentation;
+  }
+
   /**
    * Removes from the SIP's content the set of paths received as parameter.
    *
-   * @param paths The set of paths to be removed
+   * @param paths
+   *          The set of paths to be removed
    */
   public void ignoreContent(Set<Path> paths) {
     Set<String> ignored = new HashSet<>();
@@ -75,7 +85,7 @@ public class SipPreview extends DescriptionObject implements Observer {
 
   /**
    * @return True if the content has been modified (nodes removed, flattened or
-   * skipped), false otherwise.
+   *         skipped), false otherwise.
    */
   public boolean isContentModified() {
     return contentModified;
@@ -131,8 +141,10 @@ public class SipPreview extends DescriptionObject implements Observer {
    * Sets the content modified state as true if it receives a notification from
    * any TreeNode in the files Set.
    *
-   * @param o   The observable object that is modified.
-   * @param arg The arguments sent by the observable object.
+   * @param o
+   *          The observable object that is modified.
+   * @param arg
+   *          The arguments sent by the observable object.
    */
   @Override
   public void update(Observable o, Object arg) {
@@ -150,5 +162,17 @@ public class SipPreview extends DescriptionObject implements Observer {
     }
     ignoreContent(paths);
     representations.remove(representation);
+  }
+
+  public void addDocumentation(Set<TreeNode> docs) {
+    documentation.addAll(docs);
+  }
+
+  private FileVisitResult isTerminated() {
+    // terminate if the thread has been interrupted
+    if (Thread.interrupted()) {
+      return FileVisitResult.TERMINATE;
+    }
+    return FileVisitResult.CONTINUE;
   }
 }

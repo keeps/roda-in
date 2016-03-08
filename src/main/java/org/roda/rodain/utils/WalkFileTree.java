@@ -1,18 +1,19 @@
 package org.roda.rodain.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Set;
-
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 01-10-2015.
  */
 public class WalkFileTree extends Thread {
-  private static final org.slf4j.Logger log = LoggerFactory.getLogger(WalkFileTree.class.getName());
+  private static final Logger log = LoggerFactory.getLogger(WalkFileTree.class.getName());
   private Set<String> paths;
   private TreeVisitor handler;
   private boolean cancelled = false;

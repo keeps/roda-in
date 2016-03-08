@@ -25,6 +25,8 @@ public class FontAwesomeImageCreator {
   public static final String list = "\uf022";
   public static final String check = "\uf00c";
   public static final String square = "\uf096";
+  public static final String book = "\uf02d";
+  public static final String open_folder = "\uf07c";
 
   public static final Font font = loadFont();
 

@@ -22,8 +22,11 @@ import org.apache.commons.lang.StringUtils;
 import org.fxmisc.richtext.CodeArea;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.RodaIn;
+import org.roda.rodain.inspection.documentation.DocumentationCreator;
+import org.roda.rodain.inspection.documentation.SipDocumentationTreeView;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.TreeNode;
+import org.roda.rodain.rules.filters.ContentFilter;
 import org.roda.rodain.rules.sip.MetadataValue;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.rules.sip.SipRepresentation;
@@ -32,6 +35,7 @@ import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SipPreviewNode;
 import org.roda.rodain.source.ui.SourceTreeCell;
+import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.UIPair;
 import org.roda.rodain.utils.Utils;
@@ -77,14 +81,16 @@ public class InspectionPane extends BorderPane {
   private Button validationButton;
   // SIP Content
   private BorderPane content;
-  private VBox treeBox;
+  private VBox dataBox;
   private SipDataTreeView sipFiles;
-  private SipContentDirectory sipRoot;
+  private SipDocumentationTreeView sipDocumentation;
+  private SipContentDirectory sipRoot, docsRoot;
   private HBox loadingPane, contentBottom;
   private static Image loadingGif;
-  private Task<Void> contentTask;
+  private Task<Void> contentTask, docsTask;
   private Task<Boolean> metadataTask;
   private Button ignore, removeRepresentation;
+  private ToggleButton toggleDocumentation;
   // Rules
   private BorderPane rules;
   private ListView<RuleCell> ruleList;
@@ -463,27 +469,57 @@ public class InspectionPane extends BorderPane {
 
     HBox top = new HBox();
     top.getStyleClass().add("hbox");
-    top.setPadding(new Insets(10, 10, 10, 10));
+    top.setPadding(new Insets(5, 10, 5, 10));
 
     Label title = new Label(AppProperties.getLocalizedString("data"));
+    title.setPadding(new Insets(5, 0, 0, 0));
     top.getChildren().add(title);
     content.setTop(top);
 
     // create tree pane
-    treeBox = new VBox();
-    treeBox.setPadding(new Insets(5, 5, 5, 5));
-    treeBox.setSpacing(10);
+    dataBox = new VBox();
+    dataBox.setPadding(new Insets(5, 5, 5, 5));
+    dataBox.setSpacing(10);
 
     sipFiles = new SipDataTreeView();
     // add everything to the tree pane
-    treeBox.getChildren().addAll(sipFiles);
+    dataBox.getChildren().addAll(sipFiles);
     VBox.setVgrow(sipFiles, Priority.ALWAYS);
 
     sipRoot = new SipContentDirectory(new TreeNode(Paths.get("")), null);
     sipRoot.setExpanded(true);
     sipFiles.setRoot(sipRoot);
-    content.setCenter(treeBox);
+    content.setCenter(dataBox);
     createContentBottom();
+
+    // create documentation pane
+    HBox space = new HBox();
+    HBox.setHgrow(space, Priority.ALWAYS);
+
+    sipDocumentation = new SipDocumentationTreeView();
+
+    toggleDocumentation = new ToggleButton();
+    Image selected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.open_folder, Color.WHITE);
+    Image unselected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.book, Color.WHITE);
+    ImageView toggleImage = new ImageView();
+    toggleDocumentation.setGraphic(toggleImage);
+    toggleImage.imageProperty()
+        .bind(Bindings.when(toggleDocumentation.selectedProperty()).then(selected).otherwise(unselected));
+    title.textProperty().bind(Bindings.when(toggleDocumentation.selectedProperty())
+        .then(AppProperties.getLocalizedString("documentation"))
+        .otherwise(AppProperties.getLocalizedString("data")));
+
+    toggleDocumentation.selectedProperty().addListener((observable, oldValue, newValue) -> {
+      dataBox.getChildren().clear();
+      // newValue == true means that the documentation will be displayed
+      if (newValue) {
+        dataBox.getChildren().add(sipDocumentation);
+      } else { // from the documentation to the representations
+        dataBox.getChildren().add(sipFiles);
+      }
+    });
+
+    top.getChildren().addAll(space, toggleDocumentation);
   }
 
   private void createLoadingPanes() {
@@ -548,10 +584,12 @@ public class InspectionPane extends BorderPane {
     content.setBottom(contentBottom);
   }
 
-  private void createContent(SipPreviewNode node) {
+  private void createContent(SipPreviewNode node, boolean active) {
     SipContentDirectory newRoot = new SipContentDirectory(new TreeNode(Paths.get("")), null);
-    content.setCenter(loadingPane);
-    content.setBottom(new HBox());
+    if (active) {
+      content.setCenter(loadingPane);
+      content.setBottom(new HBox());
+    }
 
     contentTask = new Task<Void>() {
       @Override
@@ -573,12 +611,42 @@ public class InspectionPane extends BorderPane {
     };
     contentTask.setOnSucceeded(event -> {
       sipRoot = newRoot;
-      sipFiles.setRoot(sipRoot);
-      content.setCenter(treeBox);
-      content.setBottom(contentBottom);
+      if (active) {
+        sipFiles.setRoot(sipRoot);
+        content.setCenter(dataBox);
+        content.setBottom(contentBottom);
+      }
     });
     new Thread(contentTask).start();
+  }
 
+  private void createDocumentation(SipPreviewNode sip, boolean active) {
+    SipContentDirectory newRoot = new SipContentDirectory(new TreeNode(Paths.get("")), null);
+
+    if (active) {
+      content.setCenter(loadingPane);
+      content.setBottom(new HBox());
+    }
+
+    docsTask = new Task<Void>() {
+      @Override
+      protected Void call() throws Exception {
+        for (TreeNode treeNode : sip.getSip().getDocumentation()) {
+          TreeItem<Object> startingItem = recCreateSipContent(treeNode, newRoot);
+          startingItem.setExpanded(true);
+          newRoot.getChildren().add(startingItem);
+        }
+        newRoot.sortChildren();
+        return null;
+      }
+    };
+    docsTask.setOnSucceeded(event -> {
+      docsRoot = newRoot;
+      sipDocumentation.setRoot(docsRoot);
+      content.setCenter(dataBox);
+      content.setBottom(contentBottom);
+    });
+    new Thread(docsTask).start();
   }
 
   private TreeItem<Object> recCreateSipContent(TreeNode node, TreeItem parent) {
@@ -733,7 +801,8 @@ public class InspectionPane extends BorderPane {
     center.getChildren().clear();
 
     // content tree
-    createContent(sip);
+    createContent(sip, !toggleDocumentation.isSelected());
+    createDocumentation(sip, toggleDocumentation.isSelected());
 
     center.getChildren().addAll(metadata, content);
     setCenter(center);
@@ -883,6 +952,41 @@ public class InspectionPane extends BorderPane {
     if (ruleList != null && currentSchema != null && ruleList.getItems().size() != currentSchema.getRules().size()) {
       updateRuleList();
     }
+  }
+
+  /**
+   * Adds documentation to the current SIP.
+   *
+   * @param target The item to where the documentation should go. This is NOT the SIP
+   *               where we will be adding the documentation. This must be either an
+   *               already added folder to the documentation or null (in which case
+   *               we'll add to the root of the tree).
+   */
+  public void addDocumentationToSIP(TreeItem target) {
+    Set<ContentFilter> filters = new HashSet<>();
+    filters.add(new ContentFilter());
+
+    Set<Path> paths = new HashSet<>();
+    Set<SourceTreeItem> items = RodaIn.getSourceSelectedItems();
+    for (SourceTreeItem item : items) {
+      paths.add(Paths.get(item.getPath()));
+    }
+
+    DocumentationCreator dc = new DocumentationCreator(filters, paths);
+    Set<TreeNode> result = dc.start();
+
+    if (target instanceof SipContentDirectory) {
+      SipContentDirectory dir = (SipContentDirectory) target;
+      for (TreeNode tn : result)
+        dir.getTreeNode().add(tn);
+    } else currentSIPNode.getSip().addDocumentation(result);
+
+    SipContentDirectory parent = target != null ? (SipContentDirectory) target : docsRoot;
+    for (TreeNode treeNode : result) {
+      TreeItem<Object> startingItem = recCreateSipContent(treeNode, parent);
+      parent.getChildren().add(startingItem);
+    }
+    parent.sortChildren();
   }
 
   public void representationSelected(boolean b) {

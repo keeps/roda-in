@@ -243,6 +243,5 @@ public class SipSingle extends Observable implements TreeVisitor, SipPreviewCrea
   @Override
   public void cancel() {
     cancelled = true;
-    System.out.println("cancelled");
   }
 }
