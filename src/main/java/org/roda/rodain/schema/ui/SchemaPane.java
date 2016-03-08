@@ -11,7 +11,9 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.input.*;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -576,25 +578,21 @@ public class SchemaPane extends BorderPane {
     setOnDragEntered(cell);
     setOnDragExited(cell);
     setOnDragDropped(cell);
-    setOnDragDone(cell);
   }
 
   private void setOnDragDetected(SchemaTreeCell cell) {
-    cell.setOnDragDetected(new EventHandler<MouseEvent>() {
-      @Override
-      public void handle(MouseEvent event) {
-        TreeItem item = cell.getTreeItem();
-        if (item instanceof SchemaNode) {
-          if (item != null) {
-            Dragboard db = cell.startDragAndDrop(TransferMode.MOVE);
-            ClipboardContent content = new ClipboardContent();
-            String s = "scheme node - " + ((SchemaNode) item).getDob().getId();
-            if (s != null) {
-              content.putString(s);
-              db.setContent(content);
-            }
-            event.consume();
+    cell.setOnDragDetected(event -> {
+      TreeItem item = cell.getTreeItem();
+      if (item instanceof SchemaNode) {
+        if (item != null) {
+          Dragboard db = cell.startDragAndDrop(TransferMode.MOVE);
+          ClipboardContent content = new ClipboardContent();
+          String s = "scheme node - " + ((SchemaNode) item).getDob().getId();
+          if (s != null) {
+            content.putString(s);
+            db.setContent(content);
           }
+          event.consume();
         }
       }
     });
@@ -602,111 +600,112 @@ public class SchemaPane extends BorderPane {
 
   private void setOnDragOver(final SchemaTreeCell cell) {
     // on a Target
-    cell.setOnDragOver(new EventHandler<DragEvent>() {
-      @Override
-      public void handle(DragEvent event) {
-        TreeItem<String> treeItem = cell.getTreeItem();
-        if (treeItem == null) {
-          if (event.getGestureSource() instanceof SchemaNode)
-            event.acceptTransferModes(TransferMode.MOVE);
-          else
-            event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
-        }
-        if (treeItem instanceof SchemaNode) {
-          SchemaNode item = (SchemaNode) cell.getTreeItem();
-          if (item != null && event.getGestureSource() != cell && event.getDragboard().hasString()) {
-            event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
-          }
-        }
-        if (treeItem instanceof SipPreviewNode) {
+    cell.setOnDragOver(event -> {
+      TreeItem<String> treeItem = cell.getTreeItem();
+      if (treeItem == null) {
+        if (event.getGestureSource() instanceof SchemaNode)
+          event.acceptTransferModes(TransferMode.MOVE);
+        else
+          event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+      }
+      if (treeItem instanceof SchemaNode) {
+        SchemaNode item = (SchemaNode) cell.getTreeItem();
+        if (item != null && event.getGestureSource() != cell && event.getDragboard().hasString()) {
           event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
         }
-        event.consume();
       }
+      if (treeItem instanceof SipPreviewNode) {
+        event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+      }
+      event.consume();
     });
   }
 
   private void setOnDragEntered(final SchemaTreeCell cell) {
     // on a Target
-    cell.setOnDragEntered(new EventHandler<DragEvent>() {
-      @Override
-      public void handle(DragEvent event) {
-        TreeItem<String> treeItem = cell.getTreeItem();
-        if (treeItem instanceof SchemaNode) {
-          SchemaNode item = (SchemaNode) cell.getTreeItem();
-          if (item != null && event.getGestureSource() != cell && event.getDragboard().hasString()) {
-            cell.getStyleClass().add("schemaNodeHovered");
-          }
+    cell.setOnDragEntered(event -> {
+      TreeItem<String> treeItem = cell.getTreeItem();
+      if (treeItem instanceof SchemaNode) {
+        SchemaNode item = (SchemaNode) cell.getTreeItem();
+        if (item != null && event.getGestureSource() != cell && event.getDragboard().hasString()) {
+          cell.getStyleClass().add("schemaNodeHovered");
         }
-        event.consume();
       }
+      event.consume();
     });
   }
 
   private void setOnDragExited(final SchemaTreeCell cell) {
     // on a Target
-    cell.setOnDragExited(new EventHandler<DragEvent>() {
-      @Override
-      public void handle(DragEvent event) {
-        cell.getStyleClass().remove("schemaNodeHovered");
-        cell.updateItem(cell.getItem(), false);
-        event.consume();
-      }
+    cell.setOnDragExited(event -> {
+      cell.getStyleClass().remove("schemaNodeHovered");
+      cell.updateItem(cell.getItem(), false);
+      event.consume();
     });
   }
 
   private void setOnDragDropped(final SchemaTreeCell cell) {
     // on a Target
-    cell.setOnDragDropped(new EventHandler<DragEvent>() {
-      @Override
-      public void handle(DragEvent event) {
-        TreeItem treeItem = cell.getTreeItem();
-        Dragboard db = event.getDragboard();
-        boolean success = false;
-        if (db.hasString()) {
-          // edit the classification scheme
-          if (db.getString().startsWith("scheme")) {
-            TreeItem selected = treeView.getSelectionModel().getSelectedItem();
-            TreeItem parent = selected.getParent();
-            parent.getChildren().remove(selected);
-            SchemaNode node = (SchemaNode) treeItem;
-            if (node == null) {
-              rootNode.getChildren().add(selected);
-              sortRootChildren();
+    cell.setOnDragDropped(event -> {
+      TreeItem treeItem = cell.getTreeItem();
+      Dragboard db = event.getDragboard();
+      boolean success = false;
+      if (db.hasString()) {
+        // edit the classification scheme
+        if (db.getString().startsWith("scheme")) {
+          TreeItem selected = treeView.getSelectionModel().getSelectedItem();
+          SchemaNode node = (SchemaNode) treeItem;
+
+          // If the target item is a descendant of the source item, they would
+          // both disappear since there would be no remaining connection to the
+          // rest of the tree
+          if (checkTargetIsDescendant(selected, node)) {
+            return;
+          }
+
+          TreeItem parent = selected.getParent();
+          parent.getChildren().remove(selected);
+
+          if (node == null) {
+            rootNode.getChildren().add(selected);
+            sortRootChildren();
+          } else {
+            node.getChildren().add(selected);
+            node.sortChildren();
+          }
+        } else {
+          if (treeItem != null) {
+            // dropped on a SIP, associate to the parent of the SIP
+            if (treeItem instanceof SipPreviewNode) {
+              SipPreviewNode sipPreviewNode = (SipPreviewNode) treeItem;
+              startAssociation((SchemaNode) sipPreviewNode.getParent());
             } else {
-              node.getChildren().add(selected);
-              node.sortChildren();
+              // normal association
+              startAssociation((SchemaNode) treeItem);
             }
           } else {
-            if (treeItem != null) {
-              // dropped on a SIP, associate to the parent of the SIP
-              if (treeItem instanceof SipPreviewNode) {
-                SipPreviewNode sipPreviewNode = (SipPreviewNode) treeItem;
-                startAssociation((SchemaNode) sipPreviewNode.getParent());
-              } else {
-                // normal association
-                startAssociation((SchemaNode) treeItem);
-              }
-            } else {
-              // association to the empty tree view
-              startAssociation(rootNode);
-            }
+            // association to the empty tree view
+            startAssociation(rootNode);
           }
-          success = true;
         }
-        event.setDropCompleted(success);
-        event.consume();
+        success = true;
       }
+      event.setDropCompleted(success);
+      event.consume();
     });
   }
 
-  private void setOnDragDone(final SchemaTreeCell cell) {
-    // on a Source
-    cell.setOnDragDone(new EventHandler<DragEvent>() {
-      @Override
-      public void handle(DragEvent event) {
+  private boolean checkTargetIsDescendant(TreeItem source, TreeItem target) {
+    TreeItem aux = target.getParent();
+    boolean isChild = false;
+    while (aux != null) {
+      if (aux == source) {
+        isChild = true;
+        break;
       }
-    });
+      aux = aux.getParent();
+    }
+    return isChild;
   }
 
   private Set<SchemaNode> recursiveGetSchemaNodes(TreeItem<String> root) {

@@ -1,7 +1,11 @@
 package org.roda.rodain.inspection;
 
+import javafx.application.Platform;
 import javafx.scene.control.TreeItem;
+import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 import org.roda.rodain.rules.sip.SipRepresentation;
+import org.roda.rodain.utils.FontAwesomeImageCreator;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -25,6 +29,8 @@ public class SipContentRepresentation extends TreeItem<Object> implements Inspec
   public SipContentRepresentation(SipRepresentation representation) {
     this.representation = representation;
     this.setValue(representation.getName());
+    Platform.runLater(
+      () -> setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.square, Color.DIMGREY))));
   }
 
   public SipRepresentation getRepresentation() {

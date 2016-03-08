@@ -21,12 +21,9 @@ public class SipPreview extends DescriptionObject implements Observer {
   /**
    * Creates a new SipPreview object.
    *
-   * @param name
-   *          The name of the SIP
-   * @param representations
-   *          The set of representations to be added to the SIP
-   * @param metadata
-   *          The metadata of the SIP
+   * @param name            The name of the SIP
+   * @param representations The set of representations to be added to the SIP
+   * @param metadata        The metadata of the SIP
    */
   public SipPreview(String name, Set<SipRepresentation> representations, DescObjMetadata metadata) {
     this.representations = representations;
@@ -56,24 +53,29 @@ public class SipPreview extends DescriptionObject implements Observer {
   /**
    * Removes from the SIP's content the set of paths received as parameter.
    *
-   * @param paths
-   *          The set of paths to be removed
+   * @param paths The set of paths to be removed
    */
   public void ignoreContent(Set<Path> paths) {
-    // Set<String> ignored = new HashSet<>();
-    // Set<TreeNode> toRemove = new HashSet<>();
-    // for (TreeNode tn : files) {
-    // ignored.addAll(tn.ignoreContent(paths));
-    // if (paths.contains(tn.getPath()))
-    // toRemove.add(tn);
-    // }
-    // files.removeAll(toRemove);
-    // PathCollection.addPaths(ignored, SourceTreeItemState.NORMAL);
+    Set<String> ignored = new HashSet<>();
+    Set<TreeNode> toRemove = new HashSet<>();
+    for (SipRepresentation sr : representations) {
+      for (TreeNode tn : sr.getFiles()) {
+        ignored.addAll(tn.ignoreContent(paths));
+        if (paths.contains(tn.getPath()))
+          toRemove.add(tn);
+      }
+      sr.getFiles().removeAll(toRemove);
+    }
+    PathCollection.addPaths(ignored, SourceTreeItemState.NORMAL);
+  }
+
+  public void addRepresentation(SipRepresentation sipRep) {
+    representations.add(sipRep);
   }
 
   /**
    * @return True if the content has been modified (nodes removed, flattened or
-   *         skipped), false otherwise.
+   * skipped), false otherwise.
    */
   public boolean isContentModified() {
     return contentModified;
@@ -129,10 +131,8 @@ public class SipPreview extends DescriptionObject implements Observer {
    * Sets the content modified state as true if it receives a notification from
    * any TreeNode in the files Set.
    *
-   * @param o
-   *          The observable object that is modified.
-   * @param arg
-   *          The arguments sent by the observable object.
+   * @param o   The observable object that is modified.
+   * @param arg The arguments sent by the observable object.
    */
   @Override
   public void update(Observable o, Object arg) {
@@ -141,5 +141,14 @@ public class SipPreview extends DescriptionObject implements Observer {
       setChanged();
       notifyObservers();
     }
+  }
+
+  public void removeRepresentation(SipRepresentation representation) {
+    Set<Path> paths = new HashSet<>();
+    for (TreeNode tn : representation.getFiles()) {
+      paths.addAll(tn.getFullTreePathsAsPaths());
+    }
+    ignoreContent(paths);
+    representations.remove(representation);
   }
 }

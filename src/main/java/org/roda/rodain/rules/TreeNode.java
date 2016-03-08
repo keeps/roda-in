@@ -60,6 +60,18 @@ public class TreeNode extends Observable {
   }
 
   /**
+   * @return A set with all the paths from the tree that starts in the TreeNode
+   *         where this method is called.
+   */
+  public Set<Path> getFullTreePathsAsPaths() {
+    Set<Path> result = new HashSet<>();
+    result.add(path);
+    for (TreeNode tn : files.values())
+      result.addAll(tn.getFullTreePathsAsPaths());
+    return result;
+  }
+
+  /**
    * @return The direct children of the TreeNode.
    */
   public Map<String, TreeNode> getAllFiles() {

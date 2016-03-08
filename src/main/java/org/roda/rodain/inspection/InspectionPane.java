@@ -1,6 +1,5 @@
 package org.roda.rodain.inspection;
 
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -85,6 +84,7 @@ public class InspectionPane extends BorderPane {
   private static Image loadingGif;
   private Task<Void> contentTask;
   private Task<Boolean> metadataTask;
+  private Button ignore, removeRepresentation;
   // Rules
   private BorderPane rules;
   private ListView<RuleCell> ruleList;
@@ -93,8 +93,7 @@ public class InspectionPane extends BorderPane {
   /**
    * Creates a new inspection pane.
    *
-   * @param stage
-   *          The primary stage of the application
+   * @param stage The primary stage of the application
    */
   public InspectionPane(Stage stage) {
     createCenterHelp();
@@ -160,7 +159,7 @@ public class InspectionPane extends BorderPane {
 
     validationButton = new Button();
     validationButton
-      .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.check, Color.WHITE)));
+        .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.check, Color.WHITE)));
     validationButton.setOnAction(event -> {
       if (metadata.getChildren().contains(metadataFormWrapper)) {
         saveMetadata();
@@ -508,7 +507,7 @@ public class InspectionPane extends BorderPane {
     contentBottom.setPadding(new Insets(10, 10, 10, 10));
     contentBottom.setAlignment(Pos.CENTER);
 
-    Button ignore = new Button(AppProperties.getLocalizedString("ignore"));
+    ignore = new Button(AppProperties.getLocalizedString("ignore"));
     ignore.setOnAction(event -> {
       InspectionTreeItem selected = (InspectionTreeItem) sipFiles.getSelectionModel().getSelectedItem();
       if (selected == null)
@@ -522,10 +521,30 @@ public class InspectionPane extends BorderPane {
         parent.getChildren().remove(child);
       }
     });
-
     ignore.minWidthProperty().bind(this.widthProperty().multiply(0.25));
 
-    contentBottom.getChildren().addAll(ignore);
+    Button addRepresentation = new Button(AppProperties.getLocalizedString("InspectionPane.addRepresentation"));
+    addRepresentation.setOnAction(event -> {
+      int repCount = currentSIPNode.getSip().getRepresentations().size() + 1;
+      SipRepresentation sipRep = new SipRepresentation("rep" + repCount);
+      currentSIPNode.getSip().addRepresentation(sipRep);
+      SipContentRepresentation sipContentRep = new SipContentRepresentation(sipRep);
+      sipRoot.getChildren().add(sipContentRep);
+    });
+    addRepresentation.minWidthProperty().bind(this.widthProperty().multiply(0.25));
+
+    removeRepresentation = new Button(AppProperties.getLocalizedString("InspectionPane.removeRepresentation"));
+    removeRepresentation.setOnAction(event -> {
+      InspectionTreeItem selectedRaw = (InspectionTreeItem) sipFiles.getSelectionModel().getSelectedItem();
+      if (selectedRaw instanceof SipContentRepresentation) {
+        SipContentRepresentation selected = (SipContentRepresentation) selectedRaw;
+        sipRoot.getChildren().remove(selectedRaw);
+        currentSIPNode.getSip().removeRepresentation(selected.getRepresentation());
+      }
+    });
+    removeRepresentation.minWidthProperty().bind(this.widthProperty().multiply(0.25));
+
+    contentBottom.getChildren().addAll(addRepresentation, removeRepresentation, ignore);
     content.setBottom(contentBottom);
   }
 
@@ -548,8 +567,6 @@ public class InspectionPane extends BorderPane {
           scr.sortChildren();
           scr.setExpanded(true);
           newRoot.getChildren().add(scr);
-          Platform.runLater(() -> scr.setGraphic(new ImageView(FontAwesomeImageCreator
-            .generate(FontAwesomeImageCreator.square, Color.color(8f / 255, 157f / 255, 227f / 255)))));
         }
         return null;
       }
@@ -643,8 +660,7 @@ public class InspectionPane extends BorderPane {
    * TreeView.
    * </p>
    *
-   * @param sip
-   *          The SipPreviewNode used to update the UI.
+   * @param sip The SipPreviewNode used to update the UI.
    * @see SipPreviewNode
    * @see SipContentDirectory
    * @see SipContentFile
@@ -731,8 +747,7 @@ public class InspectionPane extends BorderPane {
    * create a ListView of RuleCell.
    * </p>
    *
-   * @param node
-   *          The SchemaNode used to update the UI.
+   * @param node The SchemaNode used to update the UI.
    * @see RuleCell
    * @see SchemaNode
    */
@@ -867,6 +882,16 @@ public class InspectionPane extends BorderPane {
   public void notifyChange() {
     if (ruleList != null && currentSchema != null && ruleList.getItems().size() != currentSchema.getRules().size()) {
       updateRuleList();
+    }
+  }
+
+  public void representationSelected(boolean b) {
+    if (b) {
+      removeRepresentation.setDisable(false);
+      ignore.setDisable(true);
+    } else {
+      removeRepresentation.setDisable(true);
+      ignore.setDisable(false);
     }
   }
 }
