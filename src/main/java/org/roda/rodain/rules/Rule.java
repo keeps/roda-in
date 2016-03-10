@@ -40,7 +40,6 @@ public class Rule extends Observable implements Observer, Comparable {
   private HashMap<String, SipPreviewNode> sipNodes = new HashMap<>();
   private Image iconBlack, iconWhite;
   private int added = 0;
-  private int level;
   private Integer id;
 
   /**
@@ -48,9 +47,6 @@ public class Rule extends Observable implements Observer, Comparable {
    *          The set of items to be transformed into SIPs
    * @param assocType
    *          The association type of the rule.
-   * @param level
-   *          The maximum level of the directory. Used in the SIP_PER_FOLDER
-   *          type only.
    * @param metadataPath
    *          The path to the metadata file(s)
    * @param template
@@ -58,12 +54,11 @@ public class Rule extends Observable implements Observer, Comparable {
    * @param metaType
    *          The type of metadata to be applied to the SIPs.
    */
-  public Rule(Set<SourceTreeItem> source, RuleTypes assocType, int level, Path metadataPath, String template,
+  public Rule(Set<SourceTreeItem> source, RuleTypes assocType, Path metadataPath, String template,
     MetadataTypes metaType, String templateVersion) {
     ruleCount++;
     this.source = source;
     this.assocType = assocType;
-    this.level = level;
     this.templateType = template;
     this.templateVersion = templateVersion;
     this.metadataPath = metadataPath;
@@ -190,6 +185,12 @@ public class Rule extends Observable implements Observer, Comparable {
           templateVersion);
         visitorFile.addObserver(this);
         visitor = visitorFile;
+        break;
+      case SIP_WITH_STRUCTURE:
+        SipsWithStructure visitorStructure = new SipsWithStructure(id.toString(), filters, metaType, metadataPath,
+          templateType, templateVersion);
+        visitorStructure.addObserver(this);
+        visitor = visitorStructure;
         break;
       default:
       case SINGLE_SIP:

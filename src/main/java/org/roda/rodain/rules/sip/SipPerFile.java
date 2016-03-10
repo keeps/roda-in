@@ -7,7 +7,6 @@ import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.filters.ContentFilter;
 import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
-import org.roda.rodain.utils.TreeVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,32 +14,17 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 05-10-2015.
  */
-public class SipPerFile extends Observable implements TreeVisitor, SipPreviewCreator {
+public class SipPerFile extends SipPreviewCreator {
   private static final Logger log = LoggerFactory.getLogger(SipPerFile.class.getName());
   private static final int UPDATEFREQUENCY = 500; // in milliseconds
-  // This map is returned, in full, to the SipPreviewNode when there's an update
-  private Map<String, SipPreview> sipsMap;
-  // This ArrayList is used to keep the SIPs ordered.
-  // We need them ordered because we have to keep track of which SIPs have
-  // already been loaded
-  private List<SipPreview> sips;
-  private int added = 0, returned = 0;
   private long lastUIUpdate = 0;
-
-  private String id;
-  private Set<ContentFilter> filters;
-  private MetadataTypes metaType;
-  private String templateType;
-  private String templateVersion;
-  private Path metadataPath;
-
-  private boolean cancelled = false;
 
   /**
    * Creates a new SipPreviewCreator where there's a new SIP created for each
@@ -59,60 +43,10 @@ public class SipPerFile extends Observable implements TreeVisitor, SipPreviewCre
    */
   public SipPerFile(String id, Set<ContentFilter> filters, MetadataTypes metaType, Path metadataPath,
     String templateType, String templateVersion) {
-    sips = new ArrayList<>();
-    sipsMap = new HashMap<>();
-    this.id = id;
-    this.filters = filters;
-    this.metaType = metaType;
-    this.metadataPath = metadataPath;
-    this.templateType = templateType;
-    this.templateVersion = templateVersion;
+    super(id, filters, metaType, metadataPath, templateType, templateVersion);
 
   }
 
-  /**
-   * @return The Map with the SIPs created by the SipPreviewCreator.
-   */
-  @Override
-  public Map<String, SipPreview> getSips() {
-    return sipsMap;
-  }
-
-  /**
-   * @return The count of the SIPs already created.
-   */
-  @Override
-  public int getCount() {
-    return added;
-  }
-
-  /**
-   * The object keeps a list with the created SIPs and this method returns them
-   * one at a time.
-   *
-   * @return The next SIP in the list.
-   */
-  @Override
-  public SipPreview getNext() {
-    return sips.get(returned++);
-  }
-
-  /**
-   * @return True if the number of SIPs returned is smaller than the count of
-   *         added SIPs.
-   */
-  @Override
-  public boolean hasNext() {
-    return returned < added;
-  }
-
-  /**
-   * Sets the starting path of this TreeVisitor. This method is empty in this
-   * class, but it's defined because of the SipPreviewCreator interface.
-   *
-   * @param path
-   *          The starting path of the TreeVisitor.
-   */
   @Override
   public void setStartPath(String path) {
     try {
@@ -150,19 +84,6 @@ public class SipPerFile extends Observable implements TreeVisitor, SipPreviewCre
    *
    * @param path
    *          The path of the directory.
-   * @param attrs
-   *          The attributes of the directory.
-   */
-  @Override
-  public void preVisitDirectory(Path path, BasicFileAttributes attrs) {
-  }
-
-  /**
-   * This method is empty in this class, but it's defined because of the
-   * TreeVisitor interface.
-   *
-   * @param path
-   *          The path of the directory.
    */
   @Override
   public void postVisitDirectory(Path path) {
@@ -171,20 +92,17 @@ public class SipPerFile extends Observable implements TreeVisitor, SipPreviewCre
     }
   }
 
-  private boolean filter(Path path) {
-    String pathString = path.toString();
-    for (ContentFilter cf : filters) {
-      if (cf.filter(pathString))
-        return true;
-    }
+  @Override
+  public boolean filter(Path path) {
+    boolean result = super.filter(path);
     if (path.getFileName() == null) {
-      return true;
+      result = true;
     }
     if (templateType != null) {
       PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + templateType);
-      return matcher.matches(path.getFileName());
+      result = matcher.matches(path.getFileName());
     }
-    return false;
+    return result;
   }
 
   /**
@@ -275,41 +193,5 @@ public class SipPerFile extends Observable implements TreeVisitor, SipPreviewCre
       return foundFiles[0].toPath();
     }
     return null;
-  }
-
-  /**
-   * This method is empty in this class, but it's defined because of the
-   * TreeVisitor interface.
-   *
-   * @param path
-   *          The path of the file.
-   */
-  @Override
-  public void visitFileFailed(Path path) {
-  }
-
-  /**
-   * Ends the tree visit, notifying the observers of modifications.
-   */
-  @Override
-  public void end() {
-    setChanged();
-    notifyObservers();
-  }
-
-  /**
-   * @return The id of the visitor.
-   */
-  @Override
-  public String getId() {
-    return id;
-  }
-
-  /**
-   * Cancels the execution of the SipPreviewCreator
-   */
-  @Override
-  public void cancel() {
-    cancelled = true;
   }
 }

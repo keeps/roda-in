@@ -1,11 +1,5 @@
 package org.roda.rodain.rules.ui;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Set;
-
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -23,7 +17,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.RuleTypes;
@@ -33,6 +26,12 @@ import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.UIPair;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -174,8 +173,14 @@ public class RuleModalPane extends BorderPane {
     HBoxCell cellSipPerFile = new HBoxCell("assoc3", icon, title, description, new HBox());
     cellSipPerFile.setUserData(RuleTypes.SIP_PER_FILE);
 
+    icon = AppProperties.getStyle("association.sipSelection.icon");
+    title = AppProperties.getLocalizedString("association.sipSelection.title");
+    description = AppProperties.getLocalizedString("association.sipSelection.description");
+    HBoxCell cellStructure = new HBoxCell("assoc4", icon, title, description, new HBox());
+    cellStructure.setUserData(RuleTypes.SIP_WITH_STRUCTURE);
+
     ObservableList<HBoxCell> hboxList = FXCollections.observableArrayList();
-    hboxList.addAll(cellSelected, cellSingleSip, cellSipPerFile);
+    hboxList.addAll(cellSelected, cellSingleSip, cellSipPerFile, cellStructure);
     assocList.setItems(hboxList);
     assocList.getSelectionModel().selectFirst();
 
