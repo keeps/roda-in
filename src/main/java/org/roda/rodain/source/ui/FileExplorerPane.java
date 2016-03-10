@@ -1,13 +1,5 @@
 package org.roda.rodain.source.ui;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
-
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -18,8 +10,9 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
-
+import javafx.stage.StageStyle;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.Footer;
 import org.roda.rodain.core.PathCollection;
@@ -31,6 +24,14 @@ import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.Utils;
 import org.roda.rodain.utils.WalkFileTree;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -234,13 +235,15 @@ public class FileExplorerPane extends BorderPane implements Observer {
    *          The new root path
    */
   public void setFileExplorerRoot(Path rootPath) {
-    // check if the path or a parent path haven't been added yet
+    // check if the path, a parent path or a child path haven't been added yet
     if (realRoots.containsKey(rootPath.toString())) {
+      alertAddFolder(rootPath.toString(), rootPath.toString());
       return;
     }
     for (String pathString : realRoots.keySet()) {
       Path path = Paths.get(pathString);
-      if (rootPath.startsWith(path)) {
+      if (rootPath.startsWith(path) || path.startsWith(rootPath)) {
+        alertAddFolder(rootPath.toString(), pathString);
         return;
       }
     }
@@ -256,6 +259,21 @@ public class FileExplorerPane extends BorderPane implements Observer {
     rootNode.setExpanded(true);
     dummyRoot.getChildren().add(rootNode);
     updateAttributes(rootPath);
+  }
+
+  private void alertAddFolder(String oldPath, String newPath) {
+    String content = String.format(AppProperties.getLocalizedString("FileExplorerPane.alertAddFolder.content"), oldPath,
+      newPath);
+    Alert dlg = new Alert(Alert.AlertType.INFORMATION);
+    dlg.initStyle(StageStyle.UNDECORATED);
+    dlg.setHeaderText(AppProperties.getLocalizedString("FileExplorerPane.alertAddFolder.header"));
+    dlg.setTitle(AppProperties.getLocalizedString("FileExplorerPane.alertAddFolder.title"));
+    dlg.setContentText(content);
+    dlg.initModality(Modality.APPLICATION_MODAL);
+    dlg.initOwner(stage);
+
+    dlg.getDialogPane().setMinWidth(600);
+    dlg.show();
   }
 
   /**

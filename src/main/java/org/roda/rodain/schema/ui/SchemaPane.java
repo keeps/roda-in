@@ -6,8 +6,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -460,12 +458,7 @@ public class SchemaPane extends BorderPane {
 
     Button export = new Button(AppProperties.getLocalizedString("export"));
     export.setMinWidth(100);
-    export.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        RodaIn.exportSIPs();
-      }
-    });
+    export.setOnAction(event -> RodaIn.exportSIPs());
 
     bottom.getChildren().addAll(removeLevel, addLevel, space, export);
   }
