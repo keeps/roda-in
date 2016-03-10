@@ -150,7 +150,7 @@ For more information or commercial support, contact [KEEP SOLUTIONS](http://www.
 ### Translating
 To help make RODA-in better you can translate it to your language. 
 
-RODA-in uses Transifex, a localization platform, and you can find the [project here](https://www.transifex.com/roda-1/roda-in/dashboard/). If you don't know how to use Transifex, check out [these instructions](http://docs.transifex.com/tutorials/txeditor/), it's really easy and simple.
+RODA-in uses Transifex, a localization platform, and you can find the [project here](https://www.transifex.com/roda-1/roda-in/). If you don't know how to use Transifex, check out [these instructions](http://docs.transifex.com/tutorials/txeditor/), it's really easy and simple.
 
 
 ## License
