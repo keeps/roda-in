@@ -125,7 +125,13 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
         earkSip.addRepresentation(rep);
       }
 
-      currentAction = "Initializing zip file";
+      currentAction = AppProperties.getLocalizedString("SimpleSipCreator.documentation");
+      Set<TreeNode> docs = sip.getDocumentation();
+      for (TreeNode tn : docs) {
+        addDocToZip(tn, new ArrayList<>(), earkSip);
+      }
+
+      currentAction = AppProperties.getLocalizedString("SimpleSipCreator.initZIP");
 
       earkSip.build(outputPath);
 
@@ -158,6 +164,22 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
       currentSIPadded++;
       String format = String.format("%s %s", actionCopyingData, "(%d/%d)");
       currentAction = String.format(format, currentSIPadded, currentSIPsize);
+    }
+  }
+
+  private void addDocToZip(TreeNode tn, List<String> relativePath, SIP earkSip) {
+    if (Files.isDirectory(tn.getPath())) {
+      // add this directory to the path list
+      List<String> newRelativePath = new ArrayList<>(relativePath);
+      newRelativePath.add(tn.getPath().getFileName().toString());
+      // recursive call to all the node's children
+      for (TreeNode node : tn.getAllFiles().values()) {
+        addDocToZip(node, newRelativePath, earkSip);
+      }
+    } else {
+      // if it's a file, add it to the SIP
+      IPFile fileDoc = new IPFile(tn.getPath(), relativePath);
+      earkSip.addDocumentation(fileDoc);
     }
   }
 

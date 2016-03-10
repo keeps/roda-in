@@ -48,10 +48,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -99,7 +96,8 @@ public class InspectionPane extends BorderPane {
   /**
    * Creates a new inspection pane.
    *
-   * @param stage The primary stage of the application
+   * @param stage
+   *          The primary stage of the application
    */
   public InspectionPane(Stage stage) {
     createCenterHelp();
@@ -165,7 +163,7 @@ public class InspectionPane extends BorderPane {
 
     validationButton = new Button();
     validationButton
-        .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.check, Color.WHITE)));
+      .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.check, Color.WHITE)));
     validationButton.setOnAction(event -> {
       if (metadata.getChildren().contains(metadataFormWrapper)) {
         saveMetadata();
@@ -550,10 +548,9 @@ public class InspectionPane extends BorderPane {
     ImageView toggleImage = new ImageView();
     toggleDocumentation.setGraphic(toggleImage);
     toggleImage.imageProperty()
-        .bind(Bindings.when(toggleDocumentation.selectedProperty()).then(selected).otherwise(unselected));
+      .bind(Bindings.when(toggleDocumentation.selectedProperty()).then(selected).otherwise(unselected));
     title.textProperty().bind(Bindings.when(toggleDocumentation.selectedProperty())
-        .then(AppProperties.getLocalizedString("documentation"))
-        .otherwise(AppProperties.getLocalizedString("data")));
+      .then(AppProperties.getLocalizedString("documentation")).otherwise(AppProperties.getLocalizedString("data")));
 
     toggleDocumentation.selectedProperty().addListener((observable, oldValue, newValue) -> {
       dataBox.getChildren().clear();
@@ -640,20 +637,29 @@ public class InspectionPane extends BorderPane {
   private void createDocsBottom() {
     docsBottom = new HBox(10);
     docsBottom.setPadding(new Insets(10, 10, 10, 10));
-    docsBottom.setAlignment(Pos.CENTER);
+    docsBottom.setAlignment(Pos.CENTER_LEFT);
 
-    Button remove = new Button(AppProperties.getLocalizedString("ignore"));
+    Button remove = new Button(AppProperties.getLocalizedString("remove"));
     remove.setOnAction(event -> {
-      InspectionTreeItem selected = (InspectionTreeItem) sipDocumentation.getSelectionModel().getSelectedItem();
-      if (selected == null)
-        return;
-      Set<Path> paths = new HashSet<>();
-      paths.add(selected.getPath());
-      if (currentDescOb != null && currentDescOb instanceof SipPreview) {
-        ((SipPreview) currentDescOb).removeDocumentation(paths);
-        TreeItem parent = selected.getParentDir();
-        TreeItem child = (TreeItem) selected;
-        parent.getChildren().remove(child);
+      List<InspectionTreeItem> selectedItems = new ArrayList<InspectionTreeItem>(
+        sipDocumentation.getSelectionModel().getSelectedItems());
+      for (InspectionTreeItem selected : selectedItems) {
+        Set<Path> paths = new HashSet<>();
+        if (selected instanceof SipContentDirectory || selected instanceof SipContentFile) {
+          paths.add(selected.getPath());
+
+          if (currentDescOb != null && currentDescOb instanceof SipPreview) {
+            ((SipPreview) currentDescOb).removeDocumentation(paths);
+            TreeItem parent = selected.getParentDir();
+            TreeItem child = (TreeItem) selected;
+            parent.getChildren().remove(child);
+          }
+        }
+      }
+      if (docsRoot.getChildren().isEmpty()) {
+        dataBox.getChildren().clear();
+        dataBox.getChildren().add(documentationHelp);
+        content.setBottom(new HBox());
       }
     });
     remove.minWidthProperty().bind(this.widthProperty().multiply(0.25));
@@ -721,8 +727,11 @@ public class InspectionPane extends BorderPane {
       docsRoot = newRoot;
       if (active) {
         sipDocumentation.setRoot(docsRoot);
-        content.setCenter(dataBox);
-        content.setBottom(contentBottom);
+        if (!docsRoot.getChildren().isEmpty()) {
+          content.setCenter(documentationHelp);
+          content.setBottom(docsBottom);
+        } else
+          content.setCenter(dataBox);
       }
     });
     new Thread(docsTask).start();
@@ -807,7 +816,8 @@ public class InspectionPane extends BorderPane {
    * TreeView.
    * </p>
    *
-   * @param sip The SipPreviewNode used to update the UI.
+   * @param sip
+   *          The SipPreviewNode used to update the UI.
    * @see SipPreviewNode
    * @see SipContentDirectory
    * @see SipContentFile
@@ -884,8 +894,14 @@ public class InspectionPane extends BorderPane {
     createContent(sip, !documentation);
     createDocumentation(sip, documentation);
     if (documentation) {
+      if (docsRoot.getChildren().isEmpty()) {
+        content.setBottom(new HBox());
+      } else {
+        content.setBottom(docsBottom);
+      }
+    } else {
       content.setBottom(contentBottom);
-    } else content.setBottom(docsBottom);
+    }
 
     center.getChildren().addAll(metadata, content);
     setCenter(center);
@@ -899,7 +915,8 @@ public class InspectionPane extends BorderPane {
    * create a ListView of RuleCell.
    * </p>
    *
-   * @param node The SchemaNode used to update the UI.
+   * @param node
+   *          The SchemaNode used to update the UI.
    * @see RuleCell
    * @see SchemaNode
    */
@@ -1040,10 +1057,11 @@ public class InspectionPane extends BorderPane {
   /**
    * Adds documentation to the current SIP.
    *
-   * @param target The item to where the documentation should go. This is NOT the SIP
-   *               where we will be adding the documentation. This must be either an
-   *               already added folder to the documentation or null (in which case
-   *               we'll add to the root of the tree).
+   * @param target
+   *          The item to where the documentation should go. This is NOT the SIP
+   *          where we will be adding the documentation. This must be either an
+   *          already added folder to the documentation or null (in which case
+   *          we'll add to the root of the tree).
    */
   public void addDocumentationToSIP(TreeItem target) {
     Set<ContentFilter> filters = new HashSet<>();
@@ -1062,7 +1080,8 @@ public class InspectionPane extends BorderPane {
       SipContentDirectory dir = (SipContentDirectory) target;
       for (TreeNode tn : result)
         dir.getTreeNode().add(tn);
-    } else currentSIPNode.getSip().addDocumentation(result);
+    } else
+      currentSIPNode.getSip().addDocumentation(result);
 
     SipContentDirectory parent = target != null ? (SipContentDirectory) target : docsRoot;
     for (TreeNode treeNode : result) {
@@ -1080,5 +1099,17 @@ public class InspectionPane extends BorderPane {
       removeRepresentation.setDisable(true);
       ignore.setDisable(false);
     }
+  }
+
+  public List<InspectionTreeItem> getDocumentationSelectedItems() {
+    List<InspectionTreeItem> result = new ArrayList<InspectionTreeItem>(
+      sipDocumentation.getSelectionModel().getSelectedItems());
+    return result;
+  }
+
+  public List<InspectionTreeItem> getDataSelectedItems() {
+    List<InspectionTreeItem> result = new ArrayList<InspectionTreeItem>(
+      sipFiles.getSelectionModel().getSelectedItems());
+    return result;
   }
 }
