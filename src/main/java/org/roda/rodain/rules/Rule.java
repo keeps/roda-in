@@ -41,7 +41,6 @@ public class Rule extends Observable implements Observer, Comparable {
   private Map<String, SipPreviewNode> sipNodes = new HashMap<>();
   private Set<SchemaNode> schemaNodes = new HashSet<>();
   private Image iconBlack, iconWhite, dObjIconBlack, dObjIconWhite;
-  private int added = 0;
   private Integer id;
 
   /**
@@ -169,7 +168,6 @@ public class Rule extends Observable implements Observer, Comparable {
    * @see SipSingle
    */
   public TreeVisitor apply() {
-    added = 0;
     sips = new HashMap<>();
     sipNodes = new HashMap<>();
 
@@ -236,7 +234,6 @@ public class Rule extends Observable implements Observer, Comparable {
       } else {
         sips = visit.getSips();
         while (visit.hasNext()) {
-          added++;
           SipPreview sipPreview = visit.getNext();
           SipPreviewNode sipNode = new SipPreviewNode(sipPreview, iconBlack, iconWhite);
           sipPreview.addObserver(sipNode);

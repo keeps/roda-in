@@ -2,8 +2,6 @@ package org.roda.rodain.rules.ui;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
 import javafx.stage.Stage;
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.MetadataTypes;
@@ -72,17 +70,7 @@ public class RuleModalController {
       }
     };
 
-    task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-      @Override
-      public void handle(WorkerStateEvent workerStateEvent) {
-        Platform.runLater(new Runnable() {
-          @Override
-          public void run() {
-            stage.setRoot(pane);
-          }
-        });
-      }
-    });
+    task.setOnSucceeded(event -> Platform.runLater(() -> stage.setRoot(pane)));
 
     new Thread(task).start();
   }
@@ -212,11 +200,6 @@ public class RuleModalController {
    * Closes the stage of the modal window.
    */
   public static void cancel() {
-    Platform.runLater(new Runnable() {
-      @Override
-      public void run() {
-        stage.close();
-      }
-    });
+    Platform.runLater(() -> stage.close());
   }
 }

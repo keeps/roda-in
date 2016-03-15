@@ -186,20 +186,7 @@ public class SchemaPane extends BorderPane {
     treeBox = new VBox();
     VBox.setVgrow(treeBox, Priority.ALWAYS);
 
-    DescriptionObject dobj = new DescriptionObject();
-    rootNode = new SchemaNode(dobj);
-    rootNode.setExpanded(true);
-    rootNode.getChildren().addListener(new ListChangeListener<TreeItem<String>>() {
-      @Override
-      public void onChanged(Change<? extends TreeItem<String>> c) {
-        if (rootNode.getChildren().isEmpty()) {
-          setCenter(dropBox);
-          RodaIn.getInspectionPane().showHelp();
-        } else {
-          setCenter(treeBox);
-        }
-      }
-    });
+    createRootNode();
 
     // create the tree view
     treeView = new TreeView<>(rootNode);
@@ -241,6 +228,23 @@ public class SchemaPane extends BorderPane {
           ((SchemaNode) newValue).setBlackIconSelected(false);
           forceUpdate(newValue);
           RodaIn.getInspectionPane().update((SchemaNode) newValue);
+        }
+      }
+    });
+  }
+
+  private void createRootNode() {
+    DescriptionObject dobj = new DescriptionObject();
+    rootNode = new SchemaNode(dobj);
+    rootNode.setExpanded(true);
+    rootNode.getChildren().addListener(new ListChangeListener<TreeItem<String>>() {
+      @Override
+      public void onChanged(Change<? extends TreeItem<String>> c) {
+        if (rootNode.getChildren().isEmpty()) {
+          setCenter(dropBox);
+          RodaIn.getInspectionPane().showHelp();
+        } else {
+          setCenter(treeBox);
         }
       }
     });
@@ -395,6 +399,8 @@ public class SchemaPane extends BorderPane {
 
     if (dlg.getResult().getButtonData() == ButtonBar.ButtonData.OK_DONE) {
       rootNode.remove();
+      createRootNode();
+      treeView.setRoot(rootNode);
       return true;
     } else
       return false;
@@ -439,6 +445,7 @@ public class SchemaPane extends BorderPane {
           SipPreview currentSIP = ((SipPreviewNode) selected).getSip();
           RuleModalController.removeSipPreview(currentSIP);
           removeNode(selected);
+          treeView.getSelectionModel().clearSelection();
           Task<Void> removeTask = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
@@ -482,6 +489,7 @@ public class SchemaPane extends BorderPane {
     } else
       parent.getChildren().remove(selected);
     schemaNodes.remove(selected);
+    treeView.getSelectionModel().clearSelection();
   }
 
   public void createClassificationScheme() {
@@ -489,7 +497,6 @@ public class SchemaPane extends BorderPane {
       return;
     }
     setTop(topBox);
-    // setCenter(treeBox);
     setCenter(dropBox);
     setBottom(bottom);
     rootNode.getChildren().clear();
@@ -695,6 +702,9 @@ public class SchemaPane extends BorderPane {
   }
 
   private boolean checkTargetIsDescendant(TreeItem source, TreeItem target) {
+    if (target == null) {
+      return false;
+    }
     TreeItem aux = target.getParent();
     boolean isChild = false;
     while (aux != null) {

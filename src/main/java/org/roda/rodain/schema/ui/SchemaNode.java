@@ -99,9 +99,6 @@ public class SchemaNode extends TreeItem<String> implements Observer {
         getChildren().addAll(nodes);
         getChildren().addAll(schemas);
 
-        if (!schemaNodes.isEmpty())
-          getChildren().addAll(schemaNodes);
-
         sortChildren();
       });
     }
