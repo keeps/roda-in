@@ -173,9 +173,9 @@ public class RuleModalPane extends BorderPane {
     HBoxCell cellSipPerFile = new HBoxCell("assoc3", icon, title, description, new HBox());
     cellSipPerFile.setUserData(RuleTypes.SIP_PER_FILE);
 
-    icon = AppProperties.getStyle("association.sipSelection.icon");
-    title = AppProperties.getLocalizedString("association.sipSelection.title");
-    description = AppProperties.getLocalizedString("association.sipSelection.description");
+    icon = AppProperties.getStyle("association.sipWithStructure.icon");
+    title = AppProperties.getLocalizedString("association.sipWithStructure.title");
+    description = AppProperties.getLocalizedString("association.sipWithStructure.description");
     HBoxCell cellStructure = new HBoxCell("assoc4", icon, title, description, new HBox());
     cellStructure.setUserData(RuleTypes.SIP_WITH_STRUCTURE);
 

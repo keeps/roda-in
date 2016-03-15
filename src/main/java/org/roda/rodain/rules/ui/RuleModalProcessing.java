@@ -1,8 +1,6 @@
 package org.roda.rodain.rules.ui;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -106,12 +104,7 @@ public class RuleModalProcessing extends BorderPane {
     bottom.setPadding(new Insets(0, 10, 10, 10));
     bottom.setAlignment(Pos.CENTER_RIGHT);
     Button cancel = new Button(AppProperties.getLocalizedString("cancel"));
-    cancel.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent actionEvent) {
-        cancel();
-      }
-    });
+    cancel.setOnAction(event -> cancel());
 
     bottom.getChildren().add(cancel);
     setBottom(bottom);
