@@ -9,6 +9,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
@@ -42,6 +43,7 @@ import org.roda.rodain.utils.Utils;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -483,7 +485,8 @@ public class InspectionPane extends BorderPane {
     documentationHelp.getChildren().add(box);
 
     documentationHelp.setOnDragOver(event -> {
-      if (event.getGestureSource() instanceof SourceTreeCell) {
+      Dragboard db = event.getDragboard();
+      if (event.getGestureSource() instanceof SourceTreeCell || db.hasFiles()) {
         event.acceptTransferModes(TransferMode.COPY);
         title.setText(AppProperties.getLocalizedString("InspectionPane.onDropDocs"));
       }
@@ -491,7 +494,16 @@ public class InspectionPane extends BorderPane {
     });
 
     documentationHelp.setOnDragDropped(event -> {
-      addDocumentationToSIP(null);
+      Dragboard db = event.getDragboard();
+      if (db.hasFiles()) {
+        Set<Path> paths = new HashSet<>();
+        for (File file : db.getFiles()) {
+          paths.add(file.toPath());
+        }
+        addDocumentationToSIP(null, paths);
+      } else
+        addDocumentationToSIP(null);
+
       dataBox.getChildren().clear();
       sipDocumentation.setRoot(docsRoot);
       dataBox.getChildren().add(sipDocumentation);
@@ -1067,14 +1079,29 @@ public class InspectionPane extends BorderPane {
    *          we'll add to the root of the tree).
    */
   public void addDocumentationToSIP(TreeItem target) {
-    Set<ContentFilter> filters = new HashSet<>();
-    filters.add(new ContentFilter());
-
     Set<Path> paths = new HashSet<>();
     Set<SourceTreeItem> items = RodaIn.getSourceSelectedItems();
     for (SourceTreeItem item : items) {
       paths.add(Paths.get(item.getPath()));
     }
+
+    addDocumentationToSIP(target, paths);
+  }
+
+  /**
+   * Adds documentation to the current SIP.
+   *
+   * @param target
+   *          The item to where the documentation should go. This is NOT the SIP
+   *          where we will be adding the documentation. This must be either an
+   *          already added folder to the documentation or null (in which case
+   *          we'll add to the root of the tree).
+   * @param paths
+   *          The paths to be used to create the documentation.
+   */
+  public void addDocumentationToSIP(TreeItem target, Set<Path> paths) {
+    Set<ContentFilter> filters = new HashSet<>();
+    filters.add(new ContentFilter());
 
     DocumentationCreator dc = new DocumentationCreator(filters, paths);
     Set<TreeNode> result = dc.start();

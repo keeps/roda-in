@@ -11,7 +11,11 @@ import javafx.util.Callback;
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.inspection.*;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -58,8 +62,9 @@ public class SipDocumentationTreeView extends TreeView {
   private void setOnDragOver(final InspectionTreeCell cell) {
     // on a Target
     cell.setOnDragOver(event -> {
+      Dragboard db = event.getDragboard();
       TreeItem treeItem = cell.getTreeItem();
-      if (treeItem == null) {
+      if (treeItem == null || db.hasFiles()) {
         event.acceptTransferModes(TransferMode.COPY);
       }
       if (treeItem instanceof SipContentDirectory || treeItem instanceof SipContentRepresentation) {
@@ -99,59 +104,71 @@ public class SipDocumentationTreeView extends TreeView {
     cell.setOnDragDropped(event -> {
       Dragboard db = event.getDragboard();
       boolean success = false;
-      if (db.hasString()) {
-        if (db.getString().startsWith("item")) {
-          InspectionTreeCell targetCell = (InspectionTreeCell) event.getGestureTarget();
-          TreeItem targetRaw = targetCell.getTreeItem();
-          List<InspectionTreeItem> selectedItems = RodaIn.getInspectionPane().getDocumentationSelectedItems();
-          for (InspectionTreeItem source : selectedItems) {
-            TreeItem sourceRaw = (TreeItem) source;
-            TreeItem sourceParent = sourceRaw.getParent();
 
-            // If the target item is a descendant of the source item, they would
-            // both disappear since there would be no remaining connection to
-            // the
-            // rest of the tree
-            if (checkTargetIsDescendant(sourceRaw, targetRaw)) {
-              return;
-            }
-
-            // Remove the path from the parent
-            if (sourceParent instanceof SipContentDirectory) {
-              SipContentDirectory castedSourceParent = (SipContentDirectory) sourceParent;
-              castedSourceParent.getTreeNode().remove(source.getPath());
-            }
-            if (sourceParent instanceof SipContentRepresentation) {
-              SipContentRepresentation castedSourceParent = (SipContentRepresentation) sourceParent;
-              castedSourceParent.getRepresentation().remove(source.getPath());
-            }
-            sourceParent.getChildren().remove(source);
-
-            // Add the path to the target
-            if (targetRaw instanceof SipContentDirectory) {
-              SipContentDirectory target = (SipContentDirectory) targetRaw;
-              if (source instanceof SipContentDirectory)
-                target.getTreeNode().add(((SipContentDirectory) source).getTreeNode());
-              if (source instanceof SipContentFile)
-                target.getTreeNode().add(source.getPath());
-            }
-            if (targetRaw instanceof SipContentRepresentation) {
-              SipContentRepresentation scr = (SipContentRepresentation) targetRaw;
-              if (source instanceof SipContentDirectory)
-                scr.getRepresentation().addFile(((SipContentDirectory) source).getTreeNode());
-              if (source instanceof SipContentFile)
-                scr.getRepresentation().addFile(source.getPath());
-            }
-
-            targetRaw.getChildren().add(source);
-          }
-          success = true;
-        } else {
-          if (db.getString().startsWith("source")) {
+      if (db.hasFiles()) {
+        success = true;
+        InspectionTreeCell targetCell = (InspectionTreeCell) event.getGestureTarget();
+        TreeItem targetRaw = targetCell.getTreeItem();
+        Set<Path> paths = new HashSet<>();
+        for (File file : db.getFiles()) {
+          paths.add(file.toPath());
+        }
+        RodaIn.getInspectionPane().addDocumentationToSIP(targetRaw, paths);
+      } else {
+        if (db.hasString()) {
+          if (db.getString().startsWith("item")) {
             InspectionTreeCell targetCell = (InspectionTreeCell) event.getGestureTarget();
-            RodaIn.getInspectionPane().addDocumentationToSIP(targetCell.getTreeItem());
-          } else
-            success = false;
+            TreeItem targetRaw = targetCell.getTreeItem();
+            List<InspectionTreeItem> selectedItems = RodaIn.getInspectionPane().getDocumentationSelectedItems();
+            for (InspectionTreeItem source : selectedItems) {
+              TreeItem sourceRaw = (TreeItem) source;
+              TreeItem sourceParent = sourceRaw.getParent();
+
+              // If the target item is a descendant of the source item, they
+              // would
+              // both disappear since there would be no remaining connection to
+              // the rest of the tree
+              if (checkTargetIsDescendant(sourceRaw, targetRaw)) {
+                return;
+              }
+
+              // Remove the path from the parent
+              if (sourceParent instanceof SipContentDirectory) {
+                SipContentDirectory castedSourceParent = (SipContentDirectory) sourceParent;
+                castedSourceParent.getTreeNode().remove(source.getPath());
+              }
+              if (sourceParent instanceof SipContentRepresentation) {
+                SipContentRepresentation castedSourceParent = (SipContentRepresentation) sourceParent;
+                castedSourceParent.getRepresentation().remove(source.getPath());
+              }
+              sourceParent.getChildren().remove(source);
+
+              // Add the path to the target
+              if (targetRaw instanceof SipContentDirectory) {
+                SipContentDirectory target = (SipContentDirectory) targetRaw;
+                if (source instanceof SipContentDirectory)
+                  target.getTreeNode().add(((SipContentDirectory) source).getTreeNode());
+                if (source instanceof SipContentFile)
+                  target.getTreeNode().add(source.getPath());
+              }
+              if (targetRaw instanceof SipContentRepresentation) {
+                SipContentRepresentation scr = (SipContentRepresentation) targetRaw;
+                if (source instanceof SipContentDirectory)
+                  scr.getRepresentation().addFile(((SipContentDirectory) source).getTreeNode());
+                if (source instanceof SipContentFile)
+                  scr.getRepresentation().addFile(source.getPath());
+              }
+
+              targetRaw.getChildren().add(source);
+            }
+            success = true;
+          } else {
+            if (db.getString().startsWith("source")) {
+              InspectionTreeCell targetCell = (InspectionTreeCell) event.getGestureTarget();
+              RodaIn.getInspectionPane().addDocumentationToSIP(targetCell.getTreeItem());
+            } else
+              success = false;
+          }
         }
       }
       event.setDropCompleted(success);
@@ -160,6 +177,8 @@ public class SipDocumentationTreeView extends TreeView {
   }
 
   private boolean checkTargetIsDescendant(TreeItem source, TreeItem target) {
+    if (target == null)
+      return false;
     TreeItem aux = target.getParent();
     boolean isChild = false;
     while (aux != null) {
