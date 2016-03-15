@@ -45,19 +45,14 @@ public class Rule extends Observable implements Observer, Comparable {
   private Integer id;
 
   /**
-   * @param source
-   *          The set of items to be transformed into SIPs
-   * @param assocType
-   *          The association type of the rule.
-   * @param metadataPath
-   *          The path to the metadata file(s)
-   * @param template
-   *          The type of the chosen template
-   * @param metaType
-   *          The type of metadata to be applied to the SIPs.
+   * @param source       The set of items to be transformed into SIPs
+   * @param assocType    The association type of the rule.
+   * @param metadataPath The path to the metadata file(s)
+   * @param template     The type of the chosen template
+   * @param metaType     The type of metadata to be applied to the SIPs.
    */
   public Rule(Set<SourceTreeItem> source, RuleTypes assocType, Path metadataPath, String template,
-    MetadataTypes metaType, String templateVersion) {
+              MetadataTypes metaType, String templateVersion) {
     ruleCount++;
     this.source = source;
     this.assocType = assocType;
@@ -187,26 +182,26 @@ public class Rule extends Observable implements Observer, Comparable {
           selection.add(sti.getPath());
         }
         SipPerSelection visitorSelection = new SipPerSelection(id.toString(), selection, filters, metaType,
-          metadataPath, templateType, templateVersion);
+            metadataPath, templateType, templateVersion);
         visitorSelection.addObserver(this);
         visitor = visitorSelection;
         break;
       case SIP_PER_FILE:
         SipPerFile visitorFile = new SipPerFile(id.toString(), filters, metaType, metadataPath, templateType,
-          templateVersion);
+            templateVersion);
         visitorFile.addObserver(this);
         visitor = visitorFile;
         break;
       case SIP_WITH_STRUCTURE:
         SipsWithStructure visitorStructure = new SipsWithStructure(id.toString(), filters, metaType, metadataPath,
-          templateType, templateVersion);
+            templateType, templateVersion);
         visitorStructure.addObserver(this);
         visitor = visitorStructure;
         break;
       default:
       case SINGLE_SIP:
         SipSingle visitorSingle = new SipSingle(id.toString(), filters, metaType, metadataPath, templateType,
-          templateVersion);
+            templateVersion);
         visitorSingle.addObserver(this);
         visitor = visitorSingle;
         break;
@@ -284,7 +279,7 @@ public class Rule extends Observable implements Observer, Comparable {
   }
 
   private TreeItem<String> rec_createNode(PseudoItem pseudoItem, Map<Path, SipPreview> sipPreviewMap,
-    Map<Path, DescriptionObject> descriptionObjectMap) {
+                                          Map<Path, DescriptionObject> descriptionObjectMap) {
     if (pseudoItem instanceof PseudoSIP) {
       PseudoSIP pseudoSIP = (PseudoSIP) pseudoItem;
       SipPreview sipPreview = sipPreviewMap.get(pseudoSIP.getNode().getPath());
@@ -298,7 +293,9 @@ public class Rule extends Observable implements Observer, Comparable {
       DescriptionObject dobj = descriptionObjectMap.get(pdo.getPath());
       SchemaNode schemaNode = new SchemaNode(dobj, dObjIconBlack, dObjIconWhite);
       for (PseudoItem pi : pdo.getChildren()) {
-        schemaNode.getChildren().add(rec_createNode(pi, sipPreviewMap, descriptionObjectMap));
+        TreeItem<String> child = rec_createNode(pi, sipPreviewMap, descriptionObjectMap);
+        schemaNode.addChild(id.toString(), child);
+        schemaNode.getChildren().add(child);
       }
       schemaNode.sortChildren();
       return schemaNode;
@@ -338,6 +335,7 @@ public class Rule extends Observable implements Observer, Comparable {
           }
         }
         sips.clear();
+        schemaNodes.clear();
         return null;
       }
     };
@@ -345,7 +343,7 @@ public class Rule extends Observable implements Observer, Comparable {
     // After everything is loaded, we add all the items to the TreeView at once.
     task.setOnSucceeded(event -> {
       setChanged();
-      notifyObservers("Removed SIP");
+      notifyObservers("Removed Rule");
     });
 
     new Thread(task).start();
@@ -354,13 +352,12 @@ public class Rule extends Observable implements Observer, Comparable {
   /**
    * Compares two rules, by their id.
    *
-   * @param o
-   *          The rule to be compared
+   * @param o The rule to be compared
    * @return the value 0 if this Rule's id is equal to the argument Rule's id; a
-   *         value less than 0 if this Rule's id is numerically less than the
-   *         argument Rule's id; and a value greater than 0 if this Rule's id is
-   *         numerically greater than the argument Rule's id (signed
-   *         comparison).
+   * value less than 0 if this Rule's id is numerically less than the
+   * argument Rule's id; and a value greater than 0 if this Rule's id is
+   * numerically greater than the argument Rule's id (signed
+   * comparison).
    */
   @Override
   public int compareTo(Object o) {
@@ -374,8 +371,7 @@ public class Rule extends Observable implements Observer, Comparable {
   }
 
   /**
-   * @param o
-   *          The rule to be compared
+   * @param o The rule to be compared
    * @return True if the ids of the rules match, false otherwise
    */
   @Override

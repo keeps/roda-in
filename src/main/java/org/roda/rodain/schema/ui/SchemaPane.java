@@ -431,11 +431,14 @@ public class SchemaPane extends BorderPane {
             dlg.initOwner(primaryStage);
             dlg.show();
             dlg.resultProperty().addListener(o -> confirmRemove(selected, dlg.getResult()));
-          } else
+          } else {
+            ((SchemaNode) selected).remove();
             removeNode(selected);
+          }
         } else if (selected instanceof SipPreviewNode) {
           SipPreview currentSIP = ((SipPreviewNode) selected).getSip();
           RuleModalController.removeSipPreview(currentSIP);
+          removeNode(selected);
           Task<Void> removeTask = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
@@ -474,7 +477,10 @@ public class SchemaPane extends BorderPane {
 
   private void removeNode(TreeItem<String> selected) {
     TreeItem parent = selected.getParent();
-    parent.getChildren().remove(selected);
+    if (parent instanceof SchemaNode) {
+      ((SchemaNode) parent).removeChild(selected);
+    } else
+      parent.getChildren().remove(selected);
     schemaNodes.remove(selected);
   }
 

@@ -22,7 +22,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
   private Map<String, Integer> rules;
   private Map<String, Rule> ruleObjects;
   private Map<String, Set<SipPreviewNode>> sips;
-  private Map<String, Set<SchemaNode>> childrenNodes;
+  private Map<String, Set<SchemaNode>> ruleNodes;
   private Image iconBlack, iconWhite;
   private boolean blackIconSelected = true;
 
@@ -41,7 +41,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     sips = new HashMap<>();
     ruleObjects = new HashMap<>();
     schemaNodes = new HashSet<>();
-    childrenNodes = new HashMap<>();
+    ruleNodes = new HashMap<>();
 
     if (dob.getDescriptionlevel() != null)
       updateDescLevel(dob.getDescriptionlevel());
@@ -54,6 +54,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     sips = new HashMap<>();
     ruleObjects = new HashMap<>();
     schemaNodes = new HashSet<>();
+    ruleNodes = new HashMap<>();
 
     this.iconBlack = iconBlack;
     this.iconWhite = iconWhite;
@@ -73,6 +74,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
       final Rule rule = (Rule) o;
       final Integer idInt = rule.getId();
       final String id = idInt.toString();
+
       // set the title with the sip count
       int count = rule.getSipCount();
       rules.put(id, count);
@@ -82,11 +84,20 @@ public class SchemaNode extends TreeItem<String> implements Observer {
         if (sips.get(id) != null) {
           getChildren().removeAll(sips.get(id));
         }
+        if (ruleNodes.get(id) != null) {
+          getChildren().removeAll(ruleNodes.get(id));
+        }
+
+        // we don't need to add the nodes and SIPs if the rule has been removed
+        if (arg instanceof String && arg.equals("Removed rule")) {
+          return;
+        }
         Set<SipPreviewNode> nodes = new HashSet<>(rule.getSipNodes());
-        Set<SchemaNode> schemaNodes = new HashSet<>(rule.getSchemaNodes());
+        Set<SchemaNode> schemas = new HashSet<>(rule.getSchemaNodes());
         sips.put(id, nodes);
-        childrenNodes.put(id, schemaNodes);
+        ruleNodes.put(id, schemas);
         getChildren().addAll(nodes);
+        getChildren().addAll(schemas);
 
         if (!schemaNodes.isEmpty())
           getChildren().addAll(schemaNodes);
@@ -140,6 +151,45 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     schemaNodes.add(node);
   }
 
+  public void addChild(String ruleID, TreeItem<String> item) {
+    if (item instanceof SipPreviewNode) {
+      Set<SipPreviewNode> set = sips.get(ruleID);
+      if (set == null) {
+        set = new HashSet<>();
+      }
+      set.add((SipPreviewNode) item);
+      sips.put(ruleID, set);
+    }
+    if (item instanceof SchemaNode) {
+      Set<SchemaNode> set = ruleNodes.get(ruleID);
+      if (set == null) {
+        set = new HashSet<>();
+      }
+      set.add((SchemaNode) item);
+      ruleNodes.put(ruleID, set);
+    }
+  }
+
+  public void removeChild(TreeItem<String> item) {
+    getChildren().remove(item);
+    for (Set<SipPreviewNode> set : sips.values()) {
+      if (set.contains(item)) {
+        set.remove(item);
+        return;
+      }
+    }
+    if (schemaNodes.contains(item)) {
+      schemaNodes.remove(item);
+      return;
+    }
+    for (Set<SchemaNode> set : ruleNodes.values()) {
+      if (set.contains(item)) {
+        set.remove(item);
+        return;
+      }
+    }
+  }
+
   /**
    * Sorts the children of the SchemaNode
    *
@@ -174,11 +224,15 @@ public class SchemaNode extends TreeItem<String> implements Observer {
 
   public int fullSipCount() {
     int result = 0;
-    for (int r : rules.values()) {
-      result += r;
+    for (Set<SipPreviewNode> set : sips.values()) {
+      result += set.size();
     }
     for (SchemaNode sn : schemaNodes) {
       result += sn.fullSipCount();
+    }
+    for (Set<SchemaNode> set : ruleNodes.values()) {
+      for (SchemaNode sn : set)
+        result += sn.fullSipCount();
     }
     return result;
   }
@@ -201,6 +255,10 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     for (Rule r : allRules) {
       removeRule(r);
     }
+    schemaNodes.forEach(SchemaNode::remove);
+    ruleNodes.forEach((id, schemas) -> schemas.forEach(SchemaNode::remove));
+    sips
+      .forEach((id, sipPreviewNodes) -> sipPreviewNodes.forEach(sipPreviewNode -> sipPreviewNode.getSip().removeSIP()));
   }
 
   /**

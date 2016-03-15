@@ -880,8 +880,10 @@ public class InspectionPane extends BorderPane {
         return result;
       }
     };
+
+    Task thisMetadataTask = metadataTask;
     metadataTask.setOnSucceeded((Void) -> {
-      if (metadataTask != null)
+      if (metadataTask != null && metadataTask == thisMetadataTask)
         showMetadataPane(metadataTask.getValue());
     });
     new Thread(metadataTask).start();
@@ -982,8 +984,9 @@ public class InspectionPane extends BorderPane {
         return result;
       }
     };
+    Task thisMetadataTask = metadataTask;
     metadataTask.setOnSucceeded((Void) -> {
-      if (metadataTask != null) {
+      if (metadataTask != null && metadataTask == thisMetadataTask) {
         showMetadataPane(metadataTask.getValue());
       }
     });
