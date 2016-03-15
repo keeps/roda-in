@@ -189,7 +189,7 @@ public class InspectionPane extends BorderPane {
               }
             }
           } catch (SAXException e) {
-            log.error("Error validating schema", e);
+            log.info("Error validating schema", e);
             message.append(e.getMessage());
           }
           return result;
@@ -273,7 +273,7 @@ public class InspectionPane extends BorderPane {
     try {
       metadataValues = getMetadataValues();
     } catch (SAXException e) {
-      log.error("Error validating metadata with the EAD2002 schema", e);
+      log.info("Error validating metadata with the EAD2002 schema", e);
       noForm();
       return;
     }
@@ -886,7 +886,7 @@ public class InspectionPane extends BorderPane {
           try {
             result = Utils.isEAD(metaText.getText());
           } catch (SAXException e) {
-            log.error("Error validating metadata with the EAD2002 schema", e);
+            log.info("Error validating metadata with the EAD2002 schema", e);
           }
         }
         return result;
@@ -991,7 +991,7 @@ public class InspectionPane extends BorderPane {
         try {
           result = Utils.isEAD(metaText.getText());
         } catch (SAXException e) {
-          log.error("Error validating metadata with the EAD2002 schema", e);
+          log.info("Error validating metadata with the EAD2002 schema", e);
         }
         return result;
       }
