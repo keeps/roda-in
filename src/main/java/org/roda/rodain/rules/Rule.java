@@ -1,13 +1,14 @@
 package org.roda.rodain.rules;
 
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
+import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.filters.ContentFilter;
 import org.roda.rodain.rules.sip.*;
+import org.roda.rodain.schema.DescriptionObject;
+import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SipPreviewNode;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
@@ -37,8 +38,9 @@ public class Rule extends Observable implements Observer, Comparable {
   // map of SipPreview id -> SipPreview
   private Map<String, SipPreview> sips;
   // map of SipPreview id -> SipPreviewNode
-  private HashMap<String, SipPreviewNode> sipNodes = new HashMap<>();
-  private Image iconBlack, iconWhite;
+  private Map<String, SipPreviewNode> sipNodes = new HashMap<>();
+  private Set<SchemaNode> schemaNodes = new HashSet<>();
+  private Image iconBlack, iconWhite, dObjIconBlack, dObjIconWhite;
   private int added = 0;
   private Integer id;
 
@@ -72,11 +74,16 @@ public class Rule extends Observable implements Observer, Comparable {
 
   private void createIcon() {
     ResourceBundle hierarchyConfig = ResourceBundle.getBundle("properties/roda-description-levels-hierarchy");
+
     String category = hierarchyConfig.getString("category.item");
     String unicode = hierarchyConfig.getString("icon." + category);
-
     iconBlack = FontAwesomeImageCreator.generate(unicode);
     iconWhite = FontAwesomeImageCreator.generate(unicode, Color.WHITE);
+
+    category = hierarchyConfig.getString("category.series");
+    unicode = hierarchyConfig.getString("icon." + category);
+    dObjIconBlack = FontAwesomeImageCreator.generate(unicode);
+    dObjIconWhite = FontAwesomeImageCreator.generate(unicode, Color.WHITE);
   }
 
   private void createFilters() {
@@ -132,6 +139,10 @@ public class Rule extends Observable implements Observer, Comparable {
    */
   public Collection<SipPreviewNode> getSipNodes() {
     return sipNodes.values();
+  }
+
+  public Set<SchemaNode> getSchemaNodes() {
+    return schemaNodes;
   }
 
   /**
@@ -225,14 +236,18 @@ public class Rule extends Observable implements Observer, Comparable {
   public void update(Observable o, Object arg) {
     if (o instanceof SipPreviewCreator) {
       SipPreviewCreator visit = (SipPreviewCreator) o;
-      sips = visit.getSips();
-      while (visit.hasNext()) {
-        added++;
-        SipPreview sipPreview = visit.getNext();
-        SipPreviewNode sipNode = new SipPreviewNode(sipPreview, iconBlack, iconWhite);
-        sipPreview.addObserver(sipNode);
-        sipPreview.addObserver(this);
-        sipNodes.put(sipPreview.getId(), sipNode);
+      if (visit instanceof SipsWithStructure) {
+        updateSipsWithStructure((SipsWithStructure) visit);
+      } else {
+        sips = visit.getSips();
+        while (visit.hasNext()) {
+          added++;
+          SipPreview sipPreview = visit.getNext();
+          SipPreviewNode sipNode = new SipPreviewNode(sipPreview, iconBlack, iconWhite);
+          sipPreview.addObserver(sipNode);
+          sipPreview.addObserver(this);
+          sipNodes.put(sipPreview.getId(), sipNode);
+        }
       }
       setChanged();
       notifyObservers();
@@ -247,6 +262,46 @@ public class Rule extends Observable implements Observer, Comparable {
         } else
           notifyObservers("Removed SIP");
       }
+    }
+  }
+
+  private void updateSipsWithStructure(SipsWithStructure visitor) {
+    Set<PseudoItem> tree = visitor.getTree();
+    Map<Path, DescriptionObject> descriptionObjectMap = visitor.getDescriptionObjects();
+    Map<Path, SipPreview> sipPreviewMap = visitor.getSipPreviewMap();
+
+    for (PseudoItem item : tree) {
+      TreeItem<String> treeItem = rec_createNode(item, sipPreviewMap, descriptionObjectMap);
+      if (treeItem instanceof SipPreviewNode) {
+        SipPreviewNode sipPreviewNode = (SipPreviewNode) treeItem;
+        sipNodes.put(sipPreviewNode.getSip().getId(), sipPreviewNode);
+      }
+      if (treeItem instanceof SchemaNode) {
+        SchemaNode schemaNode = (SchemaNode) treeItem;
+        schemaNodes.add(schemaNode);
+      }
+    }
+  }
+
+  private TreeItem<String> rec_createNode(PseudoItem pseudoItem, Map<Path, SipPreview> sipPreviewMap,
+    Map<Path, DescriptionObject> descriptionObjectMap) {
+    if (pseudoItem instanceof PseudoSIP) {
+      PseudoSIP pseudoSIP = (PseudoSIP) pseudoItem;
+      SipPreview sipPreview = sipPreviewMap.get(pseudoSIP.getNode().getPath());
+      sips.put(sipPreview.getId(), sipPreview);
+      SipPreviewNode sipNode = new SipPreviewNode(sipPreview, iconBlack, iconWhite);
+      sipPreview.addObserver(sipNode);
+      sipPreview.addObserver(this);
+      return sipNode;
+    } else {
+      PseudoDescriptionObject pdo = (PseudoDescriptionObject) pseudoItem;
+      DescriptionObject dobj = descriptionObjectMap.get(pdo.getPath());
+      SchemaNode schemaNode = new SchemaNode(dobj, dObjIconBlack, dObjIconWhite);
+      for (PseudoItem pi : pdo.getChildren()) {
+        schemaNode.getChildren().add(rec_createNode(pi, sipPreviewMap, descriptionObjectMap));
+      }
+      schemaNode.sortChildren();
+      return schemaNode;
     }
   }
 
@@ -288,12 +343,9 @@ public class Rule extends Observable implements Observer, Comparable {
     };
 
     // After everything is loaded, we add all the items to the TreeView at once.
-    task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-      @Override
-      public void handle(WorkerStateEvent workerStateEvent) {
-        setChanged();
-        notifyObservers("Removed SIP");
-      }
+    task.setOnSucceeded(event -> {
+      setChanged();
+      notifyObservers("Removed SIP");
     });
 
     new Thread(task).start();

@@ -22,6 +22,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
   private Map<String, Integer> rules;
   private Map<String, Rule> ruleObjects;
   private Map<String, Set<SipPreviewNode>> sips;
+  private Map<String, Set<SchemaNode>> childrenNodes;
   private Image iconBlack, iconWhite;
   private boolean blackIconSelected = true;
 
@@ -40,9 +41,22 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     sips = new HashMap<>();
     ruleObjects = new HashMap<>();
     schemaNodes = new HashSet<>();
+    childrenNodes = new HashMap<>();
 
     if (dob.getDescriptionlevel() != null)
       updateDescLevel(dob.getDescriptionlevel());
+  }
+
+  public SchemaNode(DescriptionObject dobject, Image iconBlack, Image iconWhite) {
+    super(dobject.getTitle());
+    dob = dobject;
+    rules = new HashMap<>();
+    sips = new HashMap<>();
+    ruleObjects = new HashMap<>();
+    schemaNodes = new HashSet<>();
+
+    this.iconBlack = iconBlack;
+    this.iconWhite = iconWhite;
   }
 
   /**
@@ -69,8 +83,14 @@ public class SchemaNode extends TreeItem<String> implements Observer {
           getChildren().removeAll(sips.get(id));
         }
         Set<SipPreviewNode> nodes = new HashSet<>(rule.getSipNodes());
+        Set<SchemaNode> schemaNodes = new HashSet<>(rule.getSchemaNodes());
         sips.put(id, nodes);
+        childrenNodes.put(id, schemaNodes);
         getChildren().addAll(nodes);
+
+        if (!schemaNodes.isEmpty())
+          getChildren().addAll(schemaNodes);
+
         sortChildren();
       });
     }

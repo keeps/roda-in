@@ -22,8 +22,10 @@ import java.util.*;
 public class SipsWithStructure extends SipPreviewCreator {
   private static final Logger log = LoggerFactory.getLogger(SipsWithStructure.class.getName());
   private Deque<Folder> folders;
-  private Map<Path, DescriptionObject> record;
-  private Map<Path, Set<Path>> structure;
+  private Set<PseudoItem> tree;
+  private Map<Path, PseudoItem> record;
+  private Map<Path, DescriptionObject> descriptionObjects;
+  private Map<Path, SipPreview> sipPreviewMap;
 
   /**
    * Creates a new SipPreviewCreator where there's a new SIP created with all
@@ -44,8 +46,10 @@ public class SipsWithStructure extends SipPreviewCreator {
     String templateType, String templateVersion) {
     super(id, filters, metaType, metadataPath, templateType, templateVersion);
     folders = new ArrayDeque<>();
+    tree = new HashSet<>();
     record = new HashMap<>();
-    structure = new HashMap<>();
+    descriptionObjects = new HashMap<>();
+    sipPreviewMap = new HashMap<>();
   }
 
   /**
@@ -115,35 +119,45 @@ public class SipsWithStructure extends SipPreviewCreator {
         TreeNode fileNode = new TreeNode(p);
         node.add(fileNode);
       }
-      createSip(path, node);
+      PseudoSIP pseudoSIP = new PseudoSIP(node, getMetadataPath(path));
+      record.put(path, pseudoSIP);
+      if (folders.isEmpty()) {
+        tree.add(pseudoSIP);
+      }
     } else {
       // each file will be a SIP
       for (Path p : subFiles) {
-        createSip(p, new TreeNode(p));
+        record.put(p, new PseudoSIP(new TreeNode(p), getMetadataPath(p)));
       }
 
       // make this node a description object
       DescriptionObject descriptionObject = new DescriptionObject();
       descriptionObject.setTitle(path.getFileName().toString());
       descriptionObject.setDescriptionlevel("series");
-      record.put(path, descriptionObject);
+      descriptionObjects.put(path, descriptionObject);
 
       // Set this node as a parent of its descriptionObject children (which can
       // only be folders)
       for (Path p : subFolders) {
-        DescriptionObject dobj = record.get(p);
+        DescriptionObject dobj = descriptionObjects.get(p);
         if (dobj != null) {
           dobj.setParentId(descriptionObject.getId());
         }
       }
 
-      // add the node's children to the structure
-      Set<Path> children = structure.get(path);
-      if (children == null)
-        children = new HashSet<>();
-      children.addAll(subFiles);
+      // construct the tree
+      Set<Path> children = new HashSet<>(subFiles);
       children.addAll(subFolders);
-      structure.put(path, children);
+
+      PseudoDescriptionObject pdo = new PseudoDescriptionObject(path);
+      for (Path child : children) {
+        pdo.addChild(record.get(child));
+      }
+      record.put(path, pdo);
+
+      if (folders.isEmpty()) {
+        tree.add(pdo);
+      }
     }
   }
 
@@ -162,13 +176,32 @@ public class SipsWithStructure extends SipPreviewCreator {
       return;
     }
     if (folders.isEmpty()) {
-      createSip(path, new TreeNode(path));
+      PseudoSIP pseudoSIP = new PseudoSIP(new TreeNode(path), getMetadataPath(path));
+      record.put(path, pseudoSIP);
+      tree.add(pseudoSIP);
     } else {
       folders.peekLast().addItem(path);
     }
   }
 
-  private void createSip(Path path, TreeNode node) {
+  /**
+   * Ends the tree visit, creating the SIP with all the files added during the
+   * visit and notifying the observers.
+   */
+  @Override
+  public void end() {
+    record.forEach((path, pseudoItem) -> {
+      if (pseudoItem instanceof PseudoSIP) {
+        PseudoSIP pseudoSIP = (PseudoSIP) pseudoItem;
+        createSip(pseudoSIP.getNode());
+      }
+    });
+    setChanged();
+    notifyObservers();
+  }
+
+  private void createSip(TreeNode node) {
+    Path path = node.getPath();
     Path metaPath = getMetadataPath(path);
     // create a new Sip
     Set<TreeNode> files = new HashSet<>();
@@ -187,9 +220,7 @@ public class SipsWithStructure extends SipPreviewCreator {
     SipPreview sipPreview = new SipPreview(path.getFileName().toString(), repSet, metadata);
     node.addObserver(sipPreview);
 
-    sips.add(sipPreview);
-    sipsMap.put(sipPreview.getId(), sipPreview);
-    record.put(path, sipPreview);
+    sipPreviewMap.put(path, sipPreview);
     added++;
   }
 
@@ -217,6 +248,22 @@ public class SipsWithStructure extends SipPreviewCreator {
       return foundFiles[0].toPath();
     }
     return null;
+  }
+
+  public Map<Path, PseudoItem> getRecord() {
+    return record;
+  }
+
+  public Set<PseudoItem> getTree() {
+    return tree;
+  }
+
+  public Map<Path, DescriptionObject> getDescriptionObjects() {
+    return descriptionObjects;
+  }
+
+  public Map<Path, SipPreview> getSipPreviewMap() {
+    return sipPreviewMap;
   }
 
   private FileVisitResult isTerminated() {
