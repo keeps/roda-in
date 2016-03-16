@@ -98,6 +98,10 @@ public class MainTest extends ApplicationTest {
     assert RodaIn.getSchemePane().getTreeView().getRoot().getChildren().size() == 2;
     sleep(1000);
     clickOn("Node2").clickOn("#removeLevel");
+    try {
+      push(KeyCode.ENTER);
+    } catch (Exception e) {
+    }
     assert RodaIn.getSchemePane().getTreeView().getRoot().getChildren().size() == 1;
   }
 
@@ -144,6 +148,11 @@ public class MainTest extends ApplicationTest {
     assert parent.getChildren().size() == 14;
 
     clickOn("#removeLevel");
+    try {
+      push(KeyCode.ENTER);
+    } catch (Exception e) {
+    }
+
     sleep(1000); // wait for the SIP removal
     assert parent.getChildren().size() == 13;
 

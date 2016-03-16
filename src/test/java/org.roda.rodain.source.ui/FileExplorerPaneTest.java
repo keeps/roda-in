@@ -1,15 +1,9 @@
 package org.roda.rodain.source.ui;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Scene;
 import javafx.scene.control.TreeItem;
 import javafx.stage.Stage;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.roda.rodain.core.AppProperties;
@@ -19,18 +13,23 @@ import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.testing.Utils;
 import org.testfx.framework.junit.ApplicationTest;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 14-12-2015.
  */
 public class FileExplorerPaneTest extends ApplicationTest {
-  private static int LOAD_MORE_SIZE = 50;
+  private static int LOAD_MORE_SIZE = 100;
   private static Path testDir;
   private FileExplorerPane fileExplorer;
 
   @Override
   public void start(Stage stage) throws Exception {
-    new Footer(); //footer needs to be initialized because of setStatus
+    new Footer(); // footer needs to be initialized because of setStatus
     AppProperties.initialize();
     fileExplorer = new FileExplorerPane(stage);
     fileExplorer.setFileExplorerRoot(testDir);
@@ -43,7 +42,6 @@ public class FileExplorerPaneTest extends ApplicationTest {
   public static void setUpBeforeClass() throws Exception {
     testDir = Utils.createFolderStructure();
   }
-
 
   @Test
   public void root() {
@@ -66,14 +64,11 @@ public class FileExplorerPaneTest extends ApplicationTest {
     assert "dir1".equals(dir1.getValue());
 
     doubleClickOn("dir1");
+    sleep(1000);
     assert dir1.getChildren().size() == LOAD_MORE_SIZE + 1;
     assert dir1.getChildren().get(0) instanceof SourceTreeFile;
 
-    scroll(50, VerticalDirection.DOWN);
-    clickOn(AppProperties.getLocalizedString("SourceTreeLoadMore.title"));
-    assert dir1.getChildren().size() == (LOAD_MORE_SIZE * 2) + 1;
-
-    scroll(50, VerticalDirection.DOWN);
+    scroll(70, VerticalDirection.DOWN);
     clickOn(AppProperties.getLocalizedString("SourceTreeLoadMore.title"));
     assert dir1.getChildren().size() == 120;
 
@@ -98,11 +93,7 @@ public class FileExplorerPaneTest extends ApplicationTest {
     assert dir2.getChildren().size() == LOAD_MORE_SIZE + 1;
     assert dir2.getChildren().get(0) instanceof SourceTreeDirectory;
 
-    scroll(50, VerticalDirection.DOWN);
-    clickOn(AppProperties.getLocalizedString("SourceTreeLoadMore.title"));
-    assert dir2.getChildren().size() == (LOAD_MORE_SIZE * 2) + 1;
-
-    scroll(50, VerticalDirection.DOWN);
+    scroll(70, VerticalDirection.DOWN);
     clickOn(AppProperties.getLocalizedString("SourceTreeLoadMore.title"));
     assert dir2.getChildren().size() == 120;
   }
@@ -118,20 +109,14 @@ public class FileExplorerPaneTest extends ApplicationTest {
     doubleClickOn("dir3");
     assert dir3.getChildren().size() == LOAD_MORE_SIZE + 1;
 
-    scroll(50, VerticalDirection.DOWN);
-    clickOn(AppProperties.getLocalizedString("SourceTreeLoadMore.title"));
-    assert dir3.getChildren().size() == (LOAD_MORE_SIZE * 2) + 1;
-
-    scroll(50, VerticalDirection.DOWN);
+    scroll(70, VerticalDirection.DOWN);
     clickOn(AppProperties.getLocalizedString("SourceTreeLoadMore.title"));
     assert dir3.getChildren().size() == 140;
 
-    List<Object> files = dir3.getChildren().stream().
-        filter(p -> p instanceof SourceTreeFile).
-        collect(Collectors.toList());
-    List<Object> dirs = dir3.getChildren().stream().
-        filter(p -> p instanceof SourceTreeDirectory).
-        collect(Collectors.toList());
+    List<Object> files = dir3.getChildren().stream().filter(p -> p instanceof SourceTreeFile)
+      .collect(Collectors.toList());
+    List<Object> dirs = dir3.getChildren().stream().filter(p -> p instanceof SourceTreeDirectory)
+      .collect(Collectors.toList());
 
     assert files.size() == 70;
     assert dirs.size() == 70;
