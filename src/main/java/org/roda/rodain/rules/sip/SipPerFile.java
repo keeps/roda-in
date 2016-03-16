@@ -53,13 +53,15 @@ public class SipPerFile extends SipPreviewCreator {
       Files.walkFileTree(Paths.get(path), new SimpleFileVisitor<Path>() {
         @Override
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-          PathCollection.simpleAddPath(file.toString());
+          if (!filter(file))
+            PathCollection.simpleAddPath(file.toString());
           return isTerminated();
         }
 
         @Override
         public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-          PathCollection.simpleAddPath(dir.toString());
+          if (!filter(dir))
+            PathCollection.simpleAddPath(dir.toString());
           return isTerminated();
         }
       });
@@ -95,6 +97,9 @@ public class SipPerFile extends SipPreviewCreator {
   @Override
   public boolean filter(Path path) {
     boolean result = super.filter(path);
+    if (result)
+      return true;
+
     if (path.getFileName() == null) {
       result = true;
     }
