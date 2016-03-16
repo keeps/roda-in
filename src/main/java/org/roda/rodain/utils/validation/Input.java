@@ -66,10 +66,17 @@ public class Input implements LSInput {
       try {
         byte[] input = new byte[inputStream.available()];
         inputStream.read(input);
-        return new String(input);
+        String result = new String(input);
+        return result;
       } catch (IOException e) {
         log.error("Unable to get string", e);
         return null;
+      } finally {
+        try {
+          inputStream.close();
+        } catch (IOException e) {
+          log.error("Error closing stream", e);
+        }
       }
     }
   }
