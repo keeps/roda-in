@@ -40,18 +40,23 @@ public class Rule extends Observable implements Observer, Comparable {
   // map of SipPreview id -> SipPreviewNode
   private Map<String, SipPreviewNode> sipNodes = new HashMap<>();
   private Set<SchemaNode> schemaNodes = new HashSet<>();
-  private Image iconBlack, iconWhite, dObjIconBlack, dObjIconWhite;
+  private Image itemIconBlack, itemIconWhite, dObjIconBlack, dObjIconWhite, fileIconBlack, fileIconWhite;
   private Integer id;
 
   /**
-   * @param source       The set of items to be transformed into SIPs
-   * @param assocType    The association type of the rule.
-   * @param metadataPath The path to the metadata file(s)
-   * @param template     The type of the chosen template
-   * @param metaType     The type of metadata to be applied to the SIPs.
+   * @param source
+   *          The set of items to be transformed into SIPs
+   * @param assocType
+   *          The association type of the rule.
+   * @param metadataPath
+   *          The path to the metadata file(s)
+   * @param template
+   *          The type of the chosen template
+   * @param metaType
+   *          The type of metadata to be applied to the SIPs.
    */
   public Rule(Set<SourceTreeItem> source, RuleTypes assocType, Path metadataPath, String template,
-              MetadataTypes metaType, String templateVersion) {
+    MetadataTypes metaType, String templateVersion) {
     ruleCount++;
     this.source = source;
     this.assocType = assocType;
@@ -71,8 +76,13 @@ public class Rule extends Observable implements Observer, Comparable {
 
     String category = hierarchyConfig.getString("category.item");
     String unicode = hierarchyConfig.getString("icon." + category);
-    iconBlack = FontAwesomeImageCreator.generate(unicode);
-    iconWhite = FontAwesomeImageCreator.generate(unicode, Color.WHITE);
+    itemIconBlack = FontAwesomeImageCreator.generate(unicode);
+    itemIconWhite = FontAwesomeImageCreator.generate(unicode, Color.WHITE);
+
+    category = hierarchyConfig.getString("category.file");
+    unicode = hierarchyConfig.getString("icon." + category);
+    fileIconBlack = FontAwesomeImageCreator.generate(unicode);
+    fileIconWhite = FontAwesomeImageCreator.generate(unicode, Color.WHITE);
 
     category = hierarchyConfig.getString("category.series");
     unicode = hierarchyConfig.getString("icon." + category);
@@ -180,26 +190,26 @@ public class Rule extends Observable implements Observer, Comparable {
           selection.add(sti.getPath());
         }
         SipPerSelection visitorSelection = new SipPerSelection(id.toString(), selection, filters, metaType,
-            metadataPath, templateType, templateVersion);
+          metadataPath, templateType, templateVersion);
         visitorSelection.addObserver(this);
         visitor = visitorSelection;
         break;
       case SIP_PER_FILE:
         SipPerFile visitorFile = new SipPerFile(id.toString(), filters, metaType, metadataPath, templateType,
-            templateVersion);
+          templateVersion);
         visitorFile.addObserver(this);
         visitor = visitorFile;
         break;
       case SIP_WITH_STRUCTURE:
         SipsWithStructure visitorStructure = new SipsWithStructure(id.toString(), filters, metaType, metadataPath,
-            templateType, templateVersion);
+          templateType, templateVersion);
         visitorStructure.addObserver(this);
         visitor = visitorStructure;
         break;
       default:
       case SINGLE_SIP:
         SipSingle visitorSingle = new SipSingle(id.toString(), filters, metaType, metadataPath, templateType,
-            templateVersion);
+          templateVersion);
         visitorSingle.addObserver(this);
         visitor = visitorSingle;
         break;
@@ -235,7 +245,11 @@ public class Rule extends Observable implements Observer, Comparable {
         sips = visit.getSips();
         while (visit.hasNext()) {
           SipPreview sipPreview = visit.getNext();
-          SipPreviewNode sipNode = new SipPreviewNode(sipPreview, iconBlack, iconWhite);
+          SipPreviewNode sipNode;
+          if ("item".equals(sipPreview.getDescriptionlevel()))
+            sipNode = new SipPreviewNode(sipPreview, itemIconBlack, itemIconWhite);
+          else
+            sipNode = new SipPreviewNode(sipPreview, fileIconBlack, fileIconWhite);
           sipPreview.addObserver(sipNode);
           sipPreview.addObserver(this);
           sipNodes.put(sipPreview.getId(), sipNode);
@@ -276,12 +290,16 @@ public class Rule extends Observable implements Observer, Comparable {
   }
 
   private TreeItem<String> rec_createNode(PseudoItem pseudoItem, Map<Path, SipPreview> sipPreviewMap,
-                                          Map<Path, DescriptionObject> descriptionObjectMap) {
+    Map<Path, DescriptionObject> descriptionObjectMap) {
     if (pseudoItem instanceof PseudoSIP) {
       PseudoSIP pseudoSIP = (PseudoSIP) pseudoItem;
       SipPreview sipPreview = sipPreviewMap.get(pseudoSIP.getNode().getPath());
       sips.put(sipPreview.getId(), sipPreview);
-      SipPreviewNode sipNode = new SipPreviewNode(sipPreview, iconBlack, iconWhite);
+      SipPreviewNode sipNode;
+      if ("item".equals(sipPreview.getDescriptionlevel()))
+        sipNode = new SipPreviewNode(sipPreview, itemIconBlack, itemIconWhite);
+      else
+        sipNode = new SipPreviewNode(sipPreview, fileIconBlack, fileIconWhite);
       sipPreview.addObserver(sipNode);
       sipPreview.addObserver(this);
       return sipNode;
@@ -349,12 +367,13 @@ public class Rule extends Observable implements Observer, Comparable {
   /**
    * Compares two rules, by their id.
    *
-   * @param o The rule to be compared
+   * @param o
+   *          The rule to be compared
    * @return the value 0 if this Rule's id is equal to the argument Rule's id; a
-   * value less than 0 if this Rule's id is numerically less than the
-   * argument Rule's id; and a value greater than 0 if this Rule's id is
-   * numerically greater than the argument Rule's id (signed
-   * comparison).
+   *         value less than 0 if this Rule's id is numerically less than the
+   *         argument Rule's id; and a value greater than 0 if this Rule's id is
+   *         numerically greater than the argument Rule's id (signed
+   *         comparison).
    */
   @Override
   public int compareTo(Object o) {
@@ -368,7 +387,8 @@ public class Rule extends Observable implements Observer, Comparable {
   }
 
   /**
-   * @param o The rule to be compared
+   * @param o
+   *          The rule to be compared
    * @return True if the ids of the rules match, false otherwise
    */
   @Override

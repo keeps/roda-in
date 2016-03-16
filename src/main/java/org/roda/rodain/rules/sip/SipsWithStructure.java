@@ -6,6 +6,7 @@ import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.filters.ContentFilter;
 import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.DescriptionObject;
+import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -190,11 +191,21 @@ public class SipsWithStructure extends SipPreviewCreator {
    */
   @Override
   public void end() {
+    Set<PseudoDescriptionObject> descObjs = new HashSet<>();
     record.forEach((path, pseudoItem) -> {
       if (pseudoItem instanceof PseudoSIP) {
         PseudoSIP pseudoSIP = (PseudoSIP) pseudoItem;
         createSip(pseudoSIP.getNode());
       }
+      if (pseudoItem instanceof PseudoDescriptionObject) {
+        descObjs.add((PseudoDescriptionObject) pseudoItem);
+      }
+    });
+
+    // Map the paths of the description objects only AFTER the SIPs are created
+    // to avoid unwanted filtering
+    descObjs.forEach(pseudoDescriptionObject -> {
+      PathCollection.addPath(pseudoDescriptionObject.getPath().toString(), SourceTreeItemState.MAPPED);
     });
     setChanged();
     notifyObservers();
@@ -219,6 +230,10 @@ public class SipsWithStructure extends SipPreviewCreator {
     repSet.add(rep);
     SipPreview sipPreview = new SipPreview(path.getFileName().toString(), repSet, metadata);
     node.addObserver(sipPreview);
+
+    if (node.getAllFiles().size() > 1) {
+      sipPreview.setDescriptionlevel("file");
+    }
 
     sipPreviewMap.put(path, sipPreview);
     added++;

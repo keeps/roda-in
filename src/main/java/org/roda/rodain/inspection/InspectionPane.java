@@ -137,6 +137,7 @@ public class InspectionPane extends BorderPane {
     metadataGrid = new GridPane();
     metadataGrid.setVgap(5);
     metadataGrid.setPadding(new Insets(5, 5, 5, 5));
+    metadataGrid.setStyle(AppProperties.getStyle("backgroundWhite"));
     ColumnConstraints column1 = new ColumnConstraints();
     column1.setPercentWidth(20);
     ColumnConstraints column2 = new ColumnConstraints();
