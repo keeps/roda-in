@@ -30,7 +30,7 @@ public class SipContentRepresentation extends TreeItem<Object> implements Inspec
     this.representation = representation;
     this.setValue(representation.getName());
     Platform.runLater(
-      () -> setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.square, Color.DIMGREY))));
+      () -> setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.SQUARE, Color.DIMGREY))));
   }
 
   public SipRepresentation getRepresentation() {

@@ -6,7 +6,6 @@ import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 
-import java.nio.file.FileVisitResult;
 import java.nio.file.Path;
 import java.util.*;
 
@@ -177,13 +176,5 @@ public class SipPreview extends DescriptionObject implements Observer {
         toRemove.add(tn);
     }
     documentation.removeAll(toRemove);
-  }
-
-  private FileVisitResult isTerminated() {
-    // terminate if the thread has been interrupted
-    if (Thread.interrupted()) {
-      return FileVisitResult.TERMINATE;
-    }
-    return FileVisitResult.CONTINUE;
   }
 }

@@ -21,7 +21,6 @@ import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.RuleTypes;
 import org.roda.rodain.schema.ui.SchemaNode;
-import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.UIPair;
@@ -30,7 +29,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Set;
 
 /**
@@ -39,7 +37,7 @@ import java.util.Set;
  */
 public class RuleModalPane extends BorderPane {
   private static final org.slf4j.Logger log = LoggerFactory.getLogger(RuleModalPane.class.getName());
-  private final int LIST_HEIGHT = 440;
+  private static final int LIST_HEIGHT = 440;
 
   private enum States {
     ASSOCIATION, METADATA
@@ -67,17 +65,12 @@ public class RuleModalPane extends BorderPane {
   private String fromFile, diffDir;
   private TextField sameFolderTxtField;
 
-  private int folderCount;
-
   /**
    * Creates a new RuleModalPane, used to create a new Rule.
    *
-   * @param stage
-   *          The stage of the pane
-   * @param sourceSet
-   *          The set of selected SourceTreeItems
-   * @param schemaNode
-   *          The destination SchemaNode, where the SIPs will be created
+   * @param stage      The stage of the pane
+   * @param sourceSet  The set of selected SourceTreeItems
+   * @param schemaNode The destination SchemaNode, where the SIPs will be created
    */
   public RuleModalPane(Stage stage, Set<SourceTreeItem> sourceSet, SchemaNode schemaNode) {
     super();
@@ -104,15 +97,8 @@ public class RuleModalPane extends BorderPane {
     pane.getChildren().add(box);
 
     Label title = new Label(
-      AppProperties.getLocalizedString("LoadingPane.createAssociation") + " \"" + schema.getDob().getTitle() + "\"");
+        AppProperties.getLocalizedString("LoadingPane.createAssociation") + " \"" + schema.getDob().getTitle() + "\"");
     title.setId("title");
-
-    ArrayList<String> dirs = new ArrayList<>();
-    for (SourceTreeItem it : sourceSet) {
-      if (it instanceof SourceTreeDirectory)
-        dirs.add(it.getValue());
-    }
-    folderCount = dirs.size();
 
     box.getChildren().add(title);
 
@@ -378,7 +364,7 @@ public class RuleModalPane extends BorderPane {
     Platform.runLater(new Runnable() {
       @Override
       public void run() {
-        Image im = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.chevron_right, Color.WHITE);
+        Image im = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CHEVRON_RIGHT, Color.WHITE);
         ImageView imv = new ImageView(im);
         btContinue.setGraphic(imv);
       }
@@ -413,7 +399,7 @@ public class RuleModalPane extends BorderPane {
     Platform.runLater(new Runnable() {
       @Override
       public void run() {
-        Image im = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.times, Color.WHITE);
+        Image im = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.TIMES, Color.WHITE);
         ImageView imv = new ImageView(im);
         btCancel.setGraphic(imv);
       }
@@ -436,7 +422,7 @@ public class RuleModalPane extends BorderPane {
     Platform.runLater(new Runnable() {
       @Override
       public void run() {
-        Image im = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.chevron_left, Color.WHITE);
+        Image im = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CHEVRON_LEFT, Color.WHITE);
         ImageView imv = new ImageView(im);
         btBack.setGraphic(imv);
       }
@@ -504,7 +490,7 @@ public class RuleModalPane extends BorderPane {
 
   /**
    * @return The association type of the item the user selected or null if there
-   *         was no selection.
+   * was no selection.
    * @throws UnexpectedDataTypeException
    */
   public RuleTypes getAssociationType() throws UnexpectedDataTypeException {
@@ -526,7 +512,7 @@ public class RuleModalPane extends BorderPane {
 
   /**
    * @return The metadata type of the item the user selected or null if there
-   *         was no selection.
+   * was no selection.
    * @throws UnexpectedDataTypeException
    */
   public MetadataTypes getMetadataType() throws UnexpectedDataTypeException {
@@ -541,7 +527,7 @@ public class RuleModalPane extends BorderPane {
 
   /**
    * @return The path of the file selected by the user in the metadata option
-   *         SINGLE_FILE
+   * SINGLE_FILE
    */
   public Path getFromFile() {
     return Paths.get(fromFile);
@@ -549,7 +535,7 @@ public class RuleModalPane extends BorderPane {
 
   /**
    * @return The path of the directory selected by the user in the metadata
-   *         option DIFF_DIRECTORY
+   * option DIFF_DIRECTORY
    */
   public Path getDiffDir() {
     return Paths.get(diffDir);

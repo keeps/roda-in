@@ -171,9 +171,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     HBox loadBox = new HBox();
     loadBox.setAlignment(Pos.CENTER);
     Button load = new Button(AppProperties.getLocalizedString("FileExplorerPane.chooseDir"));
-    load.setOnAction(event -> {
-      chooseNewRoot();
-    });
+    load.setOnAction(event -> chooseNewRoot());
     load.setMinHeight(65);
     load.setMinWidth(220);
     load.setMaxWidth(220);

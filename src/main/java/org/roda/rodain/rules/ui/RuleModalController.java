@@ -27,7 +27,6 @@ import java.util.Set;
 public class RuleModalController {
   private static final org.slf4j.Logger log = LoggerFactory.getLogger(RuleModalController.class.getName());
   private static RuleModalStage stage;
-  private static Stage primaryStage;
   private static RuleModalPane pane;
   private static Set<SourceTreeItem> sourceSet;
   private static SchemaNode schema;
@@ -52,7 +51,6 @@ public class RuleModalController {
   public static void newAssociation(final Stage primStage, Set<SourceTreeItem> source, SchemaNode schemaNode) {
     if (stage == null)
       stage = new RuleModalStage(primStage);
-    primaryStage = primStage;
     stage.setWidth(800);
     stage.setHeight(580);
 
@@ -135,7 +133,7 @@ public class RuleModalController {
       schema.addRule(rule);
 
       Platform.runLater(() -> {
-        RuleModalProcessing processing = new RuleModalProcessing(rule, (SipPreviewCreator) visitor, visitor, visitors,
+        RuleModalProcessing processing = new RuleModalProcessing((SipPreviewCreator) visitor, visitor, visitors,
           fileWalker);
         stage.setRoot(processing);
         stage.setHeight(180);

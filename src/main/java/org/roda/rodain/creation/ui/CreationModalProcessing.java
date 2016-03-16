@@ -47,7 +47,7 @@ public class CreationModalProcessing extends BorderPane {
    */
   public CreationModalProcessing(CreateSips creator, CreationModalStage stage) {
     this.creator = creator;
-    this.stage = stage;
+    CreationModalProcessing.stage = stage;
 
     etaFormatHour = String.format("< %%d %s ", AppProperties.getLocalizedString("CreationModalProcessing.hour"));
     etaFormatHours = String.format("< %%d %s ", AppProperties.getLocalizedString("CreationModalProcessing.hours"));

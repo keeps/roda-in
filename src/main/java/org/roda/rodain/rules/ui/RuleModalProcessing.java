@@ -11,7 +11,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.RodaIn;
-import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.VisitorStack;
 import org.roda.rodain.rules.VisitorState;
 import org.roda.rodain.rules.sip.SipPreviewCreator;
@@ -30,7 +29,6 @@ public class RuleModalProcessing extends BorderPane {
   private TreeVisitor visitor;
   private VisitorStack visitorStack;
   private WalkFileTree fileWalker;
-  private Rule rule;
 
   // top
   private Label sipsCreatedLabel, filesProcessedLabel;
@@ -53,13 +51,12 @@ public class RuleModalProcessing extends BorderPane {
    *          The WalkFileTree object, to get the processed files and
    *          directories
    */
-  public RuleModalProcessing(Rule rule, SipPreviewCreator creator, TreeVisitor visitor, VisitorStack visitorStack,
+  public RuleModalProcessing(SipPreviewCreator creator, TreeVisitor visitor, VisitorStack visitorStack,
     WalkFileTree fileWalker) {
     this.creator = creator;
     this.visitor = visitor;
     this.visitorStack = visitorStack;
     this.fileWalker = fileWalker;
-    this.rule = rule;
 
     getStyleClass().add("sipcreator");
 

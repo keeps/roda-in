@@ -300,7 +300,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
       @Override
       protected Void call() throws Exception {
         for (SourceTreeItem sti : files) {
-          newChildren.add((TreeItem) sti);
+          newChildren.add(sti);
         }
         files.clear();
         for (TreeItem sti : newChildren) {

@@ -157,15 +157,15 @@ public class InspectionPane extends BorderPane {
     HBox.setHgrow(space, Priority.ALWAYS);
 
     toggleForm = new ToggleButton();
-    Image selected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.code, Color.WHITE);
-    Image unselected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.list, Color.WHITE);
+    Image selected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CODE, Color.WHITE);
+    Image unselected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.LIST, Color.WHITE);
     ImageView toggleImage = new ImageView();
     toggleForm.setGraphic(toggleImage);
     toggleImage.imageProperty().bind(Bindings.when(toggleForm.selectedProperty()).then(selected).otherwise(unselected));
 
     validationButton = new Button();
     validationButton
-      .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.check, Color.WHITE)));
+      .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CHECK, Color.WHITE)));
     validationButton.setOnAction(event -> {
       if (metadata.getChildren().contains(metadataFormWrapper)) {
         saveMetadata();
@@ -195,7 +195,7 @@ public class InspectionPane extends BorderPane {
           return result;
         }
       };
-      validationTask.setOnSucceeded((Void) -> {
+      validationTask.setOnSucceeded(Void -> {
         if (validationTask.getValue()) {
           popOver.updateContent(true, message.toString());
 
@@ -203,7 +203,7 @@ public class InspectionPane extends BorderPane {
             List<DescObjMetadata> metadataList = currentDescOb.getMetadata();
             if (metadataList != null && !metadataList.isEmpty()) {
               DescObjMetadata metadataObj = metadataList.get(0);
-              if (metadataObj.getTemplateType() != null && metadataObj.getTemplateType().equals("ead")) {
+              if (metadataObj.getTemplateType() != null && "ead".equals(metadataObj.getTemplateType())) {
                 toggleForm.setVisible(true);
                 if (metadata.getChildren().contains(metaText)) {
                   toggleForm.setSelected(false);
@@ -243,9 +243,8 @@ public class InspectionPane extends BorderPane {
     metaText = new CodeArea();
     VBox.setVgrow(metaText, Priority.ALWAYS);
     metadata.getChildren().addAll(metadataTopBox, metaText);
-    metaText.textProperty().addListener((observable, oldValue, newValue) -> {
-      metaText.setStyleSpans(0, XMLEditor.computeHighlighting(newValue));
-    });
+    metaText.textProperty().addListener(
+      (observable, oldValue, newValue) -> metaText.setStyleSpans(0, XMLEditor.computeHighlighting(newValue)));
     // set the tab size to 2 spaces
     metaText.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
       if (event.getCode() == KeyCode.TAB) {
@@ -312,9 +311,8 @@ public class InspectionPane extends BorderPane {
               return LocalDate.parse(dateString, dateTimeFormatter);
             }
           });
-          datePicker.valueProperty().addListener((observable1, oldValue1, newValue1) -> {
-            metadataValue.setValue(ldsc.toString(newValue1));
-          });
+          datePicker.valueProperty()
+            .addListener((observable1, oldValue1, newValue1) -> metadataValue.setValue(ldsc.toString(newValue1)));
           control = datePicker;
           break;
         case "combo":
@@ -555,8 +553,8 @@ public class InspectionPane extends BorderPane {
     sipDocumentation = new SipDocumentationTreeView();
 
     toggleDocumentation = new ToggleButton();
-    Image selected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.open_folder, Color.WHITE);
-    Image unselected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.book, Color.WHITE);
+    Image selected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.OPEN_FOLDER, Color.WHITE);
+    Image unselected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.BOOK, Color.WHITE);
     ImageView toggleImage = new ImageView();
     toggleDocumentation.setGraphic(toggleImage);
     toggleImage.imageProperty()

@@ -1,10 +1,10 @@
 package org.roda.rodain.utils;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -19,7 +19,6 @@ public class LoggingOutputStream extends OutputStream {
     char c = (char) b;
     if (c == '\n' || c == '\r') {
       log.warn(buffer.toString());
-      System.out.println(buffer.toString());
       buffer = new StringBuilder();
     } else
       buffer.append(c);

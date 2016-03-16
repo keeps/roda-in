@@ -18,17 +18,17 @@ import java.io.InputStream;
  */
 public class FontAwesomeImageCreator {
   public static final int SIZE = 16;
-  public static final String chevron_right = "\uf054";
-  public static final String chevron_left = "\uf053";
-  public static final String times = "\uf00d";
-  public static final String code = "\uf121";
-  public static final String list = "\uf022";
-  public static final String check = "\uf00c";
-  public static final String square = "\uf096";
-  public static final String book = "\uf02d";
-  public static final String open_folder = "\uf07c";
+  public static final String CHEVRON_RIGHT = "\uf054";
+  public static final String CHEVRON_LEFT = "\uf053";
+  public static final String TIMES = "\uf00d";
+  public static final String CODE = "\uf121";
+  public static final String LIST = "\uf022";
+  public static final String CHECK = "\uf00c";
+  public static final String SQUARE = "\uf096";
+  public static final String BOOK = "\uf02d";
+  public static final String OPEN_FOLDER = "\uf07c";
 
-  public static final Font font = loadFont();
+  public static final Font FONT = loadFont();
 
   private FontAwesomeImageCreator() {
 
@@ -74,7 +74,7 @@ public class FontAwesomeImageCreator {
   public static Image generate(String unicode, Paint color, int size) {
     Font newFont;
     if (size == SIZE) {
-      newFont = font;
+      newFont = FONT;
     } else {
       InputStream fontIS = FontAwesomeImageCreator.class.getResourceAsStream("/fonts/fontawesome-webfont.ttf");
       newFont = Font.loadFont(fontIS, size);

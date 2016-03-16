@@ -77,13 +77,13 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
         METSEnums.MetadataType metadataType = METSEnums.MetadataType.OTHER;
 
         if (templateType != null) {
-          if (templateType.equals("dc")) {
+          if ("dc".equals(templateType)) {
             metadataName = "dc.xml";
             metadataType = METSEnums.MetadataType.DC;
-          } else if (templateType.equals("ead")) {
+          } else if ("ead".equals(templateType)) {
             metadataName = templateType + ".xml";
             metadataType = METSEnums.MetadataType.EAD;
-          } else if (templateType.equals("ead3")) {
+          } else if ("ead3".equals(templateType)) {
             metadataName = templateType + ".xml";
             metadataType = METSEnums.MetadataType.OTHER.setOtherType("ead3");
           } else {

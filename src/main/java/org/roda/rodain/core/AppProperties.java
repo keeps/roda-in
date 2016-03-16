@@ -82,13 +82,11 @@ public class AppProperties {
       for (String templ : templates) {
         String templateName = "metadata.template." + templ.trim() + ".file";
         String fileName = config.getString(templateName);
-        // if (!Files.exists(rodainPath.resolve(fileName)))
         Files.copy(ClassLoader.getSystemResourceAsStream("templates/" + fileName), rodainPath.resolve(fileName),
           StandardCopyOption.REPLACE_EXISTING);
 
         String schemaName = "metadata.template." + templ.trim() + ".schema";
         String schemaFileName = config.getString(schemaName);
-        // if (!Files.exists(rodainPath.resolve(fileName)))
         Files.copy(ClassLoader.getSystemResourceAsStream("templates/" + schemaFileName),
           rodainPath.resolve(schemaFileName), StandardCopyOption.REPLACE_EXISTING);
       }

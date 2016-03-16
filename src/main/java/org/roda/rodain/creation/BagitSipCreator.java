@@ -152,6 +152,7 @@ public class BagitSipCreator extends SimpleSipCreator {
    *
    * @return The estimate in milliseconds
    */
+  @Override
   public double getTimeRemainingEstimate() {
     // prevent divide by zero
     if (transferedTime == 0)
@@ -227,7 +228,7 @@ public class BagitSipCreator extends SimpleSipCreator {
   }
 
   private void copyFile(Path path, Path dest) {
-    final int progress_checkpoint = 1000;
+    final int progressCheckpoint = 1000;
     long bytesCopied = 0, previousLen = 0;
     File destFile = dest.toFile();
 
@@ -245,7 +246,7 @@ public class BagitSipCreator extends SimpleSipCreator {
         counter += len;
         bytesCopied += (destFile.length() - previousLen);
         previousLen = destFile.length();
-        if (counter > progress_checkpoint || bytesCopied == totalBytes) {
+        if (counter > progressCheckpoint || bytesCopied == totalBytes) {
           sipTransferedSize += counter;
           transferedSize += counter;
           Instant now = Instant.now();

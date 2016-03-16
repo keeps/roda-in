@@ -1,22 +1,5 @@
 package org.roda.rodain.creation;
 
-import java.io.*;
-import java.nio.file.Path;
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
 import org.apache.commons.io.FileUtils;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.sip.SipPreview;
@@ -27,15 +10,28 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.*;
+import java.nio.file.Path;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 19/11/2015.
  */
 public class SimpleSipCreator extends Thread {
   private static final org.slf4j.Logger log = LoggerFactory.getLogger(SimpleSipCreator.class.getName());
-  protected final Path outputPath;
-  protected final Map<SipPreview, String> previews;
-  protected final int sipPreviewCount;
   protected final static String actionCreatingFolders = AppProperties
     .getLocalizedString("SimpleSipCreator.creatingStructure");
   protected final static String actionCopyingData = AppProperties.getLocalizedString("SimpleSipCreator.copyingData");
@@ -43,6 +39,10 @@ public class SimpleSipCreator extends Thread {
     .getLocalizedString("SimpleSipCreator.copyingMetadata");
   protected final static String actionFinalizingSip = AppProperties
     .getLocalizedString("SimpleSipCreator.finalizingSip");
+
+  protected final Path outputPath;
+  protected final Map<SipPreview, String> previews;
+  protected final int sipPreviewCount;
 
   protected int createdSipsCount = 0;
   protected String currentSipName;

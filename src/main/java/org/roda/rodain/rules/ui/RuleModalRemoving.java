@@ -1,10 +1,5 @@
 package org.roda.rodain.rules.ui;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
-
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -12,10 +7,14 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.sip.SipPreview;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -79,6 +78,7 @@ public class RuleModalRemoving extends BorderPane implements Observer {
    * @param args
    *          The arguments of the update.
    */
+  @Override
   public void update(Observable o, Object args) {
     if (!(args instanceof Float)) {
       if (o instanceof Rule) {
