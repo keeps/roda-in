@@ -1,6 +1,7 @@
 package org.roda.rodain.schema.ui;
 
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -198,16 +199,6 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     getChildren().setAll(aux);
   }
 
-  /**
-   * @return The count of all the SIPs associated to the SchemaNode
-   */
-  public int getSipCount() {
-    int result = 0;
-    for (int i : rules.values())
-      result += i;
-    return result;
-  }
-
   public void updateDescLevel(String descLevel) {
     dob.setDescriptionlevel(descLevel);
     ResourceBundle hierarchyConfig = ResourceBundle.getBundle("properties/roda-description-levels-hierarchy");
@@ -219,43 +210,45 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     this.setGraphic(new ImageView(iconBlack));
   }
 
-  public int fullSipCount() {
-    int result = 0;
-    for (Set<SipPreviewNode> set : sips.values()) {
-      result += set.size();
-    }
-    for (SchemaNode sn : schemaNodes) {
-      result += sn.fullSipCount();
-    }
-    for (Set<SchemaNode> set : ruleNodes.values()) {
-      for (SchemaNode sn : set)
-        result += sn.fullSipCount();
-    }
-    return result;
-  }
-
   private Set<Rule> getAllRules() {
     Set<Rule> result = new HashSet<>(ruleObjects.values());
     for (SchemaNode sn : schemaNodes) {
       result.addAll(sn.getAllRules());
     }
+    ruleNodes.forEach((s, schNodes) -> schNodes.forEach(schemaNode -> result.addAll(schemaNode.getAllRules())));
     return result;
   }
 
   public void remove() {
+    Map<SipPreview, String> allSips = getSipPreviews();
+    // first start the modal to give feedback to the user
+    for (SipPreview sipPreview : allSips.keySet()) {
+      RuleModalController.removeSipPreview(sipPreview);
+    }
+
+    // then we start the remove process
+    Task<Void> sipRemoveTask = new Task<Void>() {
+      @Override
+      protected Void call() throws Exception {
+        for (SipPreview sipPreview : allSips.keySet()) {
+          sipPreview.removeSIP();
+        }
+        return null;
+      }
+    };
+    new Thread(sipRemoveTask).start();
+
     Set<Rule> allRules = getAllRules();
     // first start the modal to give feedback to the user
     for (Rule r : allRules) {
       RuleModalController.removeRule(r);
     }
+
     // then we start the remove process
     for (Rule r : allRules) {
       removeRule(r);
     }
-    schemaNodes.forEach(SchemaNode::remove);
-    ruleNodes.forEach((id, schemas) -> schemas.forEach(SchemaNode::remove));
-    sips
-      .forEach((id, sipPreviewNodes) -> sipPreviewNodes.forEach(sipPreviewNode -> sipPreviewNode.getSip().removeSIP()));
+
   }
 
   /**
@@ -300,6 +293,11 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     for (Rule r : ruleObjects.values())
       for (SipPreview sp : r.getSips())
         result.put(sp, dob.getId());
+
+    sips.forEach((id, sipPreviewNodes) -> sipPreviewNodes
+      .forEach(sipPreviewNode -> result.put(sipPreviewNode.getSip(), dob.getId())));
+
+    ruleNodes.forEach((s, schNodes) -> schNodes.forEach(schemaNode -> result.putAll(schemaNode.getSipPreviews())));
 
     // children sips
     for (SchemaNode sn : schemaNodes)

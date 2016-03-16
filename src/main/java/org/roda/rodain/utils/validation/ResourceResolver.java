@@ -1,5 +1,7 @@
 package org.roda.rodain.utils.validation;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
 
@@ -13,6 +15,8 @@ import java.net.URL;
  * @since 29-02-2016.
  */
 public class ResourceResolver implements LSResourceResolver {
+  private static final Logger log = LoggerFactory.getLogger(ResourceResolver.class.getName());
+
   @Override
   public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseURI) {
     InputStream resourceAsStream = null;
@@ -22,8 +26,9 @@ public class ResourceResolver implements LSResourceResolver {
     } catch (MalformedURLException e) {
       // the XSD's are expected to be in the root of the classpath
       resourceAsStream = this.getClass().getClassLoader().getResourceAsStream(systemId);
+      log.info("Malformed URL in schema", e);
     } catch (IOException e) {
-      e.printStackTrace();
+      log.error("Can't get file from URL", e);
     }
     return new Input(publicId, systemId, resourceAsStream);
   }
