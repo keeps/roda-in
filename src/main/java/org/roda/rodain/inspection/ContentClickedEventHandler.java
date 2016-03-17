@@ -5,6 +5,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
 import org.roda.rodain.core.RodaIn;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
@@ -14,7 +15,7 @@ import java.io.IOException;
  * @since 21-09-2015.
  */
 public class ContentClickedEventHandler implements EventHandler<MouseEvent> {
-  private static final org.slf4j.Logger log = LoggerFactory.getLogger(ContentClickedEventHandler.class.getName());
+  private static final Logger log = LoggerFactory.getLogger(ContentClickedEventHandler.class.getName());
   private static String OS = System.getProperty("os.name").toLowerCase();
   private TreeView<Object> treeView;
 

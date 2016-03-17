@@ -1,5 +1,14 @@
 package org.roda.rodain.inspection;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,6 +28,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import javafx.util.converter.LocalDateStringConverter;
+
 import org.apache.commons.lang.StringUtils;
 import org.fxmisc.richtext.CodeArea;
 import org.roda.rodain.core.AppProperties;
@@ -40,24 +50,16 @@ import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.UIPair;
 import org.roda.rodain.utils.Utils;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 26-10-2015.
  */
 public class InspectionPane extends BorderPane {
-  private static final org.slf4j.Logger log = LoggerFactory.getLogger(InspectionPane.class.getName());
+  private static final Logger log = LoggerFactory.getLogger(InspectionPane.class.getName());
   private VBox topBox;
   private VBox center;
   private HBox topSpace;

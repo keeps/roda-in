@@ -14,6 +14,7 @@ import javafx.scene.layout.VBox;
 
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.schema.ui.SchemaNode;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -21,7 +22,7 @@ import org.slf4j.LoggerFactory;
  * @since 27-10-2015.
  */
 public class LoadingPane extends BorderPane {
-  private static final org.slf4j.Logger log = LoggerFactory.getLogger(LoadingPane.class.getName());
+  private static final Logger log = LoggerFactory.getLogger(LoadingPane.class.getName());
   private static Image loadingGif;
   private SchemaNode schema;
 

@@ -10,6 +10,7 @@ import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.XMLToMetadataValue;
 import org.roda.rodain.rules.sip.MetadataValue;
 import org.roda.rodain.utils.Utils;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
@@ -25,7 +26,7 @@ import java.util.Map;
  */
 @JsonIgnoreProperties({"values", "path", "loaded", "type", "version", "templateType"})
 public class DescObjMetadata {
-  private static final org.slf4j.Logger log = LoggerFactory.getLogger(DescObjMetadata.class.getName());
+  private static final Logger log = LoggerFactory.getLogger(DescObjMetadata.class.getName());
   private String id, content, contentEncoding;
   private Map<String, Object> additionalProperties = new HashMap<String, Object>();
   private Map<String, MetadataValue> values = new HashMap<>();

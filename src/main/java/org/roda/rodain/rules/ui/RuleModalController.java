@@ -14,6 +14,7 @@ import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.utils.TreeVisitor;
 import org.roda.rodain.utils.WalkFileTree;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
@@ -25,7 +26,7 @@ import java.util.Set;
  * @since 19-10-2015.
  */
 public class RuleModalController {
-  private static final org.slf4j.Logger log = LoggerFactory.getLogger(RuleModalController.class.getName());
+  private static final Logger log = LoggerFactory.getLogger(RuleModalController.class.getName());
   private static RuleModalStage stage;
   private static RuleModalPane pane;
   private static Set<SourceTreeItem> sourceSet;

@@ -13,6 +13,7 @@ import javafx.event.EventHandler;
 
 import org.roda.rodain.utils.TreeVisitor;
 import org.roda.rodain.utils.WalkFileTree;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -20,7 +21,7 @@ import org.slf4j.LoggerFactory;
  * @since 06-10-2015.
  */
 public class VisitorStack extends Observable {
-  private static final org.slf4j.Logger log = LoggerFactory.getLogger(VisitorStack.class.getName());
+  private static final Logger log = LoggerFactory.getLogger(VisitorStack.class.getName());
   private static ExecutorService visitors;
   private HashMap<String, Future> futures;
   private String runningTask;

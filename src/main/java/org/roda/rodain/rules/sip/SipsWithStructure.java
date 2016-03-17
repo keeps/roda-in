@@ -231,6 +231,8 @@ public class SipsWithStructure extends SipPreviewCreator {
     SipPreview sipPreview = new SipPreview(path.getFileName().toString(), repSet, metadata);
     node.addObserver(sipPreview);
 
+    // set the SIP's description level as file if there's more than one file in
+    // the content
     if (node.getAllFiles().size() > 1) {
       sipPreview.setDescriptionlevel("file");
     }

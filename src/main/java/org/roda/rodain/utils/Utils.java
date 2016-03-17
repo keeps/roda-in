@@ -3,6 +3,7 @@ package org.roda.rodain.utils;
 import org.apache.commons.io.IOUtils;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.utils.validation.ResourceResolver;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -29,7 +30,7 @@ import java.nio.file.Paths;
  * @since 24-09-2015.
  */
 public class Utils {
-  private static final org.slf4j.Logger log = LoggerFactory.getLogger(Utils.class.getName());
+  private static final Logger log = LoggerFactory.getLogger(Utils.class.getName());
 
   private Utils() {
   }

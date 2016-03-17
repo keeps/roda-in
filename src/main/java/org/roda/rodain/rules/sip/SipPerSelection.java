@@ -49,6 +49,8 @@ public class SipPerSelection extends SipPreviewCreator {
   @Override
   public boolean filter(Path path) {
     boolean result = super.filter(path);
+    if (result)
+      return true;
 
     if (path.getFileName() == null) {
       result = true;

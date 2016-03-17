@@ -1,5 +1,6 @@
 package org.roda.rodain.source.representation;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
@@ -16,7 +17,7 @@ import java.util.TreeMap;
  * @since 17-09-2015.
  */
 public class SourceDirectory implements SourceItem {
-  private static final org.slf4j.Logger log = LoggerFactory.getLogger(SourceDirectory.class.getName());
+  private static final Logger log = LoggerFactory.getLogger(SourceDirectory.class.getName());
   private Path path;
   private int itemsToLoad = 0;
   private TreeMap<String, SourceItem> children;

@@ -95,6 +95,16 @@ public class SchemaNode extends TreeItem<String> implements Observer {
         }
         Set<SipPreviewNode> nodes = new HashSet<>(rule.getSipNodes());
         Set<SchemaNode> schemas = new HashSet<>(rule.getSchemaNodes());
+
+        // We need to set the parents of the top nodes here, except when this
+        // node is the hidden root
+        if (getParent() != null) { // not the root?
+          for (SchemaNode sc : schemas) {
+            if (sc.getDob().getParentId() == null) {
+              sc.getDob().setParentId(dob.getId());
+            }
+          }
+        }
         sips.put(id, nodes);
         ruleNodes.put(id, schemas);
         getChildren().addAll(nodes);

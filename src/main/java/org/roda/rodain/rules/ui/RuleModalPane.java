@@ -1,5 +1,10 @@
 package org.roda.rodain.rules.ui;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Set;
+
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -17,6 +22,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.RuleTypes;
@@ -24,19 +30,15 @@ import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.UIPair;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 28-09-2015.
  */
 public class RuleModalPane extends BorderPane {
-  private static final org.slf4j.Logger log = LoggerFactory.getLogger(RuleModalPane.class.getName());
+  private static final Logger log = LoggerFactory.getLogger(RuleModalPane.class.getName());
   private static final int LIST_HEIGHT = 440;
 
   private enum States {
