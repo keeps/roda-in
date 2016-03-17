@@ -18,7 +18,9 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.Footer;
@@ -30,6 +32,7 @@ import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.Utils;
 import org.roda.rodain.utils.WalkFileTree;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -37,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * @since 24-09-2015.
  */
 public class FileExplorerPane extends BorderPane implements Observer {
-  private static final org.slf4j.Logger log = LoggerFactory.getLogger(FileExplorerPane.class.getName());
+  private static final Logger log = LoggerFactory.getLogger(FileExplorerPane.class.getName());
   private Stage stage;
   private HBox top;
   private StackPane fileExplorer;
@@ -170,9 +173,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     HBox loadBox = new HBox();
     loadBox.setAlignment(Pos.CENTER);
     Button load = new Button(AppProperties.getLocalizedString("FileExplorerPane.chooseDir"));
-    load.setOnAction(event -> {
-      chooseNewRoot();
-    });
+    load.setOnAction(event -> chooseNewRoot());
     load.setMinHeight(65);
     load.setMinWidth(220);
     load.setMaxWidth(220);
@@ -234,13 +235,15 @@ public class FileExplorerPane extends BorderPane implements Observer {
    *          The new root path
    */
   public void setFileExplorerRoot(Path rootPath) {
-    // check if the path or a parent path haven't been added yet
+    // check if the path, a parent path or a child path haven't been added yet
     if (realRoots.containsKey(rootPath.toString())) {
+      alertAddFolder(rootPath.toString(), rootPath.toString());
       return;
     }
     for (String pathString : realRoots.keySet()) {
       Path path = Paths.get(pathString);
-      if (rootPath.startsWith(path)) {
+      if (rootPath.startsWith(path) || path.startsWith(rootPath)) {
+        alertAddFolder(rootPath.toString(), pathString);
         return;
       }
     }
@@ -256,6 +259,21 @@ public class FileExplorerPane extends BorderPane implements Observer {
     rootNode.setExpanded(true);
     dummyRoot.getChildren().add(rootNode);
     updateAttributes(rootPath);
+  }
+
+  private void alertAddFolder(String oldPath, String newPath) {
+    String content = String.format(AppProperties.getLocalizedString("FileExplorerPane.alertAddFolder.content"), oldPath,
+      newPath);
+    Alert dlg = new Alert(Alert.AlertType.INFORMATION);
+    dlg.initStyle(StageStyle.UNDECORATED);
+    dlg.setHeaderText(AppProperties.getLocalizedString("FileExplorerPane.alertAddFolder.header"));
+    dlg.setTitle(AppProperties.getLocalizedString("FileExplorerPane.alertAddFolder.title"));
+    dlg.setContentText(content);
+    dlg.initModality(Modality.APPLICATION_MODAL);
+    dlg.initOwner(stage);
+
+    dlg.getDialogPane().setMinWidth(600);
+    dlg.show();
   }
 
   /**

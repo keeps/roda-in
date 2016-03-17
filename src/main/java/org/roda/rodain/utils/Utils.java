@@ -1,11 +1,13 @@
 package org.roda.rodain.utils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import org.apache.commons.io.IOUtils;
+import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.utils.validation.ResourceResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -16,21 +18,19 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-
-import org.apache.commons.io.IOUtils;
-import org.roda.rodain.core.AppProperties;
-import org.roda.rodain.utils.validation.ResourceResolver;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 24-09-2015.
  */
 public class Utils {
-  private static final org.slf4j.Logger log = LoggerFactory.getLogger(Utils.class.getName());
+  private static final Logger log = LoggerFactory.getLogger(Utils.class.getName());
 
   private Utils() {
   }

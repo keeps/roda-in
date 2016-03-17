@@ -1,15 +1,8 @@
 package org.roda.rodain.rules.ui;
 
-import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.Set;
-
 import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
 import javafx.stage.Stage;
-
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.Rule;
@@ -21,16 +14,20 @@ import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.utils.TreeVisitor;
 import org.roda.rodain.utils.WalkFileTree;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 19-10-2015.
  */
 public class RuleModalController {
-  private static final org.slf4j.Logger log = LoggerFactory.getLogger(RuleModalController.class.getName());
+  private static final Logger log = LoggerFactory.getLogger(RuleModalController.class.getName());
   private static RuleModalStage stage;
-  private static Stage primaryStage;
   private static RuleModalPane pane;
   private static Set<SourceTreeItem> sourceSet;
   private static SchemaNode schema;
@@ -55,7 +52,6 @@ public class RuleModalController {
   public static void newAssociation(final Stage primStage, Set<SourceTreeItem> source, SchemaNode schemaNode) {
     if (stage == null)
       stage = new RuleModalStage(primStage);
-    primaryStage = primStage;
     stage.setWidth(800);
     stage.setHeight(580);
 
@@ -73,17 +69,7 @@ public class RuleModalController {
       }
     };
 
-    task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-      @Override
-      public void handle(WorkerStateEvent workerStateEvent) {
-        Platform.runLater(new Runnable() {
-          @Override
-          public void run() {
-            stage.setRoot(pane);
-          }
-        });
-      }
-    });
+    task.setOnSucceeded(event -> Platform.runLater(() -> stage.setRoot(pane)));
 
     new Thread(task).start();
   }
@@ -107,9 +93,6 @@ public class RuleModalController {
   public static void confirm() {
     try {
       RuleTypes assocType = pane.getAssociationType();
-      int level = 0;
-      if (assocType == RuleTypes.SIP_PER_FOLDER)
-        level = pane.getLevel();
       MetadataTypes metaType = pane.getMetadataType();
       Path metadataPath = null;
       String templateType = null;
@@ -134,7 +117,7 @@ public class RuleModalController {
           break;
       }
 
-      Rule rule = new Rule(sourceSet, assocType, level, metadataPath, templateType, metaType, templateVersion);
+      Rule rule = new Rule(sourceSet, assocType, metadataPath, templateType, metaType, templateVersion);
       rule.addObserver(schema);
 
       TreeVisitor visitor = rule.apply();
@@ -150,17 +133,14 @@ public class RuleModalController {
 
       schema.addRule(rule);
 
-      Platform.runLater(new Runnable() {
-        @Override
-        public void run() {
-          RuleModalProcessing processing = new RuleModalProcessing(rule, (SipPreviewCreator) visitor, visitor, visitors,
-            fileWalker);
-          stage.setRoot(processing);
-          stage.setHeight(180);
-          stage.setWidth(400);
-          stage.centerOnScreen();
-          RodaIn.getSchemePane().showTree();
-        }
+      Platform.runLater(() -> {
+        RuleModalProcessing processing = new RuleModalProcessing((SipPreviewCreator) visitor, visitor, visitors,
+          fileWalker);
+        stage.setRoot(processing);
+        stage.setHeight(180);
+        stage.setWidth(400);
+        stage.centerOnScreen();
+        RodaIn.getSchemePane().showTree();
       });
     } catch (Exception e) {
       log.error("Exception in confirm rule", e);
@@ -219,11 +199,6 @@ public class RuleModalController {
    * Closes the stage of the modal window.
    */
   public static void cancel() {
-    Platform.runLater(new Runnable() {
-      @Override
-      public void run() {
-        stage.close();
-      }
-    });
+    Platform.runLater(() -> stage.close());
   }
 }

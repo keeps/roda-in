@@ -1,11 +1,6 @@
 package org.roda.rodain.rules.ui;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -14,15 +9,16 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.RodaIn;
-import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.VisitorStack;
 import org.roda.rodain.rules.VisitorState;
 import org.roda.rodain.rules.sip.SipPreviewCreator;
 import org.roda.rodain.utils.TreeVisitor;
 import org.roda.rodain.utils.WalkFileTree;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -33,7 +29,6 @@ public class RuleModalProcessing extends BorderPane {
   private TreeVisitor visitor;
   private VisitorStack visitorStack;
   private WalkFileTree fileWalker;
-  private Rule rule;
 
   // top
   private Label sipsCreatedLabel, filesProcessedLabel;
@@ -56,13 +51,12 @@ public class RuleModalProcessing extends BorderPane {
    *          The WalkFileTree object, to get the processed files and
    *          directories
    */
-  public RuleModalProcessing(Rule rule, SipPreviewCreator creator, TreeVisitor visitor, VisitorStack visitorStack,
+  public RuleModalProcessing(SipPreviewCreator creator, TreeVisitor visitor, VisitorStack visitorStack,
     WalkFileTree fileWalker) {
     this.creator = creator;
     this.visitor = visitor;
     this.visitorStack = visitorStack;
     this.fileWalker = fileWalker;
-    this.rule = rule;
 
     getStyleClass().add("sipcreator");
 
@@ -107,12 +101,7 @@ public class RuleModalProcessing extends BorderPane {
     bottom.setPadding(new Insets(0, 10, 10, 10));
     bottom.setAlignment(Pos.CENTER_RIGHT);
     Button cancel = new Button(AppProperties.getLocalizedString("cancel"));
-    cancel.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent actionEvent) {
-        cancel();
-      }
-    });
+    cancel.setOnAction(event -> cancel());
 
     bottom.getChildren().add(cancel);
     setBottom(bottom);
@@ -122,19 +111,16 @@ public class RuleModalProcessing extends BorderPane {
     TimerTask updater = new TimerTask() {
       @Override
       public void run() {
-        Platform.runLater(new Runnable() {
-          @Override
-          public void run() {
-            int sips = creator.getCount();
-            int files = fileWalker.getProcessedFiles();
-            int dirs = fileWalker.getProcessedDirs();
+        Platform.runLater(() -> {
+          int sips = creator.getCount();
+          int files = fileWalker.getProcessedFiles();
+          int dirs = fileWalker.getProcessedDirs();
 
-            sipsCreatedLabel.setText(String.format(sipsCreatedFormat, sips));
-            filesProcessedLabel.setText(String.format(filesProcessedFormat, dirs, files));
+          sipsCreatedLabel.setText(String.format(sipsCreatedFormat, sips));
+          filesProcessedLabel.setText(String.format(filesProcessedFormat, dirs, files));
 
-            if (visitorStack.getState(visitor.getId()) == VisitorState.VISITOR_DONE) {
-              close();
-            }
+          if (visitorStack.getState(visitor.getId()) == VisitorState.VISITOR_DONE) {
+            close();
           }
         });
       }
@@ -156,5 +142,6 @@ public class RuleModalProcessing extends BorderPane {
     timer.cancel();
     RuleModalController.cancel();
     RodaIn.getInspectionPane().updateRuleList();
+    RodaIn.getFileExplorer().getTreeView().getSelectionModel().clearSelection();
   }
 }

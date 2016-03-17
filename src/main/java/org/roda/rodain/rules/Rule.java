@@ -1,13 +1,14 @@
 package org.roda.rodain.rules;
 
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
+import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.filters.ContentFilter;
 import org.roda.rodain.rules.sip.*;
+import org.roda.rodain.schema.DescriptionObject;
+import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SipPreviewNode;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
@@ -37,10 +38,9 @@ public class Rule extends Observable implements Observer, Comparable {
   // map of SipPreview id -> SipPreview
   private Map<String, SipPreview> sips;
   // map of SipPreview id -> SipPreviewNode
-  private HashMap<String, SipPreviewNode> sipNodes = new HashMap<>();
-  private Image iconBlack, iconWhite;
-  private int added = 0;
-  private int level;
+  private Map<String, SipPreviewNode> sipNodes = new HashMap<>();
+  private Set<SchemaNode> schemaNodes = new HashSet<>();
+  private Image itemIconBlack, itemIconWhite, dObjIconBlack, dObjIconWhite, fileIconBlack, fileIconWhite;
   private Integer id;
 
   /**
@@ -48,9 +48,6 @@ public class Rule extends Observable implements Observer, Comparable {
    *          The set of items to be transformed into SIPs
    * @param assocType
    *          The association type of the rule.
-   * @param level
-   *          The maximum level of the directory. Used in the SIP_PER_FOLDER
-   *          type only.
    * @param metadataPath
    *          The path to the metadata file(s)
    * @param template
@@ -58,12 +55,11 @@ public class Rule extends Observable implements Observer, Comparable {
    * @param metaType
    *          The type of metadata to be applied to the SIPs.
    */
-  public Rule(Set<SourceTreeItem> source, RuleTypes assocType, int level, Path metadataPath, String template,
+  public Rule(Set<SourceTreeItem> source, RuleTypes assocType, Path metadataPath, String template,
     MetadataTypes metaType, String templateVersion) {
     ruleCount++;
     this.source = source;
     this.assocType = assocType;
-    this.level = level;
     this.templateType = template;
     this.templateVersion = templateVersion;
     this.metadataPath = metadataPath;
@@ -77,11 +73,21 @@ public class Rule extends Observable implements Observer, Comparable {
 
   private void createIcon() {
     ResourceBundle hierarchyConfig = ResourceBundle.getBundle("properties/roda-description-levels-hierarchy");
+
     String category = hierarchyConfig.getString("category.item");
     String unicode = hierarchyConfig.getString("icon." + category);
+    itemIconBlack = FontAwesomeImageCreator.generate(unicode);
+    itemIconWhite = FontAwesomeImageCreator.generate(unicode, Color.WHITE);
 
-    iconBlack = FontAwesomeImageCreator.generate(unicode);
-    iconWhite = FontAwesomeImageCreator.generate(unicode, Color.WHITE);
+    category = hierarchyConfig.getString("category.file");
+    unicode = hierarchyConfig.getString("icon." + category);
+    fileIconBlack = FontAwesomeImageCreator.generate(unicode);
+    fileIconWhite = FontAwesomeImageCreator.generate(unicode, Color.WHITE);
+
+    category = hierarchyConfig.getString("category.series");
+    unicode = hierarchyConfig.getString("icon." + category);
+    dObjIconBlack = FontAwesomeImageCreator.generate(unicode);
+    dObjIconWhite = FontAwesomeImageCreator.generate(unicode, Color.WHITE);
   }
 
   private void createFilters() {
@@ -139,6 +145,10 @@ public class Rule extends Observable implements Observer, Comparable {
     return sipNodes.values();
   }
 
+  public Set<SchemaNode> getSchemaNodes() {
+    return schemaNodes;
+  }
+
   /**
    * @return The association type.
    */
@@ -168,7 +178,6 @@ public class Rule extends Observable implements Observer, Comparable {
    * @see SipSingle
    */
   public TreeVisitor apply() {
-    added = 0;
     sips = new HashMap<>();
     sipNodes = new HashMap<>();
 
@@ -190,6 +199,12 @@ public class Rule extends Observable implements Observer, Comparable {
           templateVersion);
         visitorFile.addObserver(this);
         visitor = visitorFile;
+        break;
+      case SIP_WITH_STRUCTURE:
+        SipsWithStructure visitorStructure = new SipsWithStructure(id.toString(), filters, metaType, metadataPath,
+          templateType, templateVersion);
+        visitorStructure.addObserver(this);
+        visitor = visitorStructure;
         break;
       default:
       case SINGLE_SIP:
@@ -224,14 +239,21 @@ public class Rule extends Observable implements Observer, Comparable {
   public void update(Observable o, Object arg) {
     if (o instanceof SipPreviewCreator) {
       SipPreviewCreator visit = (SipPreviewCreator) o;
-      sips = visit.getSips();
-      while (visit.hasNext()) {
-        added++;
-        SipPreview sipPreview = visit.getNext();
-        SipPreviewNode sipNode = new SipPreviewNode(sipPreview, iconBlack, iconWhite);
-        sipPreview.addObserver(sipNode);
-        sipPreview.addObserver(this);
-        sipNodes.put(sipPreview.getId(), sipNode);
+      if (visit instanceof SipsWithStructure) {
+        updateSipsWithStructure((SipsWithStructure) visit);
+      } else {
+        sips = visit.getSips();
+        while (visit.hasNext()) {
+          SipPreview sipPreview = visit.getNext();
+          SipPreviewNode sipNode;
+          if ("item".equals(sipPreview.getDescriptionlevel()))
+            sipNode = new SipPreviewNode(sipPreview, itemIconBlack, itemIconWhite);
+          else
+            sipNode = new SipPreviewNode(sipPreview, fileIconBlack, fileIconWhite);
+          sipPreview.addObserver(sipNode);
+          sipPreview.addObserver(this);
+          sipNodes.put(sipPreview.getId(), sipNode);
+        }
       }
       setChanged();
       notifyObservers();
@@ -249,6 +271,52 @@ public class Rule extends Observable implements Observer, Comparable {
     }
   }
 
+  private void updateSipsWithStructure(SipsWithStructure visitor) {
+    Set<PseudoItem> tree = visitor.getTree();
+    Map<Path, DescriptionObject> descriptionObjectMap = visitor.getDescriptionObjects();
+    Map<Path, SipPreview> sipPreviewMap = visitor.getSipPreviewMap();
+
+    for (PseudoItem item : tree) {
+      TreeItem<String> treeItem = rec_createNode(item, sipPreviewMap, descriptionObjectMap);
+      if (treeItem instanceof SipPreviewNode) {
+        SipPreviewNode sipPreviewNode = (SipPreviewNode) treeItem;
+        sipNodes.put(sipPreviewNode.getSip().getId(), sipPreviewNode);
+      }
+      if (treeItem instanceof SchemaNode) {
+        SchemaNode schemaNode = (SchemaNode) treeItem;
+        schemaNodes.add(schemaNode);
+      }
+    }
+  }
+
+  private TreeItem<String> rec_createNode(PseudoItem pseudoItem, Map<Path, SipPreview> sipPreviewMap,
+    Map<Path, DescriptionObject> descriptionObjectMap) {
+    if (pseudoItem instanceof PseudoSIP) {
+      PseudoSIP pseudoSIP = (PseudoSIP) pseudoItem;
+      SipPreview sipPreview = sipPreviewMap.get(pseudoSIP.getNode().getPath());
+      sips.put(sipPreview.getId(), sipPreview);
+      SipPreviewNode sipNode;
+      if ("item".equals(sipPreview.getDescriptionlevel()))
+        sipNode = new SipPreviewNode(sipPreview, itemIconBlack, itemIconWhite);
+      else
+        sipNode = new SipPreviewNode(sipPreview, fileIconBlack, fileIconWhite);
+      sipPreview.addObserver(sipNode);
+      sipPreview.addObserver(this);
+      return sipNode;
+    } else {
+      PseudoDescriptionObject pdo = (PseudoDescriptionObject) pseudoItem;
+      DescriptionObject dobj = descriptionObjectMap.get(pdo.getPath());
+      SchemaNode schemaNode = new SchemaNode(dobj, dObjIconBlack, dObjIconWhite);
+      for (PseudoItem pi : pdo.getChildren()) {
+        TreeItem<String> child = rec_createNode(pi, sipPreviewMap, descriptionObjectMap);
+        schemaNode.addChild(id.toString(), child);
+        schemaNode.getChildren().add(child);
+      }
+      schemaNode.sortChildren();
+      return schemaNode;
+    }
+  }
+
   /**
    * Sets all the SIPs from the rule as removed and removes all the
    * SipPreviewNodes.
@@ -260,35 +328,37 @@ public class Rule extends Observable implements Observer, Comparable {
         int paths = 0, removedPaths = 0;
         for (SipPreview sip : sips.values()) {
           sip.setRemoved();
-          for (TreeNode tn : sip.getFiles()) {
-            paths += tn.getFullTreePaths().size();
+          for (SipRepresentation sr : sip.getRepresentations()) {
+            for (TreeNode tn : sr.getFiles()) {
+              paths += tn.getFullTreePaths().size();
+            }
           }
         }
 
         sipNodes.clear();
         for (SipPreview sip : sips.values()) {
-          for (TreeNode tn : sip.getFiles()) {
-            for (String path : tn.getFullTreePaths()) {
-              PathCollection.addPath(path, SourceTreeItemState.NORMAL);
-              removedPaths++;
-              float result = (float) removedPaths / paths;
-              setChanged();
-              notifyObservers(result);
+          for (SipRepresentation sr : sip.getRepresentations()) {
+            for (TreeNode tn : sr.getFiles()) {
+              for (String path : tn.getFullTreePaths()) {
+                PathCollection.addPath(path, SourceTreeItemState.NORMAL);
+                removedPaths++;
+                float result = (float) removedPaths / paths;
+                setChanged();
+                notifyObservers(result);
+              }
             }
           }
         }
         sips.clear();
+        schemaNodes.clear();
         return null;
       }
     };
 
     // After everything is loaded, we add all the items to the TreeView at once.
-    task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-      @Override
-      public void handle(WorkerStateEvent workerStateEvent) {
-        setChanged();
-        notifyObservers("Removed SIP");
-      }
+    task.setOnSucceeded(event -> {
+      setChanged();
+      notifyObservers("Removed Rule");
     });
 
     new Thread(task).start();

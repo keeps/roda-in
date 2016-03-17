@@ -1,11 +1,8 @@
 package org.roda.rodain.schema;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.net.util.Base64;
 import org.roda.rodain.core.AppProperties;
@@ -13,12 +10,15 @@ import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.XMLToMetadataValue;
 import org.roda.rodain.rules.sip.MetadataValue;
 import org.roda.rodain.utils.Utils;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @JsonIgnoreProperties({"values", "path", "loaded", "type", "version", "templateType"})
 public class DescObjMetadata {
-  private static final org.slf4j.Logger log = LoggerFactory.getLogger(DescObjMetadata.class.getName());
+  private static final Logger log = LoggerFactory.getLogger(DescObjMetadata.class.getName());
   private String id, content, contentEncoding;
   private Map<String, Object> additionalProperties = new HashMap<String, Object>();
   private Map<String, MetadataValue> values = new HashMap<>();
@@ -113,6 +113,9 @@ public class DescObjMetadata {
    * @return The content
    */
   public String getContent() {
+    if (content == null) {
+      loadMetadata();
+    }
     return this.content;
   }
 

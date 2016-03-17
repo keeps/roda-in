@@ -1,41 +1,21 @@
 package org.roda.rodain.rules.sip;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
-
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.filters.ContentFilter;
 import org.roda.rodain.schema.DescObjMetadata;
-import org.roda.rodain.utils.TreeVisitor;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 05-10-2015.
  */
-public class SipSingle extends Observable implements TreeVisitor, SipPreviewCreator {
-  private String startPath;
-  // This map is returned, in full, to the SipPreviewNode when there's an update
-  private Map<String, SipPreview> sipsMap;
-  // This ArrayList is used to keep the SIPs ordered.
-  // We need them ordered because we have to keep track of which SIPs have
-  // already been loaded
-  private List<SipPreview> sips;
-  private int added = 0, returned = 0;
-  private Deque<TreeNode> nodes;
-  private Set<TreeNode> files;
-
-  private String id;
-  private Set<ContentFilter> filters;
-  private MetadataTypes metaType;
-  private Path metadataPath;
-  private String templateType;
-  private String templateVersion;
-
-  private boolean cancelled = false;
-
+public class SipSingle extends SipPreviewCreator {
   /**
    * Creates a new SipPreviewCreator where there's a new SIP created with all
    * the visited paths.
@@ -53,72 +33,7 @@ public class SipSingle extends Observable implements TreeVisitor, SipPreviewCrea
    */
   public SipSingle(String id, Set<ContentFilter> filters, MetadataTypes metaType, Path metadataPath,
     String templateType, String templateVersion) {
-    this.filters = filters;
-    sipsMap = new HashMap<>();
-    sips = new ArrayList<>();
-    nodes = new ArrayDeque<>();
-    this.id = id;
-    this.metaType = metaType;
-    this.metadataPath = metadataPath;
-    this.templateType = templateType;
-    this.templateVersion = templateVersion;
-    files = new HashSet<>();
-  }
-
-  /**
-   * @return The Map with the SIPs created by the SipPreviewCreator.
-   */
-  @Override
-  public Map<String, SipPreview> getSips() {
-    return sipsMap;
-  }
-
-  /**
-   * @return The count of the SIPs already created.
-   */
-  @Override
-  public int getCount() {
-    return added;
-  }
-
-  /**
-   * The object keeps a list with the created SIPs and this method returns them
-   * one at a time.
-   *
-   * @return The next SIP in the list.
-   */
-  @Override
-  public SipPreview getNext() {
-    return sips.get(returned++);
-  }
-
-  /**
-   * @return True if the number of SIPs returned is smaller than the count of
-   *         added SIPs.
-   */
-  @Override
-  public boolean hasNext() {
-    return returned < added;
-  }
-
-  private boolean filter(Path path) {
-    String pathString = path.toString();
-    for (ContentFilter cf : filters) {
-      if (cf.filter(pathString))
-        return true;
-    }
-    return false;
-  }
-
-  /**
-   * Sets the starting path of this TreeVisitor.
-   *
-   * @param st
-   *          The starting path of the TreeVisitor.
-   */
-  @Override
-  public void setStartPath(String st) {
-    startPath = st;
+    super(id, filters, metaType, metadataPath, templateType, templateVersion);
   }
 
   /**
@@ -178,17 +93,6 @@ public class SipSingle extends Observable implements TreeVisitor, SipPreviewCrea
   }
 
   /**
-   * This method is empty in this class, but it's defined because of the
-   * TreeVisitor interface.
-   *
-   * @param path
-   *          The path of the file.
-   */
-  @Override
-  public void visitFileFailed(Path path) {
-  }
-
-  /**
    * Ends the tree visit, creating the SIP with all the files added during the
    * visit and notifying the observers.
    */
@@ -196,7 +100,7 @@ public class SipSingle extends Observable implements TreeVisitor, SipPreviewCrea
   public void end() {
     Path metaPath = getMetadata();
     // create a new Sip
-    Path path = Paths.get(startPath);
+    Path path = Paths.get(getStartPath());
 
     DescObjMetadata metadata;
     if (metaType == MetadataTypes.TEMPLATE)
@@ -204,7 +108,11 @@ public class SipSingle extends Observable implements TreeVisitor, SipPreviewCrea
     else
       metadata = new DescObjMetadata(metaType, metaPath);
 
-    SipPreview sipPreview = new SipPreview(path.getFileName().toString(), files, metadata);
+    SipRepresentation rep = new SipRepresentation("rep1");
+    rep.setFiles(files);
+    Set<SipRepresentation> repSet = new HashSet<>();
+    repSet.add(rep);
+    SipPreview sipPreview = new SipPreview(path.getFileName().toString(), repSet, metadata);
 
     for (TreeNode tn : files) {
       tn.addObserver(sipPreview);
@@ -216,29 +124,5 @@ public class SipSingle extends Observable implements TreeVisitor, SipPreviewCrea
 
     setChanged();
     notifyObservers();
-  }
-
-  private Path getMetadata() {
-    Path result = null;
-    if (metaType == MetadataTypes.SINGLE_FILE)
-      result = metadataPath;
-    return result;
-  }
-
-  /**
-   * @return The id of the visitor.
-   */
-  @Override
-  public String getId() {
-    return id;
-  }
-
-  /**
-   * Cancels the execution of the SipPreviewCreator
-   */
-  @Override
-  public void cancel() {
-    cancelled = true;
-    System.out.println("cancelled");
   }
 }

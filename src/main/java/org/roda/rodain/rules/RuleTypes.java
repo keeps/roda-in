@@ -5,5 +5,5 @@ package org.roda.rodain.rules;
  * @since 01-10-2015.
  */
 public enum RuleTypes {
-  SINGLE_SIP, SIP_PER_FILE, SIP_PER_FOLDER, SIP_PER_SELECTION
+  SINGLE_SIP, SIP_PER_FILE, SIP_WITH_STRUCTURE, SIP_PER_SELECTION
 }

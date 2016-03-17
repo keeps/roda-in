@@ -8,9 +8,11 @@ import java.util.*;
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 05-10-2015.
- *        <p/>
+ *
+ *        <p>
  *        Used in the Handlers to make a representation of the documents tree in
  *        a SIP
+ *        </p>
  */
 public class TreeNode extends Observable {
   private Path path;
@@ -54,6 +56,18 @@ public class TreeNode extends Observable {
     result.add(path.toString());
     for (TreeNode tn : files.values())
       result.addAll(tn.getFullTreePaths());
+    return result;
+  }
+
+  /**
+   * @return A set with all the paths from the tree that starts in the TreeNode
+   *         where this method is called.
+   */
+  public Set<Path> getFullTreePathsAsPaths() {
+    Set<Path> result = new HashSet<>();
+    result.add(path);
+    for (TreeNode tn : files.values())
+      result.addAll(tn.getFullTreePathsAsPaths());
     return result;
   }
 

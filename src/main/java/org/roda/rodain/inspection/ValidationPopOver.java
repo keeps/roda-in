@@ -1,7 +1,5 @@
 package org.roda.rodain.inspection;
 
-import java.io.IOException;
-
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -13,11 +11,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-
 import org.controlsfx.control.PopOver;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -45,14 +44,14 @@ public class ValidationPopOver extends PopOver {
     setContentNode(createLoadingNode());
   }
 
-  private Node createSuccessNode(String message) {
+  private Node createSuccessNode() {
     HBox content = new HBox(10);
     content.setPadding(new Insets(5, 15, 5, 15));
     content.setAlignment(Pos.CENTER);
     HBox.setHgrow(content, Priority.ALWAYS);
     Label title = new Label("Valid metadata!");
     title.setStyle("-fx-font-size: 16px");
-    ImageView iv = new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.check, Color.GREEN, 32));
+    ImageView iv = new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CHECK, Color.GREEN, 32));
     content.getChildren().addAll(title, iv);
     return content;
   }
@@ -71,7 +70,7 @@ public class ValidationPopOver extends PopOver {
     HBox.setHgrow(titleBox, Priority.ALWAYS);
     Label title = new Label("Invalid metadata!");
     title.setStyle("-fx-font-size: 16px");
-    ImageView iv = new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.times, Color.RED, 32));
+    ImageView iv = new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.TIMES, Color.RED, 32));
     titleBox.getChildren().addAll(title, iv);
 
     content.getChildren().addAll(titleBox, text);
@@ -96,7 +95,7 @@ public class ValidationPopOver extends PopOver {
    */
   public void updateContent(boolean state, String message) {
     if (state) {
-      setContentNode(createSuccessNode(message));
+      setContentNode(createSuccessNode());
     } else {
       setContentNode(createErrorNode(message));
     }

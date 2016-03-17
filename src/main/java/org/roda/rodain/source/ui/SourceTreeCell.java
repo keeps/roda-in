@@ -1,7 +1,5 @@
 package org.roda.rodain.source.ui;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -21,17 +19,14 @@ public class SourceTreeCell extends TreeCell<String> {
     MenuItem removeIgnore = new MenuItem(AppProperties.getLocalizedString("SourceTreeCell.remove"));
     removeIgnore.setId("removeIgnore");
     menu.getItems().add(removeIgnore);
-    removeIgnore.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent actionEvent) {
-        TreeItem<String> treeItem = getTreeItem();
-        SourceTreeItem sti = (SourceTreeItem) treeItem;
-        sti.removeIgnore();
-        // force update
-        String value = treeItem.getValue();
-        treeItem.setValue("");
-        treeItem.setValue(value);
-      }
+    removeIgnore.setOnAction(event -> {
+      TreeItem<String> treeItem = getTreeItem();
+      SourceTreeItem sti = (SourceTreeItem) treeItem;
+      sti.removeIgnore();
+      // force update
+      String value = treeItem.getValue();
+      treeItem.setValue("");
+      treeItem.setValue(value);
     });
   }
 

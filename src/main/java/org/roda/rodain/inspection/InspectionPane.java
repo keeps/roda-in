@@ -1,19 +1,15 @@
 package org.roda.rodain.inspection;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -22,6 +18,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
@@ -29,7 +26,6 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import javafx.util.StringConverter;
 import javafx.util.converter.LocalDateStringConverter;
 
@@ -37,18 +33,24 @@ import org.apache.commons.lang.StringUtils;
 import org.fxmisc.richtext.CodeArea;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.RodaIn;
+import org.roda.rodain.inspection.documentation.DocumentationCreator;
+import org.roda.rodain.inspection.documentation.SipDocumentationTreeView;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.TreeNode;
+import org.roda.rodain.rules.filters.ContentFilter;
 import org.roda.rodain.rules.sip.MetadataValue;
 import org.roda.rodain.rules.sip.SipPreview;
+import org.roda.rodain.rules.sip.SipRepresentation;
 import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SipPreviewNode;
 import org.roda.rodain.source.ui.SourceTreeCell;
+import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.UIPair;
 import org.roda.rodain.utils.Utils;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
@@ -57,7 +59,7 @@ import org.xml.sax.SAXException;
  * @since 26-10-2015.
  */
 public class InspectionPane extends BorderPane {
-  private static final org.slf4j.Logger log = LoggerFactory.getLogger(InspectionPane.class.getName());
+  private static final Logger log = LoggerFactory.getLogger(InspectionPane.class.getName());
   private VBox topBox;
   private VBox center;
   private HBox topSpace;
@@ -72,21 +74,24 @@ public class InspectionPane extends BorderPane {
   // Metadata
   private VBox metadata;
   private CodeArea metaText;
-  private GridPane metadataForm;
+  private GridPane metadataGrid;
+  private ScrollPane metadataFormWrapper;
   private ToggleButton toggleForm;
   private HBox metadataLoadingPane, metadataTopBox;
   private TextField titleTextField;
   private Button validationButton;
   // SIP Content
   private BorderPane content;
-  private VBox treeBox;
-  private TreeView sipFiles;
-  private SipContentDirectory sipRoot;
-  private Button flatten, skip;
-  private HBox loadingPane, contentBottom;
+  private VBox dataBox, documentationHelp;
+  private SipDataTreeView sipFiles;
+  private SipDocumentationTreeView sipDocumentation;
+  private SipContentDirectory sipRoot, docsRoot;
+  private HBox loadingPane, contentBottom, docsBottom;
   private static Image loadingGif;
-  private Task<Void> contentTask;
+  private Task<Void> contentTask, docsTask;
   private Task<Boolean> metadataTask;
+  private Button ignore, removeRepresentation;
+  private ToggleButton toggleDocumentation;
   // Rules
   private BorderPane rules;
   private ListView<RuleCell> ruleList;
@@ -100,6 +105,7 @@ public class InspectionPane extends BorderPane {
    */
   public InspectionPane(Stage stage) {
     createCenterHelp();
+    createDocumentationHelp();
     createTop();
     createMetadata();
     createContent();
@@ -130,14 +136,19 @@ public class InspectionPane extends BorderPane {
     metadata = new VBox();
     metadata.getStyleClass().add("inspectionPart");
 
-    metadataForm = new GridPane();
-    metadataForm.setVgap(5);
-    metadataForm.setPadding(new Insets(5, 5, 5, 5));
+    metadataGrid = new GridPane();
+    metadataGrid.setVgap(5);
+    metadataGrid.setPadding(new Insets(5, 5, 5, 5));
+    metadataGrid.setStyle(AppProperties.getStyle("backgroundWhite"));
     ColumnConstraints column1 = new ColumnConstraints();
     column1.setPercentWidth(20);
     ColumnConstraints column2 = new ColumnConstraints();
     column2.setPercentWidth(80);
-    metadataForm.getColumnConstraints().addAll(column1, column2);
+    metadataGrid.getColumnConstraints().addAll(column1, column2);
+
+    metadataFormWrapper = new ScrollPane();
+    metadataFormWrapper.setContent(metadataGrid);
+    metadataFormWrapper.setFitToWidth(true);
 
     metadataTopBox = new HBox();
     metadataTopBox.getStyleClass().add("hbox");
@@ -149,17 +160,17 @@ public class InspectionPane extends BorderPane {
     HBox.setHgrow(space, Priority.ALWAYS);
 
     toggleForm = new ToggleButton();
-    Image selected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.code, Color.WHITE);
-    Image unselected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.list, Color.WHITE);
+    Image selected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CODE, Color.WHITE);
+    Image unselected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.LIST, Color.WHITE);
     ImageView toggleImage = new ImageView();
     toggleForm.setGraphic(toggleImage);
     toggleImage.imageProperty().bind(Bindings.when(toggleForm.selectedProperty()).then(selected).otherwise(unselected));
 
     validationButton = new Button();
     validationButton
-      .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.check, Color.WHITE)));
+      .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CHECK, Color.WHITE)));
     validationButton.setOnAction(event -> {
-      if (metadata.getChildren().contains(metadataForm)) {
+      if (metadata.getChildren().contains(metadataFormWrapper)) {
         saveMetadata();
       }
       StringBuilder message = new StringBuilder();
@@ -181,13 +192,13 @@ public class InspectionPane extends BorderPane {
               }
             }
           } catch (SAXException e) {
-            log.error("Error validating schema", e);
+            log.info("Error validating schema", e);
             message.append(e.getMessage());
           }
           return result;
         }
       };
-      validationTask.setOnSucceeded((Void) -> {
+      validationTask.setOnSucceeded(Void -> {
         if (validationTask.getValue()) {
           popOver.updateContent(true, message.toString());
 
@@ -195,7 +206,7 @@ public class InspectionPane extends BorderPane {
             List<DescObjMetadata> metadataList = currentDescOb.getMetadata();
             if (metadataList != null && !metadataList.isEmpty()) {
               DescObjMetadata metadataObj = metadataList.get(0);
-              if (metadataObj.getTemplateType() != null && metadataObj.getTemplateType().equals("ead")) {
+              if (metadataObj.getTemplateType() != null && "ead".equals(metadataObj.getTemplateType())) {
                 toggleForm.setVisible(true);
                 if (metadata.getChildren().contains(metaText)) {
                   toggleForm.setSelected(false);
@@ -218,13 +229,13 @@ public class InspectionPane extends BorderPane {
       // newValue == true means that the form will be displayed
       if (newValue) {
         metadata.getChildren().remove(metaText);
-        metadataForm.getChildren().clear();
+        metadataGrid.getChildren().clear();
         updateForm();
-        if (!metadata.getChildren().contains(metadataForm)) {
-          metadata.getChildren().add(metadataForm);
+        if (!metadata.getChildren().contains(metadataFormWrapper)) {
+          metadata.getChildren().add(metadataFormWrapper);
         }
       } else { // from the form to the metadata text
-        metadata.getChildren().remove(metadataForm);
+        metadata.getChildren().remove(metadataFormWrapper);
         if (!metadata.getChildren().contains(metaText))
           metadata.getChildren().add(metaText);
       }
@@ -235,9 +246,8 @@ public class InspectionPane extends BorderPane {
     metaText = new CodeArea();
     VBox.setVgrow(metaText, Priority.ALWAYS);
     metadata.getChildren().addAll(metadataTopBox, metaText);
-    metaText.textProperty().addListener((observable, oldValue, newValue) -> {
-      metaText.setStyleSpans(0, XMLEditor.computeHighlighting(newValue));
-    });
+    metaText.textProperty().addListener(
+      (observable, oldValue, newValue) -> metaText.setStyleSpans(0, XMLEditor.computeHighlighting(newValue)));
     // set the tab size to 2 spaces
     metaText.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
       if (event.getCode() == KeyCode.TAB) {
@@ -253,12 +263,9 @@ public class InspectionPane extends BorderPane {
      * we would update after every single character modification, making the
      * application slower
      */
-    metaText.focusedProperty().addListener(new ChangeListener<Boolean>() {
-      @Override
-      public void changed(ObservableValue<? extends Boolean> observableValue, Boolean aBoolean, Boolean t1) {
-        if (!t1) { // lost focus, so update
-          saveMetadata();
-        }
+    metaText.focusedProperty().addListener((observable, oldValue, newValue) -> {
+      if (!newValue) { // lost focus, so update
+        saveMetadata();
       }
     });
   }
@@ -268,7 +275,7 @@ public class InspectionPane extends BorderPane {
     try {
       metadataValues = getMetadataValues();
     } catch (SAXException e) {
-      log.error("Error validating metadata with the EAD2002 schema", e);
+      log.info("Error validating metadata with the EAD2002 schema", e);
       noForm();
       return;
     }
@@ -307,9 +314,8 @@ public class InspectionPane extends BorderPane {
               return LocalDate.parse(dateString, dateTimeFormatter);
             }
           });
-          datePicker.valueProperty().addListener((observable1, oldValue1, newValue1) -> {
-            metadataValue.setValue(ldsc.toString(newValue1));
-          });
+          datePicker.valueProperty()
+            .addListener((observable1, oldValue1, newValue1) -> metadataValue.setValue(ldsc.toString(newValue1)));
           control = datePicker;
           break;
         case "combo":
@@ -368,8 +374,8 @@ public class InspectionPane extends BorderPane {
           }
           break;
       }
-      metadataForm.add(label, 0, i);
-      metadataForm.add(control, 1, i);
+      metadataGrid.add(label, 0, i);
+      metadataGrid.add(control, 1, i);
       i++;
     }
   }
@@ -393,7 +399,7 @@ public class InspectionPane extends BorderPane {
    * Saves the metadata from the text area in the SIP.
    */
   public void saveMetadata() {
-    if (metadata.getChildren().contains(metadataForm)) {
+    if (metadata.getChildren().contains(metadataFormWrapper)) {
       if (currentDescOb != null) {
         currentDescOb.applyMetadataValues();
         updateTextArea(currentDescOb.getMetadataWithReplaces().get(0).getContentDecoded());
@@ -456,44 +462,128 @@ public class InspectionPane extends BorderPane {
     centerHelp.getChildren().add(box);
   }
 
+  private void createDocumentationHelp() {
+    documentationHelp = new VBox();
+    documentationHelp.setPadding(new Insets(0, 10, 0, 10));
+    VBox.setVgrow(documentationHelp, Priority.ALWAYS);
+    documentationHelp.setAlignment(Pos.CENTER);
+
+    VBox box = new VBox(40);
+    box.setAlignment(Pos.CENTER);
+    box.setPadding(new Insets(10, 10, 10, 10));
+    box.setMaxWidth(355);
+    box.setMaxHeight(150);
+    box.setMinHeight(150);
+
+    HBox titleBox = new HBox();
+    titleBox.setAlignment(Pos.CENTER);
+    Label title = new Label(AppProperties.getLocalizedString("InspectionPane.docsHelp.title"));
+    title.getStyleClass().add("helpTitle");
+    title.setTextAlignment(TextAlignment.CENTER);
+    titleBox.getChildren().add(title);
+
+    box.getChildren().addAll(titleBox);
+    documentationHelp.getChildren().add(box);
+
+    documentationHelp.setOnDragOver(event -> {
+      Dragboard db = event.getDragboard();
+      if (event.getGestureSource() instanceof SourceTreeCell || db.hasFiles()) {
+        event.acceptTransferModes(TransferMode.COPY);
+        title.setText(AppProperties.getLocalizedString("InspectionPane.onDropDocs"));
+      }
+      event.consume();
+    });
+
+    documentationHelp.setOnDragDropped(event -> {
+      Dragboard db = event.getDragboard();
+      if (db.hasFiles()) {
+        Set<Path> paths = new HashSet<>();
+        for (File file : db.getFiles()) {
+          paths.add(file.toPath());
+        }
+        addDocumentationToSIP(null, paths);
+      } else
+        addDocumentationToSIP(null);
+
+      dataBox.getChildren().clear();
+      sipDocumentation.setRoot(docsRoot);
+      dataBox.getChildren().add(sipDocumentation);
+      content.setBottom(docsBottom);
+      event.consume();
+    });
+
+    documentationHelp.setOnDragExited(event -> {
+      title.setText(AppProperties.getLocalizedString("InspectionPane.docsHelp.title"));
+      event.consume();
+    });
+  }
+
   private void createContent() {
     content = new BorderPane();
     content.getStyleClass().add("inspectionPart");
     VBox.setVgrow(content, Priority.ALWAYS);
+    content.setMinHeight(200);
 
     HBox top = new HBox();
     top.getStyleClass().add("hbox");
-    top.setPadding(new Insets(10, 10, 10, 10));
+    top.setPadding(new Insets(5, 10, 5, 10));
 
-    Label title = new Label(AppProperties.getLocalizedString("content"));
+    Label title = new Label(AppProperties.getLocalizedString("data"));
+    title.setPadding(new Insets(5, 0, 0, 0));
     top.getChildren().add(title);
     content.setTop(top);
 
     // create tree pane
-    treeBox = new VBox();
-    treeBox.setPadding(new Insets(5, 5, 5, 5));
-    treeBox.setSpacing(10);
+    dataBox = new VBox();
+    dataBox.setPadding(new Insets(5, 5, 5, 5));
+    dataBox.setSpacing(10);
 
-    sipFiles = new TreeView<>();
+    sipFiles = new SipDataTreeView();
     // add everything to the tree pane
-    treeBox.getChildren().addAll(sipFiles);
+    dataBox.getChildren().addAll(sipFiles);
     VBox.setVgrow(sipFiles, Priority.ALWAYS);
-
-    sipFiles.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
-      @Override
-      public TreeCell<String> call(TreeView<String> p) {
-        return new InspectionTreeCell();
-      }
-    });
-
-    sipFiles.setOnMouseClicked(new ContentClickedEventHandler(sipFiles, this));
 
     sipRoot = new SipContentDirectory(new TreeNode(Paths.get("")), null);
     sipRoot.setExpanded(true);
     sipFiles.setRoot(sipRoot);
-    sipFiles.setShowRoot(false);
-    content.setCenter(treeBox);
+    content.setCenter(dataBox);
     createContentBottom();
+
+    // create documentation pane
+    HBox space = new HBox();
+    HBox.setHgrow(space, Priority.ALWAYS);
+
+    sipDocumentation = new SipDocumentationTreeView();
+
+    toggleDocumentation = new ToggleButton();
+    Image selected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.OPEN_FOLDER, Color.WHITE);
+    Image unselected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.BOOK, Color.WHITE);
+    ImageView toggleImage = new ImageView();
+    toggleDocumentation.setGraphic(toggleImage);
+    toggleImage.imageProperty()
+      .bind(Bindings.when(toggleDocumentation.selectedProperty()).then(selected).otherwise(unselected));
+    title.textProperty().bind(Bindings.when(toggleDocumentation.selectedProperty())
+      .then(AppProperties.getLocalizedString("documentation")).otherwise(AppProperties.getLocalizedString("data")));
+
+    toggleDocumentation.selectedProperty().addListener((observable, oldValue, newValue) -> {
+      dataBox.getChildren().clear();
+      // newValue == true means that the documentation will be displayed
+      if (newValue) {
+        if (docsRoot.getChildren().isEmpty()) {
+          dataBox.getChildren().add(documentationHelp);
+          content.setBottom(new HBox());
+        } else {
+          dataBox.getChildren().add(sipDocumentation);
+          content.setBottom(docsBottom);
+        }
+      } else { // from the documentation to the representations
+        dataBox.getChildren().add(sipFiles);
+        content.setBottom(contentBottom);
+      }
+    });
+    createDocsBottom();
+
+    top.getChildren().addAll(space, toggleDocumentation);
   }
 
   private void createLoadingPanes() {
@@ -517,7 +607,7 @@ public class InspectionPane extends BorderPane {
     contentBottom.setPadding(new Insets(10, 10, 10, 10));
     contentBottom.setAlignment(Pos.CENTER);
 
-    Button ignore = new Button(AppProperties.getLocalizedString("ignore"));
+    ignore = new Button(AppProperties.getLocalizedString("ignore"));
     ignore.setOnAction(event -> {
       InspectionTreeItem selected = (InspectionTreeItem) sipFiles.getSelectionModel().getSelectedItem();
       if (selected == null)
@@ -531,60 +621,113 @@ public class InspectionPane extends BorderPane {
         parent.getChildren().remove(child);
       }
     });
-    flatten = new Button(AppProperties.getLocalizedString("InspectionPane.flatten"));
-    flatten.setOnAction(event -> {
-      Object selected = sipFiles.getSelectionModel().getSelectedItem();
-      if (selected instanceof SipContentDirectory) {
-        SipContentDirectory dir = (SipContentDirectory) selected;
-        dir.flatten();
-      }
-    });
-    skip = new Button(AppProperties.getLocalizedString("InspectionPane.skip"));
-    skip.setOnAction(event -> {
-      Object selected = sipFiles.getSelectionModel().getSelectedItem();
-      if (selected instanceof SipContentDirectory) {
-        SipContentDirectory dir = (SipContentDirectory) selected;
-        SipContentDirectory parent = (SipContentDirectory) dir.getParent();
-        dir.skip();
-        // update the SIP's internal content representation
-        Set<TreeNode> newFiles = new HashSet<>();
-        for (String s : sipRoot.getTreeNode().getKeys())
-          newFiles.add(sipRoot.getTreeNode().get(s));
-
-        ((SipPreview) currentDescOb).setFiles(newFiles);
-        // clear the parent and recreate the children based on the updated
-        // tree nodes
-        TreeItem grandparent = parent.getParent();
-        if (grandparent == null) {
-          grandparent = parent;
-        }
-        TreeItem newParent = recCreateSipContent(parent.getTreeNode(), grandparent);
-        parent.getChildren().clear();
-        parent.getChildren().addAll(newParent.getChildren());
-        parent.sortChildren();
-      }
-    });
-
     ignore.minWidthProperty().bind(this.widthProperty().multiply(0.25));
-    flatten.minWidthProperty().bind(this.widthProperty().multiply(0.25));
-    skip.minWidthProperty().bind(this.widthProperty().multiply(0.25));
 
-    setStateContentButtons(true);
+    Button addRepresentation = new Button(AppProperties.getLocalizedString("InspectionPane.addRepresentation"));
+    addRepresentation.setOnAction(event -> {
+      int repCount = currentSIPNode.getSip().getRepresentations().size() + 1;
+      SipRepresentation sipRep = new SipRepresentation("rep" + repCount);
+      currentSIPNode.getSip().addRepresentation(sipRep);
+      SipContentRepresentation sipContentRep = new SipContentRepresentation(sipRep);
+      sipRoot.getChildren().add(sipContentRep);
+    });
+    addRepresentation.minWidthProperty().bind(this.widthProperty().multiply(0.25));
 
-    contentBottom.getChildren().addAll(ignore, flatten, skip);
-    content.setBottom(contentBottom);
+    removeRepresentation = new Button(AppProperties.getLocalizedString("InspectionPane.removeRepresentation"));
+    removeRepresentation.setOnAction(event -> {
+      InspectionTreeItem selectedRaw = (InspectionTreeItem) sipFiles.getSelectionModel().getSelectedItem();
+      if (selectedRaw instanceof SipContentRepresentation) {
+        SipContentRepresentation selected = (SipContentRepresentation) selectedRaw;
+        sipRoot.getChildren().remove(selectedRaw);
+        currentSIPNode.getSip().removeRepresentation(selected.getRepresentation());
+      }
+    });
+    removeRepresentation.minWidthProperty().bind(this.widthProperty().multiply(0.25));
+
+    contentBottom.getChildren().addAll(addRepresentation, removeRepresentation, ignore);
   }
 
-  private void createContent(SipPreviewNode node) {
+  private void createDocsBottom() {
+    docsBottom = new HBox(10);
+    docsBottom.setPadding(new Insets(10, 10, 10, 10));
+    docsBottom.setAlignment(Pos.CENTER_LEFT);
+
+    Button remove = new Button(AppProperties.getLocalizedString("remove"));
+    remove.setOnAction(event -> {
+      List<InspectionTreeItem> selectedItems = new ArrayList<InspectionTreeItem>(
+        sipDocumentation.getSelectionModel().getSelectedItems());
+      for (InspectionTreeItem selected : selectedItems) {
+        Set<Path> paths = new HashSet<>();
+        if (selected instanceof SipContentDirectory || selected instanceof SipContentFile) {
+          paths.add(selected.getPath());
+
+          if (currentDescOb != null && currentDescOb instanceof SipPreview) {
+            ((SipPreview) currentDescOb).removeDocumentation(paths);
+            TreeItem parent = selected.getParentDir();
+            TreeItem child = (TreeItem) selected;
+            parent.getChildren().remove(child);
+          }
+        }
+      }
+      if (docsRoot.getChildren().isEmpty()) {
+        dataBox.getChildren().clear();
+        dataBox.getChildren().add(documentationHelp);
+        content.setBottom(new HBox());
+      }
+    });
+    remove.minWidthProperty().bind(this.widthProperty().multiply(0.25));
+
+    docsBottom.getChildren().addAll(remove);
+  }
+
+  private void createContent(SipPreviewNode node, boolean active) {
     SipContentDirectory newRoot = new SipContentDirectory(new TreeNode(Paths.get("")), null);
-    content.setCenter(loadingPane);
-    content.setBottom(new HBox());
+    if (active) {
+      content.setCenter(loadingPane);
+      content.setBottom(new HBox());
+    }
 
     contentTask = new Task<Void>() {
       @Override
       protected Void call() throws Exception {
-        Set<TreeNode> files = node.getSip().getFiles();
-        for (TreeNode treeNode : files) {
+        Set<SipRepresentation> representations = node.getSip().getRepresentations();
+        for (SipRepresentation sr : representations) {
+          SipContentRepresentation scr = new SipContentRepresentation(sr);
+          for (TreeNode treeNode : sr.getFiles()) {
+            TreeItem<Object> startingItem = recCreateSipContent(treeNode, scr);
+            startingItem.setExpanded(true);
+            scr.getChildren().add(startingItem);
+          }
+          scr.sortChildren();
+          scr.setExpanded(true);
+          newRoot.getChildren().add(scr);
+        }
+        return null;
+      }
+    };
+    contentTask.setOnSucceeded(event -> {
+      sipRoot = newRoot;
+      if (active) {
+        sipFiles.setRoot(sipRoot);
+        content.setCenter(dataBox);
+        content.setBottom(contentBottom);
+      }
+    });
+    new Thread(contentTask).start();
+  }
+
+  private void createDocumentation(SipPreviewNode sip, boolean active) {
+    SipContentDirectory newRoot = new SipContentDirectory(new TreeNode(Paths.get("")), null);
+
+    if (active) {
+      content.setCenter(loadingPane);
+      content.setBottom(new HBox());
+    }
+
+    docsTask = new Task<Void>() {
+      @Override
+      protected Void call() throws Exception {
+        for (TreeNode treeNode : sip.getSip().getDocumentation()) {
           TreeItem<Object> startingItem = recCreateSipContent(treeNode, newRoot);
           startingItem.setExpanded(true);
           newRoot.getChildren().add(startingItem);
@@ -593,14 +736,18 @@ public class InspectionPane extends BorderPane {
         return null;
       }
     };
-    contentTask.setOnSucceeded(event -> {
-      sipRoot = newRoot;
-      sipFiles.setRoot(sipRoot);
-      content.setCenter(treeBox);
-      content.setBottom(contentBottom);
+    docsTask.setOnSucceeded(event -> {
+      docsRoot = newRoot;
+      if (active) {
+        sipDocumentation.setRoot(docsRoot);
+        if (!docsRoot.getChildren().isEmpty()) {
+          content.setCenter(documentationHelp);
+          content.setBottom(docsBottom);
+        } else
+          content.setCenter(dataBox);
+      }
     });
-    new Thread(contentTask).start();
-
+    new Thread(docsTask).start();
   }
 
   private TreeItem<Object> recCreateSipContent(TreeNode node, TreeItem parent) {
@@ -623,6 +770,7 @@ public class InspectionPane extends BorderPane {
     rules = new BorderPane();
     rules.getStyleClass().add("inspectionPart");
     VBox.setVgrow(rules, Priority.ALWAYS);
+    rules.setMinHeight(200);
 
     HBox top = new HBox();
     top.getStyleClass().add("hbox");
@@ -739,14 +887,16 @@ public class InspectionPane extends BorderPane {
           try {
             result = Utils.isEAD(metaText.getText());
           } catch (SAXException e) {
-            log.error("Error validating metadata with the EAD2002 schema", e);
+            log.info("Error validating metadata with the EAD2002 schema", e);
           }
         }
         return result;
       }
     };
+
+    Task thisMetadataTask = metadataTask;
     metadataTask.setOnSucceeded((Void) -> {
-      if (metadataTask != null)
+      if (metadataTask != null && metadataTask == thisMetadataTask)
         showMetadataPane(metadataTask.getValue());
     });
     new Thread(metadataTask).start();
@@ -755,7 +905,18 @@ public class InspectionPane extends BorderPane {
     center.getChildren().clear();
 
     // content tree
-    createContent(sip);
+    boolean documentation = toggleDocumentation.isSelected();
+    createContent(sip, !documentation);
+    createDocumentation(sip, documentation);
+    if (documentation) {
+      if (docsRoot.getChildren().isEmpty()) {
+        content.setBottom(new HBox());
+      } else {
+        content.setBottom(docsBottom);
+      }
+    } else {
+      content.setBottom(contentBottom);
+    }
 
     center.getChildren().addAll(metadata, content);
     setCenter(center);
@@ -831,13 +992,14 @@ public class InspectionPane extends BorderPane {
         try {
           result = Utils.isEAD(metaText.getText());
         } catch (SAXException e) {
-          log.error("Error validating metadata with the EAD2002 schema", e);
+          log.info("Error validating metadata with the EAD2002 schema", e);
         }
         return result;
       }
     };
+    Task thisMetadataTask = metadataTask;
     metadataTask.setOnSucceeded((Void) -> {
-      if (metadataTask != null) {
+      if (metadataTask != null && metadataTask == thisMetadataTask) {
         showMetadataPane(metadataTask.getValue());
       }
     });
@@ -909,19 +1071,76 @@ public class InspectionPane extends BorderPane {
   }
 
   /**
-   * Sets the state of the SIP content buttons: "Flatten directory" and
-   * "Skip directory".
-   * <p/>
-   * <p>
-   * Used by ContentClickedEventHandler to set the state of the SIP content
-   * buttons, since they are only enabled when a directory is selected.
-   * </p>
+   * Adds documentation to the current SIP.
    *
-   * @param state
-   *          The new state of the buttons.
+   * @param target
+   *          The item to where the documentation should go. This is NOT the SIP
+   *          where we will be adding the documentation. This must be either an
+   *          already added folder to the documentation or null (in which case
+   *          we'll add to the root of the tree).
    */
-  public void setStateContentButtons(boolean state) {
-    flatten.setDisable(state);
-    skip.setDisable(state);
+  public void addDocumentationToSIP(TreeItem target) {
+    Set<Path> paths = new HashSet<>();
+    Set<SourceTreeItem> items = RodaIn.getSourceSelectedItems();
+    for (SourceTreeItem item : items) {
+      paths.add(Paths.get(item.getPath()));
+    }
+
+    addDocumentationToSIP(target, paths);
+  }
+
+  /**
+   * Adds documentation to the current SIP.
+   *
+   * @param target
+   *          The item to where the documentation should go. This is NOT the SIP
+   *          where we will be adding the documentation. This must be either an
+   *          already added folder to the documentation or null (in which case
+   *          we'll add to the root of the tree).
+   * @param paths
+   *          The paths to be used to create the documentation.
+   */
+  public void addDocumentationToSIP(TreeItem target, Set<Path> paths) {
+    Set<ContentFilter> filters = new HashSet<>();
+    filters.add(new ContentFilter());
+
+    DocumentationCreator dc = new DocumentationCreator(filters, paths);
+    Set<TreeNode> result = dc.start();
+
+    if (target instanceof SipContentDirectory) {
+      SipContentDirectory dir = (SipContentDirectory) target;
+      for (TreeNode tn : result)
+        dir.getTreeNode().add(tn);
+    } else
+      currentSIPNode.getSip().addDocumentation(result);
+
+    SipContentDirectory parent = target != null ? (SipContentDirectory) target : docsRoot;
+    for (TreeNode treeNode : result) {
+      TreeItem<Object> startingItem = recCreateSipContent(treeNode, parent);
+      parent.getChildren().add(startingItem);
+    }
+    parent.sortChildren();
+  }
+
+  public void representationSelected(boolean b) {
+    if (b) {
+      removeRepresentation.setDisable(false);
+      ignore.setDisable(true);
+    } else {
+      removeRepresentation.setDisable(true);
+      ignore.setDisable(false);
+    }
+  }
+
+  public List<InspectionTreeItem> getDocumentationSelectedItems() {
+    List<InspectionTreeItem> result = new ArrayList<InspectionTreeItem>(
+      sipDocumentation.getSelectionModel().getSelectedItems());
+    return result;
+  }
+
+  public List<InspectionTreeItem> getDataSelectedItems() {
+    List<InspectionTreeItem> result = new ArrayList<InspectionTreeItem>(
+      sipFiles.getSelectionModel().getSelectedItems());
+    return result;
   }
 }

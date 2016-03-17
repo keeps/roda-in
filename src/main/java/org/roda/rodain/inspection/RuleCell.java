@@ -1,10 +1,5 @@
 package org.roda.rodain.inspection;
 
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Set;
-import java.util.TreeSet;
-
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -22,7 +17,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
-
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.Rule;
@@ -32,6 +26,11 @@ import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
+
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -135,8 +134,8 @@ public class RuleCell extends HBox implements Observer {
       case SIP_PER_FILE:
         type = AppProperties.getLocalizedString("association.sipPerFile.title");
         break;
-      case SIP_PER_FOLDER:
-        type = AppProperties.getLocalizedString("association.sipPerFolder.title");
+      case SIP_WITH_STRUCTURE:
+        type = AppProperties.getLocalizedString("association.sipWithStructure.title");
         break;
       case SIP_PER_SELECTION:
         type = AppProperties.getLocalizedString("association.sipSelection.title");
