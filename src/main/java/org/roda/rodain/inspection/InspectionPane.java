@@ -1,14 +1,5 @@
 package org.roda.rodain.inspection;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -28,7 +19,6 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import javafx.util.converter.LocalDateStringConverter;
-
 import org.apache.commons.lang.StringUtils;
 import org.fxmisc.richtext.CodeArea;
 import org.roda.rodain.core.AppProperties;
@@ -53,6 +43,15 @@ import org.roda.rodain.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -508,6 +507,7 @@ public class InspectionPane extends BorderPane {
       dataBox.getChildren().clear();
       sipDocumentation.setRoot(docsRoot);
       dataBox.getChildren().add(sipDocumentation);
+      content.setCenter(dataBox);
       content.setBottom(docsBottom);
       event.consume();
     });
@@ -741,10 +741,12 @@ public class InspectionPane extends BorderPane {
       if (active) {
         sipDocumentation.setRoot(docsRoot);
         if (!docsRoot.getChildren().isEmpty()) {
-          content.setCenter(documentationHelp);
-          content.setBottom(docsBottom);
-        } else
           content.setCenter(dataBox);
+          content.setBottom(docsBottom);
+        } else {
+          content.setCenter(documentationHelp);
+          content.setBottom(new HBox());
+        }
       }
     });
     new Thread(docsTask).start();

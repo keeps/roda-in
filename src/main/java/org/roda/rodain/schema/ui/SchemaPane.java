@@ -665,11 +665,14 @@ public class SchemaPane extends BorderPane {
           TreeItem parent = selected.getParent();
           parent.getChildren().remove(selected);
 
+          SchemaNode schemaNode = (SchemaNode) selected;
           if (node == null) {
             rootNode.getChildren().add(selected);
+            schemaNode.getDob().setParentId(null);
             sortRootChildren();
           } else {
             node.getChildren().add(selected);
+            schemaNode.getDob().setParentId(node.getDob().getId());
             node.sortChildren();
           }
         } else {
@@ -753,6 +756,9 @@ public class SchemaPane extends BorderPane {
           SipPreviewNode sip = (SipPreviewNode) item;
           SchemaNode parent = (SchemaNode) sip.getParent();
           result.put(sip.getSip(), parent.getDob().getId());
+        }
+        if (item instanceof SchemaNode) {
+          result.putAll(((SchemaNode) item).getSipPreviews());
         }
       }
     }
