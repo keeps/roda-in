@@ -26,7 +26,8 @@ public class ResourceResolver implements LSResourceResolver {
     } catch (MalformedURLException e) {
       // the XSD's are expected to be in the root of the classpath
       resourceAsStream = this.getClass().getClassLoader().getResourceAsStream(systemId);
-      log.info("Malformed URL in schema", e);
+      // we use this catch exception to check if the systemID is a URL or a
+      // file, that's why we don't re-throw it or log it
     } catch (IOException e) {
       log.error("Can't get file from URL", e);
     }

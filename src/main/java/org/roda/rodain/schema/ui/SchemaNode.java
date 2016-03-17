@@ -26,6 +26,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
   private Map<String, Set<SchemaNode>> ruleNodes;
   private Image iconBlack, iconWhite;
   private boolean blackIconSelected = true;
+  private boolean removed = false;
 
   private Set<SchemaNode> schemaNodes;
 
@@ -198,6 +199,10 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     }
   }
 
+  public boolean isRemoved() {
+    return removed;
+  }
+
   /**
    * Sorts the children of the SchemaNode
    *
@@ -258,7 +263,11 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     for (Rule r : allRules) {
       removeRule(r);
     }
-
+    sips.clear();
+    schemaNodes.clear();
+    ruleNodes.clear();
+    ruleObjects.clear();
+    removed = true;
   }
 
   /**

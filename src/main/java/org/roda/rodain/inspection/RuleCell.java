@@ -99,13 +99,10 @@ public class RuleCell extends HBox implements Observer {
     remove.setId("removeRule" + rule.getId());
     remove.setAlignment(Pos.CENTER);
 
-    remove.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent e) {
-        RuleModalController.removeRule(rule);
-        schemaNode.removeRule(rule);
-        RodaIn.getInspectionPane().notifyChange();
-      }
+    remove.setOnAction(event -> {
+      RuleModalController.removeRule(rule);
+      schemaNode.removeRule(rule);
+      RodaIn.getInspectionPane().notifyChange();
     });
 
     int sipCount = rule.getSipCount();
@@ -281,22 +278,19 @@ public class RuleCell extends HBox implements Observer {
   @Override
   public void update(Observable o, Object arg) {
     if (o == rule) {
-      Platform.runLater(new Runnable() {
-        @Override
-        public void run() {
-          if (arg instanceof String && arg.equals("Removed rule")) {
-            RuleModalController.removeRule(rule);
-            schemaNode.removeRule(rule);
-            RodaIn.getInspectionPane().notifyChange();
-          } else {
-            int sipCount = rule.getSipCount();
-            String format = titleFormat;
-            if (sipCount != 1) {
-              format += "s";
-            }
-            String created = String.format(format, rule.getSipCount());
-            lCreated.setText(created);
+      Platform.runLater(() -> {
+        if (arg instanceof String && arg.equals("Removed rule")) {
+          RuleModalController.removeRule(rule);
+          schemaNode.removeRule(rule);
+          RodaIn.getInspectionPane().notifyChange();
+        } else {
+          int sipCount = rule.getSipCount();
+          String format = titleFormat;
+          if (sipCount != 1) {
+            format += "s";
           }
+          String created = String.format(format, rule.getSipCount());
+          lCreated.setText(created);
         }
       });
     }

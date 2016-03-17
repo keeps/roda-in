@@ -1,9 +1,15 @@
 package org.roda.rodain.source.ui;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Scene;
 import javafx.scene.control.TreeItem;
 import javafx.stage.Stage;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.roda.rodain.core.AppProperties;
@@ -12,11 +18,6 @@ import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.testing.Utils;
 import org.testfx.framework.junit.ApplicationTest;
-
-import java.io.File;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -90,6 +91,7 @@ public class FileExplorerPaneTest extends ApplicationTest {
     assert "dir2".equals(dir2.getValue());
 
     doubleClickOn("dir2");
+    sleep(1000);
     assert dir2.getChildren().size() == LOAD_MORE_SIZE + 1;
     assert dir2.getChildren().get(0) instanceof SourceTreeDirectory;
 
@@ -107,6 +109,7 @@ public class FileExplorerPaneTest extends ApplicationTest {
     assert "dir3".equals(dir3.getValue());
 
     doubleClickOn("dir3");
+    sleep(1000);
     assert dir3.getChildren().size() == LOAD_MORE_SIZE + 1;
 
     scroll(70, VerticalDirection.DOWN);

@@ -20,7 +20,7 @@
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily -->
-            <fileNamePattern>./archived/debug.%d{yyyy-MM-dd}.%i.log
+            <fileNamePattern>./roda-in archived logs/debug.%d{yyyy-MM-dd}.%i.log
             </fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
@@ -39,12 +39,6 @@
     </logger>
 
     <logger name="gov.loc.repository.bagit.utilities.FileHelper" additivity="false">
-        <level value="WARN"/>
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="LOGFILE"/>
-    </logger>
-
-    <logger name="org.apache.commons.configuration.PropertiesConfiguration" additivity="false">
         <level value="WARN"/>
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="LOGFILE"/>

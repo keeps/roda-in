@@ -263,7 +263,12 @@ public class Rule extends Observable implements Observer, Comparable {
         sipNodes.remove(sip.getId());
         sips.remove(sip.getId());
         setChanged();
-        if (sips.isEmpty()) {
+
+        schemaNodes.forEach(schemaNode -> {
+          if (schemaNode.isRemoved())
+            schemaNodes.remove(schemaNode);
+        });
+        if (sips.isEmpty() && schemaNodes.isEmpty()) {
           notifyObservers("Removed rule");
         } else
           notifyObservers("Removed SIP");

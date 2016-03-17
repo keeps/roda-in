@@ -1,13 +1,5 @@
 package org.roda.rodain.source.ui;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
-
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -21,7 +13,6 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.Footer;
 import org.roda.rodain.core.PathCollection;
@@ -34,6 +25,14 @@ import org.roda.rodain.utils.Utils;
 import org.roda.rodain.utils.WalkFileTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -159,7 +158,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
     VBox box = new VBox(40);
     box.setPadding(new Insets(10, 10, 10, 10));
-    box.setMaxWidth(355);
+    box.setMaxWidth(400);
     box.setMaxHeight(200);
     box.setMinHeight(200);
 

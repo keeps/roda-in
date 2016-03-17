@@ -55,6 +55,7 @@ public class MainTest extends ApplicationTest {
     push(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN));
     sleep(3000);
     try {
+      push(KeyCode.RIGHT);
       push(KeyCode.ENTER);
     } catch (Exception e) {
     }
@@ -99,6 +100,7 @@ public class MainTest extends ApplicationTest {
     sleep(1000);
     clickOn("Node2").clickOn("#removeLevel");
     try {
+      push(KeyCode.RIGHT);
       push(KeyCode.ENTER);
     } catch (Exception e) {
     }
@@ -149,6 +151,7 @@ public class MainTest extends ApplicationTest {
 
     clickOn("#removeLevel");
     try {
+      push(KeyCode.RIGHT);
       push(KeyCode.ENTER);
     } catch (Exception e) {
     }
