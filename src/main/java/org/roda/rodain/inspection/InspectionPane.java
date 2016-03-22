@@ -1,5 +1,6 @@
 package org.roda.rodain.inspection;
 
+import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -41,6 +42,7 @@ import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.UIPair;
 import org.roda.rodain.utils.Utils;
+import org.roda_project.commons_ip.utils.EARKEnums;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -867,7 +869,20 @@ public class InspectionPane extends BorderPane {
     top.setPadding(new Insets(0, 10, 10, 10));
     top.setAlignment(Pos.CENTER_LEFT);
     topIcon = new ImageView(sip.getIconBlack());
-    top.getChildren().addAll(topIcon, paneTitle);
+    HBox space = new HBox();
+    HBox.setHgrow(space, Priority.ALWAYS);
+
+    ComboBox<EARKEnums.ContentType> contentType = new ComboBox<>();
+    List<EARKEnums.ContentType> contTypeList = new ArrayList<>();
+    for (EARKEnums.ContentType ct : EARKEnums.ContentType.values()) {
+      contTypeList.add(ct);
+    }
+    contentType.setItems(new ObservableListWrapper<>(contTypeList));
+    contentType.getSelectionModel().select(sip.getSip().getContentType());
+    contentType.valueProperty().addListener((obs, old, newValue) -> sip.getSip().setContentType(newValue));
+    contentType.setMinWidth(85);
+
+    top.getChildren().addAll(topIcon, paneTitle, space, contentType);
     Separator separatorTop = new Separator();
 
     topBox.setPadding(new Insets(10, 0, 10, 0));

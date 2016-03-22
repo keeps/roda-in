@@ -10,7 +10,6 @@ import org.roda.rodain.rules.sip.SipRepresentation;
 import org.roda.rodain.schema.DescObjMetadata;
 import org.roda_project.commons_ip.model.*;
 import org.roda_project.commons_ip.model.impl.eark.EARKSIP;
-import org.roda_project.commons_ip.utils.EARKEnums;
 import org.roda_project.commons_ip.utils.METSEnums;
 import org.roda_project.commons_ip.utils.SIPException;
 import org.slf4j.Logger;
@@ -65,7 +64,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
     Path rodainPath = AppProperties.getRodainPath();
     String metadataName = "metadata.xml";
     try {
-      SIP earkSip = new EARKSIP(sip.getId(), EARKEnums.ContentType.mixed, "RODA-in");
+      SIP earkSip = new EARKSIP(sip.getId(), sip.getContentType(), "RODA-in");
       earkSip.addObserver(this);
       if (sip.getParentId() != null)
         earkSip.setParent(sip.getParentId());

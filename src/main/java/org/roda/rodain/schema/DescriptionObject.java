@@ -172,7 +172,7 @@ public class DescriptionObject extends Observable {
     for (DescObjMetadata dom : metadata) {
       String content = dom.getContentDecoded();
       if (content != null) {
-        Template tmpl = Mustache.compiler().defaultValue(" ").compile(content);
+        Template tmpl = Mustache.compiler().defaultValue("").compile(content);
         Map<String, String> data = new HashMap<>();
         data.put("title", title);
         data.put("dateInitial", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
