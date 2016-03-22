@@ -60,7 +60,7 @@ public class MainTest extends ApplicationTest {
     } catch (Exception e) {
     }
     sleep(1000);
-    clickOn(AppProperties.getLocalizedString("SchemaPane.add"));
+    clickOn(I18n.t("SchemaPane.add"));
     sleep(1000);
     clickOn(".schemaNode");
     sleep(500);
@@ -72,9 +72,9 @@ public class MainTest extends ApplicationTest {
     TreeItem<String> item = RodaIn.getSchemePane().getTreeView().getSelectionModel().getSelectedItem();
     assert "Node1".equals(item.getValue());
 
-    clickOn(AppProperties.getLocalizedString("SchemaPane.add"));
+    clickOn(I18n.t("SchemaPane.add"));
     sleep(500);
-    clickOn(AppProperties.getLocalizedString("SchemaPane.newNode"));
+    clickOn(I18n.t("SchemaPane.newNode"));
     sleep(500);
     clickOn("#descObjTitle");
     eraseText(50);
@@ -174,29 +174,29 @@ public class MainTest extends ApplicationTest {
     drag().dropTo("UCP");
     sleep(1000); // wait for the modal to open
     clickOn("#assoc2");
-    clickOn(AppProperties.getLocalizedString("continue"));
+    clickOn(I18n.t("continue"));
     sleep(1000); // wait for the modal to update
     clickOn("#meta4");
-    clickOn(AppProperties.getLocalizedString("confirm"));
+    clickOn(I18n.t("confirm"));
     sleep(5000); // wait for the SIPs creation
 
-    clickOn(AppProperties.getLocalizedString("Main.file"));
-    clickOn(AppProperties.getLocalizedString("Main.exportSips"));
+    clickOn(I18n.t("Main.file"));
+    clickOn(I18n.t("Main.exportSips"));
     output = Utils.homeDir.resolve("SIPs output");
     output.toFile().mkdir();
     CreationModalPreparation.setOutputFolder(output.toString());
-    clickOn(AppProperties.getLocalizedString("start"));
+    clickOn(I18n.t("start"));
 
     sleep(5000);
-    clickOn(AppProperties.getLocalizedString("close"));
+    clickOn(I18n.t("close"));
 
-    clickOn(AppProperties.getLocalizedString("Main.file"));
-    clickOn(AppProperties.getLocalizedString("Main.exportSips"));
+    clickOn(I18n.t("Main.file"));
+    clickOn(I18n.t("Main.exportSips"));
     clickOn("#sipTypes").clickOn("BagIt");
     CreationModalPreparation.setOutputFolder(output.toString());
-    clickOn(AppProperties.getLocalizedString("start"));
+    clickOn(I18n.t("start"));
     sleep(5000);
-    clickOn(AppProperties.getLocalizedString("close"));
+    clickOn(I18n.t("close"));
 
     clickOn("FTP");
     sleep(1000);

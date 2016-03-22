@@ -1,10 +1,5 @@
 package org.roda.rodain.rules.ui;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Set;
-
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -22,8 +17,8 @@ import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
 import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.core.I18n;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.RuleTypes;
 import org.roda.rodain.schema.ui.SchemaNode;
@@ -32,6 +27,11 @@ import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.UIPair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -99,7 +99,7 @@ public class RuleModalPane extends BorderPane {
     pane.getChildren().add(box);
 
     Label title = new Label(
-        AppProperties.getLocalizedString("LoadingPane.createAssociation") + " \"" + schema.getDob().getTitle() + "\"");
+        I18n.t("LoadingPane.createAssociation") + " \"" + schema.getDob().getTitle() + "\"");
     title.setId("title");
 
     box.getChildren().add(title);
@@ -119,7 +119,7 @@ public class RuleModalPane extends BorderPane {
     boxAssociation.setPadding(new Insets(0, 10, 0, 10));
     boxAssociation.setAlignment(Pos.TOP_LEFT);
 
-    Label subtitle = new Label(AppProperties.getLocalizedString("RuleModalPane.associationMethod"));
+    Label subtitle = new Label(I18n.t("RuleModalPane.associationMethod"));
     subtitle.setPadding(new Insets(0, 0, 10, 0));
     subtitle.setId("sub-title");
 
@@ -144,26 +144,26 @@ public class RuleModalPane extends BorderPane {
     });
 
     String icon = AppProperties.getStyle("association.sipSelection.icon");
-    String title = AppProperties.getLocalizedString("association.sipSelection.title");
-    String description = AppProperties.getLocalizedString("association.sipSelection.description");
+    String title = I18n.t("association.sipSelection.title");
+    String description = I18n.t("association.sipSelection.description");
     HBoxCell cellSelected = new HBoxCell("assoc2", icon, title, description, new HBox());
     cellSelected.setUserData(RuleTypes.SIP_PER_SELECTION);
 
     icon = AppProperties.getStyle("association.singleSip.icon");
-    title = AppProperties.getLocalizedString("association.singleSip.title");
-    description = AppProperties.getLocalizedString("association.singleSip.description");
+    title = I18n.t("association.singleSip.title");
+    description = I18n.t("association.singleSip.description");
     HBoxCell cellSingleSip = new HBoxCell("assoc1", icon, title, description, new HBox());
     cellSingleSip.setUserData(RuleTypes.SINGLE_SIP);
 
     icon = AppProperties.getStyle("association.sipPerFile.icon");
-    title = AppProperties.getLocalizedString("association.sipPerFile.title");
-    description = AppProperties.getLocalizedString("association.sipPerFile.description");
+    title = I18n.t("association.sipPerFile.title");
+    description = I18n.t("association.sipPerFile.description");
     HBoxCell cellSipPerFile = new HBoxCell("assoc3", icon, title, description, new HBox());
     cellSipPerFile.setUserData(RuleTypes.SIP_PER_FILE);
 
     icon = AppProperties.getStyle("association.sipWithStructure.icon");
-    title = AppProperties.getLocalizedString("association.sipWithStructure.title");
-    description = AppProperties.getLocalizedString("association.sipWithStructure.description");
+    title = I18n.t("association.sipWithStructure.title");
+    description = I18n.t("association.sipWithStructure.description");
     HBoxCell cellStructure = new HBoxCell("assoc4", icon, title, description, new HBox());
     cellStructure.setUserData(RuleTypes.SIP_WITH_STRUCTURE);
 
@@ -184,7 +184,7 @@ public class RuleModalPane extends BorderPane {
     boxMetadata.setAlignment(Pos.TOP_LEFT);
     boxMetadata.setPadding(new Insets(0, 10, 0, 10));
 
-    Label subtitle = new Label(AppProperties.getLocalizedString("RuleModalPane.metadataMethod"));
+    Label subtitle = new Label(I18n.t("RuleModalPane.metadataMethod"));
     subtitle.setId("sub-title");
     subtitle.setPadding(new Insets(0, 0, 10, 0));
 
@@ -209,26 +209,26 @@ public class RuleModalPane extends BorderPane {
     });
 
     String icon = AppProperties.getStyle("metadata.template.icon");
-    String title = AppProperties.getLocalizedString("metadata.template.title");
-    String description = AppProperties.getLocalizedString("metadata.template.description");
+    String title = I18n.t("metadata.template.title");
+    String description = I18n.t("metadata.template.description");
     HBoxCell cellTemplate = new HBoxCell("meta4", icon, title, description, optionsTemplate());
     cellTemplate.setUserData(MetadataTypes.TEMPLATE);
 
     icon = AppProperties.getStyle("metadata.singleFile.icon");
-    title = AppProperties.getLocalizedString("metadata.singleFile.title");
-    description = AppProperties.getLocalizedString("metadata.singleFile.description");
+    title = I18n.t("metadata.singleFile.title");
+    description = I18n.t("metadata.singleFile.description");
     cellSingleFile = new HBoxCell("meta1", icon, title, description, optionsSingleFile());
     cellSingleFile.setUserData(MetadataTypes.SINGLE_FILE);
 
     icon = AppProperties.getStyle("metadata.sameFolder.icon");
-    title = AppProperties.getLocalizedString("metadata.sameFolder.title");
-    description = AppProperties.getLocalizedString("metadata.sameFolder.description");
+    title = I18n.t("metadata.sameFolder.title");
+    description = I18n.t("metadata.sameFolder.description");
     cellSameFolder = new HBoxCell("meta2", icon, title, description, optionsSameFolder());
     cellSameFolder.setUserData(MetadataTypes.SAME_DIRECTORY);
 
     icon = AppProperties.getStyle("metadata.diffFolder.icon");
-    title = AppProperties.getLocalizedString("metadata.diffFolder.title");
-    description = AppProperties.getLocalizedString("metadata.diffFolder.description");
+    title = I18n.t("metadata.diffFolder.title");
+    description = I18n.t("metadata.diffFolder.description");
     cellDiffFolder = new HBoxCell("meta3", icon, title, description, optionsDiffFolder());
     cellDiffFolder.setUserData(MetadataTypes.DIFF_DIRECTORY);
 
@@ -250,14 +250,14 @@ public class RuleModalPane extends BorderPane {
     HBox box = new HBox();
     box.setAlignment(Pos.CENTER_LEFT);
 
-    chooseFile = new Button(AppProperties.getLocalizedString("RuleModalPane.chooseFile"));
+    chooseFile = new Button(I18n.t("RuleModalPane.chooseFile"));
     chooseFile.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
         metaList.getSelectionModel().clearSelection();
         metaList.getSelectionModel().select(cellSingleFile);
         FileChooser chooser = new FileChooser();
-        chooser.setTitle(AppProperties.getLocalizedString("filechooser.title"));
+        chooser.setTitle(I18n.t("filechooser.title"));
         File selectedFile = chooser.showOpenDialog(stage);
         if (selectedFile == null)
           return;
@@ -275,7 +275,7 @@ public class RuleModalPane extends BorderPane {
     HBox box = new HBox(5);
     box.setAlignment(Pos.CENTER_LEFT);
 
-    Label lab = new Label(AppProperties.getLocalizedString("RuleModalPane.metadataPattern"));
+    Label lab = new Label(I18n.t("RuleModalPane.metadataPattern"));
     sameFolderTxtField = new TextField("metadata.xml");
 
     box.getChildren().addAll(lab, sameFolderTxtField);
@@ -286,14 +286,14 @@ public class RuleModalPane extends BorderPane {
     HBox box = new HBox();
     box.setAlignment(Pos.CENTER_LEFT);
 
-    chooseDir = new Button(AppProperties.getLocalizedString("RuleModalPane.chooseDirectory"));
+    chooseDir = new Button(I18n.t("RuleModalPane.chooseDirectory"));
     chooseDir.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
         metaList.getSelectionModel().clearSelection();
         metaList.getSelectionModel().select(cellDiffFolder);
         DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle(AppProperties.getLocalizedString("directorychooser.title"));
+        chooser.setTitle(I18n.t("directorychooser.title"));
         File selectedDirectory = chooser.showDialog(stage);
         if (selectedDirectory == null)
           return;
@@ -359,7 +359,7 @@ public class RuleModalPane extends BorderPane {
   }
 
   private void createContinueButton() {
-    btContinue = new Button(AppProperties.getLocalizedString("continue"));
+    btContinue = new Button(I18n.t("continue"));
     btContinue.setId("btConfirm");
     btContinue.setMaxWidth(120);
     btContinue.setMinWidth(120);
@@ -384,7 +384,7 @@ public class RuleModalPane extends BorderPane {
             enableMetaOptions();
             buttons.getChildren().clear();
             buttons.getChildren().addAll(btCancel, space, btBack, btContinue);
-            btContinue.setText(AppProperties.getLocalizedString("confirm"));
+            btContinue.setText(I18n.t("confirm"));
             btContinue.setGraphicTextGap(16);
           }
         } else if (currentState == States.METADATA && metadataCheckContinue()) {
@@ -395,7 +395,7 @@ public class RuleModalPane extends BorderPane {
   }
 
   private void createCancelButton() {
-    btCancel = new Button(AppProperties.getLocalizedString("cancel"));
+    btCancel = new Button(I18n.t("cancel"));
     btCancel.setMaxWidth(120);
     btCancel.setMinWidth(120);
     Platform.runLater(new Runnable() {
@@ -418,7 +418,7 @@ public class RuleModalPane extends BorderPane {
   }
 
   private void createBackButton() {
-    btBack = new Button(AppProperties.getLocalizedString("back"));
+    btBack = new Button(I18n.t("back"));
     btBack.setMaxWidth(120);
     btBack.setMinWidth(120);
     Platform.runLater(new Runnable() {
@@ -443,7 +443,7 @@ public class RuleModalPane extends BorderPane {
           currentState = States.ASSOCIATION;
           buttons.getChildren().clear();
           buttons.getChildren().addAll(btCancel, space, btContinue);
-          btContinue.setText(AppProperties.getLocalizedString("continue"));
+          btContinue.setText(I18n.t("continue"));
           btContinue.setGraphicTextGap(10);
         }
       }

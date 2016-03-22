@@ -2,6 +2,7 @@ package org.roda.rodain.creation;
 
 import org.apache.commons.io.FileUtils;
 import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.core.I18n;
 import org.roda.rodain.creation.ui.CreationModalProcessing;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
@@ -57,7 +58,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
       }
       createEarkSip(preview);
     }
-    currentAction = AppProperties.getLocalizedString("done");
+    currentAction = I18n.t("done");
   }
 
   private void createEarkSip(SipPreview sip) {
@@ -126,13 +127,13 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
         earkSip.addRepresentation(rep);
       }
 
-      currentAction = AppProperties.getLocalizedString("SimpleSipCreator.documentation");
+      currentAction = I18n.t("SimpleSipCreator.documentation");
       Set<TreeNode> docs = sip.getDocumentation();
       for (TreeNode tn : docs) {
         addDocToZip(tn, new ArrayList<>(), earkSip);
       }
 
-      currentAction = AppProperties.getLocalizedString("SimpleSipCreator.initZIP");
+      currentAction = I18n.t("SimpleSipCreator.initZIP");
 
       earkSip.build(outputPath);
 
@@ -196,7 +197,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
 
   @Override
   public void sipBuildRepresentationProcessingCurrentStatus(int i) {
-    String format = AppProperties.getLocalizedString("CreationModalProcessing.representation") + " (%d/%d)";
+    String format = I18n.t("CreationModalProcessing.representation") + " (%d/%d)";
     currentAction = String.format(format, i, repProcessingSize);
   }
 
@@ -217,7 +218,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
 
   @Override
   public void sipBuildPackagingCurrentStatus(int current) {
-    String format = AppProperties.getLocalizedString("CreationModalProcessing.eark.progress");
+    String format = I18n.t("CreationModalProcessing.eark.progress");
     String progress = String.format(format, current, countFilesOfZip);
     currentAction = progress;
     currentSipProgress = ((float) current) / countFilesOfZip;

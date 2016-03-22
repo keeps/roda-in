@@ -1,16 +1,15 @@
 package org.roda.rodain.schema;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import org.roda.rodain.core.AppProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.samskivert.mustache.Mustache;
+import com.samskivert.mustache.Template;
+import org.roda.rodain.core.I18n;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.sip.MetadataValue;
 import org.xml.sax.SAXException;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.samskivert.mustache.Mustache;
-import com.samskivert.mustache.Template;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -23,7 +22,7 @@ public class DescriptionObject extends Observable {
   private Map<String, Object> additionalProperties = new TreeMap<>();
 
   public DescriptionObject() {
-    title = AppProperties.getLocalizedString("root");
+    title = I18n.t("root");
     id = UUID.randomUUID().toString();
     metadata.add(new DescObjMetadata(MetadataTypes.TEMPLATE, "ead", "2002"));
   }

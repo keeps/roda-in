@@ -1,23 +1,23 @@
 package org.roda.rodain.source.ui;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Scene;
 import javafx.scene.control.TreeItem;
 import javafx.stage.Stage;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.Footer;
+import org.roda.rodain.core.I18n;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.testing.Utils;
 import org.testfx.framework.junit.ApplicationTest;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -70,7 +70,7 @@ public class FileExplorerPaneTest extends ApplicationTest {
     assert dir1.getChildren().get(0) instanceof SourceTreeFile;
 
     scroll(70, VerticalDirection.DOWN);
-    clickOn(AppProperties.getLocalizedString("SourceTreeLoadMore.title"));
+    clickOn(I18n.t("SourceTreeLoadMore.title"));
     assert dir1.getChildren().size() == 120;
 
     SourceTreeFile file = (SourceTreeFile) dir1.getChildren().get(0);
@@ -96,7 +96,7 @@ public class FileExplorerPaneTest extends ApplicationTest {
     assert dir2.getChildren().get(0) instanceof SourceTreeDirectory;
 
     scroll(70, VerticalDirection.DOWN);
-    clickOn(AppProperties.getLocalizedString("SourceTreeLoadMore.title"));
+    clickOn(I18n.t("SourceTreeLoadMore.title"));
     assert dir2.getChildren().size() == 120;
   }
 
@@ -113,7 +113,7 @@ public class FileExplorerPaneTest extends ApplicationTest {
     assert dir3.getChildren().size() == LOAD_MORE_SIZE + 1;
 
     scroll(70, VerticalDirection.DOWN);
-    clickOn(AppProperties.getLocalizedString("SourceTreeLoadMore.title"));
+    clickOn(I18n.t("SourceTreeLoadMore.title"));
     assert dir3.getChildren().size() == 140;
 
     List<Object> files = dir3.getChildren().stream().filter(p -> p instanceof SourceTreeFile)

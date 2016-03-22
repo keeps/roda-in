@@ -1,9 +1,5 @@
 package org.roda.rodain.creation.ui;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -16,9 +12,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
-
-import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.core.I18n;
 import org.roda.rodain.creation.SipTypes;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -58,7 +57,7 @@ public class CreationModalPreparation extends BorderPane {
     top.setPadding(new Insets(10, 10, 10, 0));
     top.setAlignment(Pos.CENTER);
 
-    Label title = new Label(AppProperties.getLocalizedString("CreationModalPreparation.creatingSips"));
+    Label title = new Label(I18n.t("CreationModalPreparation.creatingSips"));
     title.setId("title");
 
     top.getChildren().add(title);
@@ -83,13 +82,13 @@ public class CreationModalPreparation extends BorderPane {
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
-    Label outputFolderLabel = new Label(AppProperties.getLocalizedString("CreationModalPreparation.outputDirectory"));
-    Button chooseFile = new Button(AppProperties.getLocalizedString("CreationModalPreparation.choose"));
+    Label outputFolderLabel = new Label(I18n.t("CreationModalPreparation.outputDirectory"));
+    Button chooseFile = new Button(I18n.t("CreationModalPreparation.choose"));
     chooseFile.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
         DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle(AppProperties.getLocalizedString("directorychooser.title"));
+        chooser.setTitle(I18n.t("directorychooser.title"));
         File selectedFile = chooser.showDialog(stage);
         if (selectedFile == null)
           return;
@@ -122,7 +121,7 @@ public class CreationModalPreparation extends BorderPane {
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
-    Label sipTypesLabel = new Label(AppProperties.getLocalizedString("CreationModalPreparation.sipFormat"));
+    Label sipTypesLabel = new Label(I18n.t("CreationModalPreparation.sipFormat"));
 
     sipTypes = new ComboBox<>();
     sipTypes.setId("sipTypes");
@@ -141,7 +140,7 @@ public class CreationModalPreparation extends BorderPane {
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
-    Button cancel = new Button(AppProperties.getLocalizedString("cancel"));
+    Button cancel = new Button(I18n.t("cancel"));
     cancel.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent actionEvent) {
@@ -149,7 +148,7 @@ public class CreationModalPreparation extends BorderPane {
       }
     });
 
-    start = new Button(AppProperties.getLocalizedString("start"));
+    start = new Button(I18n.t("start"));
     start.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent actionEvent) {

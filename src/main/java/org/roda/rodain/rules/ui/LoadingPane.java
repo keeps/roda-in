@@ -1,7 +1,5 @@
 package org.roda.rodain.rules.ui;
 
-import java.io.IOException;
-
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -11,11 +9,12 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-
-import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.core.I18n;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -61,7 +60,7 @@ public class LoadingPane extends BorderPane {
     pane.getChildren().add(box);
 
     Label title = new Label(
-      AppProperties.getLocalizedString("LoadingPane.createAssociation") + " \"" + schema.getDob().getTitle() + "\"");
+      I18n.t("LoadingPane.createAssociation") + " \"" + schema.getDob().getTitle() + "\"");
     title.setId("title");
 
     box.getChildren().add(title);

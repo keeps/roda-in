@@ -1,17 +1,8 @@
 package org.roda.rodain.rules;
 
-import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
+import com.jcabi.xml.XMLDocument;
 import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.core.I18n;
 import org.roda.rodain.rules.sip.MetadataValue;
 import org.roda.rodain.utils.UIPair;
 import org.roda.rodain.utils.Utils;
@@ -22,7 +13,15 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.jcabi.xml.XMLDocument;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -108,20 +107,20 @@ public class XMLToMetadataValue {
 
   private static Map<String, MetadataValue> createEADForm() {
     Map<String, MetadataValue> result = new LinkedHashMap<>();
-    MetadataValue title = new MetadataValue("title", AppProperties.getLocalizedString("metadataValue.title"), null,
+    MetadataValue title = new MetadataValue("title", I18n.t("metadataValue.title"), null,
       "text");
     title.addXpathDestination("//*[local-name()='titleproper']");
     title.addXpathDestination("//*[local-name()='unittitle']");
 
-    MetadataValue date = new MetadataValue("date", AppProperties.getLocalizedString("metadataValue.date"), null,
+    MetadataValue date = new MetadataValue("date", I18n.t("metadataValue.date"), null,
       "text");
     date.addXpathDestination("//*[local-name()='unitdate']/@normal");
     date.addXpathDestination("//*[local-name()='unitdate']");
 
-    MetadataValue id = new MetadataValue("id", AppProperties.getLocalizedString("metadataValue.id"), null, "text");
+    MetadataValue id = new MetadataValue("id", I18n.t("metadataValue.id"), null, "text");
     id.addXpathDestination("//*[local-name()='unitid']");
 
-    MetadataValue level = new MetadataValue("level", AppProperties.getLocalizedString("metadataValue.level"), null,
+    MetadataValue level = new MetadataValue("level", I18n.t("metadataValue.level"), null,
       "combo");
     level.addXpathDestination("//*[local-name()='archdesc']/@level");
     String itemTypesRaw = AppProperties.getDescLevels("levels_ordered");
@@ -132,22 +131,22 @@ public class XMLToMetadataValue {
     }
 
     MetadataValue description = new MetadataValue("description",
-      AppProperties.getLocalizedString("metadataValue.description"), null, "text");
+      I18n.t("metadataValue.description"), null, "text");
     description.addXpathDestination("//*[local-name()='scopecontent']/*[local-name()='p']");
 
-    MetadataValue rights = new MetadataValue("rights", AppProperties.getLocalizedString("metadataValue.rights"), null,
+    MetadataValue rights = new MetadataValue("rights", I18n.t("metadataValue.rights"), null,
       "text");
     rights.addXpathDestination("//*[local-name()='userestrict']/*[local-name()='p']");
 
-    MetadataValue language = new MetadataValue("language", AppProperties.getLocalizedString("metadataValue.language"),
+    MetadataValue language = new MetadataValue("language", I18n.t("metadataValue.language"),
       null, "text");
     language.addXpathDestination("//*[local-name()='langmaterial']");
 
-    MetadataValue producer = new MetadataValue("producer", AppProperties.getLocalizedString("metadataValue.producer"),
+    MetadataValue producer = new MetadataValue("producer", I18n.t("metadataValue.producer"),
       null, "text");
     producer.addXpathDestination("//*[local-name()='origination'][@label=\"producer\"]");
 
-    MetadataValue creator = new MetadataValue("creator", AppProperties.getLocalizedString("metadataValue.creator"),
+    MetadataValue creator = new MetadataValue("creator", I18n.t("metadataValue.creator"),
       null, "text");
     creator.addXpathDestination("//*[local-name()='origination'][@label=\"creator\"]");
 

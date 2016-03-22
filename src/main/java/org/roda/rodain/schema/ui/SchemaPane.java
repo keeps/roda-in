@@ -24,6 +24,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.rules.ui.RuleModalController;
@@ -97,7 +98,7 @@ public class SchemaPane extends BorderPane {
   }
 
   private void createTop() {
-    Label title = new Label(AppProperties.getLocalizedString("SchemaPane.title"));
+    Label title = new Label(I18n.t("SchemaPane.title"));
     title.getStyleClass().add("title");
 
     topBox = new HBox();
@@ -122,14 +123,14 @@ public class SchemaPane extends BorderPane {
 
     HBox titleBox = new HBox();
     titleBox.setAlignment(Pos.CENTER);
-    Label title = new Label("2 . " + AppProperties.getLocalizedString("SchemaPane.help.title"));
+    Label title = new Label("2 . " + I18n.t("SchemaPane.help.title"));
     title.getStyleClass().add("helpTitle");
     title.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(title);
 
     HBox loadBox = new HBox();
     loadBox.setAlignment(Pos.CENTER);
-    Button load = new Button(AppProperties.getLocalizedString("load"));
+    Button load = new Button(I18n.t("load"));
     load.setMinHeight(65);
     load.setMinWidth(130);
     load.setMaxWidth(130);
@@ -137,10 +138,10 @@ public class SchemaPane extends BorderPane {
     load.getStyleClass().add("helpButton");
     loadBox.getChildren().add(load);
 
-    Hyperlink link = new Hyperlink(AppProperties.getLocalizedString("SchemaPane.create"));
+    Hyperlink link = new Hyperlink(I18n.t("SchemaPane.create"));
     link.setOnAction(event -> createClassificationScheme());
 
-    TextFlow flow = new TextFlow(new Text(AppProperties.getLocalizedString("SchemaPane.or")), link);
+    TextFlow flow = new TextFlow(new Text(I18n.t("SchemaPane.or")), link);
     flow.setTextAlignment(TextAlignment.CENTER);
 
     box.getChildren().addAll(titleBox, loadBox);
@@ -158,7 +159,7 @@ public class SchemaPane extends BorderPane {
     Separator separatorTop = new Separator();
     Separator separatorBottom = new Separator();
 
-    Label title = new Label(AppProperties.getLocalizedString("SchemaPane.dragHelp"));
+    Label title = new Label(I18n.t("SchemaPane.dragHelp"));
     title.getStyleClass().add("helpTitle");
     title.setTextAlignment(TextAlignment.CENTER);
     innerBox.getChildren().add(title);
@@ -167,7 +168,7 @@ public class SchemaPane extends BorderPane {
     dropBox.setOnDragOver(event -> {
       if (rootNode != null && event.getGestureSource() instanceof SourceTreeCell) {
         event.acceptTransferModes(TransferMode.COPY);
-        title.setText(AppProperties.getLocalizedString("InspectionPane.onDrop"));
+        title.setText(I18n.t("InspectionPane.onDrop"));
       }
       event.consume();
     });
@@ -178,7 +179,7 @@ public class SchemaPane extends BorderPane {
     });
 
     dropBox.setOnDragExited(event -> {
-      title.setText(AppProperties.getLocalizedString("SchemaPane.dragHelp"));
+      title.setText(I18n.t("SchemaPane.dragHelp"));
       event.consume();
     });
   }
@@ -275,7 +276,7 @@ public class SchemaPane extends BorderPane {
    */
   public void loadClassificationSchema() {
     FileChooser chooser = new FileChooser();
-    chooser.setTitle(AppProperties.getLocalizedString("filechooser.title"));
+    chooser.setTitle(I18n.t("filechooser.title"));
     File selectedFile = chooser.showOpenDialog(primaryStage);
     if (selectedFile == null)
       return;
@@ -392,11 +393,11 @@ public class SchemaPane extends BorderPane {
     if (rootNode.getChildren().isEmpty()) {
       return true;
     }
-    String content = AppProperties.getLocalizedString("SchemaPane.confirmNewScheme.content");
+    String content = I18n.t("SchemaPane.confirmNewScheme.content");
     Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
     dlg.initStyle(StageStyle.UNDECORATED);
-    dlg.setHeaderText(AppProperties.getLocalizedString("SchemaPane.confirmNewScheme.header"));
-    dlg.setTitle(AppProperties.getLocalizedString("SchemaPane.confirmNewScheme.title"));
+    dlg.setHeaderText(I18n.t("SchemaPane.confirmNewScheme.header"));
+    dlg.setTitle(I18n.t("SchemaPane.confirmNewScheme.title"));
     dlg.setContentText(content);
     dlg.initModality(Modality.APPLICATION_MODAL);
     dlg.initOwner(primaryStage);
@@ -421,23 +422,23 @@ public class SchemaPane extends BorderPane {
     bottom = new HBox(10);
     bottom.setPadding(new Insets(10, 10, 10, 10));
 
-    Button removeLevel = new Button(AppProperties.getLocalizedString("SchemaPane.remove"));
+    Button removeLevel = new Button(I18n.t("SchemaPane.remove"));
     removeLevel.setId("removeLevel");
     removeLevel.setMinWidth(100);
     removeLevel.setOnAction(event -> {
       List<TreeItem<String>> selectedItems = new ArrayList<>(treeView.getSelectionModel().getSelectedItems());
       Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
       dlg.initStyle(StageStyle.UNDECORATED);
-      dlg.setHeaderText(AppProperties.getLocalizedString("SchemaPane.confirmRemove.header"));
-      dlg.setTitle(AppProperties.getLocalizedString("SchemaPane.confirmRemove.title"));
-      dlg.setContentText(AppProperties.getLocalizedString("SchemaPane.confirmRemove.content"));
+      dlg.setHeaderText(I18n.t("SchemaPane.confirmRemove.header"));
+      dlg.setTitle(I18n.t("SchemaPane.confirmRemove.title"));
+      dlg.setContentText(I18n.t("SchemaPane.confirmRemove.content"));
       dlg.initModality(Modality.APPLICATION_MODAL);
       dlg.initOwner(primaryStage);
       dlg.show();
       dlg.resultProperty().addListener(o -> confirmRemove(selectedItems, dlg.getResult()));
     });
 
-    Button addLevel = new Button(AppProperties.getLocalizedString("SchemaPane.add"));
+    Button addLevel = new Button(I18n.t("SchemaPane.add"));
     addLevel.setMinWidth(100);
 
     addLevel.setOnAction(event -> addNewLevel());
@@ -445,7 +446,7 @@ public class SchemaPane extends BorderPane {
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
-    Button export = new Button(AppProperties.getLocalizedString("export"));
+    Button export = new Button(I18n.t("export"));
     export.setMinWidth(100);
     export.setOnAction(event -> RodaIn.exportSIPs());
 
@@ -511,7 +512,7 @@ public class SchemaPane extends BorderPane {
 
     DescriptionObject dobj = new DescriptionObject();
     dobj.setId(UUID.randomUUID().toString());
-    dobj.setTitle(AppProperties.getLocalizedString("SchemaPane.newNode"));
+    dobj.setTitle(I18n.t("SchemaPane.newNode"));
     dobj.setDescriptionlevel("series");
     SchemaNode newNode = new SchemaNode(dobj);
     if (selected != null) {

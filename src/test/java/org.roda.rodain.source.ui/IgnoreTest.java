@@ -1,22 +1,21 @@
 package org.roda.rodain.source.ui;
 
-import java.nio.file.Path;
-
 import javafx.scene.control.TreeItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.testing.Utils;
 import org.testfx.framework.junit.ApplicationTest;
+
+import java.nio.file.Path;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -89,7 +88,7 @@ public class IgnoreTest extends ApplicationTest {
     assert fileA.getState() == SourceTreeItemState.IGNORED;
 
     clickOn("dir4");
-    clickOn(AppProperties.getLocalizedString("ignore"));
+    clickOn(I18n.t("ignore"));
     assert dir4.getState() == SourceTreeItemState.IGNORED;
     assert fileA.getState() == SourceTreeItemState.IGNORED;
     assert dirA.getState() == SourceTreeItemState.IGNORED;

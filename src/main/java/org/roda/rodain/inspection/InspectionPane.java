@@ -1,5 +1,14 @@
 package org.roda.rodain.inspection;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,9 +28,11 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import javafx.util.converter.LocalDateStringConverter;
+
 import org.apache.commons.lang.StringUtils;
 import org.fxmisc.richtext.CodeArea;
 import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.inspection.documentation.DocumentationCreator;
 import org.roda.rodain.inspection.documentation.SipDocumentationTreeView;
@@ -43,15 +54,6 @@ import org.roda.rodain.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -154,7 +156,7 @@ public class InspectionPane extends BorderPane {
     metadataTopBox.setPadding(new Insets(5, 10, 5, 10));
     metadataTopBox.setAlignment(Pos.CENTER_LEFT);
 
-    Label titleLabel = new Label(AppProperties.getLocalizedString("InspectionPane.metadata"));
+    Label titleLabel = new Label(I18n.t("InspectionPane.metadata"));
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
@@ -452,7 +454,7 @@ public class InspectionPane extends BorderPane {
 
     HBox titleBox = new HBox();
     titleBox.setAlignment(Pos.CENTER);
-    Label title = new Label(AppProperties.getLocalizedString("InspectionPane.help.title"));
+    Label title = new Label(I18n.t("InspectionPane.help.title"));
     title.getStyleClass().add("helpTitle");
     title.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(title);
@@ -476,7 +478,7 @@ public class InspectionPane extends BorderPane {
 
     HBox titleBox = new HBox();
     titleBox.setAlignment(Pos.CENTER);
-    Label title = new Label(AppProperties.getLocalizedString("InspectionPane.docsHelp.title"));
+    Label title = new Label(I18n.t("InspectionPane.docsHelp.title"));
     title.getStyleClass().add("helpTitle");
     title.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(title);
@@ -488,7 +490,7 @@ public class InspectionPane extends BorderPane {
       Dragboard db = event.getDragboard();
       if (event.getGestureSource() instanceof SourceTreeCell || db.hasFiles()) {
         event.acceptTransferModes(TransferMode.COPY);
-        title.setText(AppProperties.getLocalizedString("InspectionPane.onDropDocs"));
+        title.setText(I18n.t("InspectionPane.onDropDocs"));
       }
       event.consume();
     });
@@ -513,7 +515,7 @@ public class InspectionPane extends BorderPane {
     });
 
     documentationHelp.setOnDragExited(event -> {
-      title.setText(AppProperties.getLocalizedString("InspectionPane.docsHelp.title"));
+      title.setText(I18n.t("InspectionPane.docsHelp.title"));
       event.consume();
     });
   }
@@ -528,7 +530,7 @@ public class InspectionPane extends BorderPane {
     top.getStyleClass().add("hbox");
     top.setPadding(new Insets(5, 10, 5, 10));
 
-    Label title = new Label(AppProperties.getLocalizedString("data"));
+    Label title = new Label(I18n.t("data"));
     title.setPadding(new Insets(5, 0, 0, 0));
     top.getChildren().add(title);
     content.setTop(top);
@@ -563,7 +565,7 @@ public class InspectionPane extends BorderPane {
     toggleImage.imageProperty()
       .bind(Bindings.when(toggleDocumentation.selectedProperty()).then(selected).otherwise(unselected));
     title.textProperty().bind(Bindings.when(toggleDocumentation.selectedProperty())
-      .then(AppProperties.getLocalizedString("documentation")).otherwise(AppProperties.getLocalizedString("data")));
+      .then(I18n.t("documentation")).otherwise(I18n.t("data")));
 
     toggleDocumentation.selectedProperty().addListener((observable, oldValue, newValue) -> {
       dataBox.getChildren().clear();
@@ -607,7 +609,7 @@ public class InspectionPane extends BorderPane {
     contentBottom.setPadding(new Insets(10, 10, 10, 10));
     contentBottom.setAlignment(Pos.CENTER);
 
-    ignore = new Button(AppProperties.getLocalizedString("ignore"));
+    ignore = new Button(I18n.t("ignore"));
     ignore.setOnAction(event -> {
       InspectionTreeItem selected = (InspectionTreeItem) sipFiles.getSelectionModel().getSelectedItem();
       if (selected == null)
@@ -623,7 +625,7 @@ public class InspectionPane extends BorderPane {
     });
     ignore.minWidthProperty().bind(this.widthProperty().multiply(0.25));
 
-    Button addRepresentation = new Button(AppProperties.getLocalizedString("InspectionPane.addRepresentation"));
+    Button addRepresentation = new Button(I18n.t("InspectionPane.addRepresentation"));
     addRepresentation.setOnAction(event -> {
       int repCount = currentSIPNode.getSip().getRepresentations().size() + 1;
       SipRepresentation sipRep = new SipRepresentation("rep" + repCount);
@@ -633,7 +635,7 @@ public class InspectionPane extends BorderPane {
     });
     addRepresentation.minWidthProperty().bind(this.widthProperty().multiply(0.25));
 
-    removeRepresentation = new Button(AppProperties.getLocalizedString("InspectionPane.removeRepresentation"));
+    removeRepresentation = new Button(I18n.t("InspectionPane.removeRepresentation"));
     removeRepresentation.setOnAction(event -> {
       InspectionTreeItem selectedRaw = (InspectionTreeItem) sipFiles.getSelectionModel().getSelectedItem();
       if (selectedRaw instanceof SipContentRepresentation) {
@@ -652,7 +654,7 @@ public class InspectionPane extends BorderPane {
     docsBottom.setPadding(new Insets(10, 10, 10, 10));
     docsBottom.setAlignment(Pos.CENTER_LEFT);
 
-    Button remove = new Button(AppProperties.getLocalizedString("remove"));
+    Button remove = new Button(I18n.t("remove"));
     remove.setOnAction(event -> {
       List<InspectionTreeItem> selectedItems = new ArrayList<InspectionTreeItem>(
         sipDocumentation.getSelectionModel().getSelectedItems());
@@ -778,7 +780,7 @@ public class InspectionPane extends BorderPane {
     top.getStyleClass().add("hbox");
     top.setPadding(new Insets(10, 10, 10, 10));
 
-    Label title = new Label(AppProperties.getLocalizedString("InspectionPane.rules"));
+    Label title = new Label(I18n.t("InspectionPane.rules"));
     top.getChildren().add(title);
     rules.setTop(top);
     ruleList = new ListView<>();
@@ -793,7 +795,7 @@ public class InspectionPane extends BorderPane {
 
     HBox titleBox = new HBox();
     titleBox.setAlignment(Pos.CENTER);
-    Label emptyText = new Label(AppProperties.getLocalizedString("InspectionPane.help.ruleList"));
+    Label emptyText = new Label(I18n.t("InspectionPane.help.ruleList"));
     emptyText.getStyleClass().add("helpTitle");
     emptyText.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(emptyText);
@@ -801,7 +803,7 @@ public class InspectionPane extends BorderPane {
     emptyRulesPane.setOnDragOver(event -> {
       if (currentSchema != null && event.getGestureSource() instanceof SourceTreeCell) {
         event.acceptTransferModes(TransferMode.COPY);
-        emptyText.setText(AppProperties.getLocalizedString("InspectionPane.onDrop"));
+        emptyText.setText(I18n.t("InspectionPane.onDrop"));
       }
       event.consume();
     });
@@ -812,7 +814,7 @@ public class InspectionPane extends BorderPane {
     });
 
     emptyRulesPane.setOnDragExited(event -> {
-      emptyText.setText(AppProperties.getLocalizedString("InspectionPane.help.ruleList"));
+      emptyText.setText(I18n.t("InspectionPane.help.ruleList"));
       event.consume();
     });
 

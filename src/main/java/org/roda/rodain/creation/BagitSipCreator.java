@@ -4,7 +4,7 @@ import gov.loc.repository.bagit.Bag;
 import gov.loc.repository.bagit.BagFactory;
 import gov.loc.repository.bagit.PreBag;
 import gov.loc.repository.bagit.writer.impl.ZipWriter;
-import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.core.I18n;
 import org.roda.rodain.creation.ui.CreationModalProcessing;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
@@ -70,7 +70,7 @@ public class BagitSipCreator extends SimpleSipCreator {
       }
       createBagit(previews.get(preview), preview);
     }
-    currentAction = AppProperties.getLocalizedString("done");
+    currentAction = I18n.t("done");
   }
 
   private void createBagit(String schemaId, SipPreview sip) {
