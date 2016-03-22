@@ -50,7 +50,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
   private TreeItem<String> dummyRoot;
   private Map<String, SourceTreeDirectory> realRoots;
-  private boolean rootSelected;
+  private boolean rootSelected, selectedIsIgnored;
 
   private ComputeDirectorySize computeSize;
 
@@ -65,9 +65,8 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
   /**
    * Creates a new FileExplorerPane object.
-   * 
-   * @param stage
-   *          The stage of the application.
+   *
+   * @param stage The stage of the application.
    */
   public FileExplorerPane(Stage stage) {
     super();
@@ -92,7 +91,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
   /**
    * @return True if the file explorer is showing ignored items, false
-   *         otherwise.
+   * otherwise.
    */
   public static boolean isShowIgnored() {
     return showIgnored;
@@ -135,8 +134,23 @@ public class FileExplorerPane extends BorderPane implements Observer {
           this.setCenter(centerHelp);
           this.setBottom(new HBox());
         }
+      } else if (selectedIsIgnored) {
+        List<TreeItem<String>> selectedItems = treeView.getSelectionModel().getSelectedItems();
+        if (selectedItems == null)
+          return;
+        for (TreeItem ti : selectedItems) {
+          SourceTreeItem sti = (SourceTreeItem) ti;
+          if (sti.getState() == SourceTreeItemState.IGNORED)
+            sti.removeIgnore();
+        }
+        selectedIsIgnored = false;
+        ignore.setText(AppProperties.getLocalizedString("ignore"));
       } else {
         ignore();
+        if (showIgnored) {
+          selectedIsIgnored = true;
+          ignore.setText(AppProperties.getLocalizedString("SourceTreeCell.remove"));
+        }
       }
     });
 
@@ -229,9 +243,8 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
   /**
    * Sets a new root to file explorer
-   * 
-   * @param rootPath
-   *          The new root path
+   *
+   * @param rootPath The new root path
    */
   public void setFileExplorerRoot(Path rootPath) {
     // check if the path, a parent path or a child path haven't been added yet
@@ -252,7 +265,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     this.setBottom(bottom);
 
     SourceTreeDirectory rootNode = new SourceTreeDirectory(rootPath, new SourceDirectory(rootPath, isShowFiles()),
-      null);
+        null);
     realRoots.put(rootPath.toString(), rootNode);
     PathCollection.addItem(rootNode);
     rootNode.setExpanded(true);
@@ -262,7 +275,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
   private void alertAddFolder(String oldPath, String newPath) {
     String content = String.format(AppProperties.getLocalizedString("FileExplorerPane.alertAddFolder.content"), oldPath,
-      newPath);
+        newPath);
     Alert dlg = new Alert(Alert.AlertType.INFORMATION);
     dlg.initStyle(StageStyle.UNDECORATED);
     dlg.setHeaderText(AppProperties.getLocalizedString("FileExplorerPane.alertAddFolder.header"));
@@ -277,9 +290,8 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
   /**
    * Updates the interface with the attributes of the path in argument.
-   * 
-   * @param path
-   *          The path to be used in the update
+   *
+   * @param path The path to be used in the update
    */
   public void updateAttributes(Path path) {
     // we need to stop the directory size compute thread to avoid more than one
@@ -302,9 +314,8 @@ public class FileExplorerPane extends BorderPane implements Observer {
   }
 
   /**
-   * @param pathString
-   *          The path, in the form of a string, to be used to update the
-   *          interface.
+   * @param pathString The path, in the form of a string, to be used to update the
+   *                   interface.
    * @see #updateAttributes(Path)
    */
   public void updateAttributes(String pathString) {
@@ -321,7 +332,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
   /**
    * Returns the tree view of the file explorer pane.
-   * 
+   *
    * @return
    */
   public TreeView<String> getTreeView() {
@@ -388,9 +399,8 @@ public class FileExplorerPane extends BorderPane implements Observer {
    * Ignores the items received in parameter. If an item is normal, this method
    * ignores it. Depending on the state of the showIgnored flag, it shows or
    * hides the ignored items.
-   * 
-   * @param items
-   *          The set of items to be ignored
+   *
+   * @param items The set of items to be ignored
    */
   public void ignore(Set<SourceTreeItem> items) {
     for (SourceTreeItem item : items) {
@@ -477,6 +487,15 @@ public class FileExplorerPane extends BorderPane implements Observer {
     rootSelected = b;
     if (b) {
       ignore.setText(AppProperties.getLocalizedString("FileExplorerPane.removeFolder"));
+    } else {
+      ignore.setText(AppProperties.getLocalizedString("ignore"));
+    }
+  }
+
+  public void selectedIsIgnored(boolean b) {
+    selectedIsIgnored = b;
+    if (b) {
+      ignore.setText(AppProperties.getLocalizedString("SourceTreeCell.remove"));
     } else {
       ignore.setText(AppProperties.getLocalizedString("ignore"));
     }
