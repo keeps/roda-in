@@ -13,7 +13,7 @@ The tool includes features such as:
 * Creation of SIP of unlimited size
 * Creation of SIP in various formats: [BagIt](https://github.com/LibraryOfCongress/bagit-java) and [E-ARK](http://www.eark-project.com/resources/project-deliverables/51-d33pilotspec)
 
-This application was part of the [RODA project](http://www.roda-community.org) and now has been released as a project by its own due to the increasing interest in its particular functionality. It is now being further developed in the [EARK project](http://www.eark-project.com).
+This application was part of the [RODA project](http://www.roda-community.org) and now has been released as a project by its own due to the increasing interest in its particular functionality. It is now being further developed in the [E-ARK project](http://www.eark-project.com).
 
 ## Supported SIP formats
 
