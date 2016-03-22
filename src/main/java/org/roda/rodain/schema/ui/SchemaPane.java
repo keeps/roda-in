@@ -236,6 +236,7 @@ public class SchemaPane extends BorderPane {
 
   private void createRootNode() {
     DescriptionObject dobj = new DescriptionObject();
+    dobj.setParentId(null);
     rootNode = new SchemaNode(dobj);
     rootNode.setExpanded(true);
     rootNode.getChildren().addListener(new ListChangeListener<TreeItem<String>>() {

@@ -55,18 +55,19 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
       if (canceled) {
         break;
       }
-      createEarkSip(previews.get(preview), preview);
+      createEarkSip(preview);
     }
     currentAction = AppProperties.getLocalizedString("done");
   }
 
-  private void createEarkSip(String schemaId, SipPreview sip) {
+  private void createEarkSip(SipPreview sip) {
     Path rodainPath = AppProperties.getRodainPath();
     String metadataName = "metadata.xml";
     try {
       SIP earkSip = new EARKSIP(sip.getId(), EARKEnums.ContentType.mixed, "RODA-in");
       earkSip.addObserver(this);
-      earkSip.setParent(schemaId);
+      if (sip.getParentId() != null)
+        earkSip.setParent(sip.getParentId());
 
       currentSipProgress = 0;
       currentSipName = sip.getTitle();
