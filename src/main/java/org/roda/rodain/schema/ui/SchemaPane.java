@@ -56,8 +56,9 @@ public class SchemaPane extends BorderPane {
   private HBox topBox, bottom;
   private VBox dropBox;
   private static Stage primaryStage;
-
   private Set<SchemaNode> schemaNodes;
+
+  private boolean modifiedPlan = false;
 
   // center help
   private VBox centerHelp;
@@ -316,6 +317,7 @@ public class SchemaPane extends BorderPane {
     // create ObjectMapper instance
     ObjectMapper objectMapper = new ObjectMapper();
 
+    modifiedPlan = false;
     // convert json string to object
     return objectMapper.readValue(input, ClassificationSchema.class);
   }
@@ -383,6 +385,7 @@ public class SchemaPane extends BorderPane {
     }
     sortRootChildren();
     hasClassificationScheme = true;
+    modifiedPlan = false;
   }
 
   private boolean confirmUpdate() {
@@ -494,6 +497,9 @@ public class SchemaPane extends BorderPane {
     setBottom(bottom);
     rootNode.getChildren().clear();
     hasClassificationScheme = true;
+    AppProperties.setConfig("lastClassificationScheme", "");
+    AppProperties.saveConfig();
+    modifiedPlan = true;
   }
 
   private SchemaNode addNewLevel() {
@@ -529,6 +535,7 @@ public class SchemaPane extends BorderPane {
     treeView.getSelectionModel().clearSelection();
     treeView.getSelectionModel().select(newNode);
     treeView.scrollTo(treeView.getSelectionModel().getSelectedIndex());
+    modifiedPlan = true;
 
     return newNode;
   }
@@ -665,6 +672,7 @@ public class SchemaPane extends BorderPane {
 
           TreeItem parent = selected.getParent();
           parent.getChildren().remove(selected);
+          modifiedPlan = true;
 
           SchemaNode schemaNode = (SchemaNode) selected;
           if (node == null) {
@@ -729,6 +737,12 @@ public class SchemaPane extends BorderPane {
     setCenter(treeBox);
   }
 
+  public void showHelp() {
+    rootNode.getChildren().clear();
+    setCenter(centerHelp);
+    setBottom(new HBox());
+  }
+
   /**
    * @return A set with all the SchemaNodes in the tree
    */
@@ -741,6 +755,10 @@ public class SchemaPane extends BorderPane {
    */
   public TreeView<String> getTreeView() {
     return treeView;
+  }
+
+  public boolean isModifiedPlan() {
+    return modifiedPlan;
   }
 
   /**

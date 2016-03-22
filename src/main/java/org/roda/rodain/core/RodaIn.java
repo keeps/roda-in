@@ -78,8 +78,7 @@ public class RodaIn extends Application {
     stage.setMinHeight(600);
 
     stage.setOnCloseRequest(event -> {
-      VisitorStack.end();
-      Platform.exit();
+      closeApp();
     });
 
     try {
@@ -197,8 +196,7 @@ public class RodaIn extends Application {
     final MenuItem quit = new MenuItem(AppProperties.getLocalizedString("Main.quit"));
     quit.setAccelerator(KeyCombination.keyCombination("Ctrl+Q"));
     quit.setOnAction(event -> {
-      VisitorStack.end();
-      Platform.exit();
+      closeApp();
     });
     final MenuItem reset = new MenuItem(AppProperties.getLocalizedString("Main.reset"));
     reset.setAccelerator(KeyCombination.keyCombination("Ctrl+N"));
@@ -218,6 +216,7 @@ public class RodaIn extends Application {
         fileExplorer = new FileExplorerPane(stage);
         schemePane = new SchemaPane(stage);
         mainPane.setCenter(createSplitPane());
+        schemePane.showHelp();
       }
     });
 
@@ -240,18 +239,7 @@ public class RodaIn extends Application {
       File selectedFile = chooser.showSaveDialog(stage);
       if (selectedFile == null)
         return;
-      String outputFile = selectedFile.toPath().toString();
-
-      Set<SchemaNode> nodes = schemePane.getSchemaNodes();
-      List<DescriptionObject> dobjs = new ArrayList<>();
-      for (SchemaNode sn : nodes) {
-        dobjs.add(sn.getDob());
-      }
-      ClassificationSchema cs = new ClassificationSchema();
-      cs.setDos(dobjs);
-      cs.export(outputFile);
-      AppProperties.setConfig("lastClassificationScheme", outputFile);
-      AppProperties.saveConfig();
+      exportCS(selectedFile.toPath().toString());
     });
 
     menuClassScheme.getItems().addAll(createCS, updateCS, exportCS);
@@ -296,6 +284,27 @@ public class RodaIn extends Application {
 
     menu.getMenus().addAll(menuFile, menuEdit, menuClassScheme, menuView);
     mainPane.setTop(menu);
+  }
+
+  private static void closeApp() {
+    if (schemePane.isModifiedPlan()) {
+      exportCS(AppProperties.getRodainPath().resolve(".plan.temp").toString());
+    }
+    VisitorStack.end();
+    Platform.exit();
+  }
+
+  private static void exportCS(String outputFile) {
+    Set<SchemaNode> nodes = schemePane.getSchemaNodes();
+    List<DescriptionObject> dobjs = new ArrayList<>();
+    for (SchemaNode sn : nodes) {
+      dobjs.add(sn.getDob());
+    }
+    ClassificationSchema cs = new ClassificationSchema();
+    cs.setDos(dobjs);
+    cs.export(outputFile);
+    AppProperties.setConfig("lastClassificationScheme", outputFile);
+    AppProperties.saveConfig();
   }
 
   /**
