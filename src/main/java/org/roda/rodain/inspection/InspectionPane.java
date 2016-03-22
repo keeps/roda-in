@@ -1,14 +1,5 @@
 package org.roda.rodain.inspection;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -28,7 +19,6 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import javafx.util.converter.LocalDateStringConverter;
-
 import org.apache.commons.lang.StringUtils;
 import org.fxmisc.richtext.CodeArea;
 import org.roda.rodain.core.AppProperties;
@@ -54,6 +44,15 @@ import org.roda.rodain.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -161,6 +160,7 @@ public class InspectionPane extends BorderPane {
     HBox.setHgrow(space, Priority.ALWAYS);
 
     toggleForm = new ToggleButton();
+    toggleForm.setTooltip(new Tooltip(I18n.t("InspectionPane.textContent")));
     Image selected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CODE, Color.WHITE);
     Image unselected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.LIST, Color.WHITE);
     ImageView toggleImage = new ImageView();
@@ -168,6 +168,7 @@ public class InspectionPane extends BorderPane {
     toggleImage.imageProperty().bind(Bindings.when(toggleForm.selectedProperty()).then(selected).otherwise(unselected));
 
     validationButton = new Button();
+    validationButton.setTooltip(new Tooltip(I18n.t("InspectionPane.validate")));
     validationButton
       .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CHECK, Color.WHITE)));
     validationButton.setOnAction(event -> {
@@ -229,6 +230,7 @@ public class InspectionPane extends BorderPane {
       saveMetadata();
       // newValue == true means that the form will be displayed
       if (newValue) {
+        toggleForm.setTooltip(new Tooltip(I18n.t("InspectionPane.textContent")));
         metadata.getChildren().remove(metaText);
         metadataGrid.getChildren().clear();
         updateForm();
@@ -236,6 +238,7 @@ public class InspectionPane extends BorderPane {
           metadata.getChildren().add(metadataFormWrapper);
         }
       } else { // from the form to the metadata text
+        toggleForm.setTooltip(new Tooltip(I18n.t("InspectionPane.form")));
         metadata.getChildren().remove(metadataFormWrapper);
         if (!metadata.getChildren().contains(metaText))
           metadata.getChildren().add(metaText);
@@ -558,19 +561,21 @@ public class InspectionPane extends BorderPane {
     sipDocumentation = new SipDocumentationTreeView();
 
     toggleDocumentation = new ToggleButton();
+    toggleDocumentation.setTooltip(new Tooltip(I18n.t("documentation")));
     Image selected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.OPEN_FOLDER, Color.WHITE);
     Image unselected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.BOOK, Color.WHITE);
     ImageView toggleImage = new ImageView();
     toggleDocumentation.setGraphic(toggleImage);
     toggleImage.imageProperty()
       .bind(Bindings.when(toggleDocumentation.selectedProperty()).then(selected).otherwise(unselected));
-    title.textProperty().bind(Bindings.when(toggleDocumentation.selectedProperty())
-      .then(I18n.t("documentation")).otherwise(I18n.t("data")));
+    title.textProperty().bind(
+      Bindings.when(toggleDocumentation.selectedProperty()).then(I18n.t("documentation")).otherwise(I18n.t("data")));
 
     toggleDocumentation.selectedProperty().addListener((observable, oldValue, newValue) -> {
       dataBox.getChildren().clear();
       // newValue == true means that the documentation will be displayed
       if (newValue) {
+        toggleDocumentation.setTooltip(new Tooltip(I18n.t("data")));
         if (docsRoot.getChildren().isEmpty()) {
           dataBox.getChildren().add(documentationHelp);
           content.setBottom(new HBox());
@@ -579,6 +584,7 @@ public class InspectionPane extends BorderPane {
           content.setBottom(docsBottom);
         }
       } else { // from the documentation to the representations
+        toggleDocumentation.setTooltip(new Tooltip(I18n.t("documentation")));
         dataBox.getChildren().add(sipFiles);
         content.setBottom(contentBottom);
       }

@@ -142,6 +142,7 @@ public class RodaIn extends Application {
   private void createMenu() {
     MenuBar menu = new MenuBar();
     Menu menuFile = new Menu(I18n.t("Main.file"));
+
     Menu menuEdit = new Menu(I18n.t("Main.edit"));
     Menu menuClassScheme = new Menu(I18n.t("Main.classScheme"));
     Menu menuView = new Menu(I18n.t("Main.view"));
