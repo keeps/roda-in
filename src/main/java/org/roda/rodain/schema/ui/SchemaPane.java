@@ -384,8 +384,15 @@ public class SchemaPane extends BorderPane {
       rootNode.getChildren().add(sn);
       schemaNodes.add(sn);
     }
-    sortRootChildren();
-    hasClassificationScheme = true;
+    // if there were no nodes in the file, show the help panel
+    if (roots.isEmpty()) {
+      setTop(new HBox());
+      setCenter(centerHelp);
+      setBottom(new HBox());
+    } else {
+      sortRootChildren();
+      hasClassificationScheme = true;
+    }
     modifiedPlan = false;
   }
 

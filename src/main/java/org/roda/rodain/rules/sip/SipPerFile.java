@@ -177,9 +177,7 @@ public class SipPerFile extends SipPreviewCreator {
       dir = sipPath.getParent().toFile();
 
     PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + templateType);
-    File[] foundFiles = dir.listFiles((dir1, name) -> {
-      return matcher.matches(Paths.get(name));
-    });
+    File[] foundFiles = dir.listFiles((dir1, name) -> matcher.matches(Paths.get(name)));
 
     if (foundFiles != null && foundFiles.length > 0) {
       return foundFiles[0].toPath();
@@ -188,11 +186,11 @@ public class SipPerFile extends SipPreviewCreator {
   }
 
   private Path getFileFromDir(Path path) {
-    String fileName = FilenameUtils.removeExtension(path.getFileName().toString());
+    String fileNameWithExtension = path.getFileName().toString();
+    String fileName = FilenameUtils.removeExtension(fileNameWithExtension);
     File dir = new File(metadataPath.toString());
-    File[] foundFiles = dir.listFiles((dir1, name) -> {
-      return name.startsWith(fileName + ".");
-    });
+    File[] foundFiles = dir
+      .listFiles((dir1, name) -> name.startsWith(fileName + ".") && !name.equals(fileNameWithExtension));
 
     if (foundFiles.length > 0) {
       return foundFiles[0].toPath();

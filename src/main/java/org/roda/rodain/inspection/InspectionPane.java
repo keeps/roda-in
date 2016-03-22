@@ -871,12 +871,14 @@ public class InspectionPane extends BorderPane {
     topIcon = new ImageView(sip.getIconBlack());
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
-
+    // Content Type combo box
     ComboBox<EARKEnums.ContentType> contentType = new ComboBox<>();
     List<EARKEnums.ContentType> contTypeList = new ArrayList<>();
     for (EARKEnums.ContentType ct : EARKEnums.ContentType.values()) {
       contTypeList.add(ct);
     }
+    // sort the list as strings
+    Collections.sort(contTypeList, (o1, o2) -> o1.toString().compareTo(o2.toString()));
     contentType.setItems(new ObservableListWrapper<>(contTypeList));
     contentType.getSelectionModel().select(sip.getSip().getContentType());
     contentType.valueProperty().addListener((obs, old, newValue) -> sip.getSip().setContentType(newValue));
