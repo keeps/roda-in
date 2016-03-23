@@ -81,7 +81,9 @@ public class InspectionPane extends BorderPane {
   private ToggleButton toggleForm;
   private HBox metadataLoadingPane, metadataTopBox;
   private TextField titleTextField;
-  private Button validationButton;
+  private Button validationButton, addMetadata;
+  private ComboBox<UIPair> metadataCombo;
+  private Set<Control> topButtons;
   // SIP Content
   private BorderPane content;
   private VBox dataBox, documentationHelp;
@@ -102,8 +104,7 @@ public class InspectionPane extends BorderPane {
   /**
    * Creates a new inspection pane.
    *
-   * @param stage
-   *          The primary stage of the application
+   * @param stage The primary stage of the application
    */
   public InspectionPane(Stage stage) {
     createCenterHelp();
@@ -152,108 +153,12 @@ public class InspectionPane extends BorderPane {
     metadataFormWrapper.setContent(metadataGrid);
     metadataFormWrapper.setFitToWidth(true);
 
-    metadataTopBox = new HBox();
-    metadataTopBox.getStyleClass().add("hbox");
-    metadataTopBox.setPadding(new Insets(5, 10, 5, 10));
-    metadataTopBox.setAlignment(Pos.CENTER_LEFT);
-
-    Label titleLabel = new Label(I18n.t("InspectionPane.metadata"));
-    HBox space = new HBox();
-    HBox.setHgrow(space, Priority.ALWAYS);
-
-    toggleForm = new ToggleButton();
-    toggleForm.setTooltip(new Tooltip(I18n.t("InspectionPane.textContent")));
-    Image selected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CODE, Color.WHITE);
-    Image unselected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.LIST, Color.WHITE);
-    ImageView toggleImage = new ImageView();
-    toggleForm.setGraphic(toggleImage);
-    toggleImage.imageProperty().bind(Bindings.when(toggleForm.selectedProperty()).then(selected).otherwise(unselected));
-
-    validationButton = new Button();
-    validationButton.setTooltip(new Tooltip(I18n.t("InspectionPane.validate")));
-    validationButton
-      .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CHECK, Color.WHITE)));
-    validationButton.setOnAction(event -> {
-      if (metadata.getChildren().contains(metadataFormWrapper)) {
-        saveMetadata();
-      }
-      StringBuilder message = new StringBuilder();
-      ValidationPopOver popOver = new ValidationPopOver();
-      popOver.show(validationButton);
-
-      Task<Boolean> validationTask = new Task<Boolean>() {
-        @Override
-        protected Boolean call() throws Exception {
-          boolean result = false;
-          try {
-            if (currentDescOb != null) {
-              List<DescObjMetadata> metadataList = currentDescOb.getMetadata();
-              if (metadataList != null && !metadataList.isEmpty()) {
-                DescObjMetadata metadata = metadataList.get(0);
-                if (Utils.validateSchema(metaText.getText(), metadata.getSchema())) {
-                  result = true;
-                }
-              }
-            }
-          } catch (SAXException e) {
-            log.info("Error validating schema", e);
-            message.append(e.getMessage());
-          }
-          return result;
-        }
-      };
-      validationTask.setOnSucceeded(Void -> {
-        if (validationTask.getValue()) {
-          popOver.updateContent(true, message.toString());
-
-          if (currentDescOb != null) {
-            List<DescObjMetadata> metadataList = currentDescOb.getMetadata();
-            if (metadataList != null && !metadataList.isEmpty()) {
-              DescObjMetadata metadataObj = metadataList.get(0);
-              if (metadataObj.getTemplateType() != null && "ead".equals(metadataObj.getTemplateType())) {
-                toggleForm.setVisible(true);
-                if (metadata.getChildren().contains(metaText)) {
-                  toggleForm.setSelected(false);
-                } else
-                  toggleForm.setSelected(true);
-              }
-            }
-          }
-        } else {
-          popOver.updateContent(false, message.toString());
-          toggleForm.setVisible(false);
-        }
-      });
-      new Thread(validationTask).start();
-
-    });
-
-    toggleForm.selectedProperty().addListener((observable, oldValue, newValue) -> {
-      saveMetadata();
-      // newValue == true means that the form will be displayed
-      if (newValue) {
-        toggleForm.setTooltip(new Tooltip(I18n.t("InspectionPane.textContent")));
-        metadata.getChildren().remove(metaText);
-        metadataGrid.getChildren().clear();
-        updateForm();
-        if (!metadata.getChildren().contains(metadataFormWrapper)) {
-          metadata.getChildren().add(metadataFormWrapper);
-        }
-      } else { // from the form to the metadata text
-        toggleForm.setTooltip(new Tooltip(I18n.t("InspectionPane.form")));
-        metadata.getChildren().remove(metadataFormWrapper);
-        if (!metadata.getChildren().contains(metaText))
-          metadata.getChildren().add(metaText);
-      }
-    });
-
-    metadataTopBox.getChildren().addAll(titleLabel, space, toggleForm, validationButton);
+    createMetadataTop();
 
     metaText = new CodeArea();
     VBox.setVgrow(metaText, Priority.ALWAYS);
-    metadata.getChildren().addAll(metadataTopBox, metaText);
     metaText.textProperty().addListener(
-      (observable, oldValue, newValue) -> metaText.setStyleSpans(0, XMLEditor.computeHighlighting(newValue)));
+        (observable, oldValue, newValue) -> metaText.setStyleSpans(0, XMLEditor.computeHighlighting(newValue)));
     // set the tab size to 2 spaces
     metaText.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
       if (event.getCode() == KeyCode.TAB) {
@@ -274,6 +179,139 @@ public class InspectionPane extends BorderPane {
         saveMetadata();
       }
     });
+    metadata.getChildren().addAll(metadataTopBox, metaText);
+  }
+
+  private void createMetadataTop() {
+    metadataTopBox = new HBox();
+    metadataTopBox.getStyleClass().add("hbox");
+    metadataTopBox.setPadding(new Insets(5, 10, 5, 10));
+    metadataTopBox.setAlignment(Pos.CENTER_LEFT);
+
+    Label titleLabel = new Label(I18n.t("InspectionPane.metadata"));
+    HBox space = new HBox();
+    HBox.setHgrow(space, Priority.ALWAYS);
+
+    toggleForm = new ToggleButton();
+    toggleForm.setTooltip(new Tooltip(I18n.t("InspectionPane.textContent")));
+    Image selected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CODE, Color.WHITE);
+    Image unselected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.LIST, Color.WHITE);
+    ImageView toggleImage = new ImageView();
+    toggleForm.setGraphic(toggleImage);
+    toggleImage.imageProperty().bind(Bindings.when(toggleForm.selectedProperty()).then(selected).otherwise(unselected));
+    toggleForm.selectedProperty().addListener((observable, oldValue, newValue) -> {
+      saveMetadata();
+      // newValue == true means that the form will be displayed
+      if (newValue) {
+        toggleForm.setTooltip(new Tooltip(I18n.t("InspectionPane.textContent")));
+        metadata.getChildren().remove(metaText);
+        metadataGrid.getChildren().clear();
+        updateForm();
+        if (!metadata.getChildren().contains(metadataFormWrapper)) {
+          metadata.getChildren().add(metadataFormWrapper);
+        }
+      } else { // from the form to the metadata text
+        toggleForm.setTooltip(new Tooltip(I18n.t("InspectionPane.form")));
+        metadata.getChildren().remove(metadataFormWrapper);
+        if (!metadata.getChildren().contains(metaText))
+          metadata.getChildren().add(metaText);
+      }
+    });
+
+    validationButton = new Button();
+    validationButton.setTooltip(new Tooltip(I18n.t("InspectionPane.validate")));
+    validationButton
+        .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CHECK, Color.WHITE)));
+    validationButton.setOnAction(event -> validationAction());
+
+    addMetadata = new Button();
+    addMetadata.setTooltip(new Tooltip(I18n.t("InspectionPane.addMetadata")));
+    addMetadata.setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.PLUS, Color.WHITE)));
+    addMetadata.setOnAction(event -> addMetadataAction());
+
+    topButtons = new HashSet<>();
+    topButtons.add(addMetadata);
+    topButtons.add(toggleForm);
+    topButtons.add(validationButton);
+
+    metadataTopBox.getChildren().addAll(titleLabel, space);
+    updateMetadataTop();
+  }
+
+  private void updateMetadataTop() {
+    if (topButtons.contains(addMetadata)) {
+      if (!metadataTopBox.getChildren().contains(addMetadata))
+        metadataTopBox.getChildren().add(addMetadata);
+    } else metadataTopBox.getChildren().remove(addMetadata);
+
+    if (topButtons.contains(toggleForm)) {
+      if (!metadataTopBox.getChildren().contains(toggleForm))
+        metadataTopBox.getChildren().add(toggleForm);
+    } else metadataTopBox.getChildren().remove(toggleForm);
+
+    if (topButtons.contains(validationButton)) {
+      if (!metadataTopBox.getChildren().contains(validationButton))
+        metadataTopBox.getChildren().add(validationButton);
+    } else metadataTopBox.getChildren().remove(validationButton);
+  }
+
+  private void addMetadataAction() {
+  }
+
+  private void validationAction() {
+    if (metadata.getChildren().contains(metadataFormWrapper)) {
+      saveMetadata();
+    }
+    StringBuilder message = new StringBuilder();
+    ValidationPopOver popOver = new ValidationPopOver();
+    popOver.show(validationButton);
+
+    Task<Boolean> validationTask = new Task<Boolean>() {
+      @Override
+      protected Boolean call() throws Exception {
+        boolean result = false;
+        try {
+          if (currentDescOb != null) {
+            List<DescObjMetadata> metadataList = currentDescOb.getMetadata();
+            if (metadataList != null && !metadataList.isEmpty()) {
+              DescObjMetadata metadata = metadataList.get(0);
+              if (Utils.validateSchema(metaText.getText(), metadata.getSchema())) {
+                result = true;
+              }
+            }
+          }
+        } catch (SAXException e) {
+          log.info("Error validating schema", e);
+          message.append(e.getMessage());
+        }
+        return result;
+      }
+    };
+    validationTask.setOnSucceeded(Void -> {
+      if (validationTask.getValue()) {
+        popOver.updateContent(true, message.toString());
+
+        if (currentDescOb != null) {
+          List<DescObjMetadata> metadataList = currentDescOb.getMetadata();
+          if (metadataList != null && !metadataList.isEmpty()) {
+            DescObjMetadata metadataObj = metadataList.get(0);
+            if (metadataObj.getTemplateType() != null && "ead".equals(metadataObj.getTemplateType())) {
+              topButtons.add(toggleForm);
+              updateMetadataTop();
+              if (metadata.getChildren().contains(metaText)) {
+                toggleForm.setSelected(false);
+              } else
+                toggleForm.setSelected(true);
+            }
+          }
+        }
+      } else {
+        popOver.updateContent(false, message.toString());
+        topButtons.remove(toggleForm);
+        updateMetadataTop();
+      }
+    });
+    new Thread(validationTask).start();
   }
 
   private void updateForm() {
@@ -321,7 +359,7 @@ public class InspectionPane extends BorderPane {
             }
           });
           datePicker.valueProperty()
-            .addListener((observable1, oldValue1, newValue1) -> metadataValue.setValue(ldsc.toString(newValue1)));
+              .addListener((observable1, oldValue1, newValue1) -> metadataValue.setValue(ldsc.toString(newValue1)));
           control = datePicker;
           break;
         case "combo":
@@ -389,7 +427,8 @@ public class InspectionPane extends BorderPane {
   private void noForm() {
     metadata.getChildren().clear();
     metadata.getChildren().addAll(metadataTopBox, metaText);
-    toggleForm.setVisible(false);
+    topButtons.remove(toggleForm);
+    updateMetadataTop();
   }
 
   private Map<String, MetadataValue> getMetadataValues() throws SAXException {
@@ -569,9 +608,9 @@ public class InspectionPane extends BorderPane {
     ImageView toggleImage = new ImageView();
     toggleDocumentation.setGraphic(toggleImage);
     toggleImage.imageProperty()
-      .bind(Bindings.when(toggleDocumentation.selectedProperty()).then(selected).otherwise(unselected));
+        .bind(Bindings.when(toggleDocumentation.selectedProperty()).then(selected).otherwise(unselected));
     title.textProperty().bind(
-      Bindings.when(toggleDocumentation.selectedProperty()).then(I18n.t("documentation")).otherwise(I18n.t("data")));
+        Bindings.when(toggleDocumentation.selectedProperty()).then(I18n.t("documentation")).otherwise(I18n.t("data")));
 
     toggleDocumentation.selectedProperty().addListener((observable, oldValue, newValue) -> {
       dataBox.getChildren().clear();
@@ -665,7 +704,7 @@ public class InspectionPane extends BorderPane {
     Button remove = new Button(I18n.t("remove"));
     remove.setOnAction(event -> {
       List<InspectionTreeItem> selectedItems = new ArrayList<InspectionTreeItem>(
-        sipDocumentation.getSelectionModel().getSelectedItems());
+          sipDocumentation.getSelectionModel().getSelectedItems());
       for (InspectionTreeItem selected : selectedItems) {
         Set<Path> paths = new HashSet<>();
         if (selected instanceof SipContentDirectory || selected instanceof SipContentFile) {
@@ -841,8 +880,7 @@ public class InspectionPane extends BorderPane {
    * TreeView.
    * </p>
    *
-   * @param sip
-   *          The SipPreviewNode used to update the UI.
+   * @param sip The SipPreviewNode used to update the UI.
    * @see SipPreviewNode
    * @see SipContentDirectory
    * @see SipContentFile
@@ -866,7 +904,7 @@ public class InspectionPane extends BorderPane {
     paneTitle.getStyleClass().add("title");
 
     HBox top = new HBox(5);
-    top.setPadding(new Insets(0, 10, 10, 10));
+    top.setPadding(new Insets(0, 10, 5, 10));
     top.setAlignment(Pos.CENTER_LEFT);
     topIcon = new ImageView(sip.getIconBlack());
     HBox space = new HBox();
@@ -895,9 +933,10 @@ public class InspectionPane extends BorderPane {
     if (metadataList != null && !metadataList.isEmpty()) {
       String schema = metadataList.get(0).getSchema();
       if (schema == null || "".equals(schema)) {
-        validationButton.setVisible(false);
+        topButtons.remove(validationButton);
       } else
-        validationButton.setVisible(true);
+        topButtons.add(validationButton);
+      updateMetadataTop();
     }
 
     metadata.getChildren().clear();
@@ -957,8 +996,7 @@ public class InspectionPane extends BorderPane {
    * create a ListView of RuleCell.
    * </p>
    *
-   * @param node
-   *          The SchemaNode used to update the UI.
+   * @param node The SchemaNode used to update the UI.
    * @see RuleCell
    * @see SchemaNode
    */
@@ -1000,9 +1038,10 @@ public class InspectionPane extends BorderPane {
     if (metadataList != null && !metadataList.isEmpty()) {
       String schema = metadataList.get(0).getSchema();
       if (schema == null || "".equals(schema)) {
-        validationButton.setVisible(false);
+        topButtons.remove(validationButton);
       } else
-        validationButton.setVisible(true);
+        topButtons.add(validationButton);
+      updateMetadataTop();
     }
 
     metadataTask = new Task<Boolean>() {
@@ -1057,13 +1096,14 @@ public class InspectionPane extends BorderPane {
     metadata.getChildren().add(metadataTopBox);
 
     if (isEAD) {
-      toggleForm.setVisible(true);
+      topButtons.add(toggleForm);
       toggleForm.setSelected(false);
       toggleForm.fire();
     } else {
-      toggleForm.setVisible(false);
+      topButtons.remove(toggleForm);
       metadata.getChildren().add(metaText);
     }
+    updateMetadataTop();
   }
 
   /**
@@ -1100,11 +1140,10 @@ public class InspectionPane extends BorderPane {
   /**
    * Adds documentation to the current SIP.
    *
-   * @param target
-   *          The item to where the documentation should go. This is NOT the SIP
-   *          where we will be adding the documentation. This must be either an
-   *          already added folder to the documentation or null (in which case
-   *          we'll add to the root of the tree).
+   * @param target The item to where the documentation should go. This is NOT the SIP
+   *               where we will be adding the documentation. This must be either an
+   *               already added folder to the documentation or null (in which case
+   *               we'll add to the root of the tree).
    */
   public void addDocumentationToSIP(TreeItem target) {
     Set<Path> paths = new HashSet<>();
@@ -1119,13 +1158,11 @@ public class InspectionPane extends BorderPane {
   /**
    * Adds documentation to the current SIP.
    *
-   * @param target
-   *          The item to where the documentation should go. This is NOT the SIP
-   *          where we will be adding the documentation. This must be either an
-   *          already added folder to the documentation or null (in which case
-   *          we'll add to the root of the tree).
-   * @param paths
-   *          The paths to be used to create the documentation.
+   * @param target The item to where the documentation should go. This is NOT the SIP
+   *               where we will be adding the documentation. This must be either an
+   *               already added folder to the documentation or null (in which case
+   *               we'll add to the root of the tree).
+   * @param paths  The paths to be used to create the documentation.
    */
   public void addDocumentationToSIP(TreeItem target, Set<Path> paths) {
     Set<ContentFilter> filters = new HashSet<>();
@@ -1160,14 +1197,12 @@ public class InspectionPane extends BorderPane {
   }
 
   public List<InspectionTreeItem> getDocumentationSelectedItems() {
-    List<InspectionTreeItem> result = new ArrayList<InspectionTreeItem>(
-      sipDocumentation.getSelectionModel().getSelectedItems());
+    List<InspectionTreeItem> result = new ArrayList<>(sipDocumentation.getSelectionModel().getSelectedItems());
     return result;
   }
 
   public List<InspectionTreeItem> getDataSelectedItems() {
-    List<InspectionTreeItem> result = new ArrayList<InspectionTreeItem>(
-      sipFiles.getSelectionModel().getSelectedItems());
+    List<InspectionTreeItem> result = new ArrayList<>(sipFiles.getSelectionModel().getSelectedItems());
     return result;
   }
 }
