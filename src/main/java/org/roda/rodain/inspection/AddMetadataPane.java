@@ -116,9 +116,9 @@ public class AddMetadataPane extends BorderPane {
     cellSingleFile = new HBoxCell("meta1", icon, title, description, optionsSingleFile());
     cellSingleFile.setUserData(OPTIONS.SINGLE_FILE);
 
-    icon = AppProperties.getStyle("metadata.sameFolder.icon");
-    title = I18n.t("metadata.sameFolder.title");
-    description = I18n.t("metadata.sameFolder.description");
+    icon = AppProperties.getStyle("metadata.emptyFile.icon");
+    title = I18n.t("metadata.emptyFile.title");
+    description = I18n.t("metadata.emptyFile.description");
     HBoxCell cellEmptyFile = new HBoxCell("meta2", icon, title, description, optionsEmptyFile());
     cellEmptyFile.setUserData(OPTIONS.EMPTY_FILE);
 
@@ -162,7 +162,7 @@ public class AddMetadataPane extends BorderPane {
     HBox box = new HBox(5);
     box.setAlignment(Pos.CENTER_LEFT);
 
-    Label lab = new Label(I18n.t("RuleModalPane.metadataPattern"));
+    Label lab = new Label(I18n.t("name"));
     emptyFileNameTxtField = new TextField("metadata.xml");
 
     box.getChildren().addAll(lab, emptyFileNameTxtField);
