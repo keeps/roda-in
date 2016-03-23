@@ -91,6 +91,17 @@
     -fx-font-size: medium;
 }
 
+.separator .line {
+    /*-fx-border-style: segments(0.166667em, 0.166667em);*/
+    -fx-border-width: 0.083333em; /* 1 */
+}
+
+.separator:vertical .line {
+    -fx-background-color: null;
+    -fx-padding: 0.0em 0.083333em 0.0em 0.0em; /* 0 1 0 0 */
+    -fx-border-color: transparent derive(-fx-background, -20%) transparent transparent;
+}
+
 /* Tree-view and Tree-cell*/
 .tree-view {
     -fx-background-color: white;

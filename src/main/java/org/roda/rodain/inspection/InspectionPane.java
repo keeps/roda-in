@@ -6,6 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -17,7 +18,9 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.StringConverter;
 import javafx.util.converter.LocalDateStringConverter;
 import org.apache.commons.lang.StringUtils;
@@ -65,6 +68,7 @@ public class InspectionPane extends BorderPane {
   private VBox topBox;
   private VBox center;
   private HBox topSpace;
+  private Stage stage;
 
   private SipPreviewNode currentSIPNode;
   private SchemaNode currentSchema;
@@ -81,9 +85,10 @@ public class InspectionPane extends BorderPane {
   private ToggleButton toggleForm;
   private HBox metadataLoadingPane, metadataTopBox;
   private TextField titleTextField;
-  private Button validationButton, addMetadata;
+  private Button validationButton, addMetadata, removeMetadata;
   private ComboBox<UIPair> metadataCombo;
   private Set<Control> topButtons;
+  private Separator metadataTopSeparator;
   // SIP Content
   private BorderPane content;
   private VBox dataBox, documentationHelp;
@@ -107,6 +112,8 @@ public class InspectionPane extends BorderPane {
    * @param stage The primary stage of the application
    */
   public InspectionPane(Stage stage) {
+    this.stage = stage;
+
     createCenterHelp();
     createDocumentationHelp();
     createTop();
@@ -229,6 +236,13 @@ public class InspectionPane extends BorderPane {
     addMetadata.setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.PLUS, Color.WHITE)));
     addMetadata.setOnAction(event -> addMetadataAction());
 
+    removeMetadata = new Button();
+    removeMetadata.setTooltip(new Tooltip(I18n.t("InspectionPane.removeMetadata")));
+    removeMetadata.setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.MINUS, Color.WHITE)));
+    removeMetadata.setOnAction(event -> removeMetadataAction());
+
+    metadataTopSeparator = new Separator(Orientation.VERTICAL);
+
     topButtons = new HashSet<>();
     topButtons.add(addMetadata);
     topButtons.add(toggleForm);
@@ -239,10 +253,14 @@ public class InspectionPane extends BorderPane {
       // only display the comboBox if there's more than one metadata object
       if (metadataCombo.getItems().size() > 1) {
         topButtons.add(metadataCombo);
-      } else topButtons.remove(metadataCombo);
+        topButtons.add(removeMetadata);
+      } else {
+        topButtons.remove(metadataCombo);
+        topButtons.remove(removeMetadata);
+      }
+      updateMetadataTop();
     });
     metadataCombo.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-      System.out.println(newValue);
       updateSelectedMetadata((DescObjMetadata) newValue.getKey());
     });
 
@@ -250,22 +268,50 @@ public class InspectionPane extends BorderPane {
     updateMetadataTop();
   }
 
+
   private void updateMetadataTop() {
-    metadataTopBox.getChildren().removeAll(addMetadata, toggleForm, validationButton, metadataCombo);
-    if (topButtons.contains(addMetadata)) {
-      metadataTopBox.getChildren().add(addMetadata);
-    }
+    metadataTopBox.getChildren().removeAll(addMetadata, removeMetadata, toggleForm, validationButton, metadataCombo);
+    metadataTopBox.getChildren().remove(metadataTopSeparator);
 
-    if (topButtons.contains(toggleForm)) {
+    if (topButtons.contains(toggleForm))
       metadataTopBox.getChildren().add(toggleForm);
-    }
 
-    if (topButtons.contains(validationButton)) {
+    if (topButtons.contains(validationButton))
       metadataTopBox.getChildren().add(validationButton);
-    }
 
-    if (topButtons.contains(metadataCombo)) {
+    if (topButtons.contains(toggleForm) || topButtons.contains(validationButton))
+      metadataTopBox.getChildren().add(metadataTopSeparator);
+
+    if (topButtons.contains(addMetadata))
+      metadataTopBox.getChildren().add(addMetadata);
+
+    if (topButtons.contains(removeMetadata))
+      metadataTopBox.getChildren().add(removeMetadata);
+
+    if (topButtons.contains(metadataCombo))
       metadataTopBox.getChildren().add(metadataCombo);
+  }
+
+  private void removeMetadataAction() {
+    if (metadataCombo.getSelectionModel().getSelectedIndex() == -1)
+      return;
+
+    String content = I18n.t("InspectionPane.removeMetadata.content");
+    Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
+    dlg.initStyle(StageStyle.UNDECORATED);
+    dlg.setHeaderText(I18n.t("InspectionPane.removeMetadata.header"));
+    dlg.setTitle(I18n.t("InspectionPane.removeMetadata.title"));
+    dlg.setContentText(content);
+    dlg.initModality(Modality.APPLICATION_MODAL);
+    dlg.initOwner(stage);
+    dlg.showAndWait();
+
+    if (dlg.getResult().getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+      DescObjMetadata toRemove = (DescObjMetadata) metadataCombo.getSelectionModel().getSelectedItem().getKey();
+      currentDescOb.getMetadata().remove(toRemove);
+      metadataCombo.getItems().remove(metadataCombo.getSelectionModel().getSelectedItem());
+      metadataCombo.getSelectionModel().selectFirst();
+      RodaIn.getSchemePane().setModifiedPlan(true);
     }
   }
 
@@ -725,7 +771,7 @@ public class InspectionPane extends BorderPane {
 
     Button remove = new Button(I18n.t("remove"));
     remove.setOnAction(event -> {
-      List<InspectionTreeItem> selectedItems = new ArrayList<InspectionTreeItem>(
+      List<InspectionTreeItem> selectedItems = new ArrayList<>(
           sipDocumentation.getSelectionModel().getSelectedItems());
       for (InspectionTreeItem selected : selectedItems) {
         Set<Path> paths = new HashSet<>();

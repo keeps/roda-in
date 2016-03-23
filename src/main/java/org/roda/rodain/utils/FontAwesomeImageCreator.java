@@ -28,6 +28,7 @@ public class FontAwesomeImageCreator {
   public static final String BOOK = "\uf02d";
   public static final String OPEN_FOLDER = "\uf07c";
   public static final String PLUS = "\uf067";
+  public static final String MINUS = "\uf068";
 
   public static final Font FONT = loadFont();
 
