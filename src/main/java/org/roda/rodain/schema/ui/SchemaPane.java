@@ -769,6 +769,10 @@ public class SchemaPane extends BorderPane {
     return modifiedPlan;
   }
 
+  public void setModifiedPlan(boolean b) {
+    modifiedPlan = b;
+  }
+
   /**
    * @return The Map with the SIPs of all the SchemaNodes in the TreeView
    */

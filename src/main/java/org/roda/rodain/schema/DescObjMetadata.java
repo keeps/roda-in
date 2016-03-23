@@ -28,7 +28,7 @@ import java.util.Map;
 public class DescObjMetadata {
   private static final Logger log = LoggerFactory.getLogger(DescObjMetadata.class.getName());
   private String id, content, contentEncoding;
-  private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  private Map<String, Object> additionalProperties = new HashMap<>();
   private Map<String, MetadataValue> values = new HashMap<>();
   private Path path;
   private boolean loaded = false;

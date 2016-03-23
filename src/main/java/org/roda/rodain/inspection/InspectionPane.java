@@ -234,28 +234,49 @@ public class InspectionPane extends BorderPane {
     topButtons.add(toggleForm);
     topButtons.add(validationButton);
 
+    metadataCombo = new ComboBox<>();
+    metadataCombo.valueProperty().addListener((observable, oldValue, newValue) -> {
+      // only display the comboBox if there's more than one metadata object
+      if (metadataCombo.getItems().size() > 1) {
+        topButtons.add(metadataCombo);
+      } else topButtons.remove(metadataCombo);
+    });
+    metadataCombo.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+      System.out.println(newValue);
+      updateSelectedMetadata((DescObjMetadata) newValue.getKey());
+    });
+
     metadataTopBox.getChildren().addAll(titleLabel, space);
     updateMetadataTop();
   }
 
   private void updateMetadataTop() {
+    metadataTopBox.getChildren().removeAll(addMetadata, toggleForm, validationButton, metadataCombo);
     if (topButtons.contains(addMetadata)) {
-      if (!metadataTopBox.getChildren().contains(addMetadata))
-        metadataTopBox.getChildren().add(addMetadata);
-    } else metadataTopBox.getChildren().remove(addMetadata);
+      metadataTopBox.getChildren().add(addMetadata);
+    }
 
     if (topButtons.contains(toggleForm)) {
-      if (!metadataTopBox.getChildren().contains(toggleForm))
-        metadataTopBox.getChildren().add(toggleForm);
-    } else metadataTopBox.getChildren().remove(toggleForm);
+      metadataTopBox.getChildren().add(toggleForm);
+    }
 
     if (topButtons.contains(validationButton)) {
-      if (!metadataTopBox.getChildren().contains(validationButton))
-        metadataTopBox.getChildren().add(validationButton);
-    } else metadataTopBox.getChildren().remove(validationButton);
+      metadataTopBox.getChildren().add(validationButton);
+    }
+
+    if (topButtons.contains(metadataCombo)) {
+      metadataTopBox.getChildren().add(metadataCombo);
+    }
   }
 
   private void addMetadataAction() {
+    DescObjMetadata dom = new DescObjMetadata();
+    dom.setId("aaaaaa" + metadataCombo.getItems().size());
+    currentDescOb.getMetadata().add(dom);
+    UIPair toAdd = new UIPair(dom, dom.getId());
+    metadataCombo.getItems().add(toAdd);
+    metadataCombo.getSelectionModel().select(toAdd);
+    RodaIn.getSchemePane().setModifiedPlan(true);
   }
 
   private void validationAction() {
@@ -444,19 +465,23 @@ public class InspectionPane extends BorderPane {
    * Saves the metadata from the text area in the SIP.
    */
   public void saveMetadata() {
+    if (metadataCombo == null) return;
+    UIPair selectedObject = metadataCombo.getSelectionModel().getSelectedItem();
+    DescObjMetadata selectedDescObjMetadata;
+    if (selectedObject != null && selectedObject.getKey() instanceof DescObjMetadata)
+      selectedDescObjMetadata = (DescObjMetadata) selectedObject.getKey();
+    else return;
+
     if (metadata.getChildren().contains(metadataFormWrapper)) {
       if (currentDescOb != null) {
         currentDescOb.applyMetadataValues();
-        updateTextArea(currentDescOb.getMetadataWithReplaces().get(0).getContentDecoded());
+        updateTextArea(selectedDescObjMetadata.getContentDecoded());
       }
     } else {
       String oldMetadata = null, newMetadata = null;
       if (currentDescOb != null) {
         newMetadata = metaText.getText();
-        List<DescObjMetadata> metadatas = currentDescOb.getMetadataWithReplaces();
-        if (!metadatas.isEmpty()) {
-          oldMetadata = metadatas.get(0).getContentDecoded();
-        }
+        oldMetadata = selectedDescObjMetadata.getContentDecoded();
       }
       // only update if there's been modifications or there's no old
       // metadata and the new isn't empty
@@ -470,15 +495,12 @@ public class InspectionPane extends BorderPane {
 
       if (update) {
         if (currentDescOb != null) {
-          List<DescObjMetadata> metadatas = currentDescOb.getMetadataWithReplaces();
-          if (!metadatas.isEmpty()) {
-            metadatas.get(0).setContentDecoded(newMetadata);
-          } else {
-            DescObjMetadata newObjMetadata = new DescObjMetadata();
-            newObjMetadata.setContentEncoding("Base64");
-            newObjMetadata.setContentDecoded(newMetadata);
-            metadatas.add(newObjMetadata);
-          }
+          selectedDescObjMetadata.setContentDecoded(newMetadata);
+        } else {
+          DescObjMetadata newObjMetadata = new DescObjMetadata();
+          newObjMetadata.setContentEncoding("Base64");
+          newObjMetadata.setContentDecoded(newMetadata);
+          currentDescOb.getMetadata().add(newObjMetadata);
         }
       }
     }
@@ -870,6 +892,44 @@ public class InspectionPane extends BorderPane {
     rules.setCenter(emptyRulesPane);
   }
 
+  private void updateSelectedMetadata(DescObjMetadata dom) {
+    metadata.getChildren().removeAll(metadataFormWrapper, metaText);
+    if (!metadata.getChildren().contains(metadataLoadingPane))
+      metadata.getChildren().add(metadataLoadingPane);
+
+    metadataTask = new Task<Boolean>() {
+      @Override
+      protected Boolean call() throws Exception {
+        // metadata
+        boolean result = false;
+        if (dom != null) {
+          String meta = dom.getContentDecoded();
+          updateTextArea(meta);
+          try {
+            result = Utils.isEAD(metaText.getText());
+          } catch (SAXException e) {
+            log.info("Error validating metadata with the EAD2002 schema", e);
+          }
+        }
+        return result;
+      }
+    };
+
+    Task thisMetadataTask = metadataTask;
+    metadataTask.setOnSucceeded((Void) -> {
+      if (metadataTask != null && metadataTask == thisMetadataTask)
+        showMetadataPane(metadataTask.getValue());
+
+      String schema = dom.getSchema();
+      if (schema == null || "".equals(schema)) {
+        topButtons.remove(validationButton);
+      } else
+        topButtons.add(validationButton);
+      updateMetadataTop();
+    });
+    new Thread(metadataTask).start();
+  }
+
   /**
    * Updates the UI using a SipPreviewNode.
    * <p/>
@@ -930,42 +990,12 @@ public class InspectionPane extends BorderPane {
     topBox.getChildren().addAll(top, separatorTop);
 
     List<DescObjMetadata> metadataList = currentDescOb.getMetadataWithReplaces();
-    if (metadataList != null && !metadataList.isEmpty()) {
-      String schema = metadataList.get(0).getSchema();
-      if (schema == null || "".equals(schema)) {
-        topButtons.remove(validationButton);
-      } else
-        topButtons.add(validationButton);
-      updateMetadataTop();
+    List<UIPair> comboList = new ArrayList<>();
+    for (DescObjMetadata dom : metadataList) {
+      comboList.add(new UIPair(dom, dom.getId()));
     }
-
-    metadata.getChildren().clear();
-    metadata.getChildren().addAll(metadataTopBox, metadataLoadingPane);
-    metadataTask = new Task<Boolean>() {
-      @Override
-      protected Boolean call() throws Exception {
-        // metadata
-        boolean result = false;
-        List<DescObjMetadata> metadataList = currentDescOb.getMetadataWithReplaces();
-        if (metadataList != null && !metadataList.isEmpty()) {
-          String meta = metadataList.get(0).getContentDecoded();
-          updateTextArea(meta);
-          try {
-            result = Utils.isEAD(metaText.getText());
-          } catch (SAXException e) {
-            log.info("Error validating metadata with the EAD2002 schema", e);
-          }
-        }
-        return result;
-      }
-    };
-
-    Task thisMetadataTask = metadataTask;
-    metadataTask.setOnSucceeded((Void) -> {
-      if (metadataTask != null && metadataTask == thisMetadataTask)
-        showMetadataPane(metadataTask.getValue());
-    });
-    new Thread(metadataTask).start();
+    metadataCombo.getItems().setAll(comboList);
+    metadataCombo.getSelectionModel().selectFirst();
 
     /* Center */
     center.getChildren().clear();
@@ -1035,41 +1065,12 @@ public class InspectionPane extends BorderPane {
     metadata.getChildren().addAll(metadataTopBox, metadataLoadingPane);
 
     List<DescObjMetadata> metadataList = currentDescOb.getMetadataWithReplaces();
-    if (metadataList != null && !metadataList.isEmpty()) {
-      String schema = metadataList.get(0).getSchema();
-      if (schema == null || "".equals(schema)) {
-        topButtons.remove(validationButton);
-      } else
-        topButtons.add(validationButton);
-      updateMetadataTop();
+    List<UIPair> comboList = new ArrayList<>();
+    for (DescObjMetadata dom : metadataList) {
+      comboList.add(new UIPair(dom, dom.getId()));
     }
-
-    metadataTask = new Task<Boolean>() {
-      @Override
-      protected Boolean call() throws Exception {
-        // metadata
-        List<DescObjMetadata> metadatas = currentDescOb.getMetadataWithReplaces();
-        if (!metadatas.isEmpty()) {
-          // For now we only get the first metadata object
-          updateTextArea(metadatas.get(0).getContentDecoded());
-        } else
-          metaText.clear();
-        boolean result = false;
-        try {
-          result = Utils.isEAD(metaText.getText());
-        } catch (SAXException e) {
-          log.info("Error validating metadata with the EAD2002 schema", e);
-        }
-        return result;
-      }
-    };
-    Task thisMetadataTask = metadataTask;
-    metadataTask.setOnSucceeded((Void) -> {
-      if (metadataTask != null && metadataTask == thisMetadataTask) {
-        showMetadataPane(metadataTask.getValue());
-      }
-    });
-    new Thread(metadataTask).start();
+    metadataCombo.getItems().setAll(comboList);
+    metadataCombo.getSelectionModel().selectFirst();
 
     // rules
     updateRuleList();
@@ -1097,13 +1098,15 @@ public class InspectionPane extends BorderPane {
 
     if (isEAD) {
       topButtons.add(toggleForm);
+      updateMetadataTop();
       toggleForm.setSelected(false);
       toggleForm.fire();
     } else {
       topButtons.remove(toggleForm);
+      updateMetadataTop();
       metadata.getChildren().add(metaText);
     }
-    updateMetadataTop();
+
   }
 
   /**
