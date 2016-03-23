@@ -43,6 +43,7 @@ import org.roda.rodain.schema.ui.SipPreviewNode;
 import org.roda.rodain.source.ui.SourceTreeCell;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
+import org.roda.rodain.utils.ModalStage;
 import org.roda.rodain.utils.UIPair;
 import org.roda.rodain.utils.Utils;
 import org.roda_project.commons_ip.utils.EARKEnums;
@@ -316,13 +317,9 @@ public class InspectionPane extends BorderPane {
   }
 
   private void addMetadataAction() {
-    DescObjMetadata dom = new DescObjMetadata();
-    dom.setId("aaaaaa" + metadataCombo.getItems().size());
-    currentDescOb.getMetadata().add(dom);
-    UIPair toAdd = new UIPair(dom, dom.getId());
-    metadataCombo.getItems().add(toAdd);
-    metadataCombo.getSelectionModel().select(toAdd);
-    RodaIn.getSchemePane().setModifiedPlan(true);
+    ModalStage modalStage = new ModalStage(stage);
+    AddMetadataPane addMetadataPane = new AddMetadataPane(modalStage, currentDescOb);
+    modalStage.setRoot(addMetadataPane);
   }
 
   private void validationAction() {
@@ -1035,13 +1032,7 @@ public class InspectionPane extends BorderPane {
     topBox.getChildren().clear();
     topBox.getChildren().addAll(top, separatorTop);
 
-    List<DescObjMetadata> metadataList = currentDescOb.getMetadataWithReplaces();
-    List<UIPair> comboList = new ArrayList<>();
-    for (DescObjMetadata dom : metadataList) {
-      comboList.add(new UIPair(dom, dom.getId()));
-    }
-    metadataCombo.getItems().setAll(comboList);
-    metadataCombo.getSelectionModel().selectFirst();
+    updateMetadataCombo();
 
     /* Center */
     center.getChildren().clear();
@@ -1110,6 +1101,16 @@ public class InspectionPane extends BorderPane {
     metadata.getChildren().clear();
     metadata.getChildren().addAll(metadataTopBox, metadataLoadingPane);
 
+    updateMetadataCombo();
+
+    // rules
+    updateRuleList();
+
+    center.getChildren().addAll(metadata, rules);
+    setCenter(center);
+  }
+
+  private void updateMetadataCombo() {
     List<DescObjMetadata> metadataList = currentDescOb.getMetadataWithReplaces();
     List<UIPair> comboList = new ArrayList<>();
     for (DescObjMetadata dom : metadataList) {
@@ -1117,12 +1118,6 @@ public class InspectionPane extends BorderPane {
     }
     metadataCombo.getItems().setAll(comboList);
     metadataCombo.getSelectionModel().selectFirst();
-
-    // rules
-    updateRuleList();
-
-    center.getChildren().addAll(metadata, rules);
-    setCenter(center);
   }
 
   private void updateTextArea(String content) {
@@ -1253,5 +1248,13 @@ public class InspectionPane extends BorderPane {
   public List<InspectionTreeItem> getDataSelectedItems() {
     List<InspectionTreeItem> result = new ArrayList<>(sipFiles.getSelectionModel().getSelectedItems());
     return result;
+  }
+
+  public void updateMetadataList(DescriptionObject descriptionObject) {
+    if (descriptionObject == currentDescOb) {
+      updateMetadataCombo();
+      metadataCombo.getSelectionModel().selectLast();
+      RodaIn.getSchemePane().setModifiedPlan(true);
+    }
   }
 }

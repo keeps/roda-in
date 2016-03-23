@@ -12,6 +12,7 @@ import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.rules.sip.SipPreviewCreator;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
+import org.roda.rodain.utils.ModalStage;
 import org.roda.rodain.utils.TreeVisitor;
 import org.roda.rodain.utils.WalkFileTree;
 import org.slf4j.Logger;
@@ -27,7 +28,7 @@ import java.util.Set;
  */
 public class RuleModalController {
   private static final Logger log = LoggerFactory.getLogger(RuleModalController.class.getName());
-  private static RuleModalStage stage;
+  private static ModalStage stage;
   private static RuleModalPane pane;
   private static Set<SourceTreeItem> sourceSet;
   private static SchemaNode schema;
@@ -51,7 +52,7 @@ public class RuleModalController {
    */
   public static void newAssociation(final Stage primStage, Set<SourceTreeItem> source, SchemaNode schemaNode) {
     if (stage == null)
-      stage = new RuleModalStage(primStage);
+      stage = new ModalStage(primStage);
     stage.setWidth(800);
     stage.setHeight(580);
 
