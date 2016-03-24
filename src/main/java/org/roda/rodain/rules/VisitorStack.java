@@ -1,20 +1,17 @@
 package org.roda.rodain.rules;
 
+import javafx.concurrent.Task;
+import org.roda.rodain.utils.TreeVisitor;
+import org.roda.rodain.utils.WalkFileTree;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.HashMap;
 import java.util.Observable;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
-import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
-
-import org.roda.rodain.utils.TreeVisitor;
-import org.roda.rodain.utils.WalkFileTree;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -66,29 +63,19 @@ public class VisitorStack extends Observable {
         return null;
       }
     };
-    toRun.setOnRunning(new EventHandler<WorkerStateEvent>() {
-      @Override
-      public void handle(WorkerStateEvent workerStateEvent) {
-        runningTask = id;
-        update();
-      }
+    toRun.setOnRunning(event -> {
+      runningTask = id;
+      update();
     });
     // notify the observers when the task finishes
-    toRun.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-      @Override
-      public void handle(WorkerStateEvent workerStateEvent) {
-        runningTask = null;
-        update();
-      }
+    toRun.setOnSucceeded(event -> {
+      runningTask = null;
+      update();
     });
 
-    toRun.setOnCancelled(new EventHandler<WorkerStateEvent>() {
-      @Override
-      public void handle(WorkerStateEvent event) {
-        walker.interrupt();
-        System.out.println("VisitorStack on cancelled");
-        update();
-      }
+    toRun.setOnCancelled(event -> {
+      walker.interrupt();
+      update();
     });
 
     Future fut = visitors.submit(toRun);
