@@ -72,7 +72,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
    */
   @Override
   public void update(final Observable o, Object arg) {
-    if (o instanceof Rule) {
+    if (o instanceof Rule && arg instanceof String) {
       final Rule rule = (Rule) o;
       final Integer idInt = rule.getId();
       final String id = idInt.toString();
@@ -91,7 +91,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
         }
 
         // we don't need to add the nodes and SIPs if the rule has been removed
-        if (arg instanceof String && arg.equals("Removed rule")) {
+        if (arg.equals("Removed rule")) {
           return;
         }
         Set<SipPreviewNode> nodes = new HashSet<>(rule.getSipNodes());

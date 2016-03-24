@@ -32,7 +32,7 @@ public class CreationModalProcessing extends BorderPane {
   private String etaFormatHour, etaFormatHours, etaFormatMinute, etaFormatMinutes, etaFormatLessMin, etaFormatLess30;
   // center
   private ProgressBar progress;
-  private Label sipName, sipAction, eta, etaLabel;
+  private Label sipName, sipAction, eta, etaLabel, elapsedTime;
   private HBox etaBox;
   private Timer timer;
 
@@ -109,6 +109,14 @@ public class CreationModalProcessing extends BorderPane {
     progress.setPadding(new Insets(5, 0, 10, 0));
     progress.setPrefSize(380, 25);
 
+    HBox elapsed = new HBox(10);
+    elapsed.maxWidth(380);
+    Label lElapsed = new Label(I18n.t("CreationModalProcessing.elapsed"));
+    lElapsed.getStyleClass().add("boldText");
+    lElapsed.setMinWidth(70);
+    elapsedTime = new Label("");
+    elapsed.getChildren().addAll(lElapsed, elapsedTime);
+
     HBox sip = new HBox(10);
     sip.maxWidth(380);
     Label lName = new Label(I18n.t("CreationModalProcessing.currentSip"));
@@ -124,7 +132,7 @@ public class CreationModalProcessing extends BorderPane {
     sipAction = new Label("");
     action.getChildren().addAll(lAction, sipAction);
 
-    center.getChildren().addAll(subtitles, progress, etaBox, sip, action);
+    center.getChildren().addAll(subtitles, progress, etaBox, elapsed, sip, action);
     setCenter(center);
   }
 
@@ -171,6 +179,7 @@ public class CreationModalProcessing extends BorderPane {
             int size = creator.getSipsCount();
             int errors = creator.getErrorCount();
             double etaDouble = creator.getTimeRemainingEstimate();
+            long startedTime = creator.getStartedTime();
             updateETA(etaDouble);
             double prog = creator.getProgress();
 
@@ -182,6 +191,12 @@ public class CreationModalProcessing extends BorderPane {
 
             sipName.setText(creator.getSipName());
             sipAction.setText(creator.getAction());
+            // format elapsed time
+            long millis = System.currentTimeMillis() - startedTime;
+            long second = (millis / 1000) % 60;
+            long minute = (millis / (1000 * 60)) % 60;
+            long hour = (millis / (1000 * 60 * 60)) % 24;
+            elapsedTime.setText(String.format("%02d:%02d:%02d", hour, minute, second));
 
             // stop the timer when all the SIPs have been created
             if ((created + errors) == size) {
@@ -195,7 +210,7 @@ public class CreationModalProcessing extends BorderPane {
     };
 
     timer = new Timer();
-    timer.schedule(updater, 0, 600);
+    timer.schedule(updater, 0, 200);
   }
 
   private void updateETA(double etaDouble) {
@@ -248,8 +263,7 @@ public class CreationModalProcessing extends BorderPane {
       alert.initStyle(StageStyle.UNDECORATED);
       alert.initOwner(stage);
       alert.setTitle(I18n.t("CreationModalProcessing.alert.title"));
-      String header = String.format(I18n.t("CreationModalProcessing.alert.header"),
-        sip.getTitle());
+      String header = String.format(I18n.t("CreationModalProcessing.alert.header"), sip.getTitle());
       alert.setHeaderText(header);
       StringBuilder content = new StringBuilder(ex.getLocalizedMessage());
       content.append("\n");

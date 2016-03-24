@@ -173,7 +173,7 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
   @Override
   public void end() {
     setChanged();
-    notifyObservers();
+    notifyObservers("Finished");
   }
 
   protected Path getMetadata() {

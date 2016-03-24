@@ -258,7 +258,7 @@ public class Rule extends Observable implements Observer, Comparable {
         }
       }
       setChanged();
-      notifyObservers();
+      notifyObservers(arg);
     } else if (o instanceof SipPreview) {
       SipPreview sip = (SipPreview) o;
       if (sip.isRemoved()) {

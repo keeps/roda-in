@@ -14,7 +14,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -23,6 +25,10 @@ import java.util.Set;
  */
 public class SipPerFile extends SipPreviewCreator {
   private static final Logger log = LoggerFactory.getLogger(SipPerFile.class.getName());
+  private static final int UPDATEFREQUENCY = 500; // in milliseconds
+  private long lastUIUpdate = 0;
+
+  private Map<String, Set<Path>> metadata;
 
   /**
    * Creates a new SipPreviewCreator where there's a new SIP created for each
@@ -42,6 +48,22 @@ public class SipPerFile extends SipPreviewCreator {
   public SipPerFile(String id, Set<ContentFilter> filters, MetadataTypes metaType, Path metadataPath,
     String templateType, String templateVersion) {
     super(id, filters, metaType, metadataPath, templateType, templateVersion);
+    metadata = new HashMap<>();
+
+    try {
+      DirectoryStream<Path> pathList = Files.newDirectoryStream(metadataPath);
+      for (Path pathResult : pathList) {
+        String key = FilenameUtils.removeExtension(pathResult.getFileName().toString());
+        Set<Path> paths = metadata.get(key);
+        if (paths == null)
+          paths = new HashSet<>();
+        paths.add(pathResult);
+        metadata.put(key, paths);
+      }
+      pathList.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
 
   }
 
@@ -142,6 +164,13 @@ public class SipPerFile extends SipPreviewCreator {
     sips.add(sipPreview);
     sipsMap.put(sipPreview.getId(), sipPreview);
     added++;
+
+    long now = System.currentTimeMillis();
+    if (now - lastUIUpdate > UPDATEFREQUENCY) {
+      setChanged();
+      notifyObservers();
+      lastUIUpdate = now;
+    }
   }
 
   private Path getMetadataPath(Path path) {
@@ -179,13 +208,16 @@ public class SipPerFile extends SipPreviewCreator {
   private Path getFileFromDir(Path path) {
     String fileNameWithExtension = path.getFileName().toString();
     String fileName = FilenameUtils.removeExtension(fileNameWithExtension);
-    File dir = new File(metadataPath.toString());
-    File[] foundFiles = dir
-      .listFiles((dir1, name) -> name.startsWith(fileName + ".") && !name.equals(fileNameWithExtension));
 
-    if (foundFiles.length > 0) {
-      return foundFiles[0].toPath();
+    Set<Path> paths = metadata.get(fileName);
+    Path result = null;
+    if (paths != null) {
+      for (Path p : paths) {
+        if (!p.getFileName().toString().equals(fileNameWithExtension))
+          result = p;
+
+      }
     }
-    return null;
+    return result;
   }
 }
