@@ -18,6 +18,7 @@ import org.roda.rodain.utils.TreeVisitor;
 
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -38,8 +39,8 @@ public class Rule extends Observable implements Observer, Comparable {
   // map of SipPreview id -> SipPreview
   private Map<String, SipPreview> sips;
   // map of SipPreview id -> SipPreviewNode
-  private Map<String, SipPreviewNode> sipNodes = new HashMap<>();
-  private Set<SchemaNode> schemaNodes = new HashSet<>();
+  private Map<String, SipPreviewNode> sipNodes = new ConcurrentHashMap<>();
+  private Set<SchemaNode> schemaNodes = Collections.synchronizedSet(new HashSet<>());
   private Image itemIconBlack, itemIconWhite, dObjIconBlack, dObjIconWhite, fileIconBlack, fileIconWhite;
   private Integer id;
 
@@ -179,7 +180,8 @@ public class Rule extends Observable implements Observer, Comparable {
    */
   public TreeVisitor apply() {
     sips = new HashMap<>();
-    sipNodes = new HashMap<>();
+    sipNodes = new ConcurrentHashMap<>();
+    schemaNodes = Collections.synchronizedSet(new HashSet<>());
 
     TreeVisitor visitor;
     switch (assocType) {

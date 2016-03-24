@@ -234,28 +234,44 @@ public class AddMetadataPane extends BorderPane {
 
     btContinue.setOnAction(event -> {
       HBoxCell selected = metaList.getSelectionModel().getSelectedItem();
-      if (selected == null) return;
+      if (selected == null)
+        return;
       if (selected.getUserData() instanceof OPTIONS) {
         OPTIONS option = (OPTIONS) selected.getUserData();
+        DescObjMetadata metadataToAdd = null;
         switch (option) {
           case TEMPLATE:
             String rawTemplateType = (String) templateTypes.getSelectionModel().getSelectedItem().getKey();
             String[] splitted = rawTemplateType.split("!###!");
-            descriptionObject.getMetadata().add(new DescObjMetadata(MetadataTypes.TEMPLATE, splitted[0], splitted[1]));
+            metadataToAdd = new DescObjMetadata(MetadataTypes.TEMPLATE, splitted[0], splitted[1]);
             break;
           case SINGLE_FILE:
-            if (selectedPath == null) return;
-            descriptionObject.getMetadata().add(new DescObjMetadata(MetadataTypes.SINGLE_FILE, selectedPath));
+            if (selectedPath == null)
+              return;
+            metadataToAdd = new DescObjMetadata(MetadataTypes.SINGLE_FILE, selectedPath);
             break;
           case EMPTY_FILE:
             String name = emptyFileNameTxtField.getText();
-            if (name == null || "".equals(name)) return;
-            DescObjMetadata metadata = new DescObjMetadata();
-            metadata.setId(name);
-            descriptionObject.getMetadata().add(metadata);
+            if (name == null || "".equals(name))
+              return;
+            metadataToAdd = new DescObjMetadata();
+            metadataToAdd.setId(name);
             break;
         }
-        RodaIn.getInspectionPane().updateMetadataList(descriptionObject);
+
+        if (metadataToAdd == null)
+          return;
+        boolean add = true;
+        for (DescObjMetadata dom : descriptionObject.getMetadata()) {
+          if (dom.getId().equals(metadataToAdd.getId()))
+            add = false;
+        }
+        if (add) {
+          descriptionObject.getMetadata().add(metadataToAdd);
+          RodaIn.getInspectionPane().updateMetadataList(descriptionObject);
+        } else {
+          RodaIn.getInspectionPane().showAddMetadataError(metadataToAdd);
+        }
         stage.close();
       }
     });

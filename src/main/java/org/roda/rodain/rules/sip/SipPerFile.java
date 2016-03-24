@@ -23,8 +23,6 @@ import java.util.Set;
  */
 public class SipPerFile extends SipPreviewCreator {
   private static final Logger log = LoggerFactory.getLogger(SipPerFile.class.getName());
-  private static final int UPDATEFREQUENCY = 500; // in milliseconds
-  private long lastUIUpdate = 0;
 
   /**
    * Creates a new SipPreviewCreator where there's a new SIP created for each
@@ -144,13 +142,6 @@ public class SipPerFile extends SipPreviewCreator {
     sips.add(sipPreview);
     sipsMap.put(sipPreview.getId(), sipPreview);
     added++;
-
-    long now = System.currentTimeMillis();
-    if (now - lastUIUpdate > UPDATEFREQUENCY) {
-      setChanged();
-      notifyObservers();
-      lastUIUpdate = now;
-    }
   }
 
   private Path getMetadataPath(Path path) {

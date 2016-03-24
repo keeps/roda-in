@@ -239,7 +239,8 @@ public class InspectionPane extends BorderPane {
 
     removeMetadata = new Button();
     removeMetadata.setTooltip(new Tooltip(I18n.t("InspectionPane.removeMetadata")));
-    removeMetadata.setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.MINUS, Color.WHITE)));
+    removeMetadata
+        .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.MINUS, Color.WHITE)));
     removeMetadata.setOnAction(event -> removeMetadataAction());
 
     metadataTopSeparator = new Separator(Orientation.VERTICAL);
@@ -262,13 +263,13 @@ public class InspectionPane extends BorderPane {
       updateMetadataTop();
     });
     metadataCombo.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-      updateSelectedMetadata((DescObjMetadata) newValue.getKey());
+      if (newValue != null)
+        updateSelectedMetadata((DescObjMetadata) newValue.getKey());
     });
 
     metadataTopBox.getChildren().addAll(titleLabel, space);
     updateMetadataTop();
   }
-
 
   private void updateMetadataTop() {
     metadataTopBox.getChildren().removeAll(addMetadata, removeMetadata, toggleForm, validationButton, metadataCombo);
@@ -508,12 +509,14 @@ public class InspectionPane extends BorderPane {
    * Saves the metadata from the text area in the SIP.
    */
   public void saveMetadata() {
-    if (metadataCombo == null) return;
+    if (metadataCombo == null)
+      return;
     UIPair selectedObject = metadataCombo.getSelectionModel().getSelectedItem();
     DescObjMetadata selectedDescObjMetadata;
     if (selectedObject != null && selectedObject.getKey() instanceof DescObjMetadata)
       selectedDescObjMetadata = (DescObjMetadata) selectedObject.getKey();
-    else return;
+    else
+      return;
 
     if (metadata.getChildren().contains(metadataFormWrapper)) {
       if (currentDescOb != null) {
@@ -768,8 +771,7 @@ public class InspectionPane extends BorderPane {
 
     Button remove = new Button(I18n.t("remove"));
     remove.setOnAction(event -> {
-      List<InspectionTreeItem> selectedItems = new ArrayList<>(
-          sipDocumentation.getSelectionModel().getSelectedItems());
+      List<InspectionTreeItem> selectedItems = new ArrayList<>(sipDocumentation.getSelectionModel().getSelectedItems());
       for (InspectionTreeItem selected : selectedItems) {
         Set<Path> paths = new HashSet<>();
         if (selected instanceof SipContentDirectory || selected instanceof SipContentFile) {
@@ -960,6 +962,9 @@ public class InspectionPane extends BorderPane {
 
     Task thisMetadataTask = metadataTask;
     metadataTask.setOnSucceeded((Void) -> {
+      if (metadata.getChildren().contains(metadataLoadingPane))
+        metadata.getChildren().remove(metadataLoadingPane);
+
       if (metadataTask != null && metadataTask == thisMetadataTask)
         showMetadataPane(metadataTask.getValue());
 
@@ -969,6 +974,10 @@ public class InspectionPane extends BorderPane {
       } else
         topButtons.add(validationButton);
       updateMetadataTop();
+    });
+    metadataTask.setOnFailed(event -> {
+      if (metadata.getChildren().contains(metadataLoadingPane))
+        metadata.getChildren().remove(metadataLoadingPane);
     });
     new Thread(metadataTask).start();
   }
@@ -1111,12 +1120,14 @@ public class InspectionPane extends BorderPane {
   }
 
   private void updateMetadataCombo() {
+    metadataCombo.getSelectionModel().clearSelection();
+    metadataCombo.getItems().clear();
     List<DescObjMetadata> metadataList = currentDescOb.getMetadataWithReplaces();
     List<UIPair> comboList = new ArrayList<>();
     for (DescObjMetadata dom : metadataList) {
       comboList.add(new UIPair(dom, dom.getId()));
     }
-    metadataCombo.getItems().setAll(comboList);
+    metadataCombo.getItems().addAll(comboList);
     metadataCombo.getSelectionModel().selectFirst();
   }
 
@@ -1256,5 +1267,18 @@ public class InspectionPane extends BorderPane {
       metadataCombo.getSelectionModel().selectLast();
       RodaIn.getSchemePane().setModifiedPlan(true);
     }
+  }
+
+  public void showAddMetadataError(DescObjMetadata metadataToAdd) {
+    String content = String.format(I18n.t("InspectionPane.addMetadataError.content"), metadataToAdd.getId());
+    Alert dlg = new Alert(Alert.AlertType.INFORMATION);
+    dlg.initStyle(StageStyle.UNDECORATED);
+    dlg.setHeaderText(I18n.t("InspectionPane.addMetadataError.header"));
+    dlg.setTitle(I18n.t("InspectionPane.addMetadataError.title"));
+    dlg.setContentText(content);
+    dlg.initModality(Modality.APPLICATION_MODAL);
+    dlg.initOwner(stage);
+    dlg.getDialogPane().setMinHeight(180);
+    dlg.show();
   }
 }

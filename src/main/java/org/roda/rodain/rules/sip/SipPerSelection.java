@@ -19,8 +19,6 @@ import java.util.Set;
  * @since 10-11-2015.
  */
 public class SipPerSelection extends SipPreviewCreator {
-  private static final int UPDATEFREQUENCY = 500; // in milliseconds
-  private long lastUIUpdate = 0;
   private Set<String> selectedPaths;
 
   /**
@@ -99,13 +97,6 @@ public class SipPerSelection extends SipPreviewCreator {
     // Check if we create a new SIP using this node
     if (selectedPaths.contains(path.toString())) {
       createSip(path, node);
-    }
-
-    long now = System.currentTimeMillis();
-    if (now - lastUIUpdate > UPDATEFREQUENCY) {
-      setChanged();
-      notifyObservers();
-      lastUIUpdate = now;
     }
   }
 

@@ -103,6 +103,8 @@
     -fx-background-color: white;
     -fx-border-color: gray;
     -fx-border-width: 1px;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
 }
 
 .combo-box-base .list-cell {
