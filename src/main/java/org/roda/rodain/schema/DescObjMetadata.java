@@ -38,7 +38,7 @@ public class DescObjMetadata {
   private String version, templateType;
 
   public DescObjMetadata() {
-
+    type = MetadataTypes.NEW_FILE;
   }
 
   public DescObjMetadata(MetadataTypes type, String templateType, String version) {
@@ -56,6 +56,21 @@ public class DescObjMetadata {
     if (path != null) {
       this.id = path.getFileName().toString();
     }
+  }
+
+  @JsonIgnore
+  public Path getPath() {
+    return path;
+  }
+
+  @JsonIgnore
+  public boolean isLoaded() {
+    return loaded;
+  }
+
+  @JsonIgnore
+  public MetadataTypes getType() {
+    return type;
   }
 
   /**

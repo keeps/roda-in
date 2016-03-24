@@ -170,29 +170,35 @@ public class DescriptionObject extends Observable {
   @JsonIgnore
   public List<DescObjMetadata> getMetadataWithReplaces() {
     for (DescObjMetadata dom : metadata) {
-      String content = dom.getContentDecoded();
-      if (content != null) {
-        Template tmpl = Mustache.compiler().defaultValue("").compile(content);
-        Map<String, String> data = new HashMap<>();
-        data.put("title", title);
-        data.put("dateInitial", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
-        data.put("dateFinal", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
-        data.put("now", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
-        data.put("id", id);
-        data.put("level", descriptionlevel);
-        data.put("creator", creator);
-        data.put("producer", producer);
-        data.put("rights", rights);
-        data.put("description", description);
-        content = tmpl.execute(data);
-        // we need to clean the '\r' character in windows,
-        // otherwise the strings are different even if no modification has been
-        // made
-        content = content.replace("\r", "");
-        dom.setContentDecoded(content);
-      }
+      getMetadataWithReplaces(dom);
     }
     return metadata;
+  }
+
+  @JsonIgnore
+  public DescObjMetadata getMetadataWithReplaces(DescObjMetadata dom) {
+    String content = dom.getContentDecoded();
+    if (content != null) {
+      Template tmpl = Mustache.compiler().defaultValue("").compile(content);
+      Map<String, String> data = new HashMap<>();
+      data.put("title", title);
+      data.put("dateInitial", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+      data.put("dateFinal", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+      data.put("now", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+      data.put("id", id);
+      data.put("level", descriptionlevel);
+      data.put("creator", creator);
+      data.put("producer", producer);
+      data.put("rights", rights);
+      data.put("description", description);
+      content = tmpl.execute(data);
+      // we need to clean the '\r' character in windows,
+      // otherwise the strings are different even if no modification has been
+      // made
+      content = content.replace("\r", "");
+      dom.setContentDecoded(content);
+    }
+    return dom;
   }
 
   /**

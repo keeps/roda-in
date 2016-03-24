@@ -66,7 +66,8 @@ public class FileExplorerPane extends BorderPane implements Observer {
   /**
    * Creates a new FileExplorerPane object.
    *
-   * @param stage The stage of the application.
+   * @param stage
+   *          The stage of the application.
    */
   public FileExplorerPane(Stage stage) {
     super();
@@ -91,7 +92,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
   /**
    * @return True if the file explorer is showing ignored items, false
-   * otherwise.
+   *         otherwise.
    */
   public static boolean isShowIgnored() {
     return showIgnored;
@@ -158,8 +159,11 @@ public class FileExplorerPane extends BorderPane implements Observer {
     HBox.setHgrow(space, Priority.ALWAYS);
 
     Button associate = new Button(I18n.t("associate"));
+    associate.disableProperty().bind(RodaIn.getSchemePane().hasClassificationScheme().not());
     associate.setMinWidth(100);
-    associate.setOnAction(event -> RodaIn.getSchemePane().startAssociation());
+    associate.setOnAction(event -> {
+      RodaIn.getSchemePane().startAssociation();
+    });
 
     bottom.getChildren().addAll(ignore, space, associate);
   }
@@ -244,7 +248,8 @@ public class FileExplorerPane extends BorderPane implements Observer {
   /**
    * Sets a new root to file explorer
    *
-   * @param rootPath The new root path
+   * @param rootPath
+   *          The new root path
    */
   public void setFileExplorerRoot(Path rootPath) {
     // check if the path, a parent path or a child path haven't been added yet
@@ -265,7 +270,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     this.setBottom(bottom);
 
     SourceTreeDirectory rootNode = new SourceTreeDirectory(rootPath, new SourceDirectory(rootPath, isShowFiles()),
-        null);
+      null);
     realRoots.put(rootPath.toString(), rootNode);
     PathCollection.addItem(rootNode);
     rootNode.setExpanded(true);
@@ -274,8 +279,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
   }
 
   private void alertAddFolder(String oldPath, String newPath) {
-    String content = String.format(I18n.t("FileExplorerPane.alertAddFolder.content"), oldPath,
-        newPath);
+    String content = String.format(I18n.t("FileExplorerPane.alertAddFolder.content"), oldPath, newPath);
     Alert dlg = new Alert(Alert.AlertType.INFORMATION);
     dlg.initStyle(StageStyle.UNDECORATED);
     dlg.setHeaderText(I18n.t("FileExplorerPane.alertAddFolder.header"));
@@ -291,7 +295,8 @@ public class FileExplorerPane extends BorderPane implements Observer {
   /**
    * Updates the interface with the attributes of the path in argument.
    *
-   * @param path The path to be used in the update
+   * @param path
+   *          The path to be used in the update
    */
   public void updateAttributes(Path path) {
     // we need to stop the directory size compute thread to avoid more than one
@@ -314,8 +319,9 @@ public class FileExplorerPane extends BorderPane implements Observer {
   }
 
   /**
-   * @param pathString The path, in the form of a string, to be used to update the
-   *                   interface.
+   * @param pathString
+   *          The path, in the form of a string, to be used to update the
+   *          interface.
    * @see #updateAttributes(Path)
    */
   public void updateAttributes(String pathString) {
@@ -400,7 +406,8 @@ public class FileExplorerPane extends BorderPane implements Observer {
    * ignores it. Depending on the state of the showIgnored flag, it shows or
    * hides the ignored items.
    *
-   * @param items The set of items to be ignored
+   * @param items
+   *          The set of items to be ignored
    */
   public void ignore(Set<SourceTreeItem> items) {
     for (SourceTreeItem item : items) {

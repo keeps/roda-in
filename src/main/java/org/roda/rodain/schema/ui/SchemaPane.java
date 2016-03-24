@@ -1,6 +1,8 @@
 package org.roda.rodain.schema.ui;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
@@ -63,7 +65,7 @@ public class SchemaPane extends BorderPane {
 
   // center help
   private VBox centerHelp;
-  private boolean hasClassificationScheme = false;
+  private BooleanProperty hasClassificationScheme;
 
   /**
    * Creates a new SchemaPane object.
@@ -82,6 +84,8 @@ public class SchemaPane extends BorderPane {
 
     createCenterHelp();
     this.setCenter(centerHelp);
+
+    hasClassificationScheme = new SimpleBooleanProperty(false);
 
     String lastClassScheme = AppProperties.getConfig("lastClassificationScheme");
     if (lastClassScheme != null && !"".equals(lastClassScheme)) {
@@ -391,7 +395,7 @@ public class SchemaPane extends BorderPane {
       setBottom(new HBox());
     } else {
       sortRootChildren();
-      hasClassificationScheme = true;
+      hasClassificationScheme.setValue(true);
     }
     modifiedPlan = false;
   }
@@ -504,7 +508,7 @@ public class SchemaPane extends BorderPane {
     setCenter(dropBox);
     setBottom(bottom);
     rootNode.getChildren().clear();
-    hasClassificationScheme = true;
+    hasClassificationScheme.setValue(true);
     AppProperties.setConfig("lastClassificationScheme", "");
     AppProperties.saveConfig();
     modifiedPlan = true;
@@ -549,7 +553,7 @@ public class SchemaPane extends BorderPane {
   }
 
   public void startAssociation() {
-    if (hasClassificationScheme) {
+    if (hasClassificationScheme.get()) {
       TreeItem<String> selected = getSelectedItem();
       if (selected != null && selected instanceof SchemaNode)
         startAssociation((SchemaNode) selected);
@@ -749,6 +753,7 @@ public class SchemaPane extends BorderPane {
     rootNode.getChildren().clear();
     setCenter(centerHelp);
     setBottom(new HBox());
+    hasClassificationScheme.setValue(false);
   }
 
   /**
@@ -771,6 +776,10 @@ public class SchemaPane extends BorderPane {
 
   public void setModifiedPlan(boolean b) {
     modifiedPlan = b;
+  }
+
+  public BooleanProperty hasClassificationScheme() {
+    return hasClassificationScheme;
   }
 
   /**

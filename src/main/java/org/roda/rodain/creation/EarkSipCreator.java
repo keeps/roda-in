@@ -1,9 +1,18 @@
 package org.roda.rodain.creation;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.io.FileUtils;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.creation.ui.CreationModalProcessing;
+import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.rules.sip.SipRepresentation;
@@ -14,14 +23,6 @@ import org.roda_project.commons_ip.utils.METSEnums;
 import org.roda_project.commons_ip.utils.SIPException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -62,7 +63,6 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
 
   private void createEarkSip(SipPreview sip) {
     Path rodainPath = AppProperties.getRodainPath();
-    String metadataName = "metadata.xml";
     try {
       SIP earkSip = new EARKSIP(sip.getId(), sip.getContentType(), "RODA-in");
       earkSip.addObserver(this);
@@ -79,16 +79,12 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
 
         if (templateType != null) {
           if ("dc".equals(templateType)) {
-            metadataName = "dc.xml";
             metadataType = METSEnums.MetadataType.DC;
           } else if ("ead".equals(templateType)) {
-            metadataName = templateType + ".xml";
             metadataType = METSEnums.MetadataType.EAD;
           } else if ("ead3".equals(templateType)) {
-            metadataName = templateType + ".xml";
             metadataType = METSEnums.MetadataType.EAD;
           } else {
-            metadataName = "custom.xml";
             metadataType = METSEnums.MetadataType.OTHER;
           }
           Path schemaPath = AppProperties.getSchemaPath(descObjMetadata.getTemplateType());
@@ -96,13 +92,22 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
             earkSip.addSchema(new IPFile(schemaPath));
         }
 
-        List<DescObjMetadata> metadataList = sip.getMetadataWithReplaces();
-        String content = "";
-        if (!metadataList.isEmpty())
-          content = metadataList.get(0).getContentDecoded();
+        // metadataType = METSEnums.MetadataType.OTHER.setOtherType("celexrdf");
+        Path metadataPath = null;
+        if (descObjMetadata.getType() != MetadataTypes.TEMPLATE && descObjMetadata.getType() != MetadataTypes.NEW_FILE
+          && !descObjMetadata.isLoaded()) {
+          metadataPath = descObjMetadata.getPath();
+        }
 
-        FileUtils.writeStringToFile(rodainPath.resolve(metadataName).toFile(), content);
-        IPFile metadataFile = new IPFile(rodainPath.resolve(metadataName));
+        if (metadataPath == null) {
+          sip.getMetadataWithReplaces(descObjMetadata);
+          String content = descObjMetadata.getContentDecoded();
+
+          metadataPath = rodainPath.resolve(descObjMetadata.getId());
+          FileUtils.writeStringToFile(metadataPath.toFile(), content);
+        }
+
+        IPFile metadataFile = new IPFile(metadataPath);
         IPDescriptiveMetadata metadata = new IPDescriptiveMetadata(metadataFile, metadataType,
           descObjMetadata.getVersion());
         earkSip.addDescriptiveMetadata(metadata);

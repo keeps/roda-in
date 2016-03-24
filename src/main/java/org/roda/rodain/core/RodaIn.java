@@ -129,8 +129,10 @@ public class RodaIn extends Application {
   private SplitPane createSplitPane() {
     // Divide center pane in 3
     SplitPane split = new SplitPane();
-    fileExplorer = new FileExplorerPane(stage);
+    // schemePane must be created before fileExplorer because of some variable
+    // bindings
     schemePane = new SchemaPane(stage);
+    fileExplorer = new FileExplorerPane(stage);
     inspectionPane = new InspectionPane(stage);
 
     split.setDividerPositions(0.33, 0.67);

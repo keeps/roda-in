@@ -50,21 +50,22 @@ public class SipPerFile extends SipPreviewCreator {
     super(id, filters, metaType, metadataPath, templateType, templateVersion);
     metadata = new HashMap<>();
 
-    try {
-      DirectoryStream<Path> pathList = Files.newDirectoryStream(metadataPath);
-      for (Path pathResult : pathList) {
-        String key = FilenameUtils.removeExtension(pathResult.getFileName().toString());
-        Set<Path> paths = metadata.get(key);
-        if (paths == null)
-          paths = new HashSet<>();
-        paths.add(pathResult);
-        metadata.put(key, paths);
+    if (metadataPath != null && metaType == MetadataTypes.DIFF_DIRECTORY) {
+      try {
+        DirectoryStream<Path> pathList = Files.newDirectoryStream(metadataPath);
+        for (Path pathResult : pathList) {
+          String key = FilenameUtils.removeExtension(pathResult.getFileName().toString());
+          Set<Path> paths = metadata.get(key);
+          if (paths == null)
+            paths = new HashSet<>();
+          paths.add(pathResult);
+          metadata.put(key, paths);
+        }
+        pathList.close();
+      } catch (IOException e) {
+        e.printStackTrace();
       }
-      pathList.close();
-    } catch (IOException e) {
-      e.printStackTrace();
     }
-
   }
 
   @Override
