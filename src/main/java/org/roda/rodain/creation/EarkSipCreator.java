@@ -92,7 +92,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
             earkSip.addSchema(new IPFile(schemaPath));
         }
 
-        // metadataType = METSEnums.MetadataType.OTHER.setOtherType("celexrdf");
+//        metadataType = METSEnums.MetadataType.OTHER.setOtherType("celexrdf");
         Path metadataPath = null;
         if (descObjMetadata.getType() != MetadataTypes.TEMPLATE && descObjMetadata.getType() != MetadataTypes.NEW_FILE
           && !descObjMetadata.isLoaded()) {
@@ -150,6 +150,10 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
       canceled = true;
     } catch (IOException e) {
       log.error("Error accessing the files", e);
+      unsuccessful.add(sip);
+      CreationModalProcessing.showError(sip, e);
+    } catch (Exception e){
+      log.error("Error exporting E-ARK SIP", e);
       unsuccessful.add(sip);
       CreationModalProcessing.showError(sip, e);
     }

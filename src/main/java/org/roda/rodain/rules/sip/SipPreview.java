@@ -36,7 +36,8 @@ public class SipPreview extends DescriptionObject implements Observer {
     documentation = new HashSet<>();
     setTitle(name);
     List<DescObjMetadata> tempList = new ArrayList<>();
-    tempList.add(metadata);
+    if(metadata != null)
+      tempList.add(metadata);
     setMetadata(tempList);
     setDescriptionlevel("item");
     setId(UUID.randomUUID().toString());

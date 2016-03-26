@@ -52,18 +52,22 @@ public class SipPerFile extends SipPreviewCreator {
 
     if (metadataPath != null && metaType == MetadataTypes.DIFF_DIRECTORY) {
       try {
-        DirectoryStream<Path> pathList = Files.newDirectoryStream(metadataPath);
-        for (Path pathResult : pathList) {
-          String key = FilenameUtils.removeExtension(pathResult.getFileName().toString());
-          Set<Path> paths = metadata.get(key);
-          if (paths == null)
-            paths = new HashSet<>();
-          paths.add(pathResult);
-          metadata.put(key, paths);
-        }
-        pathList.close();
+        Files.walkFileTree(metadataPath, new SimpleFileVisitor<Path>() {
+          @Override
+          public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+            String key = FilenameUtils.removeExtension(file.getFileName().toString());
+            Set<Path> paths = metadata.get(key);
+            if (paths == null)
+              paths = new HashSet<>();
+            paths.add(file);
+            metadata.put(key, paths);
+            return FileVisitResult.CONTINUE;
+          }
+        });
+      } catch (AccessDeniedException e) {
+        log.info("Access denied to file", e);
       } catch (IOException e) {
-        e.printStackTrace();
+        log.error("Error walking the file tree", e);
       }
     }
   }
@@ -149,10 +153,10 @@ public class SipPerFile extends SipPreviewCreator {
     Set<TreeNode> files = new HashSet<>();
     files.add(node);
 
-    DescObjMetadata metadata;
+    DescObjMetadata metadata = null;
     if (metaType == MetadataTypes.TEMPLATE)
       metadata = new DescObjMetadata(metaType, templateType, templateVersion);
-    else
+    else if(metaPath != null)
       metadata = new DescObjMetadata(metaType, metaPath);
 
     SipRepresentation rep = new SipRepresentation("rep1");
