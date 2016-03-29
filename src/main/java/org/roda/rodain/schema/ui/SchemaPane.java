@@ -91,7 +91,7 @@ public class SchemaPane extends BorderPane {
     if (lastClassScheme != null && !"".equals(lastClassScheme)) {
       try {
         ClassificationSchema schema = loadClassificationSchemaFile(lastClassScheme);
-        updateClassificationSchema(schema);
+        updateClassificationSchema(schema, true);
       } catch (IOException e) {
         log.error("Error reading classification scheme specification", e);
       }
@@ -328,7 +328,11 @@ public class SchemaPane extends BorderPane {
   }
 
   private void updateClassificationSchema(ClassificationSchema cs) {
-    if (!confirmUpdate()) {
+    updateClassificationSchema(cs, false);
+  }
+
+  private void updateClassificationSchema(ClassificationSchema cs, boolean skipConfirmation) {
+    if (skipConfirmation || !confirmUpdate()) {
       return;
     }
     setTop(topBox);

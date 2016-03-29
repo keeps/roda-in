@@ -2,11 +2,17 @@ package org.roda.rodain.core;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
+import javafx.scene.CacheHint;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
@@ -45,6 +51,10 @@ public class RodaIn extends Application {
   private BorderPane mainPane;
   private double initialWidth = 1200, initialHeight = 700;
 
+  // Splash
+  private Pane splashPane;
+  private Stage splashStage;
+
   private static FileExplorerPane fileExplorer;
   private static InspectionPane inspectionPane;
   private static SchemaPane schemePane;
@@ -57,6 +67,23 @@ public class RodaIn extends Application {
    */
   public static void startApp(String[] args) {
     launch(args);
+  }
+
+  @Override
+  public void init() {
+    ImageView splash = new ImageView();
+    try {
+      splash = new ImageView(new Image(ClassLoader.getSystemResource("roda-in-splash.png").openStream()));
+    } catch (IOException e) {
+      log.error("Error reading logo file", e);
+    }
+
+    splashPane = new Pane();
+    splashPane.setStyle("-fx-background-color: transparent");
+    splashPane.getChildren().add(splash);
+    splashPane.setCache(true);
+    splashPane.setCacheHint(CacheHint.SPEED);
+    splashPane.setEffect(new DropShadow());
   }
 
   /**
@@ -73,47 +100,69 @@ public class RodaIn extends Application {
    */
   @Override
   public void start(Stage primaryStage) {
+    if (splashPane != null) {
+      splashStage = new Stage();
+      Scene splashScene = new Scene(splashPane);
+      splashScene.setFill(Color.TRANSPARENT);
+      splashStage.setScene(splashScene);
+      splashStage.initOwner(stage);
+      splashStage.initStyle(StageStyle.TRANSPARENT);
+      splashStage.show();
+      splashStage.centerOnScreen();
+    }
+
     stage = primaryStage;
     stage.setMinWidth(1024);
     stage.setMinHeight(600);
 
-    stage.setOnCloseRequest(event -> {
-      closeApp();
+    Task<Void> initTask = new Task<Void>() {
+      @Override
+      protected Void call() throws Exception {
+        stage.setOnCloseRequest(event -> closeApp());
+
+        try {
+          stage.getIcons().add(new Image(ClassLoader.getSystemResource("roda2-logo.png").openStream()));
+        } catch (IOException e) {
+          log.error("Error reading logo file", e);
+        }
+
+        AppProperties.initialize();
+        String ignoredRaw = AppProperties.getConfig("app.ignoredFiles");
+        String[] ignored = ignoredRaw.split(",");
+        for (String s : ignored) {
+          IgnoredFilter.addIgnoreRule(s);
+        }
+
+        // load the custom fonts
+        Font.loadFont(ClassLoader.getSystemResource("fonts/Ubuntu-Regular.ttf").toExternalForm(), 10);
+        Font.loadFont(ClassLoader.getSystemResource("fonts/Ubuntu-Medium.ttf").toExternalForm(), 10);
+        Font.loadFont(ClassLoader.getSystemResource("fonts/Ubuntu-Light.ttf").toExternalForm(), 10);
+
+        createFrameStructure();
+        createMenu();
+
+        // setup and show the window
+        stage.setTitle("RODA-In");
+        return null;
+      }
+    };
+
+    initTask.setOnSucceeded(event -> {
+      Scene scene = new Scene(mainPane, initialWidth, initialHeight);
+
+      scene.getStylesheets().add(ClassLoader.getSystemResource("css/mainWindow.css").toExternalForm());
+      scene.getStylesheets().add(ClassLoader.getSystemResource("css/shared.css").toExternalForm());
+      scene.getStylesheets().add(ClassLoader.getSystemResource("css/xml-highlighting.css").toExternalForm());
+      stage.setScene(scene);
+
+      if (splashStage != null)
+        splashStage.close();
+      stage.show();
+      stage.centerOnScreen();
+      stage.setMaximized(true);
     });
 
-    try {
-      stage.getIcons().add(new Image(ClassLoader.getSystemResource("roda2-logo.png").openStream()));
-    } catch (IOException e) {
-      log.error("Error reading logo file", e);
-    }
-
-    AppProperties.initialize();
-    String ignoredRaw = AppProperties.getConfig("app.ignoredFiles");
-    String[] ignored = ignoredRaw.split(",");
-    for (String s : ignored) {
-      IgnoredFilter.addIgnoreRule(s);
-    }
-
-    // load the custom fonts
-    Font.loadFont(ClassLoader.getSystemResource("fonts/Ubuntu-Regular.ttf").toExternalForm(), 10);
-    Font.loadFont(ClassLoader.getSystemResource("fonts/Ubuntu-Medium.ttf").toExternalForm(), 10);
-    Font.loadFont(ClassLoader.getSystemResource("fonts/Ubuntu-Light.ttf").toExternalForm(), 10);
-
-    createFrameStructure();
-    createMenu();
-
-    // setup and show the window
-    stage.setTitle("RODA-In");
-    Scene scene = new Scene(mainPane, initialWidth, initialHeight);
-
-    scene.getStylesheets().add(ClassLoader.getSystemResource("css/mainWindow.css").toExternalForm());
-    scene.getStylesheets().add(ClassLoader.getSystemResource("css/shared.css").toExternalForm());
-    scene.getStylesheets().add(ClassLoader.getSystemResource("css/xml-highlighting.css").toExternalForm());
-    stage.setScene(scene);
-
-    stage.show();
-    stage.centerOnScreen();
-    stage.setMaximized(true);
+    new Thread(initTask).start();
   }
 
   private void createFrameStructure() {

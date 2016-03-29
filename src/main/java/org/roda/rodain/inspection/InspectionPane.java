@@ -1,6 +1,7 @@
 package org.roda.rodain.inspection;
 
 import com.sun.javafx.collections.ObservableListWrapper;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
@@ -231,11 +232,14 @@ public class InspectionPane extends BorderPane {
 
     toggleForm = new ToggleButton();
     toggleForm.setTooltip(new Tooltip(I18n.t("InspectionPane.textContent")));
-    Image selected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CODE, Color.WHITE);
-    Image unselected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.LIST, Color.WHITE);
-    ImageView toggleImage = new ImageView();
-    toggleForm.setGraphic(toggleImage);
-    toggleImage.imageProperty().bind(Bindings.when(toggleForm.selectedProperty()).then(selected).otherwise(unselected));
+    Platform.runLater(() -> {
+      Image selected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CODE, Color.WHITE);
+      Image unselected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.LIST, Color.WHITE);
+      ImageView toggleImage = new ImageView();
+      toggleForm.setGraphic(toggleImage);
+      toggleImage.imageProperty()
+        .bind(Bindings.when(toggleForm.selectedProperty()).then(selected).otherwise(unselected));
+    });
     toggleForm.selectedProperty().addListener((observable, oldValue, newValue) -> {
       saveMetadata();
       // newValue == true means that the form will be displayed
@@ -257,19 +261,21 @@ public class InspectionPane extends BorderPane {
 
     validationButton = new Button();
     validationButton.setTooltip(new Tooltip(I18n.t("InspectionPane.validate")));
-    validationButton
-      .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CHECK, Color.WHITE)));
+    Platform.runLater(() -> validationButton
+      .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CHECK, Color.WHITE))));
+
     validationButton.setOnAction(event -> validationAction());
 
     addMetadata = new Button();
     addMetadata.setTooltip(new Tooltip(I18n.t("InspectionPane.addMetadata")));
-    addMetadata.setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.PLUS, Color.WHITE)));
+    Platform.runLater(() -> addMetadata
+      .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.PLUS, Color.WHITE))));
     addMetadata.setOnAction(event -> addMetadataAction());
 
     removeMetadata = new Button();
     removeMetadata.setTooltip(new Tooltip(I18n.t("InspectionPane.removeMetadata")));
-    removeMetadata
-      .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.MINUS, Color.WHITE)));
+    Platform.runLater(() -> removeMetadata
+      .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.MINUS, Color.WHITE))));
     removeMetadata.setOnAction(event -> removeMetadataAction());
 
     metadataTopSeparator = new Separator(Orientation.VERTICAL);
@@ -635,12 +641,14 @@ public class InspectionPane extends BorderPane {
 
     toggleDocumentation = new ToggleButton();
     toggleDocumentation.setTooltip(new Tooltip(I18n.t("documentation")));
-    Image selected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.OPEN_FOLDER, Color.WHITE);
-    Image unselected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.BOOK, Color.WHITE);
-    ImageView toggleImage = new ImageView();
-    toggleDocumentation.setGraphic(toggleImage);
-    toggleImage.imageProperty()
-      .bind(Bindings.when(toggleDocumentation.selectedProperty()).then(selected).otherwise(unselected));
+    Platform.runLater(() -> {
+      Image selected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.OPEN_FOLDER, Color.WHITE);
+      Image unselected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.BOOK, Color.WHITE);
+      ImageView toggleImage = new ImageView();
+      toggleDocumentation.setGraphic(toggleImage);
+      toggleImage.imageProperty()
+        .bind(Bindings.when(toggleDocumentation.selectedProperty()).then(selected).otherwise(unselected));
+    });
     title.textProperty().bind(
       Bindings.when(toggleDocumentation.selectedProperty()).then(I18n.t("documentation")).otherwise(I18n.t("data")));
 
