@@ -2,8 +2,6 @@ package org.roda.rodain.inspection;
 
 import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.beans.binding.Bindings;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -21,8 +19,6 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.util.StringConverter;
-import javafx.util.converter.LocalDateStringConverter;
 import org.apache.commons.lang.StringUtils;
 import org.fxmisc.richtext.CodeArea;
 import org.roda.rodain.core.AppProperties;
@@ -56,8 +52,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -79,7 +73,7 @@ public class InspectionPane extends BorderPane {
 
   private VBox centerHelp;
   // Metadata
-  private VBox metadata;
+  private VBox metadata, metadataHelpBox;
   private CodeArea metaText;
   private GridPane metadataGrid;
   private ScrollPane metadataFormWrapper;
@@ -110,8 +104,7 @@ public class InspectionPane extends BorderPane {
   /**
    * Creates a new inspection pane.
    *
-   * @param stage
-   *          The primary stage of the application
+   * @param stage The primary stage of the application
    */
   public InspectionPane(Stage stage) {
     this.stage = stage;
@@ -162,16 +155,48 @@ public class InspectionPane extends BorderPane {
     metadataFormWrapper.setContent(metadataGrid);
     metadataFormWrapper.setFitToWidth(true);
 
+    createMetadataHelp();
     createMetadataTop();
     createMetadataTextBox();
     metadata.getChildren().addAll(metadataTopBox, metaText);
+  }
+
+  private void createMetadataHelp() {
+    metadataHelpBox = new VBox();
+    metadataHelpBox.setPadding(new Insets(0, 10, 0, 10));
+    VBox.setVgrow(metadataHelpBox, Priority.ALWAYS);
+    metadataHelpBox.setAlignment(Pos.CENTER);
+
+    VBox box = new VBox(40);
+    box.setAlignment(Pos.CENTER);
+    box.setPadding(new Insets(10, 10, 10, 10));
+    box.setMaxWidth(355);
+    box.setMaxHeight(200);
+    box.setMinHeight(200);
+
+    HBox titleBox = new HBox();
+    titleBox.setAlignment(Pos.CENTER);
+    Label title = new Label(I18n.t("InspectionPane.addMetadata"));
+    title.getStyleClass().add("helpTitle");
+    title.setTextAlignment(TextAlignment.CENTER);
+    titleBox.getChildren().add(title);
+
+    Button addMetadata = new Button(I18n.t("add"));
+    addMetadata.setMinHeight(65);
+    addMetadata.setMinWidth(130);
+    addMetadata.setMaxWidth(130);
+    addMetadata.setOnAction(event -> addMetadataAction());
+    addMetadata.getStyleClass().add("helpButton");
+
+    box.getChildren().addAll(titleBox, addMetadata);
+    metadataHelpBox.getChildren().add(box);
   }
 
   private void createMetadataTextBox() {
     metaText = new CodeArea();
     VBox.setVgrow(metaText, Priority.ALWAYS);
     metaText.textProperty().addListener(
-      (observable, oldValue, newValue) -> metaText.setStyleSpans(0, XMLEditor.computeHighlighting(newValue)));
+        (observable, oldValue, newValue) -> metaText.setStyleSpans(0, XMLEditor.computeHighlighting(newValue)));
     // set the tab size to 2 spaces
     metaText.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
       if (event.getCode() == KeyCode.TAB) {
@@ -233,7 +258,7 @@ public class InspectionPane extends BorderPane {
     validationButton = new Button();
     validationButton.setTooltip(new Tooltip(I18n.t("InspectionPane.validate")));
     validationButton
-      .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CHECK, Color.WHITE)));
+        .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CHECK, Color.WHITE)));
     validationButton.setOnAction(event -> validationAction());
 
     addMetadata = new Button();
@@ -244,7 +269,7 @@ public class InspectionPane extends BorderPane {
     removeMetadata = new Button();
     removeMetadata.setTooltip(new Tooltip(I18n.t("InspectionPane.removeMetadata")));
     removeMetadata
-      .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.MINUS, Color.WHITE)));
+        .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.MINUS, Color.WHITE)));
     removeMetadata.setOnAction(event -> removeMetadataAction());
 
     metadataTopSeparator = new Separator(Orientation.VERTICAL);
@@ -267,8 +292,11 @@ public class InspectionPane extends BorderPane {
       updateMetadataTop();
     });
     metadataCombo.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-      if (newValue != null)
+      if (newValue != null) {
         updateSelectedMetadata((DescObjMetadata) newValue.getKey());
+      } else {
+        showMetadataHelp();
+      }
     });
 
     metadataTopBox.getChildren().addAll(titleLabel, space);
@@ -401,94 +429,27 @@ public class InspectionPane extends BorderPane {
       Label label = new Label(metadataValue.getTitle());
       label.getStyleClass().add("formLabel");
 
-      Control control;
-      switch (metadataValue.getFieldType()) {
-        case "date":
-          String pattern = "yyyy-MM-dd";
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
-          LocalDateStringConverter ldsc = new LocalDateStringConverter(formatter, null);
-
-          DatePicker datePicker = new DatePicker(ldsc.fromString(metadataValue.getValue()));
-          datePicker.setMaxWidth(Double.MAX_VALUE);
-          datePicker.setConverter(new StringConverter<LocalDate>() {
-            private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern);
-
-            @Override
-            public String toString(LocalDate localDate) {
-              if (localDate == null)
-                return "";
-              return dateTimeFormatter.format(localDate);
-            }
-
-            @Override
-            public LocalDate fromString(String dateString) {
-              if (dateString == null || dateString.trim().isEmpty())
-                return null;
-              return LocalDate.parse(dateString, dateTimeFormatter);
-            }
-          });
-          datePicker.valueProperty()
-            .addListener((observable1, oldValue1, newValue1) -> metadataValue.setValue(ldsc.toString(newValue1)));
-          control = datePicker;
-          break;
-        case "combo":
-          ComboBox<UIPair> itemTypes = new ComboBox<>();
-          itemTypes.setMaxWidth(Double.MAX_VALUE);
-          control = itemTypes;
-          itemTypes.setId("itemLevels");
-          ObservableList<UIPair> itemList = FXCollections.observableArrayList(metadataValue.getFieldOptions());
-          itemTypes.setItems(itemList);
-          // Select current value
-          for (UIPair pair : itemTypes.getItems()) {
-            if (metadataValue.getValue().equals(pair.getKey())) {
-              itemTypes.getSelectionModel().select(pair);
-              break;
-            }
+      TextField textField = new TextField(metadataValue.getValue());
+      HBox.setHgrow(textField, Priority.ALWAYS);
+      textField.setUserData(metadataValue);
+      textField.textProperty().addListener((observable2, oldValue2, newValue2) -> {
+        metadataValue.setValue(newValue2);
+      });
+      if (metadataValue.getId().equals("title")) {
+        textField.setId("descObjTitle");
+        titleTextField = textField;
+        paneTitle.textProperty().bind(textField.textProperty());
+        if (currentSIPNode != null) {
+          textField.textProperty().bindBidirectional(currentSIPNode.valueProperty());
+        } else {
+          if (currentSchema != null) {
+            textField.textProperty().bindBidirectional(currentSchema.valueProperty());
           }
-          itemTypes.valueProperty().addListener((observable1, oldValue1, newValue1) -> {
-            metadataValue.setValue(newValue1.getKey().toString());
-            if (metadataValue.getId().equals("level")) {
-              if (currentSchema != null) {
-                currentSchema.updateDescLevel(newValue1.getKey().toString());
-                topIcon.setImage(currentSchema.getIconBlack());
-              }
-              if (currentSIPNode != null) {
-                currentSIPNode.setDescriptionLevel(newValue1.getKey().toString());
-                topIcon.setImage(currentSIPNode.getIconBlack());
-              }
-              if (titleTextField != null) {
-                // force update
-                String title = titleTextField.getText();
-                titleTextField.setText("");
-                titleTextField.setText(title);
-              }
-            }
-          });
-          break;
-        default:
-          TextField textField = new TextField(metadataValue.getValue());
-          HBox.setHgrow(textField, Priority.ALWAYS);
-          textField.setUserData(metadataValue);
-          control = textField;
-          textField.textProperty().addListener((observable2, oldValue2, newValue2) -> {
-            metadataValue.setValue(newValue2);
-          });
-          if (metadataValue.getId().equals("title")) {
-            textField.setId("descObjTitle");
-            titleTextField = textField;
-            paneTitle.textProperty().bind(textField.textProperty());
-            if (currentSIPNode != null) {
-              textField.textProperty().bindBidirectional(currentSIPNode.valueProperty());
-            } else {
-              if (currentSchema != null) {
-                textField.textProperty().bindBidirectional(currentSchema.valueProperty());
-              }
-            }
-          }
-          break;
+        }
       }
+
       metadataGrid.add(label, 0, i);
-      metadataGrid.add(control, 1, i);
+      metadataGrid.add(textField, 1, i);
       i++;
     }
   }
@@ -502,11 +463,15 @@ public class InspectionPane extends BorderPane {
 
   private Map<String, MetadataValue> getMetadataValues() throws SAXException {
     if (currentDescOb != null) {
-      return currentDescOb.getMetadataValues();
-    } else {
-      // error, there is no SIP or SchemaNode selected
-      return null;
+      UIPair selectedPair = metadataCombo.getSelectionModel().getSelectedItem();
+      if (selectedPair != null) {
+        DescObjMetadata dom = (DescObjMetadata) selectedPair.getKey();
+        if (dom != null)
+          return dom.getValues();
+      }
     }
+    // error, there is no SIP or SchemaNode selected
+    return null;
   }
 
   /**
@@ -680,9 +645,9 @@ public class InspectionPane extends BorderPane {
     ImageView toggleImage = new ImageView();
     toggleDocumentation.setGraphic(toggleImage);
     toggleImage.imageProperty()
-      .bind(Bindings.when(toggleDocumentation.selectedProperty()).then(selected).otherwise(unselected));
+        .bind(Bindings.when(toggleDocumentation.selectedProperty()).then(selected).otherwise(unselected));
     title.textProperty().bind(
-      Bindings.when(toggleDocumentation.selectedProperty()).then(I18n.t("documentation")).otherwise(I18n.t("data")));
+        Bindings.when(toggleDocumentation.selectedProperty()).then(I18n.t("documentation")).otherwise(I18n.t("data")));
 
     toggleDocumentation.selectedProperty().addListener((observable, oldValue, newValue) -> {
       dataBox.getChildren().clear();
@@ -942,7 +907,7 @@ public class InspectionPane extends BorderPane {
   }
 
   private void updateSelectedMetadata(DescObjMetadata dom) {
-    metadata.getChildren().removeAll(metadataFormWrapper, metaText);
+    metadata.getChildren().removeAll(metadataFormWrapper, metaText, metadataHelpBox);
     if (!metadata.getChildren().contains(metadataLoadingPane))
       metadata.getChildren().add(metadataLoadingPane);
 
@@ -998,8 +963,7 @@ public class InspectionPane extends BorderPane {
    * TreeView.
    * </p>
    *
-   * @param sip
-   *          The SipPreviewNode used to update the UI.
+   * @param sip The SipPreviewNode used to update the UI.
    * @see SipPreviewNode
    * @see SipContentDirectory
    * @see SipContentFile
@@ -1079,8 +1043,7 @@ public class InspectionPane extends BorderPane {
    * create a ListView of RuleCell.
    * </p>
    *
-   * @param node
-   *          The SchemaNode used to update the UI.
+   * @param node The SchemaNode used to update the UI.
    * @see RuleCell
    * @see SchemaNode
    */
@@ -1135,8 +1098,20 @@ public class InspectionPane extends BorderPane {
     for (DescObjMetadata dom : metadataList) {
       comboList.add(new UIPair(dom, dom.getId()));
     }
-    metadataCombo.getItems().addAll(comboList);
-    metadataCombo.getSelectionModel().selectFirst();
+    if (comboList.isEmpty()) {
+      showMetadataHelp();
+    } else {
+      metadataCombo.getItems().addAll(comboList);
+      metadataCombo.getSelectionModel().selectFirst();
+    }
+  }
+
+  private void showMetadataHelp() {
+    topButtons.clear();
+    topButtons.add(addMetadata);
+    updateMetadataTop();
+    metadata.getChildren().clear();
+    metadata.getChildren().addAll(metadataTopBox, metadataHelpBox);
   }
 
   private void updateTextArea(String content) {
@@ -1202,11 +1177,10 @@ public class InspectionPane extends BorderPane {
   /**
    * Adds documentation to the current SIP.
    *
-   * @param target
-   *          The item to where the documentation should go. This is NOT the SIP
-   *          where we will be adding the documentation. This must be either an
-   *          already added folder to the documentation or null (in which case
-   *          we'll add to the root of the tree).
+   * @param target The item to where the documentation should go. This is NOT the SIP
+   *               where we will be adding the documentation. This must be either an
+   *               already added folder to the documentation or null (in which case
+   *               we'll add to the root of the tree).
    */
   public void addDocumentationToSIP(TreeItem target) {
     Set<Path> paths = new HashSet<>();
@@ -1221,13 +1195,11 @@ public class InspectionPane extends BorderPane {
   /**
    * Adds documentation to the current SIP.
    *
-   * @param target
-   *          The item to where the documentation should go. This is NOT the SIP
-   *          where we will be adding the documentation. This must be either an
-   *          already added folder to the documentation or null (in which case
-   *          we'll add to the root of the tree).
-   * @param paths
-   *          The paths to be used to create the documentation.
+   * @param target The item to where the documentation should go. This is NOT the SIP
+   *               where we will be adding the documentation. This must be either an
+   *               already added folder to the documentation or null (in which case
+   *               we'll add to the root of the tree).
+   * @param paths  The paths to be used to create the documentation.
    */
   public void addDocumentationToSIP(TreeItem target, Set<Path> paths) {
     Set<ContentFilter> filters = new HashSet<>();

@@ -1,15 +1,14 @@
 package org.roda.rodain.schema;
 
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import org.roda.rodain.core.I18n;
+import org.roda.rodain.rules.MetadataTypes;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
-import org.roda.rodain.core.I18n;
-import org.roda.rodain.rules.MetadataTypes;
-import org.roda.rodain.rules.sip.MetadataValue;
-import org.xml.sax.SAXException;
-
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -25,18 +24,6 @@ public class DescriptionObject extends Observable {
     title = I18n.t("root");
     id = UUID.randomUUID().toString();
     metadata.add(new DescObjMetadata(MetadataTypes.TEMPLATE, "ead", "2002"));
-  }
-
-  /**
-   * @return A list with the metadata values.
-   */
-  @JsonIgnore
-  public Map<String, MetadataValue> getMetadataValues() throws SAXException {
-    List<DescObjMetadata> metadataDup = getMetadataWithReplaces();
-    if (!metadataDup.isEmpty()) {
-      return metadataDup.get(0).getValues();
-    } else
-      return null;
   }
 
   public void applyMetadataValues() {
