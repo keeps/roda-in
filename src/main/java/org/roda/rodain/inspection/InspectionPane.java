@@ -26,6 +26,7 @@ import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.inspection.documentation.DocumentationCreator;
 import org.roda.rodain.inspection.documentation.SipDocumentationTreeView;
+import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.filters.ContentFilter;
@@ -79,7 +80,6 @@ public class InspectionPane extends BorderPane {
   private ScrollPane metadataFormWrapper;
   private ToggleButton toggleForm;
   private HBox metadataLoadingPane, metadataTopBox;
-  private TextField titleTextField;
   private Button validationButton, addMetadata, removeMetadata;
   private ComboBox<UIPair> metadataCombo;
   private Set<Control> topButtons;
@@ -92,8 +92,7 @@ public class InspectionPane extends BorderPane {
   private SipContentDirectory sipRoot, docsRoot;
   private HBox loadingPane, contentBottom, docsBottom;
   private static Image loadingGif;
-  private Task<Void> contentTask, docsTask;
-  private Task<Boolean> metadataTask;
+  private Task<Void> contentTask, docsTask, metadataTask;
   private Button ignore, removeRepresentation;
   private ToggleButton toggleDocumentation;
   // Rules
@@ -104,7 +103,8 @@ public class InspectionPane extends BorderPane {
   /**
    * Creates a new inspection pane.
    *
-   * @param stage The primary stage of the application
+   * @param stage
+   *          The primary stage of the application
    */
   public InspectionPane(Stage stage) {
     this.stage = stage;
@@ -196,7 +196,7 @@ public class InspectionPane extends BorderPane {
     metaText = new CodeArea();
     VBox.setVgrow(metaText, Priority.ALWAYS);
     metaText.textProperty().addListener(
-        (observable, oldValue, newValue) -> metaText.setStyleSpans(0, XMLEditor.computeHighlighting(newValue)));
+      (observable, oldValue, newValue) -> metaText.setStyleSpans(0, XMLEditor.computeHighlighting(newValue)));
     // set the tab size to 2 spaces
     metaText.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
       if (event.getCode() == KeyCode.TAB) {
@@ -258,7 +258,7 @@ public class InspectionPane extends BorderPane {
     validationButton = new Button();
     validationButton.setTooltip(new Tooltip(I18n.t("InspectionPane.validate")));
     validationButton
-        .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CHECK, Color.WHITE)));
+      .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CHECK, Color.WHITE)));
     validationButton.setOnAction(event -> validationAction());
 
     addMetadata = new Button();
@@ -269,7 +269,7 @@ public class InspectionPane extends BorderPane {
     removeMetadata = new Button();
     removeMetadata.setTooltip(new Tooltip(I18n.t("InspectionPane.removeMetadata")));
     removeMetadata
-        .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.MINUS, Color.WHITE)));
+      .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.MINUS, Color.WHITE)));
     removeMetadata.setOnAction(event -> removeMetadataAction());
 
     metadataTopSeparator = new Separator(Orientation.VERTICAL);
@@ -412,14 +412,7 @@ public class InspectionPane extends BorderPane {
   }
 
   private void updateForm() {
-    Map<String, MetadataValue> metadataValues;
-    try {
-      metadataValues = getMetadataValues();
-    } catch (SAXException e) {
-      log.info("Error validating metadata with the EAD2002 schema", e);
-      noForm();
-      return;
-    }
+    Map<String, MetadataValue> metadataValues = getMetadataValues();
     if (metadataValues == null || metadataValues.isEmpty()) {
       noForm();
       return;
@@ -437,7 +430,6 @@ public class InspectionPane extends BorderPane {
       });
       if (metadataValue.getId().equals("title")) {
         textField.setId("descObjTitle");
-        titleTextField = textField;
         paneTitle.textProperty().bind(textField.textProperty());
         if (currentSIPNode != null) {
           textField.textProperty().bindBidirectional(currentSIPNode.valueProperty());
@@ -461,13 +453,13 @@ public class InspectionPane extends BorderPane {
     updateMetadataTop();
   }
 
-  private Map<String, MetadataValue> getMetadataValues() throws SAXException {
+  private Map<String, MetadataValue> getMetadataValues() {
     if (currentDescOb != null) {
       UIPair selectedPair = metadataCombo.getSelectionModel().getSelectedItem();
       if (selectedPair != null) {
         DescObjMetadata dom = (DescObjMetadata) selectedPair.getKey();
         if (dom != null)
-          return dom.getValues();
+          return currentDescOb.getMetadataValueMap(dom);
       }
     }
     // error, there is no SIP or SchemaNode selected
@@ -489,8 +481,7 @@ public class InspectionPane extends BorderPane {
 
     if (metadata.getChildren().contains(metadataFormWrapper)) {
       if (currentDescOb != null) {
-        currentDescOb.applyMetadataValues();
-        updateTextArea(selectedDescObjMetadata.getContentDecoded());
+        updateTextArea(currentDescOb.getMetadataWithReplaces(selectedDescObjMetadata));
       }
     } else {
       String oldMetadata = null, newMetadata = null;
@@ -501,11 +492,15 @@ public class InspectionPane extends BorderPane {
       // only update if there's been modifications or there's no old
       // metadata and the new isn't empty
       boolean update = false;
-      if (newMetadata != null) {
-        if (oldMetadata == null)
-          update = true;
-        else if (!oldMetadata.equals(newMetadata))
-          update = true;
+      if (selectedDescObjMetadata.getType() == MetadataTypes.TEMPLATE) {
+        currentDescOb.updatedMetadata(selectedDescObjMetadata);
+      } else {
+        if (newMetadata != null) {
+          if (oldMetadata == null)
+            update = true;
+          else if (!oldMetadata.equals(newMetadata))
+            update = true;
+        }
       }
 
       if (update) {
@@ -645,9 +640,9 @@ public class InspectionPane extends BorderPane {
     ImageView toggleImage = new ImageView();
     toggleDocumentation.setGraphic(toggleImage);
     toggleImage.imageProperty()
-        .bind(Bindings.when(toggleDocumentation.selectedProperty()).then(selected).otherwise(unselected));
+      .bind(Bindings.when(toggleDocumentation.selectedProperty()).then(selected).otherwise(unselected));
     title.textProperty().bind(
-        Bindings.when(toggleDocumentation.selectedProperty()).then(I18n.t("documentation")).otherwise(I18n.t("data")));
+      Bindings.when(toggleDocumentation.selectedProperty()).then(I18n.t("documentation")).otherwise(I18n.t("data")));
 
     toggleDocumentation.selectedProperty().addListener((observable, oldValue, newValue) -> {
       dataBox.getChildren().clear();
@@ -911,28 +906,25 @@ public class InspectionPane extends BorderPane {
     if (!metadata.getChildren().contains(metadataLoadingPane))
       metadata.getChildren().add(metadataLoadingPane);
 
-    metadataTask = new Task<Boolean>() {
+    metadataTask = new Task<Void>() {
       @Override
-      protected Boolean call() throws Exception {
+      protected Void call() throws Exception {
         // metadata
-        boolean result = false;
         if (dom != null) {
-          String meta = dom.getContentDecoded();
+          String meta = currentDescOb.getMetadataWithReplaces(dom);
           updateTextArea(meta);
-          try {
-            result = Utils.isEAD(metaText.getText());
-          } catch (SAXException e) {
-            log.info("Error validating metadata with the EAD2002 schema", e);
-          }
         }
-        return result;
+        return null;
       }
     };
 
     Task thisMetadataTask = metadataTask;
     metadataTask.setOnSucceeded((Void) -> {
-      if (metadataTask != null && metadataTask == thisMetadataTask)
-        showMetadataPane(metadataTask.getValue());
+      if (metadataTask != null && metadataTask == thisMetadataTask) {
+        Map<String, MetadataValue> values = currentDescOb.getMetadataValueMap(dom);
+        boolean show = values != null && !values.isEmpty();
+        showMetadataPane(show);
+      }
 
       String schema = dom.getSchema();
       if (schema == null || "".equals(schema)) {
@@ -963,7 +955,8 @@ public class InspectionPane extends BorderPane {
    * TreeView.
    * </p>
    *
-   * @param sip The SipPreviewNode used to update the UI.
+   * @param sip
+   *          The SipPreviewNode used to update the UI.
    * @see SipPreviewNode
    * @see SipContentDirectory
    * @see SipContentFile
@@ -1043,7 +1036,8 @@ public class InspectionPane extends BorderPane {
    * create a ListView of RuleCell.
    * </p>
    *
-   * @param node The SchemaNode used to update the UI.
+   * @param node
+   *          The SchemaNode used to update the UI.
    * @see RuleCell
    * @see SchemaNode
    */
@@ -1093,7 +1087,7 @@ public class InspectionPane extends BorderPane {
   private void updateMetadataCombo() {
     metadataCombo.getSelectionModel().clearSelection();
     metadataCombo.getItems().clear();
-    List<DescObjMetadata> metadataList = currentDescOb.getMetadataWithReplaces();
+    List<DescObjMetadata> metadataList = currentDescOb.getMetadata();
     List<UIPair> comboList = new ArrayList<>();
     for (DescObjMetadata dom : metadataList) {
       comboList.add(new UIPair(dom, dom.getId()));
@@ -1127,11 +1121,11 @@ public class InspectionPane extends BorderPane {
     setTop(new HBox());
   }
 
-  private void showMetadataPane(boolean isEAD) {
+  private void showMetadataPane(boolean toShow) {
     metadata.getChildren().clear();
     metadata.getChildren().add(metadataTopBox);
 
-    if (isEAD) {
+    if (toShow) {
       topButtons.add(toggleForm);
       updateMetadataTop();
       toggleForm.setSelected(false);
@@ -1177,10 +1171,11 @@ public class InspectionPane extends BorderPane {
   /**
    * Adds documentation to the current SIP.
    *
-   * @param target The item to where the documentation should go. This is NOT the SIP
-   *               where we will be adding the documentation. This must be either an
-   *               already added folder to the documentation or null (in which case
-   *               we'll add to the root of the tree).
+   * @param target
+   *          The item to where the documentation should go. This is NOT the SIP
+   *          where we will be adding the documentation. This must be either an
+   *          already added folder to the documentation or null (in which case
+   *          we'll add to the root of the tree).
    */
   public void addDocumentationToSIP(TreeItem target) {
     Set<Path> paths = new HashSet<>();
@@ -1195,11 +1190,13 @@ public class InspectionPane extends BorderPane {
   /**
    * Adds documentation to the current SIP.
    *
-   * @param target The item to where the documentation should go. This is NOT the SIP
-   *               where we will be adding the documentation. This must be either an
-   *               already added folder to the documentation or null (in which case
-   *               we'll add to the root of the tree).
-   * @param paths  The paths to be used to create the documentation.
+   * @param target
+   *          The item to where the documentation should go. This is NOT the SIP
+   *          where we will be adding the documentation. This must be either an
+   *          already added folder to the documentation or null (in which case
+   *          we'll add to the root of the tree).
+   * @param paths
+   *          The paths to be used to create the documentation.
    */
   public void addDocumentationToSIP(TreeItem target, Set<Path> paths) {
     Set<ContentFilter> filters = new HashSet<>();

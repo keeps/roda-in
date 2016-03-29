@@ -1,38 +1,37 @@
 package org.roda.rodain.rules.sip;
 
+import org.roda.rodain.utils.UIPair;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.roda.rodain.utils.UIPair;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 08-02-2016.
  */
 public class MetadataValue {
-  private String title, id, fieldType;
-  private List<String> xpathDestinations;
+  private String title, id;
   private List<UIPair> fieldOptions;
   private String value;
 
+  public MetadataValue() {
+    fieldOptions = new ArrayList<>();
+  }
+
   /**
    * Creates a new MetadataValue object.
-   * 
+   *
    * @param id
    *          The id of the MetadataValue object.
    * @param title
    *          The title of the MetadataValue object.
    * @param value
    *          The value of the MetadataValue object.
-   * @param fieldType
-   *          The id of the MetadataValue object. Can be text, date or combo.
    */
-  public MetadataValue(String id, String title, String value, String fieldType) {
+  public MetadataValue(String id, String title, String value) {
     this.id = id;
     this.title = title;
     this.value = value;
-    this.fieldType = fieldType;
-    this.xpathDestinations = new ArrayList<>();
     this.fieldOptions = new ArrayList<>();
   }
 
@@ -68,35 +67,10 @@ public class MetadataValue {
   }
 
   /**
-   * @return The field type of the object.
-   */
-  public String getFieldType() {
-    return fieldType;
-  }
-
-  /**
-   * @return The XPath destinations of the object.
-   */
-  public List<String> getXpathDestinations() {
-    return xpathDestinations;
-  }
-
-  /**
    * @return The field options of the object.
    */
   public List<UIPair> getFieldOptions() {
     return fieldOptions;
-  }
-
-  /**
-   * Adds a new XPath destination to the object. With these we can replace
-   * content in the XML file in the right places.
-   * 
-   * @param xpath
-   *          The new XPath destination
-   */
-  public void addXpathDestination(String xpath) {
-    xpathDestinations.add(xpath);
   }
 
   /**

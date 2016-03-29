@@ -301,7 +301,7 @@ public class AppProperties {
     try {
       result = resourceBundle.getString(key);
     } catch (MissingResourceException e) {
-      log.warn("Missing translation for language: " + locale.getDisplayName(), e);
+      log.warn(String.format("Missing translation for %s in language: %s", key, locale.getDisplayName()));
       result = defaultResourceBundler.getString(key);
     }
     return result;
