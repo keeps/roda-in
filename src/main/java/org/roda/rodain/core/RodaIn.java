@@ -155,11 +155,11 @@ public class RodaIn extends Application {
       scene.getStylesheets().add(ClassLoader.getSystemResource("css/xml-highlighting.css").toExternalForm());
       stage.setScene(scene);
 
-      if (splashStage != null)
-        splashStage.close();
       stage.show();
       stage.centerOnScreen();
       stage.setMaximized(true);
+      if (splashStage != null)
+        splashStage.close();
     });
 
     initTask.setOnFailed(event -> {
