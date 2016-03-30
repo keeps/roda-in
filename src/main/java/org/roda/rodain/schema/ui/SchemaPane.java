@@ -756,6 +756,7 @@ public class SchemaPane extends BorderPane {
 
   public void showHelp() {
     rootNode.getChildren().clear();
+    setTop(new HBox());
     setCenter(centerHelp);
     setBottom(new HBox());
     hasClassificationScheme.setValue(false);

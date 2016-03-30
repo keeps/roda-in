@@ -38,7 +38,7 @@ public class TemplateToForm {
   private static String getTitle(String var) {
     String result = var;
     try {
-      result = I18n.t(var);
+      result = I18n.t("metadata." + var);
     } catch (MissingResourceException e) {
       // we will use the name of the variable if there's no available title
       // no need to log the exception or rethrow it
