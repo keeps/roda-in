@@ -30,16 +30,13 @@ public class TemplateToForm {
     Map<String, MetadataValue> result = new TreeMap<>();
     List<String> variables = list(content);
     for (String var : variables) {
-      String title = getTitle(var);
-      if (title == null)
-        title = var;
-      result.put(var, new MetadataValue(var, title, null));
+      result.put(var, new MetadataValue(var, getTitle(var), null));
     }
     return result;
   }
 
   private static String getTitle(String var) {
-    String result = null;
+    String result = var;
     try {
       result = I18n.t(var);
     } catch (MissingResourceException e) {

@@ -30,6 +30,8 @@ public class IgnoreTest extends ApplicationTest {
     RodaIn main = new RodaIn();
     main.start(stage);
 
+    sleep(3000);
+
     fileExplorer = RodaIn.getFileExplorer();
     fileExplorer.setFileExplorerRoot(testDir);
   }
@@ -41,7 +43,7 @@ public class IgnoreTest extends ApplicationTest {
 
   @Test
   public void ignore() {
-    sleep(1000);
+    sleep(3000);
     TreeItem<String> root = fileExplorer.getTreeView().getRoot().getChildren().get(0);
 
     clickOn("dir4");

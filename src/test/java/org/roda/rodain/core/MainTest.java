@@ -1,17 +1,11 @@
 package org.roda.rodain.core;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import javafx.application.Platform;
 import javafx.scene.control.TreeItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.roda.rodain.creation.ui.CreationModalPreparation;
@@ -22,6 +16,11 @@ import org.roda.rodain.schema.ui.SipPreviewNode;
 import org.roda.rodain.source.ui.FileExplorerPane;
 import org.roda.rodain.testing.Utils;
 import org.testfx.framework.junit.ApplicationTest;
+
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -37,7 +36,7 @@ public class MainTest extends ApplicationTest {
     RodaIn main = new RodaIn();
     main.start(stage);
 
-    sleep(10000);
+    sleep(3000);
 
     schemaPane = RodaIn.getSchemePane();
     fileExplorer = RodaIn.getFileExplorer();
@@ -62,11 +61,11 @@ public class MainTest extends ApplicationTest {
       push(KeyCode.ENTER);
     } catch (Exception e) {
     }
-    sleep(1000);
+    sleep(12000);
     clickOn(I18n.t("SchemaPane.add"));
-    sleep(1000);
+    sleep(2000);
     clickOn(".schemaNode");
-    sleep(500);
+    sleep(1000);
     clickOn("#descObjTitle");
     eraseText(50);
     write("Node1");
@@ -96,8 +95,6 @@ public class MainTest extends ApplicationTest {
     assert dobj.getDescriptionlevel() != null;
 
     sleep(2000);
-    clickOn("#itemLevels").clickOn("Sub-fonds");
-
     drag("Node2").dropTo(".tree-view");
     assert RodaIn.getSchemePane().getTreeView().getRoot().getChildren().size() == 2;
     sleep(1000);
@@ -133,9 +130,9 @@ public class MainTest extends ApplicationTest {
 
     sleep(5000); // wait for the tree to be created
     doubleClickOn("dir4");
-    sleep(1000); // wait for the node to expand
+    sleep(2000); // wait for the node to expand
     drag("dirB").dropTo("UCP");
-    sleep(1000); // wait for the modal to open
+    sleep(2000); // wait for the modal to open
     clickOn("#assoc3");
     clickOn("#btConfirm");
     sleep(2000); // wait for the modal to update

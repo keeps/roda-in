@@ -1,14 +1,12 @@
 package org.roda.rodain.source.ui;
 
 import javafx.geometry.VerticalDirection;
-import javafx.scene.Scene;
 import javafx.scene.control.TreeItem;
 import javafx.stage.Stage;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.roda.rodain.core.AppProperties;
-import org.roda.rodain.core.Footer;
 import org.roda.rodain.core.I18n;
+import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.testing.Utils;
@@ -30,13 +28,14 @@ public class FileExplorerPaneTest extends ApplicationTest {
 
   @Override
   public void start(Stage stage) throws Exception {
-    new Footer(); // footer needs to be initialized because of setStatus
-    AppProperties.initialize();
-    fileExplorer = new FileExplorerPane(stage);
+    RodaIn main = new RodaIn();
+    main.start(stage);
+
+    sleep(5000);
+
+    fileExplorer = RodaIn.getFileExplorer();
     fileExplorer.setFileExplorerRoot(testDir);
-    Scene scene = new Scene(fileExplorer, 600, 600);
-    stage.setScene(scene);
-    stage.show();
+    sleep(2000);
   }
 
   @BeforeClass
@@ -58,7 +57,7 @@ public class FileExplorerPaneTest extends ApplicationTest {
 
   @Test
   public void dir1() {
-    sleep(1000);
+    sleep(3000);
     TreeItem<String> root = fileExplorer.getTreeView().getRoot().getChildren().get(0);
     TreeItem<String> dir1 = root.getChildren().get(0);
     assert dir1 != null;
@@ -127,7 +126,7 @@ public class FileExplorerPaneTest extends ApplicationTest {
 
   @Test
   public void dir4() {
-    sleep(1000);
+    sleep(3000);
     TreeItem<String> root = fileExplorer.getTreeView().getRoot().getChildren().get(0);
     TreeItem<String> dir4 = root.getChildren().get(3);
     assert dir4 != null;

@@ -220,9 +220,11 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     String category = hierarchyConfig.getString("category." + dob.getDescriptionlevel());
     String unicode = hierarchyConfig.getString("icon." + category);
 
-    iconBlack = FontAwesomeImageCreator.generate(unicode);
-    iconWhite = FontAwesomeImageCreator.generate(unicode, Color.WHITE);
-    this.setGraphic(new ImageView(iconBlack));
+    Platform.runLater(() -> {
+      iconBlack = FontAwesomeImageCreator.generate(unicode);
+      iconWhite = FontAwesomeImageCreator.generate(unicode, Color.WHITE);
+      this.setGraphic(new ImageView(iconBlack));
+    });
   }
 
   private Set<Rule> getAllRules() {

@@ -332,9 +332,10 @@ public class SchemaPane extends BorderPane {
   }
 
   private void updateClassificationSchema(ClassificationSchema cs, boolean skipConfirmation) {
-    if (skipConfirmation || !confirmUpdate()) {
-      return;
-    }
+    if (!skipConfirmation)
+      if (!confirmUpdate())
+        return;
+
     setTop(topBox);
     setCenter(treeBox);
     setBottom(bottom);

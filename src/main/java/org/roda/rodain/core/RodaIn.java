@@ -115,16 +115,16 @@ public class RodaIn extends Application {
     stage.setMinWidth(1024);
     stage.setMinHeight(600);
 
+    try {
+      stage.getIcons().add(new Image(ClassLoader.getSystemResource("roda2-logo.png").openStream()));
+    } catch (IOException e) {
+      log.error("Error reading logo file", e);
+    }
+
     Task<Void> initTask = new Task<Void>() {
       @Override
       protected Void call() throws Exception {
         stage.setOnCloseRequest(event -> closeApp());
-
-        try {
-          stage.getIcons().add(new Image(ClassLoader.getSystemResource("roda2-logo.png").openStream()));
-        } catch (IOException e) {
-          log.error("Error reading logo file", e);
-        }
 
         AppProperties.initialize();
         String ignoredRaw = AppProperties.getConfig("app.ignoredFiles");
@@ -160,6 +160,12 @@ public class RodaIn extends Application {
       stage.show();
       stage.centerOnScreen();
       stage.setMaximized(true);
+    });
+
+    initTask.setOnFailed(event -> {
+      log.error("Failed application initialization");
+      if (splashStage != null)
+        splashStage.close();
     });
 
     new Thread(initTask).start();
