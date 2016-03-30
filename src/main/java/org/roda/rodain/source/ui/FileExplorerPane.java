@@ -161,9 +161,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     Button associate = new Button(I18n.t("associate"));
     associate.disableProperty().bind(RodaIn.getSchemePane().hasClassificationScheme().not());
     associate.setMinWidth(100);
-    associate.setOnAction(event -> {
-      RodaIn.getSchemePane().startAssociation();
-    });
+    associate.setOnAction(event -> RodaIn.getSchemePane().startAssociation());
 
     bottom.getChildren().addAll(ignore, space, associate);
   }

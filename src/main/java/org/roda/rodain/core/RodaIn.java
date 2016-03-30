@@ -259,9 +259,7 @@ public class RodaIn extends Application {
 
     final MenuItem quit = new MenuItem(I18n.t("Main.quit"));
     quit.setAccelerator(KeyCombination.keyCombination("Ctrl+Q"));
-    quit.setOnAction(event -> {
-      closeApp();
-    });
+    quit.setOnAction(event -> closeApp());
     final MenuItem reset = new MenuItem(I18n.t("Main.reset"));
     reset.setAccelerator(KeyCombination.keyCombination("Ctrl+N"));
     reset.setOnAction(event -> {

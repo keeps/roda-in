@@ -153,17 +153,17 @@ public class SipPerFile extends SipPreviewCreator {
     Set<TreeNode> files = new HashSet<>();
     files.add(node);
 
-    DescObjMetadata metadata = null;
+    DescObjMetadata dom = null;
     if (metaType == MetadataTypes.TEMPLATE)
-      metadata = new DescObjMetadata(metaType, templateType, templateVersion);
-    else if(metaPath != null)
-      metadata = new DescObjMetadata(metaType, metaPath);
+      dom = new DescObjMetadata(metaType, templateType, templateVersion);
+    else if (metaPath != null)
+      dom = new DescObjMetadata(metaType, metaPath);
 
     SipRepresentation rep = new SipRepresentation("rep1");
     rep.setFiles(files);
     Set<SipRepresentation> repSet = new HashSet<>();
     repSet.add(rep);
-    SipPreview sipPreview = new SipPreview(path.getFileName().toString(), repSet, metadata);
+    SipPreview sipPreview = new SipPreview(path.getFileName().toString(), repSet, dom);
     node.addObserver(sipPreview);
 
     sips.add(sipPreview);

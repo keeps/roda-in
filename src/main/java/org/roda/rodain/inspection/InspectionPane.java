@@ -1,8 +1,8 @@
 package org.roda.rodain.inspection;
 
-import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -336,12 +336,12 @@ public class InspectionPane extends BorderPane {
     if (metadataCombo.getSelectionModel().getSelectedIndex() == -1)
       return;
 
-    String content = I18n.t("InspectionPane.removeMetadata.content");
+    String remContent = I18n.t("InspectionPane.removeMetadata.content");
     Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
     dlg.initStyle(StageStyle.UNDECORATED);
     dlg.setHeaderText(I18n.t("InspectionPane.removeMetadata.header"));
     dlg.setTitle(I18n.t("InspectionPane.removeMetadata.title"));
-    dlg.setContentText(content);
+    dlg.setContentText(remContent);
     dlg.initModality(Modality.APPLICATION_MODAL);
     dlg.initOwner(stage);
     dlg.showAndWait();
@@ -377,8 +377,8 @@ public class InspectionPane extends BorderPane {
           if (currentDescOb != null) {
             UIPair selectedInCombo = metadataCombo.getSelectionModel().getSelectedItem();
             if (selectedInCombo != null) {
-              DescObjMetadata metadata = (DescObjMetadata) selectedInCombo.getKey();
-              if (Utils.validateSchema(metaText.getText(), metadata.getSchema())) {
+              DescObjMetadata dom = (DescObjMetadata) selectedInCombo.getKey();
+              if (Utils.validateSchema(metaText.getText(), dom.getSchema())) {
                 result = true;
               }
             }
@@ -1001,7 +1001,7 @@ public class InspectionPane extends BorderPane {
     }
     // sort the list as strings
     Collections.sort(contTypeList, (o1, o2) -> o1.toString().compareTo(o2.toString()));
-    contentType.setItems(new ObservableListWrapper<>(contTypeList));
+    contentType.setItems(FXCollections.observableList(contTypeList));
     contentType.getSelectionModel().select(sip.getSip().getContentType());
     contentType.valueProperty().addListener((obs, old, newValue) -> sip.getSip().setContentType(newValue));
     contentType.setMinWidth(85);
@@ -1258,12 +1258,12 @@ public class InspectionPane extends BorderPane {
   }
 
   public void showAddMetadataError(DescObjMetadata metadataToAdd) {
-    String content = String.format(I18n.t("InspectionPane.addMetadataError.content"), metadataToAdd.getId());
+    String showContent = String.format(I18n.t("InspectionPane.addMetadataError.content"), metadataToAdd.getId());
     Alert dlg = new Alert(Alert.AlertType.INFORMATION);
     dlg.initStyle(StageStyle.UNDECORATED);
     dlg.setHeaderText(I18n.t("InspectionPane.addMetadataError.header"));
     dlg.setTitle(I18n.t("InspectionPane.addMetadataError.title"));
-    dlg.setContentText(content);
+    dlg.setContentText(showContent);
     dlg.initModality(Modality.APPLICATION_MODAL);
     dlg.initOwner(stage);
     dlg.getDialogPane().setMinHeight(180);
