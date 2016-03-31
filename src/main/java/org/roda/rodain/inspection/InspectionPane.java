@@ -390,30 +390,7 @@ public class InspectionPane extends BorderPane {
         return result;
       }
     };
-    validationTask.setOnSucceeded(Void -> {
-      if (validationTask.getValue()) {
-        popOver.updateContent(true, message.toString());
-
-        if (currentDescOb != null) {
-          UIPair selectedInCombo = metadataCombo.getSelectionModel().getSelectedItem();
-          if (selectedInCombo != null) {
-            DescObjMetadata metadataObj = (DescObjMetadata) selectedInCombo.getKey();
-            if (metadataObj.getTemplateType() != null && "ead".equals(metadataObj.getTemplateType())) {
-              topButtons.add(toggleForm);
-              updateMetadataTop();
-              if (metadata.getChildren().contains(metaText)) {
-                toggleForm.setSelected(false);
-              } else
-                toggleForm.setSelected(true);
-            }
-          }
-        }
-      } else {
-        popOver.updateContent(false, message.toString());
-        topButtons.remove(toggleForm);
-        updateMetadataTop();
-      }
-    });
+    validationTask.setOnSucceeded(Void -> popOver.updateContent(validationTask.getValue(), message.toString()));
     new Thread(validationTask).start();
   }
 
