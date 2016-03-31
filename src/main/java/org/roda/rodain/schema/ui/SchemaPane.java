@@ -75,6 +75,7 @@ public class SchemaPane extends BorderPane {
    */
   public SchemaPane(Stage stage) {
     super();
+    setPadding(new Insets(10, 0, 0, 0));
     primaryStage = stage;
     schemaNodes = new HashSet<>();
 
@@ -102,11 +103,12 @@ public class SchemaPane extends BorderPane {
   }
 
   private void createTop() {
-    Label title = new Label(I18n.t("SchemaPane.title"));
+    Label title = new Label(I18n.t("SchemaPane.title").toUpperCase());
     title.getStyleClass().add("title");
 
     topBox = new HBox();
-    topBox.setPadding(new Insets(10, 10, 10, 10));
+    topBox.getStyleClass().add("title-box");
+    topBox.setPadding(new Insets(15, 15, 15, 15));
     topBox.setAlignment(Pos.CENTER_LEFT);
     topBox.getChildren().add(title);
   }
@@ -191,6 +193,7 @@ public class SchemaPane extends BorderPane {
   private void createTreeView() {
     // create tree pane
     treeBox = new VBox();
+    treeBox.setPadding(new Insets(10, 0, 0, 0));
     VBox.setVgrow(treeBox, Priority.ALWAYS);
 
     createRootNode();
@@ -207,10 +210,9 @@ public class SchemaPane extends BorderPane {
       return cell;
     });
 
-    Separator separatorTop = new Separator();
     Separator separatorBottom = new Separator();
     // add everything to the tree pane
-    treeBox.getChildren().addAll(separatorTop, treeView, separatorBottom);
+    treeBox.getChildren().addAll(treeView, separatorBottom);
     treeView.setOnMouseClicked(new SchemaClickedEventHandler(this));
     treeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem>() {
       @Override
@@ -439,6 +441,7 @@ public class SchemaPane extends BorderPane {
     bottom.setPadding(new Insets(10, 10, 10, 10));
 
     Button removeLevel = new Button(I18n.t("SchemaPane.remove"));
+    removeLevel.getStyleClass().add("button-secondary");
     removeLevel.setId("removeLevel");
     removeLevel.setMinWidth(100);
     removeLevel.setOnAction(event -> {
@@ -455,6 +458,7 @@ public class SchemaPane extends BorderPane {
     });
 
     Button addLevel = new Button(I18n.t("SchemaPane.add"));
+    addLevel.getStyleClass().add("button-secondary");
     addLevel.setMinWidth(100);
 
     addLevel.setOnAction(event -> addNewLevel());

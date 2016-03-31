@@ -282,8 +282,8 @@ public class SchemaNode extends TreeItem<String> implements Observer {
       return iconWhite;
   }
 
-  public Image getIconBlack() {
-    return iconBlack;
+  public Image getIconWhite() {
+    return iconWhite;
   }
 
   public void setBlackIconSelected(boolean value) {

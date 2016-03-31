@@ -1,19 +1,36 @@
 .title {
-    -fx-font-size: x-large;
+    -fx-font-size: large;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.title-box {
+    -fx-background-color: -fx-dark;
+}
+
+.top-sub-title {
+    -fx-text-fill: lightgray;
+    -fx-font-weight: bold;
+    -fx-font-size: large;
+}
+
+.split-pane *.split-pane-divider {
+    -fx-padding: 0 10 0 10;
+    -fx-background-color: white;
 }
 
 /* Inspection */
 .inspectionPart {
     -fx-border-width: 1;
-    -fx-border-color: #089de3;
+    -fx-border-color: -fx-dark;
 }
 
 .inspectionPart .hbox {
-    -fx-background-color: #089de3;
+    -fx-background-color: -fx-dark;
 }
 
 .inspectionPart .label {
-    -fx-font-size: large;
+    -fx-font-size: medium;
     -fx-text-fill: white;
 }
 
@@ -115,26 +132,26 @@
 }
 
 .tree-cell:filled:hover {
-    -fx-background-color: lightgray;
+    -fx-background-color: -fx-alt-light;
 }
 
 .tree-cell:selected:hover {
-    -fx-background-color: #089de3;
+    -fx-background-color: -fx-medium;
     -fx-font-weight: bold;
 }
 
 .tree-cell:focused:selected:hover {
-    -fx-background-color: #089de3;
+    -fx-background-color: -fx-medium;
     -fx-font-weight: bold;
 }
 
 .tree-cell:selected {
-    -fx-background-color: #089de3;
+    -fx-background-color: -fx-medium;
     -fx-text-fill: white;
 }
 
 .tree-cell:focused:selected {
-    -fx-background-color: #089de3;
+    -fx-background-color: -fx-medium;
     -fx-text-fill: white;
 }
 
@@ -160,11 +177,11 @@
 
 /* Schema */
 .schemaNode .cellText {
-    -fx-opacity: 70%;
+    -fx-opacity: 85%;
 }
 
 .schemaNode:focused:selected {
-    -fx-background-color: #089de3;
+    -fx-background-color: -fx-medium;
     -fx-text-fill: white;
 }
 
@@ -181,7 +198,7 @@
 }
 
 .schemaNodeEmpty:focused:selected {
-    -fx-background-color: #089de3;
+    -fx-background-color: -fx-medium;
     -fx-text-fill: white;
 }
 
@@ -229,15 +246,15 @@
 }
 
 .ruleCell .hyperlink {
-    -fx-text-fill: #089de3;
+    -fx-text-fill: -fx-medium;
 }
 
 .list-cell:focused:selected .ruleCell {
-    -fx-border-color: #089de3;
+    -fx-border-color: -fx-medium;
 }
 
 .list-cell:focused:selected .ruleCell .top {
-    -fx-background-color: #089de3;
+    -fx-background-color: -fx-medium;
 }
 
 .list-cell:focused:selected .ruleCell .top * {
@@ -260,11 +277,11 @@
 }
 
 .ruleCell .top .button:pressed {
-    -fx-text-fill: #089de3;
+    -fx-text-fill: -fx-light;
 }
 
 .list-cell:focused:selected .top .button:hover {
-    -fx-text-fill: #08577e;
+    -fx-text-fill: -fx-dark;
 }
 
 .list-cell:focused:selected .top .button:pressed {

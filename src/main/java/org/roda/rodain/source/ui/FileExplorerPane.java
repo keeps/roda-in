@@ -72,6 +72,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
   public FileExplorerPane(Stage stage) {
     super();
     this.stage = stage;
+    setPadding(new Insets(10, 0, 0, 10));
 
     createCenterHelp();
     createTop();
@@ -106,12 +107,13 @@ public class FileExplorerPane extends BorderPane implements Observer {
   }
 
   private void createTop() {
-    Label title = new Label(I18n.t("FileExplorerPane.title"));
+    Label title = new Label(I18n.t("FileExplorerPane.title").toUpperCase());
     title.getStyleClass().add("title");
 
     top = new HBox();
+    top.getStyleClass().add("title-box");
     top.setAlignment(Pos.CENTER_LEFT);
-    top.setPadding(new Insets(10, 10, 10, 10));
+    top.setPadding(new Insets(15, 15, 15, 15));
     top.getChildren().add(title);
   }
 
@@ -120,6 +122,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     bottom.setPadding(new Insets(10, 10, 10, 10));
 
     ignore = new Button(I18n.t("ignore"));
+    ignore.getStyleClass().add("button-secondary");
     ignore.setId("bt_ignore");
     ignore.setMinWidth(100);
     ignore.setOnAction(event -> {
@@ -202,7 +205,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
   private void createFileExplorer() {
     // create tree pane
     final VBox treeBox = new VBox();
-    Separator separatorTop = new Separator();
+    treeBox.setPadding(new Insets(10, 0, 0, 0));
     Separator separatorBottom = new Separator();
 
     dummyRoot = new TreeItem<>();
@@ -213,7 +216,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     treeView.setShowRoot(false);
     treeView.setRoot(dummyRoot);
     // add everything to the tree pane
-    treeBox.getChildren().addAll(separatorTop, treeView, separatorBottom);
+    treeBox.getChildren().addAll(treeView, separatorBottom);
     VBox.setVgrow(treeView, Priority.ALWAYS);
     treeView.setCellFactory(param -> {
       SourceTreeCell cell = new SourceTreeCell();

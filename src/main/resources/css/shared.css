@@ -1,3 +1,11 @@
+* {
+    -fx-dark: #44749D;
+    -fx-medium: #6995B9;
+    -fx-light: #9CBFD9;
+    -fx-alt-dark: #9DA4A9;
+    -fx-alt-light: #D3D7DA;
+}
+
 .root {
     -fx-font-family: "Ubuntu Light";
 }
@@ -15,14 +23,14 @@
 }
 
 .alert {
-    -fx-border-color: #089de3;
+    -fx-border-color: -fx-dark;
     -fx-border-width: 2px;
     -fx-background-color: white;
     -fx-text-fill: black;
 }
 
 .alert:header *.header-panel {
-    -fx-background-color: #089de3;
+    -fx-background-color: -fx-dark;
 }
 
 .alert:header *.header-panel *.label {
@@ -31,26 +39,30 @@
 
 /* Buttons */
 .button {
-    -fx-background-color: #089de3;
-    -fx-background-insets: 0, 1, 2;
-    -fx-background-radius: 5, 4, 3;
+    -fx-background-color: -fx-dark;
     -fx-padding: 0.333333em 0.666667em 0.416667em 0.666667em; /* 4 8 5 8 */
     -fx-text-fill: white;
-    -fx-border-radius: 2px;
 }
 
 .button .text {
-    /*-fx-font-family: "Ubuntu Light";*/
     -fx-font-weight: bold;
 }
 
 .button:hover {
-    -fx-background-color: #3998d0;
+    -fx-background-color: -fx-medium;
 }
 
 .button:pressed {
-    -fx-background-color: #5bbeff;
+    -fx-background-color: -fx-medium;
     -fx-text-fill: white;
+}
+
+.button-secondary {
+    -fx-background-color: -fx-medium;
+}
+
+.button-secondary:hover {
+    -fx-background-color: -fx-light;
 }
 
 /* Help */
@@ -70,7 +82,7 @@
 }
 
 .helpButton:hover {
-    -fx-background-color: #089de3;
+    -fx-background-color: -fx-medium;
     -fx-text-fill: white;
 }
 
@@ -84,34 +96,38 @@
 }
 
 .helpButtonSmall:hover {
-    -fx-background-color: #089de3;
+    -fx-background-color: -fx-light;
     -fx-text-fill: white;
 }
 
 /* Combo-Box */
 .combo-box-base .list-view .list-cell {
-    -fx-background-color: white;
-    -fx-text-fill: black;
+    -fx-background-color: -fx-dark;
+    -fx-text-fill: white;
 }
 
 .combo-box .list-view .list-cell:selected {
-    -fx-background-color: darkgray;
-    -fx-text-fill: black;
+    -fx-background-color: -fx-medium;
+    -fx-text-fill: white;
+}
+
+.combo-box .list-view {
+    -fx-border-color: transparent;
 }
 
 .combo-box {
-    -fx-background-color: white;
-    -fx-border-color: gray;
+    -fx-background-color: -fx-dark;
+    -fx-border-color: white;
     -fx-border-width: 1px;
     -fx-background-radius: 0;
     -fx-background-insets: 0;
 }
 
 .combo-box-base .list-cell {
-    -fx-background-color: white;
-    -fx-text-fill: black;
+    -fx-background-color: -fx-dark;
+    -fx-text-fill: white;
 }
 
 .combo-box .list-view .list-cell:hover {
-    -fx-background-color: lightgray;
+    -fx-background-color: -fx-light;
 }

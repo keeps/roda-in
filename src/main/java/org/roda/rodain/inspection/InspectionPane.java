@@ -62,15 +62,14 @@ import java.util.*;
  */
 public class InspectionPane extends BorderPane {
   private static final Logger log = LoggerFactory.getLogger(InspectionPane.class.getName());
-  private VBox topBox;
+  private HBox topBox;
   private VBox center;
-  private HBox topSpace;
+  private HBox topSubtitle;
   private Stage stage;
 
   private SipPreviewNode currentSIPNode;
   private SchemaNode currentSchema;
   private DescriptionObject currentDescOb;
-  private ImageView topIcon;
   private Label paneTitle;
 
   private VBox centerHelp;
@@ -110,6 +109,8 @@ public class InspectionPane extends BorderPane {
   public InspectionPane(Stage stage) {
     this.stage = stage;
 
+    setPadding(new Insets(10, 10, 0, 0));
+
     createCenterHelp();
     createDocumentationHelp();
     createTop();
@@ -119,7 +120,7 @@ public class InspectionPane extends BorderPane {
     createLoadingPanes();
 
     center = new VBox(10);
-    center.setPadding(new Insets(0, 10, 10, 10));
+    center.setPadding(new Insets(10, 5, 10, 5));
 
     setCenter(centerHelp);
 
@@ -128,14 +129,16 @@ public class InspectionPane extends BorderPane {
   }
 
   private void createTop() {
-    Label top = new Label(" ");
-    topBox = new VBox();
-    topBox.getChildren().add(top);
-    topBox.setPadding(new Insets(10, 0, 10, 0));
-    topBox.setAlignment(Pos.CENTER_LEFT);
+    Label title = new Label(I18n.t("InspectionPane.title").toUpperCase());
+    title.getStyleClass().add("title");
+    topSubtitle = new HBox();
+    HBox.setHgrow(topSubtitle, Priority.ALWAYS);
 
-    topSpace = new HBox();
-    HBox.setHgrow(topSpace, Priority.ALWAYS);
+    topBox = new HBox(2);
+    topBox.getStyleClass().add("title-box");
+    topBox.getChildren().addAll(title, topSubtitle);
+    topBox.setPadding(new Insets(15, 15, 15, 15));
+    topBox.setAlignment(Pos.CENTER_LEFT);
   }
 
   private void createMetadata() {
@@ -223,10 +226,11 @@ public class InspectionPane extends BorderPane {
   private void createMetadataTop() {
     metadataTopBox = new HBox();
     metadataTopBox.getStyleClass().add("hbox");
-    metadataTopBox.setPadding(new Insets(5, 10, 5, 10));
+    metadataTopBox.setPadding(new Insets(5, 15, 5, 15));
     metadataTopBox.setAlignment(Pos.CENTER_LEFT);
 
-    Label titleLabel = new Label(I18n.t("InspectionPane.metadata"));
+    Label titleLabel = new Label(I18n.t("InspectionPane.metadata").toUpperCase());
+    titleLabel.getStyleClass().add("title");
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
@@ -587,9 +591,9 @@ public class InspectionPane extends BorderPane {
 
     HBox top = new HBox();
     top.getStyleClass().add("hbox");
-    top.setPadding(new Insets(5, 10, 5, 10));
+    top.setPadding(new Insets(5, 15, 5, 15));
 
-    Label title = new Label(I18n.t("data"));
+    Label title = new Label(I18n.t("data").toUpperCase());
     title.setPadding(new Insets(5, 0, 0, 0));
     top.getChildren().add(title);
     content.setTop(top);
@@ -674,6 +678,7 @@ public class InspectionPane extends BorderPane {
     contentBottom.setAlignment(Pos.CENTER);
 
     ignore = new Button(I18n.t("ignore"));
+    ignore.getStyleClass().add("button-secondary");
     ignore.setOnAction(event -> {
       InspectionTreeItem selected = (InspectionTreeItem) sipFiles.getSelectionModel().getSelectedItem();
       if (selected == null)
@@ -690,6 +695,7 @@ public class InspectionPane extends BorderPane {
     ignore.minWidthProperty().bind(this.widthProperty().multiply(0.25));
 
     Button addRepresentation = new Button(I18n.t("InspectionPane.addRepresentation"));
+    addRepresentation.getStyleClass().add("button-secondary");
     addRepresentation.setOnAction(event -> {
       int repCount = currentSIPNode.getSip().getRepresentations().size() + 1;
       SipRepresentation sipRep = new SipRepresentation("rep" + repCount);
@@ -700,6 +706,7 @@ public class InspectionPane extends BorderPane {
     addRepresentation.minWidthProperty().bind(this.widthProperty().multiply(0.25));
 
     removeRepresentation = new Button(I18n.t("InspectionPane.removeRepresentation"));
+    removeRepresentation.getStyleClass().add("button-secondary");
     removeRepresentation.setOnAction(event -> {
       InspectionTreeItem selectedRaw = (InspectionTreeItem) sipFiles.getSelectionModel().getSelectedItem();
       if (selectedRaw instanceof SipContentRepresentation) {
@@ -841,9 +848,10 @@ public class InspectionPane extends BorderPane {
 
     HBox top = new HBox();
     top.getStyleClass().add("hbox");
-    top.setPadding(new Insets(10, 10, 10, 10));
+    top.setPadding(new Insets(10, 15, 10, 15));
 
-    Label title = new Label(I18n.t("InspectionPane.rules"));
+    Label title = new Label(I18n.t("InspectionPane.rules").toUpperCase());
+    title.getStyleClass().add("title");
     top.getChildren().add(title);
     rules.setTop(top);
     ruleList = new ListView<>();
@@ -960,14 +968,8 @@ public class InspectionPane extends BorderPane {
     }
 
     /* Top */
-    paneTitle = new Label(sip.getValue());
-    paneTitle.setWrapText(true);
-    paneTitle.getStyleClass().add("title");
-
+    createTopSubtitle(sip.getIconWhite(), sip.getValue());
     HBox top = new HBox(5);
-    top.setPadding(new Insets(0, 10, 5, 10));
-    top.setAlignment(Pos.CENTER_LEFT);
-    topIcon = new ImageView(sip.getIconBlack());
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
     // Content Type combo box
@@ -983,12 +985,9 @@ public class InspectionPane extends BorderPane {
     contentType.valueProperty().addListener((obs, old, newValue) -> sip.getSip().setContentType(newValue));
     contentType.setMinWidth(85);
 
-    top.getChildren().addAll(topIcon, paneTitle, space, contentType);
-    Separator separatorTop = new Separator();
+    top.getChildren().addAll(space, contentType);
 
-    topBox.setPadding(new Insets(10, 0, 10, 0));
-    topBox.getChildren().clear();
-    topBox.getChildren().addAll(top, separatorTop);
+    topSubtitle.getChildren().addAll(space, top);
 
     updateMetadataCombo();
 
@@ -1039,21 +1038,7 @@ public class InspectionPane extends BorderPane {
     }
 
     /* top */
-    // title
-    paneTitle = new Label(node.getValue());
-    paneTitle.setWrapText(true);
-    paneTitle.getStyleClass().add("title");
-
-    HBox top = new HBox(5);
-    top.setPadding(new Insets(5, 10, 10, 10));
-    top.setAlignment(Pos.CENTER_LEFT);
-    topIcon = new ImageView(node.getIconBlack());
-    top.getChildren().addAll(topIcon, paneTitle);
-
-    Separator separatorTop = new Separator();
-    topBox.setPadding(new Insets(5, 0, 5, 0));
-    topBox.getChildren().clear();
-    topBox.getChildren().addAll(top, separatorTop);
+    createTopSubtitle(node.getIconWhite(), node.getValue());
 
     /* center */
     center.getChildren().clear();
@@ -1067,6 +1052,20 @@ public class InspectionPane extends BorderPane {
 
     center.getChildren().addAll(metadata, rules);
     setCenter(center);
+  }
+
+  private void createTopSubtitle(Image icon, String text) {
+    Label leftPar = new Label("(");
+    leftPar.getStyleClass().add("top-sub-title");
+    Label rightPar = new Label(")");
+    rightPar.getStyleClass().add("top-sub-title");
+
+    ImageView iconView = new ImageView(icon);
+    paneTitle = new Label(text);
+    paneTitle.setWrapText(true);
+    paneTitle.getStyleClass().add("top-sub-title");
+    topSubtitle.getChildren().clear();
+    topSubtitle.getChildren().addAll(leftPar, iconView, paneTitle, rightPar);
   }
 
   private void updateMetadataCombo() {

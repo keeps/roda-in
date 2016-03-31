@@ -1,17 +1,16 @@
 package org.roda.rodain.schema.ui;
 
-import java.util.Observable;
-import java.util.Observer;
-import java.util.ResourceBundle;
-
 import javafx.application.Platform;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
-
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
+
+import java.util.Observable;
+import java.util.Observer;
+import java.util.ResourceBundle;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -58,8 +57,8 @@ public class SipPreviewNode extends TreeItem<String> implements Observer {
       return iconWhite;
   }
 
-  public Image getIconBlack() {
-    return iconBlack;
+  public Image getIconWhite() {
+    return iconWhite;
   }
 
   public void setDescriptionLevel(String descLevel) {

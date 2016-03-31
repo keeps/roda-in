@@ -54,7 +54,6 @@ public class SchemaTreeCell extends TreeCell<String> {
           getStyleClass().add("schemaNode");
         SchemaNode itemNode = (SchemaNode) treeItem;
         icon = new ImageView(itemNode.getImage());
-        icon.setOpacity(0.7);
         updateDObj(item);
         addHbox = true;
       } else {
