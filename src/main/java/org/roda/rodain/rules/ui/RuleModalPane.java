@@ -97,10 +97,11 @@ public class RuleModalPane extends BorderPane {
     VBox box = new VBox(5);
     box.setAlignment(Pos.CENTER_LEFT);
     box.getStyleClass().add("hbox");
-    box.setPadding(new Insets(10, 10, 10, 10));
+    box.setPadding(new Insets(15, 15, 15, 15));
     pane.getChildren().add(box);
 
-    Label title = new Label(I18n.t("LoadingPane.createAssociation") + " \"" + schema.getDob().getTitle() + "\"");
+    Label title = new Label(
+      I18n.t("LoadingPane.createAssociation").toUpperCase() + " \"" + schema.getDob().getTitle() + "\"");
     title.setId("title");
 
     box.getChildren().add(title);
@@ -117,10 +118,10 @@ public class RuleModalPane extends BorderPane {
 
   private void createCenterAssociation() {
     boxAssociation = new VBox();
-    boxAssociation.setPadding(new Insets(0, 10, 0, 10));
+    boxAssociation.setPadding(new Insets(0, 15, 0, 15));
     boxAssociation.setAlignment(Pos.TOP_LEFT);
 
-    Label subtitle = new Label(I18n.t("RuleModalPane.associationMethod"));
+    Label subtitle = new Label(I18n.t("RuleModalPane.associationMethod").toUpperCase());
     subtitle.setPadding(new Insets(0, 0, 10, 0));
     subtitle.setId("sub-title");
 
@@ -183,9 +184,9 @@ public class RuleModalPane extends BorderPane {
   private void createCenterMetadata() {
     boxMetadata = new VBox();
     boxMetadata.setAlignment(Pos.TOP_LEFT);
-    boxMetadata.setPadding(new Insets(0, 10, 0, 10));
+    boxMetadata.setPadding(new Insets(0, 15, 0, 15));
 
-    Label subtitle = new Label(I18n.t("RuleModalPane.metadataMethod"));
+    Label subtitle = new Label(I18n.t("RuleModalPane.metadataMethod").toUpperCase());
     subtitle.setId("sub-title");
     subtitle.setPadding(new Insets(0, 0, 10, 0));
 

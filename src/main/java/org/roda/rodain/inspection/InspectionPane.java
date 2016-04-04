@@ -131,10 +131,10 @@ public class InspectionPane extends BorderPane {
   private void createTop() {
     Label title = new Label(I18n.t("InspectionPane.title").toUpperCase());
     title.getStyleClass().add("title");
-    topSubtitle = new HBox();
+    topSubtitle = new HBox(1);
     HBox.setHgrow(topSubtitle, Priority.ALWAYS);
 
-    topBox = new HBox(2);
+    topBox = new HBox(15);
     topBox.getStyleClass().add("title-box");
     topBox.getChildren().addAll(title, topSubtitle);
     topBox.setPadding(new Insets(15, 15, 15, 15));
@@ -591,10 +591,11 @@ public class InspectionPane extends BorderPane {
 
     HBox top = new HBox();
     top.getStyleClass().add("hbox");
-    top.setPadding(new Insets(5, 15, 5, 15));
+    top.setPadding(new Insets(4, 15, 3, 15));
 
     Label title = new Label(I18n.t("data").toUpperCase());
     title.setPadding(new Insets(5, 0, 0, 0));
+    title.getStyleClass().add("title");
     top.getChildren().add(title);
     content.setTop(top);
 
@@ -630,8 +631,8 @@ public class InspectionPane extends BorderPane {
       toggleImage.imageProperty()
         .bind(Bindings.when(toggleDocumentation.selectedProperty()).then(selected).otherwise(unselected));
     });
-    title.textProperty().bind(
-      Bindings.when(toggleDocumentation.selectedProperty()).then(I18n.t("documentation")).otherwise(I18n.t("data")));
+    title.textProperty().bind(Bindings.when(toggleDocumentation.selectedProperty())
+      .then(I18n.t("documentation").toUpperCase()).otherwise(I18n.t("data").toUpperCase()));
 
     toggleDocumentation.selectedProperty().addListener((observable, oldValue, newValue) -> {
       dataBox.getChildren().clear();
@@ -972,6 +973,9 @@ public class InspectionPane extends BorderPane {
     HBox top = new HBox(5);
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
+    // we need to account for the size of the combo-box, otherwise the top box
+    // is too tall
+    topBox.setPadding(new Insets(11, 15, 11, 15));
     // Content Type combo box
     ComboBox<EARKEnums.ContentType> contentType = new ComboBox<>();
     List<EARKEnums.ContentType> contTypeList = new ArrayList<>();
@@ -1038,6 +1042,7 @@ public class InspectionPane extends BorderPane {
     }
 
     /* top */
+    topBox.setPadding(new Insets(15, 15, 15, 15));
     createTopSubtitle(node.getIconWhite(), node.getValue());
 
     /* center */
@@ -1055,17 +1060,13 @@ public class InspectionPane extends BorderPane {
   }
 
   private void createTopSubtitle(Image icon, String text) {
-    Label leftPar = new Label("(");
-    leftPar.getStyleClass().add("top-sub-title");
-    Label rightPar = new Label(")");
-    rightPar.getStyleClass().add("top-sub-title");
-
     ImageView iconView = new ImageView(icon);
     paneTitle = new Label(text);
     paneTitle.setWrapText(true);
-    paneTitle.getStyleClass().add("top-sub-title");
+    paneTitle.getStyleClass().add("top-subtitle");
+    topSubtitle.setAlignment(Pos.CENTER_LEFT);
     topSubtitle.getChildren().clear();
-    topSubtitle.getChildren().addAll(leftPar, iconView, paneTitle, rightPar);
+    topSubtitle.getChildren().addAll(iconView, paneTitle);
   }
 
   private void updateMetadataCombo() {

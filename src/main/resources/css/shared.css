@@ -82,7 +82,7 @@
 }
 
 .helpButton:hover {
-    -fx-background-color: -fx-medium;
+    -fx-background-color: -fx-dark;
     -fx-text-fill: white;
 }
 
@@ -121,6 +121,7 @@
     -fx-border-width: 1px;
     -fx-background-radius: 0;
     -fx-background-insets: 0;
+    -fx-max-height: 10;
 }
 
 .combo-box-base .list-cell {
@@ -131,3 +132,8 @@
 .combo-box .list-view .list-cell:hover {
     -fx-background-color: -fx-light;
 }
+
+.combo-box .arrow {
+    -fx-background-color: white;
+}
+

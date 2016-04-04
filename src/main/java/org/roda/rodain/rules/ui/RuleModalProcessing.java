@@ -73,7 +73,7 @@ public class RuleModalProcessing extends BorderPane {
     top.getStyleClass().add("hbox");
     top.setPadding(new Insets(10, 10, 10, 0));
 
-    Label title = new Label(I18n.t("RuleModalProcessing.creatingPreview"));
+    Label title = new Label(I18n.t("RuleModalProcessing.creatingPreview").toUpperCase());
     title.setId("title");
 
     top.getChildren().add(title);

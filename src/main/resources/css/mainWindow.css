@@ -4,14 +4,13 @@
     -fx-text-fill: white;
 }
 
-.title-box {
-    -fx-background-color: -fx-dark;
+.top-subtitle {
+    -fx-font-size: large;
+    -fx-text-fill: white;
 }
 
-.top-sub-title {
-    -fx-text-fill: lightgray;
-    -fx-font-weight: bold;
-    -fx-font-size: large;
+.title-box {
+    -fx-background-color: -fx-dark;
 }
 
 .split-pane *.split-pane-divider {

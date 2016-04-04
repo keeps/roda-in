@@ -34,8 +34,8 @@ public class ModalStage extends Stage {
     setResizable(false);
 
     Scene scene = new Scene(new HBox(), 800, 580);
-    scene.getStylesheets().add(ClassLoader.getSystemResource("css/modal.css").toExternalForm());
     scene.getStylesheets().add(ClassLoader.getSystemResource("css/shared.css").toExternalForm());
+    scene.getStylesheets().add(ClassLoader.getSystemResource("css/modal.css").toExternalForm());
     setScene(scene);
   }
 

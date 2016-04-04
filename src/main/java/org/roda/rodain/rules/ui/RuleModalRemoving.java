@@ -49,7 +49,7 @@ public class RuleModalRemoving extends BorderPane implements Observer {
     top.setPadding(new Insets(10, 10, 10, 0));
     top.getStyleClass().add("hbox");
 
-    Label title = new Label(I18n.t("RuleModalRemoving.title"));
+    Label title = new Label(I18n.t("RuleModalRemoving.title").toUpperCase());
     title.setId("title");
 
     top.getChildren().add(title);
@@ -153,8 +153,7 @@ public class RuleModalRemoving extends BorderPane implements Observer {
   private void updateProgress(float progressValue) {
     Platform.runLater(() -> {
       progress.setProgress(progressValue);
-      sipsRemovedLabel.setText(String.format(I18n.t("RuleModalRemoving.removedFormat"),
-        (int) (progressValue * 100)));
+      sipsRemovedLabel.setText(String.format(I18n.t("RuleModalRemoving.removedFormat"), (int) (progressValue * 100)));
     });
   }
 
