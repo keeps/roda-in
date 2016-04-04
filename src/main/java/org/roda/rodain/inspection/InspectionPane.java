@@ -84,6 +84,7 @@ public class InspectionPane extends BorderPane {
   private ComboBox<UIPair> metadataCombo;
   private Set<Control> topButtons;
   private Separator metadataTopSeparator;
+  private boolean textBoxCancelledChange = false;
   // SIP Content
   private BorderPane content;
   private VBox dataBox, documentationHelp;
@@ -199,8 +200,36 @@ public class InspectionPane extends BorderPane {
   private void createMetadataTextBox() {
     metaText = new CodeArea();
     VBox.setVgrow(metaText, Priority.ALWAYS);
-    metaText.textProperty().addListener(
-      (observable, oldValue, newValue) -> metaText.setStyleSpans(0, XMLEditor.computeHighlighting(newValue)));
+    metaText.textProperty().addListener((observable, oldValue, newValue) -> {
+      metaText.setStyleSpans(0, XMLEditor.computeHighlighting(newValue));
+      UIPair selectedPair = metadataCombo.getSelectionModel().getSelectedItem();
+      DescObjMetadata selected = (DescObjMetadata) selectedPair.getKey();
+      if (oldValue != null && !"".equals(oldValue) && topButtons.contains(toggleForm) && !textBoxCancelledChange) {
+        String changeContent = I18n.t("InspectionPane.changeTemplate.content");
+        Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
+        dlg.initStyle(StageStyle.UNDECORATED);
+        dlg.setHeaderText(I18n.t("InspectionPane.changeTemplate.header"));
+        dlg.setTitle(I18n.t("InspectionPane.changeTemplate.title"));
+        dlg.setContentText(changeContent);
+        dlg.initModality(Modality.APPLICATION_MODAL);
+        dlg.initOwner(stage);
+        dlg.showAndWait();
+
+        if (dlg.getResult().getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+          selected.setContentDecoded(newValue);
+          selected.setValues(null);
+          selected.setType(MetadataTypes.NEW_FILE);
+          topButtons.remove(toggleForm);
+          updateMetadataTop();
+
+        } else {
+          textBoxCancelledChange = true;
+          updateTextArea(oldValue);
+        }
+      } else {
+        textBoxCancelledChange = false;
+      }
+    });
     // set the tab size to 2 spaces
     metaText.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
       if (event.getCode() == KeyCode.TAB) {
@@ -245,10 +274,12 @@ public class InspectionPane extends BorderPane {
         .bind(Bindings.when(toggleForm.selectedProperty()).then(selected).otherwise(unselected));
     });
     toggleForm.selectedProperty().addListener((observable, oldValue, newValue) -> {
+      textBoxCancelledChange = true;
       saveMetadata();
       // newValue == true means that the form will be displayed
       if (newValue) {
         toggleForm.setTooltip(new Tooltip(I18n.t("InspectionPane.textContent")));
+        textBoxCancelledChange = false;
         metadata.getChildren().remove(metaText);
         metadataGrid.getChildren().clear();
         updateForm();
@@ -303,6 +334,10 @@ public class InspectionPane extends BorderPane {
     });
     metadataCombo.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
       if (newValue != null) {
+        if (oldValue != null)
+          saveMetadata((DescObjMetadata) oldValue.getKey());
+        // we need this to prevent the alert from being shown
+        textBoxCancelledChange = true;
         updateSelectedMetadata((DescObjMetadata) newValue.getKey());
       } else {
         showMetadataHelp();
@@ -453,6 +488,38 @@ public class InspectionPane extends BorderPane {
     return null;
   }
 
+  private void saveMetadata(DescObjMetadata selectedDescObjMetadata) {
+    String oldMetadata = null, newMetadata = null;
+    if (currentDescOb != null) {
+      newMetadata = metaText.getText();
+      oldMetadata = selectedDescObjMetadata.getContentDecoded();
+    }
+    // only update if there's been modifications or there's no old
+    // metadata and the new isn't empty
+    boolean update = false;
+    if (selectedDescObjMetadata.getType() == MetadataTypes.TEMPLATE) {
+      currentDescOb.updatedMetadata(selectedDescObjMetadata);
+    } else {
+      if (newMetadata != null) {
+        if (oldMetadata == null)
+          update = true;
+        else if (!oldMetadata.equals(newMetadata))
+          update = true;
+      }
+    }
+
+    if (update) {
+      if (currentDescOb != null) {
+        selectedDescObjMetadata.setContentDecoded(newMetadata);
+      } else {
+        DescObjMetadata newObjMetadata = new DescObjMetadata();
+        newObjMetadata.setContentEncoding("Base64");
+        newObjMetadata.setContentDecoded(newMetadata);
+        currentDescOb.getMetadata().add(newObjMetadata);
+      }
+    }
+  }
+
   /**
    * Saves the metadata from the text area in the SIP.
    */
@@ -465,41 +532,12 @@ public class InspectionPane extends BorderPane {
       selectedDescObjMetadata = (DescObjMetadata) selectedObject.getKey();
     else
       return;
-
     if (metadata.getChildren().contains(metadataFormWrapper)) {
       if (currentDescOb != null) {
         updateTextArea(currentDescOb.getMetadataWithReplaces(selectedDescObjMetadata));
       }
     } else {
-      String oldMetadata = null, newMetadata = null;
-      if (currentDescOb != null) {
-        newMetadata = metaText.getText();
-        oldMetadata = selectedDescObjMetadata.getContentDecoded();
-      }
-      // only update if there's been modifications or there's no old
-      // metadata and the new isn't empty
-      boolean update = false;
-      if (selectedDescObjMetadata.getType() == MetadataTypes.TEMPLATE) {
-        currentDescOb.updatedMetadata(selectedDescObjMetadata);
-      } else {
-        if (newMetadata != null) {
-          if (oldMetadata == null)
-            update = true;
-          else if (!oldMetadata.equals(newMetadata))
-            update = true;
-        }
-      }
-
-      if (update) {
-        if (currentDescOb != null) {
-          selectedDescObjMetadata.setContentDecoded(newMetadata);
-        } else {
-          DescObjMetadata newObjMetadata = new DescObjMetadata();
-          newObjMetadata.setContentEncoding("Base64");
-          newObjMetadata.setContentDecoded(newMetadata);
-          currentDescOb.getMetadata().add(newObjMetadata);
-        }
-      }
+      saveMetadata(selectedDescObjMetadata);
     }
   }
 
