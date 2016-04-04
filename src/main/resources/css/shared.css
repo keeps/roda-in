@@ -137,3 +137,25 @@
     -fx-background-color: white;
 }
 
+/* Menu */
+
+.menu:focused {
+    -fx-background-color: -fx-dark;
+}
+
+.menu:hover {
+    -fx-background-color: -fx-dark;
+}
+
+.menu:showing {
+    -fx-background-color: -fx-dark;
+}
+
+.menu-item:focused {
+    -fx-background-color: -fx-dark;
+}
+
+.menu-item:hover {
+    -fx-background-color: -fx-dark;
+}
+

@@ -192,7 +192,6 @@
             <artifactId>controlsfx</artifactId>
             <version>8.40.10</version>
         </dependency>
-
         <!-- Tests -->
         <dependency>
             <groupId>junit</groupId>
