@@ -72,7 +72,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
    */
   @Override
   public void update(final Observable o, Object arg) {
-    if (o instanceof Rule) {
+    if (o instanceof Rule && arg instanceof String) {
       final Rule rule = (Rule) o;
       final Integer idInt = rule.getId();
       final String id = idInt.toString();
@@ -91,7 +91,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
         }
 
         // we don't need to add the nodes and SIPs if the rule has been removed
-        if (arg instanceof String && arg.equals("Removed rule")) {
+        if (arg.equals("Removed rule")) {
           return;
         }
         Set<SipPreviewNode> nodes = new HashSet<>(rule.getSipNodes());
@@ -220,9 +220,11 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     String category = hierarchyConfig.getString("category." + dob.getDescriptionlevel());
     String unicode = hierarchyConfig.getString("icon." + category);
 
-    iconBlack = FontAwesomeImageCreator.generate(unicode);
-    iconWhite = FontAwesomeImageCreator.generate(unicode, Color.WHITE);
-    this.setGraphic(new ImageView(iconBlack));
+    Platform.runLater(() -> {
+      iconBlack = FontAwesomeImageCreator.generate(unicode);
+      iconWhite = FontAwesomeImageCreator.generate(unicode, Color.WHITE);
+      this.setGraphic(new ImageView(iconBlack));
+    });
   }
 
   private Set<Rule> getAllRules() {
@@ -280,8 +282,8 @@ public class SchemaNode extends TreeItem<String> implements Observer {
       return iconWhite;
   }
 
-  public Image getIconBlack() {
-    return iconBlack;
+  public Image getIconWhite() {
+    return iconWhite;
   }
 
   public void setBlackIconSelected(boolean value) {

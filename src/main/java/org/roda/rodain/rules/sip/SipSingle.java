@@ -123,6 +123,6 @@ public class SipSingle extends SipPreviewCreator {
     added++;
 
     setChanged();
-    notifyObservers();
+    notifyObservers("Finished");
   }
 }

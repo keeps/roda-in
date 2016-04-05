@@ -1,16 +1,14 @@
 package org.roda.rodain.schema;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import org.roda.rodain.core.AppProperties;
-import org.roda.rodain.rules.MetadataTypes;
-import org.roda.rodain.rules.sip.MetadataValue;
-import org.xml.sax.SAXException;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
+import org.roda.rodain.core.I18n;
+import org.roda.rodain.rules.MetadataTypes;
+import org.roda.rodain.rules.sip.MetadataValue;
+
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -18,32 +16,13 @@ import com.samskivert.mustache.Template;
  */
 public class DescriptionObject extends Observable {
   private String title, id, parentId, descriptionlevel;
-  private String producer, creator, description, rights;
   private List<DescObjMetadata> metadata = new ArrayList<>();
   private Map<String, Object> additionalProperties = new TreeMap<>();
 
   public DescriptionObject() {
-    title = AppProperties.getLocalizedString("root");
+    title = I18n.t("root");
     id = UUID.randomUUID().toString();
     metadata.add(new DescObjMetadata(MetadataTypes.TEMPLATE, "ead", "2002"));
-  }
-
-  /**
-   * @return A list with the metadata values.
-   */
-  @JsonIgnore
-  public Map<String, MetadataValue> getMetadataValues() throws SAXException {
-    List<DescObjMetadata> metadataDup = getMetadataWithReplaces();
-    if (!metadataDup.isEmpty()) {
-      return metadataDup.get(0).getValues();
-    } else
-      return null;
-  }
-
-  public void applyMetadataValues() {
-    if (!metadata.isEmpty()) {
-      metadata.get(0).applyMetadataValues();
-    }
   }
 
   /**
@@ -122,42 +101,6 @@ public class DescriptionObject extends Observable {
     this.descriptionlevel = descriptionLevel;
   }
 
-  public String getProducer() {
-    return producer;
-  }
-
-  @JsonIgnore
-  public void setProducer(String producer) {
-    this.producer = producer;
-  }
-
-  public String getCreator() {
-    return creator;
-  }
-
-  @JsonIgnore
-  public void setCreator(String creator) {
-    this.creator = creator;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  @JsonIgnore
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public String getRights() {
-    return rights;
-  }
-
-  @JsonIgnore
-  public void setRights(String rights) {
-    this.rights = rights;
-  }
-
   public List<DescObjMetadata> getMetadata() {
     return metadata;
   }
@@ -169,31 +112,81 @@ public class DescriptionObject extends Observable {
    * @return The metadata list
    */
   @JsonIgnore
-  public List<DescObjMetadata> getMetadataWithReplaces() {
+  public Map<String, String> getMetadataWithReplaces() {
+    Map<String, String> result = new HashMap<>();
     for (DescObjMetadata dom : metadata) {
-      String content = dom.getContentDecoded();
-      if (content != null) {
-        Template tmpl = Mustache.compiler().defaultValue(" ").compile(content);
-        Map<String, String> data = new HashMap<>();
-        data.put("title", title);
-        data.put("dateInitial", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
-        data.put("dateFinal", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
-        data.put("now", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
-        data.put("id", id);
-        data.put("level", descriptionlevel);
-        data.put("creator", creator);
-        data.put("producer", producer);
-        data.put("rights", rights);
-        data.put("description", description);
-        content = tmpl.execute(data);
-        // we need to clean the '\r' character in windows,
-        // otherwise the strings are different even if no modification has been
-        // made
-        content = content.replace("\r", "");
-        dom.setContentDecoded(content);
-      }
+      result.put(dom.getId(), getMetadataWithReplaces(dom));
     }
-    return metadata;
+    return result;
+  }
+
+  @JsonIgnore
+  public String getMetadataWithReplaces(DescObjMetadata dom) {
+    String content = dom.getContentDecoded();
+    if (content != null) {
+      Template tmpl = Mustache.compiler().defaultValue("").compile(content);
+      Map<String, String> data = new HashMap<>();
+      Map<String, MetadataValue> values = getMetadataValueMap(dom);
+      if (values != null) {
+        values.forEach((s, metadataValue) -> data.put(s, metadataValue.getValue()));
+      }
+      content = tmpl.execute(data);
+      // we need to clean the '\r' character in windows,
+      // otherwise the strings are different even if no modification has been
+      // made
+      content = content.replace("\r", "");
+    }
+    return content;
+  }
+
+  @JsonIgnore
+  public Map<String, MetadataValue> getMetadataValueMap(DescObjMetadata dom) {
+    String content = dom.getContentDecoded();
+    if (content != null) {
+      Map<String, MetadataValue> values = dom.getValues();
+      values.forEach((s, metadataValue) -> {
+        String toSearch = s.toLowerCase();
+        switch (toSearch) {
+          case "title":
+            metadataValue.setValue(title);
+            break;
+          case "now":
+            metadataValue.setValue(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+            break;
+          case "id":
+            metadataValue.setValue(id);
+            break;
+          case "level":
+            metadataValue.setValue(descriptionlevel);
+            break;
+          case "parentid":
+            metadataValue.setValue(parentId);
+            break;
+        }
+      });
+      return values;
+    }
+    return null;
+  }
+
+  public void updatedMetadata(DescObjMetadata dom) {
+    dom.getValues().forEach((s, metadataValue) -> {
+      String toSearch = s.toLowerCase();
+      switch (toSearch) {
+        case "title":
+          title = metadataValue.getValue();
+          break;
+        case "id":
+          id = metadataValue.getValue();
+          break;
+        case "level":
+          descriptionlevel = metadataValue.getValue();
+          break;
+        case "parentid":
+          parentId = metadataValue.getValue();
+          break;
+      }
+    });
   }
 
   /**

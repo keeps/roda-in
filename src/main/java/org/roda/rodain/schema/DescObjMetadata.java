@@ -2,17 +2,15 @@ package org.roda.rodain.schema;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.net.util.Base64;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.MetadataTypes;
-import org.roda.rodain.rules.XMLToMetadataValue;
+import org.roda.rodain.rules.TemplateToForm;
 import org.roda.rodain.rules.sip.MetadataValue;
 import org.roda.rodain.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -24,12 +22,12 @@ import java.util.Map;
  * @author Andre Pereira apereira@keep.pt
  * @since 07-12-2015.
  */
-@JsonIgnoreProperties({"values", "path", "loaded", "type", "version", "templateType"})
+@JsonIgnoreProperties({"path", "loaded", "version"})
 public class DescObjMetadata {
   private static final Logger log = LoggerFactory.getLogger(DescObjMetadata.class.getName());
   private String id, content, contentEncoding;
-  private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-  private Map<String, MetadataValue> values = new HashMap<>();
+  private Map<String, Object> additionalProperties = new HashMap<>();
+  private Map<String, MetadataValue> values;
   private Path path;
   private boolean loaded = false;
 
@@ -38,7 +36,7 @@ public class DescObjMetadata {
   private String version, templateType;
 
   public DescObjMetadata() {
-
+    type = MetadataTypes.NEW_FILE;
   }
 
   public DescObjMetadata(MetadataTypes type, String templateType, String version) {
@@ -58,26 +56,36 @@ public class DescObjMetadata {
     }
   }
 
+  @JsonIgnore
+  public Path getPath() {
+    return path;
+  }
+
+  @JsonIgnore
+  public boolean isLoaded() {
+    return loaded;
+  }
+
+  public MetadataTypes getType() {
+    return type;
+  }
+
+  public void setType(MetadataTypes type) {
+    this.type = type;
+  }
+
   /**
    * @return The set of MetadataValue objects. Used to create the form.
    */
-  @JsonIgnore
-  public Map<String, MetadataValue> getValues() throws SAXException {
-    values = XMLToMetadataValue.createEADMetadataValues(getContentDecoded());
+  public Map<String, MetadataValue> getValues() {
+    if (values == null) {
+      values = TemplateToForm.createMap(getContentDecoded());
+    }
     return values;
   }
 
-  @JsonProperty
   public void setValues(Map<String, MetadataValue> val) {
     this.values = val;
-  }
-
-  /**
-   * Applies the data from the MetadataValues to the XML string.
-   */
-  public void applyMetadataValues() {
-    String result = XMLToMetadataValue.applyMetadataValues(getContentDecoded(), values);
-    setContentDecoded(result);
   }
 
   public String getVersion() {

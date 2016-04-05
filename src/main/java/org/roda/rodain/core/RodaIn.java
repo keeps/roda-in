@@ -2,11 +2,17 @@ package org.roda.rodain.core;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
+import javafx.scene.CacheHint;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
@@ -45,6 +51,10 @@ public class RodaIn extends Application {
   private BorderPane mainPane;
   private double initialWidth = 1200, initialHeight = 700;
 
+  // Splash
+  private Pane splashPane;
+  private Stage splashStage;
+
   private static FileExplorerPane fileExplorer;
   private static InspectionPane inspectionPane;
   private static SchemaPane schemePane;
@@ -57,6 +67,23 @@ public class RodaIn extends Application {
    */
   public static void startApp(String[] args) {
     launch(args);
+  }
+
+  @Override
+  public void init() {
+    ImageView splash = new ImageView();
+    try {
+      splash = new ImageView(new Image(ClassLoader.getSystemResource("roda-in-splash.png").openStream()));
+    } catch (IOException e) {
+      log.error("Error reading logo file", e);
+    }
+
+    splashPane = new Pane();
+    splashPane.setStyle("-fx-background-color: transparent");
+    splashPane.getChildren().add(splash);
+    splashPane.setCache(true);
+    splashPane.setCacheHint(CacheHint.SPEED);
+    splashPane.setEffect(new DropShadow());
   }
 
   /**
@@ -73,13 +100,20 @@ public class RodaIn extends Application {
    */
   @Override
   public void start(Stage primaryStage) {
+    if (splashPane != null) {
+      splashStage = new Stage();
+      Scene splashScene = new Scene(splashPane);
+      splashScene.setFill(Color.TRANSPARENT);
+      splashStage.setScene(splashScene);
+      splashStage.initOwner(stage);
+      splashStage.initStyle(StageStyle.TRANSPARENT);
+      splashStage.show();
+      splashStage.centerOnScreen();
+    }
+
     stage = primaryStage;
     stage.setMinWidth(1024);
     stage.setMinHeight(600);
-
-    stage.setOnCloseRequest(event -> {
-      closeApp();
-    });
 
     try {
       stage.getIcons().add(new Image(ClassLoader.getSystemResource("roda2-logo.png").openStream()));
@@ -87,33 +121,54 @@ public class RodaIn extends Application {
       log.error("Error reading logo file", e);
     }
 
-    AppProperties.initialize();
-    String ignoredRaw = AppProperties.getConfig("app.ignoredFiles");
-    String[] ignored = ignoredRaw.split(",");
-    for (String s : ignored) {
-      IgnoredFilter.addIgnoreRule(s);
-    }
+    Task<Void> initTask = new Task<Void>() {
+      @Override
+      protected Void call() throws Exception {
+        stage.setOnCloseRequest(event -> closeApp());
 
-    // load the custom fonts
-    Font.loadFont(ClassLoader.getSystemResource("fonts/Ubuntu-Regular.ttf").toExternalForm(), 10);
-    Font.loadFont(ClassLoader.getSystemResource("fonts/Ubuntu-Medium.ttf").toExternalForm(), 10);
-    Font.loadFont(ClassLoader.getSystemResource("fonts/Ubuntu-Light.ttf").toExternalForm(), 10);
+        AppProperties.initialize();
+        String ignoredRaw = AppProperties.getConfig("app.ignoredFiles");
+        String[] ignored = ignoredRaw.split(",");
+        for (String s : ignored) {
+          IgnoredFilter.addIgnoreRule(s);
+        }
 
-    createFrameStructure();
-    createMenu();
+        // load the custom fonts
+        Font.loadFont(ClassLoader.getSystemResource("fonts/Ubuntu-Regular.ttf").toExternalForm(), 10);
+        Font.loadFont(ClassLoader.getSystemResource("fonts/Ubuntu-Medium.ttf").toExternalForm(), 10);
+        Font.loadFont(ClassLoader.getSystemResource("fonts/Ubuntu-Light.ttf").toExternalForm(), 10);
 
-    // setup and show the window
-    stage.setTitle("RODA-In");
-    Scene scene = new Scene(mainPane, initialWidth, initialHeight);
+        createFrameStructure();
+        createMenu();
 
-    scene.getStylesheets().add(ClassLoader.getSystemResource("css/mainWindow.css").toExternalForm());
-    scene.getStylesheets().add(ClassLoader.getSystemResource("css/shared.css").toExternalForm());
-    scene.getStylesheets().add(ClassLoader.getSystemResource("css/xml-highlighting.css").toExternalForm());
-    stage.setScene(scene);
+        // setup and show the window
+        stage.setTitle("RODA-In");
+        return null;
+      }
+    };
 
-    stage.show();
-    stage.centerOnScreen();
-    stage.setMaximized(true);
+    initTask.setOnSucceeded(event -> {
+      Scene scene = new Scene(mainPane, initialWidth, initialHeight);
+
+      scene.getStylesheets().add(ClassLoader.getSystemResource("css/mainWindow.css").toExternalForm());
+      scene.getStylesheets().add(ClassLoader.getSystemResource("css/shared.css").toExternalForm());
+      scene.getStylesheets().add(ClassLoader.getSystemResource("css/xml-highlighting.css").toExternalForm());
+      stage.setScene(scene);
+
+      stage.show();
+      stage.centerOnScreen();
+      stage.setMaximized(true);
+      if (splashStage != null)
+        splashStage.close();
+    });
+
+    initTask.setOnFailed(event -> {
+      log.error("Failed application initialization");
+      if (splashStage != null)
+        splashStage.close();
+    });
+
+    new Thread(initTask).start();
   }
 
   private void createFrameStructure() {
@@ -129,8 +184,10 @@ public class RodaIn extends Application {
   private SplitPane createSplitPane() {
     // Divide center pane in 3
     SplitPane split = new SplitPane();
-    fileExplorer = new FileExplorerPane(stage);
+    // schemePane must be created before fileExplorer because of some variable
+    // bindings
     schemePane = new SchemaPane(stage);
+    fileExplorer = new FileExplorerPane(stage);
     inspectionPane = new InspectionPane(stage);
 
     split.setDividerPositions(0.33, 0.67);
@@ -141,13 +198,14 @@ public class RodaIn extends Application {
 
   private void createMenu() {
     MenuBar menu = new MenuBar();
-    Menu menuFile = new Menu(AppProperties.getLocalizedString("Main.file"));
-    Menu menuEdit = new Menu(AppProperties.getLocalizedString("Main.edit"));
-    Menu menuClassScheme = new Menu(AppProperties.getLocalizedString("Main.classScheme"));
-    Menu menuView = new Menu(AppProperties.getLocalizedString("Main.view"));
+    Menu menuFile = new Menu(I18n.t("Main.file"));
+
+    Menu menuEdit = new Menu(I18n.t("Main.edit"));
+    Menu menuClassScheme = new Menu(I18n.t("Main.classScheme"));
+    Menu menuView = new Menu(I18n.t("Main.view"));
 
     // File
-    Menu language = new Menu(AppProperties.getLocalizedString("Main.language"));
+    Menu language = new Menu(I18n.t("Main.language"));
     final ToggleGroup languageGroup = new ToggleGroup();
     RadioMenuItem langPT = new RadioMenuItem("Português");
     langPT.setUserData("pt");
@@ -182,36 +240,34 @@ public class RodaIn extends Application {
         AppProperties.saveConfig();
         Alert dlg = new Alert(Alert.AlertType.INFORMATION);
         dlg.initStyle(StageStyle.UNDECORATED);
-        dlg.setHeaderText(AppProperties.getLocalizedString("Main.updateLang.header"));
-        dlg.setTitle(AppProperties.getLocalizedString("Main.updateLang.title"));
-        dlg.setContentText(AppProperties.getLocalizedString("Main.updateLang.content"));
+        dlg.setHeaderText(I18n.t("Main.updateLang.header"));
+        dlg.setTitle(I18n.t("Main.updateLang.title"));
+        dlg.setContentText(I18n.t("Main.updateLang.content"));
         dlg.initModality(Modality.APPLICATION_MODAL);
         dlg.initOwner(stage);
         dlg.show();
       }
     });
 
-    final MenuItem openFolder = new MenuItem(AppProperties.getLocalizedString("Main.addFolder"));
+    final MenuItem openFolder = new MenuItem(I18n.t("Main.addFolder"));
     openFolder.setAccelerator(KeyCombination.keyCombination("Ctrl+O"));
     openFolder.setOnAction(event -> fileExplorer.chooseNewRoot());
 
-    final MenuItem createSIPs = new MenuItem(AppProperties.getLocalizedString("Main.exportSips"));
+    final MenuItem createSIPs = new MenuItem(I18n.t("Main.exportSips"));
     createSIPs.setAccelerator(KeyCombination.keyCombination("Ctrl+X"));
     createSIPs.setOnAction(event -> exportSIPs());
 
-    final MenuItem quit = new MenuItem(AppProperties.getLocalizedString("Main.quit"));
+    final MenuItem quit = new MenuItem(I18n.t("Main.quit"));
     quit.setAccelerator(KeyCombination.keyCombination("Ctrl+Q"));
-    quit.setOnAction(event -> {
-      closeApp();
-    });
-    final MenuItem reset = new MenuItem(AppProperties.getLocalizedString("Main.reset"));
+    quit.setOnAction(event -> closeApp());
+    final MenuItem reset = new MenuItem(I18n.t("Main.reset"));
     reset.setAccelerator(KeyCombination.keyCombination("Ctrl+N"));
     reset.setOnAction(event -> {
       Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
       dlg.initStyle(StageStyle.UNDECORATED);
-      dlg.setHeaderText(AppProperties.getLocalizedString("Main.confirmReset.header"));
-      dlg.setTitle(AppProperties.getLocalizedString("Main.reset"));
-      dlg.setContentText(AppProperties.getLocalizedString("Main.confirmReset.content"));
+      dlg.setHeaderText(I18n.t("Main.confirmReset.header"));
+      dlg.setTitle(I18n.t("Main.reset"));
+      dlg.setContentText(I18n.t("Main.confirmReset.content"));
       dlg.initModality(Modality.APPLICATION_MODAL);
       dlg.initOwner(stage);
       dlg.showAndWait();
@@ -229,19 +285,19 @@ public class RodaIn extends Application {
     menuFile.getItems().addAll(reset, openFolder, createSIPs, language, quit);
 
     // Classification scheme
-    final MenuItem createCS = new MenuItem(AppProperties.getLocalizedString("Main.createCS"));
+    final MenuItem createCS = new MenuItem(I18n.t("Main.createCS"));
     createCS.setAccelerator(KeyCombination.keyCombination("Ctrl+R"));
     createCS.setOnAction(event -> schemePane.createClassificationScheme());
 
-    final MenuItem updateCS = new MenuItem(AppProperties.getLocalizedString("Main.loadCS"));
+    final MenuItem updateCS = new MenuItem(I18n.t("Main.loadCS"));
     updateCS.setAccelerator(KeyCombination.keyCombination("Ctrl+L"));
     updateCS.setOnAction(event -> schemePane.loadClassificationSchema());
 
-    final MenuItem exportCS = new MenuItem(AppProperties.getLocalizedString("Main.exportCS"));
+    final MenuItem exportCS = new MenuItem(I18n.t("Main.exportCS"));
     exportCS.setAccelerator(KeyCombination.keyCombination("Ctrl+E"));
     exportCS.setOnAction(event -> {
       FileChooser chooser = new FileChooser();
-      chooser.setTitle(AppProperties.getLocalizedString("filechooser.title"));
+      chooser.setTitle(I18n.t("filechooser.title"));
       File selectedFile = chooser.showSaveDialog(stage);
       if (selectedFile == null)
         return;
@@ -251,39 +307,39 @@ public class RodaIn extends Application {
     menuClassScheme.getItems().addAll(createCS, updateCS, exportCS);
 
     // Edit
-    final MenuItem ignoreItems = new MenuItem(AppProperties.getLocalizedString("Main.ignoreItems"));
+    final MenuItem ignoreItems = new MenuItem(I18n.t("Main.ignoreItems"));
     ignoreItems.setAccelerator(KeyCombination.keyCombination("DELETE"));
     ignoreItems.setOnAction(event -> fileExplorer.ignore());
 
     menuEdit.getItems().addAll(ignoreItems);
 
     // View
-    final MenuItem showFiles = new MenuItem(AppProperties.getLocalizedString("Main.hideFiles"));
+    final MenuItem showFiles = new MenuItem(I18n.t("Main.hideFiles"));
     showFiles.setAccelerator(KeyCombination.keyCombination("Ctrl+F"));
     showFiles.setOnAction(event -> {
       fileExplorer.toggleFilesShowing();
       if (FileExplorerPane.isShowFiles())
-        showFiles.setText(AppProperties.getLocalizedString("Main.hideFiles"));
+        showFiles.setText(I18n.t("Main.hideFiles"));
       else
-        showFiles.setText(AppProperties.getLocalizedString("Main.showFiles"));
+        showFiles.setText(I18n.t("Main.showFiles"));
     });
-    final MenuItem showIgnored = new MenuItem(AppProperties.getLocalizedString("Main.showIgnored"));
+    final MenuItem showIgnored = new MenuItem(I18n.t("Main.showIgnored"));
     showIgnored.setAccelerator(KeyCombination.keyCombination("Ctrl+I"));
     showIgnored.setOnAction(event -> {
       fileExplorer.toggleIgnoredShowing();
       if (FileExplorerPane.isShowIgnored())
-        showIgnored.setText(AppProperties.getLocalizedString("Main.hideIgnored"));
+        showIgnored.setText(I18n.t("Main.hideIgnored"));
       else
-        showIgnored.setText(AppProperties.getLocalizedString("Main.showIgnored"));
+        showIgnored.setText(I18n.t("Main.showIgnored"));
     });
-    final MenuItem showMapped = new MenuItem(AppProperties.getLocalizedString("Main.showMapped"));
+    final MenuItem showMapped = new MenuItem(I18n.t("Main.showMapped"));
     showMapped.setAccelerator(KeyCombination.keyCombination("Ctrl+M"));
     showMapped.setOnAction(event -> {
       fileExplorer.toggleMappedShowing();
       if (FileExplorerPane.isShowMapped())
-        showMapped.setText(AppProperties.getLocalizedString("Main.hideMapped"));
+        showMapped.setText(I18n.t("Main.hideMapped"));
       else
-        showMapped.setText(AppProperties.getLocalizedString("Main.showMapped"));
+        showMapped.setText(I18n.t("Main.showMapped"));
     });
 
     menuView.getItems().addAll(showFiles, showIgnored, showMapped);

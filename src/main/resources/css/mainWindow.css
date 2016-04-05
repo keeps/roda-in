@@ -1,19 +1,35 @@
 .title {
-    -fx-font-size: x-large;
+    -fx-font-size: large;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.top-subtitle {
+    -fx-font-size: large;
+    -fx-text-fill: white;
+}
+
+.title-box {
+    -fx-background-color: -fx-dark;
+}
+
+.split-pane *.split-pane-divider {
+    -fx-padding: 1px;
+    -fx-background-color: #d8d8d8;
 }
 
 /* Inspection */
 .inspectionPart {
     -fx-border-width: 1;
-    -fx-border-color: #089de3;
+    -fx-border-color: -fx-dark;
 }
 
 .inspectionPart .hbox {
-    -fx-background-color: #089de3;
+    -fx-background-color: -fx-dark;
 }
 
 .inspectionPart .label {
-    -fx-font-size: large;
+    -fx-font-size: medium;
     -fx-text-fill: white;
 }
 
@@ -91,6 +107,17 @@
     -fx-font-size: medium;
 }
 
+.separator .line {
+    /*-fx-border-style: segments(0.166667em, 0.166667em);*/
+    -fx-border-width: 0.083333em; /* 1 */
+}
+
+.separator:vertical .line {
+    -fx-background-color: null;
+    -fx-padding: 0.0em 0.083333em 0.0em 0.0em; /* 0 1 0 0 */
+    -fx-border-color: transparent derive(-fx-background, -20%) transparent transparent;
+}
+
 /* Tree-view and Tree-cell*/
 .tree-view {
     -fx-background-color: white;
@@ -104,26 +131,26 @@
 }
 
 .tree-cell:filled:hover {
-    -fx-background-color: lightgray;
+    -fx-background-color: -fx-alt-light;
 }
 
 .tree-cell:selected:hover {
-    -fx-background-color: #089de3;
+    -fx-background-color: -fx-medium;
     -fx-font-weight: bold;
 }
 
 .tree-cell:focused:selected:hover {
-    -fx-background-color: #089de3;
+    -fx-background-color: -fx-medium;
     -fx-font-weight: bold;
 }
 
 .tree-cell:selected {
-    -fx-background-color: #089de3;
+    -fx-background-color: -fx-medium;
     -fx-text-fill: white;
 }
 
 .tree-cell:focused:selected {
-    -fx-background-color: #089de3;
+    -fx-background-color: -fx-medium;
     -fx-text-fill: white;
 }
 
@@ -147,13 +174,17 @@
     -fx-strikethrough: true;
 }
 
+.main-tree {
+    /*-fx-border-color: -fx-dark;*/
+}
+
 /* Schema */
 .schemaNode .cellText {
-    -fx-opacity: 70%;
+    -fx-opacity: 85%;
 }
 
 .schemaNode:focused:selected {
-    -fx-background-color: #089de3;
+    -fx-background-color: -fx-medium;
     -fx-text-fill: white;
 }
 
@@ -170,7 +201,7 @@
 }
 
 .schemaNodeEmpty:focused:selected {
-    -fx-background-color: #089de3;
+    -fx-background-color: -fx-medium;
     -fx-text-fill: white;
 }
 
@@ -218,15 +249,15 @@
 }
 
 .ruleCell .hyperlink {
-    -fx-text-fill: #089de3;
+    -fx-text-fill: -fx-medium;
 }
 
 .list-cell:focused:selected .ruleCell {
-    -fx-border-color: #089de3;
+    -fx-border-color: -fx-medium;
 }
 
 .list-cell:focused:selected .ruleCell .top {
-    -fx-background-color: #089de3;
+    -fx-background-color: -fx-medium;
 }
 
 .list-cell:focused:selected .ruleCell .top * {
@@ -249,11 +280,11 @@
 }
 
 .ruleCell .top .button:pressed {
-    -fx-text-fill: #089de3;
+    -fx-text-fill: -fx-light;
 }
 
 .list-cell:focused:selected .top .button:hover {
-    -fx-text-fill: #08577e;
+    -fx-text-fill: -fx-dark;
 }
 
 .list-cell:focused:selected .top .button:pressed {

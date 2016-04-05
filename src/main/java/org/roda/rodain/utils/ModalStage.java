@@ -1,10 +1,8 @@
-package org.roda.rodain.rules.ui;
+package org.roda.rodain.utils;
 
-import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.effect.ColorAdjust;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -14,7 +12,7 @@ import javafx.stage.StageStyle;
  * @author Andre Pereira apereira@keep.pt
  * @since 15-10-2015.
  */
-public class RuleModalStage extends Stage {
+public class ModalStage extends Stage {
   private ColorAdjust colorAdjust;
   private Stage primaryStage;
 
@@ -24,7 +22,7 @@ public class RuleModalStage extends Stage {
    * @param primaryStage
    *          The primary stage of the application.
    */
-  public RuleModalStage(Stage primaryStage) {
+  public ModalStage(Stage primaryStage) {
     super(StageStyle.TRANSPARENT);
     this.primaryStage = primaryStage;
     initModality(Modality.WINDOW_MODAL);
@@ -36,8 +34,8 @@ public class RuleModalStage extends Stage {
     setResizable(false);
 
     Scene scene = new Scene(new HBox(), 800, 580);
-    scene.getStylesheets().add(ClassLoader.getSystemResource("css/modal.css").toExternalForm());
     scene.getStylesheets().add(ClassLoader.getSystemResource("css/shared.css").toExternalForm());
+    scene.getStylesheets().add(ClassLoader.getSystemResource("css/modal.css").toExternalForm());
     setScene(scene);
   }
 
@@ -63,22 +61,16 @@ public class RuleModalStage extends Stage {
 
     // allow the dialog to be dragged around.
     final Delta dragDelta = new Delta();
-    final RuleModalStage thisDialog = this; // reference to be used in the
+    final ModalStage thisDialog = this; // reference to be used in the
     // handlers
-    root.setOnMousePressed(new EventHandler<MouseEvent>() {
-      @Override
-      public void handle(MouseEvent mouseEvent) {
-        // record a delta distance for the drag and drop operation.
-        dragDelta.x = thisDialog.getX() - mouseEvent.getScreenX();
-        dragDelta.y = thisDialog.getY() - mouseEvent.getScreenY();
-      }
+    root.setOnMousePressed(event -> {
+      // record a delta distance for the drag and drop operation.
+      dragDelta.x = thisDialog.getX() - event.getScreenX();
+      dragDelta.y = thisDialog.getY() - event.getScreenY();
     });
-    root.setOnMouseDragged(new EventHandler<MouseEvent>() {
-      @Override
-      public void handle(MouseEvent mouseEvent) {
-        thisDialog.setX(mouseEvent.getScreenX() + dragDelta.x);
-        thisDialog.setY(mouseEvent.getScreenY() + dragDelta.y);
-      }
+    root.setOnMouseDragged(event -> {
+      thisDialog.setX(event.getScreenX() + dragDelta.x);
+      thisDialog.setY(event.getScreenY() + dragDelta.y);
     });
 
     show();

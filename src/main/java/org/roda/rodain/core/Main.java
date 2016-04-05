@@ -1,10 +1,10 @@
 package org.roda.rodain.core;
 
-import java.io.PrintStream;
-
 import org.roda.rodain.utils.LoggingOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.PrintStream;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -23,7 +23,7 @@ public class Main {
     String javaString = Runtime.class.getPackage().getSpecificationVersion();
     double javaVersion = Double.parseDouble(javaString);
     if (javaVersion < 1.8) {
-      String format = AppProperties.getLocalizedString("Main.useJava8");
+      String format = I18n.t("Main.useJava8");
       log.error(String.format(format, javaVersion));
       return;
     }

@@ -9,6 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.StageStyle;
 import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.core.I18n;
 import org.roda.rodain.creation.CreateSips;
 import org.roda.rodain.rules.sip.SipPreview;
 
@@ -31,7 +32,7 @@ public class CreationModalProcessing extends BorderPane {
   private String etaFormatHour, etaFormatHours, etaFormatMinute, etaFormatMinutes, etaFormatLessMin, etaFormatLess30;
   // center
   private ProgressBar progress;
-  private Label sipName, sipAction, eta, etaLabel;
+  private Label sipName, sipAction, eta, etaLabel, elapsedTime;
   private HBox etaBox;
   private Timer timer;
 
@@ -49,14 +50,14 @@ public class CreationModalProcessing extends BorderPane {
     this.creator = creator;
     CreationModalProcessing.stage = stage;
 
-    etaFormatHour = String.format("< %%d %s ", AppProperties.getLocalizedString("CreationModalProcessing.hour"));
-    etaFormatHours = String.format("< %%d %s ", AppProperties.getLocalizedString("CreationModalProcessing.hours"));
-    etaFormatMinute = String.format("%%d %s", AppProperties.getLocalizedString("CreationModalProcessing.minute"));
-    etaFormatMinutes = String.format("%%d %s", AppProperties.getLocalizedString("CreationModalProcessing.minutes"));
-    etaFormatLessMin = AppProperties.getLocalizedString("CreationModalProcessing.lessMinute");
-    etaFormatLess30 = AppProperties.getLocalizedString("CreationModalProcessing.lessSeconds");
+    etaFormatHour = String.format("< %%d %s ", I18n.t("CreationModalProcessing.hour"));
+    etaFormatHours = String.format("< %%d %s ", I18n.t("CreationModalProcessing.hours"));
+    etaFormatMinute = String.format("%%d %s", I18n.t("CreationModalProcessing.minute"));
+    etaFormatMinutes = String.format("%%d %s", I18n.t("CreationModalProcessing.minutes"));
+    etaFormatLessMin = I18n.t("CreationModalProcessing.lessMinute");
+    etaFormatLess30 = I18n.t("CreationModalProcessing.lessSeconds");
 
-    subtitleFormat = AppProperties.getLocalizedString("CreationModalProcessing.subtitle");
+    subtitleFormat = I18n.t("CreationModalProcessing.subtitle");
 
     getStyleClass().add("sipcreator");
 
@@ -73,7 +74,7 @@ public class CreationModalProcessing extends BorderPane {
     top.getStyleClass().add("hbox");
     top.setAlignment(Pos.CENTER);
 
-    Label title = new Label(AppProperties.getLocalizedString("CreationModalPreparation.creatingSips"));
+    Label title = new Label(I18n.t("CreationModalPreparation.creatingSips"));
     title.setId("title");
 
     top.getChildren().add(title);
@@ -86,7 +87,7 @@ public class CreationModalProcessing extends BorderPane {
     center.setPadding(new Insets(0, 10, 10, 10));
 
     etaBox = new HBox(10);
-    etaLabel = new Label(AppProperties.getLocalizedString("CreationModalProcessing.remaining"));
+    etaLabel = new Label(I18n.t("CreationModalProcessing.remaining"));
     etaLabel.setMinWidth(70);
     etaLabel.getStyleClass().add("boldText");
     eta = new Label();
@@ -108,22 +109,30 @@ public class CreationModalProcessing extends BorderPane {
     progress.setPadding(new Insets(5, 0, 10, 0));
     progress.setPrefSize(380, 25);
 
+    HBox elapsed = new HBox(10);
+    elapsed.maxWidth(380);
+    Label lElapsed = new Label(I18n.t("CreationModalProcessing.elapsed"));
+    lElapsed.getStyleClass().add("boldText");
+    lElapsed.setMinWidth(70);
+    elapsedTime = new Label("");
+    elapsed.getChildren().addAll(lElapsed, elapsedTime);
+
     HBox sip = new HBox(10);
     sip.maxWidth(380);
-    Label lName = new Label(AppProperties.getLocalizedString("CreationModalProcessing.currentSip"));
+    Label lName = new Label(I18n.t("CreationModalProcessing.currentSip"));
     lName.getStyleClass().add("boldText");
     lName.setMinWidth(70);
     sipName = new Label("");
     sip.getChildren().addAll(lName, sipName);
 
     HBox action = new HBox(10);
-    Label lAction = new Label(AppProperties.getLocalizedString("CreationModalProcessing.action"));
+    Label lAction = new Label(I18n.t("CreationModalProcessing.action"));
     lAction.getStyleClass().add("boldText");
     lAction.setMinWidth(70);
     sipAction = new Label("");
     action.getChildren().addAll(lAction, sipAction);
 
-    center.getChildren().addAll(subtitles, progress, etaBox, sip, action);
+    center.getChildren().addAll(subtitles, progress, etaBox, elapsed, sip, action);
     setCenter(center);
   }
 
@@ -131,7 +140,7 @@ public class CreationModalProcessing extends BorderPane {
     HBox bottom = new HBox();
     bottom.setPadding(new Insets(0, 10, 10, 10));
     bottom.setAlignment(Pos.CENTER_LEFT);
-    Button cancel = new Button(AppProperties.getLocalizedString("cancel"));
+    Button cancel = new Button(I18n.t("cancel"));
     cancel.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent actionEvent) {
@@ -147,7 +156,7 @@ public class CreationModalProcessing extends BorderPane {
     finishedBox = new HBox();
     finishedBox.setPadding(new Insets(0, 10, 10, 10));
     finishedBox.setAlignment(Pos.CENTER_RIGHT);
-    Button close = new Button(AppProperties.getLocalizedString("close"));
+    Button close = new Button(I18n.t("close"));
 
     close.setOnAction(new EventHandler<ActionEvent>() {
       @Override
@@ -170,21 +179,28 @@ public class CreationModalProcessing extends BorderPane {
             int size = creator.getSipsCount();
             int errors = creator.getErrorCount();
             double etaDouble = creator.getTimeRemainingEstimate();
+            long startedTime = creator.getStartedTime();
             updateETA(etaDouble);
             double prog = creator.getProgress();
 
             if (errors > 0) {
-              subtitleError.setText(errors + AppProperties.getLocalizedString("CreationModalProcessing.errors"));
+              subtitleError.setText(errors + I18n.t("CreationModalProcessing.errors"));
             }
             subtitleSuccess.setText(String.format(subtitleFormat, created, size, (int) (prog * 100)));
             progress.setProgress(prog);
 
             sipName.setText(creator.getSipName());
             sipAction.setText(creator.getAction());
+            // format elapsed time
+            long millis = System.currentTimeMillis() - startedTime;
+            long second = (millis / 1000) % 60;
+            long minute = (millis / (1000 * 60)) % 60;
+            long hour = (millis / (1000 * 60 * 60)) % 24;
+            elapsedTime.setText(String.format("%02d:%02d:%02d", hour, minute, second));
 
             // stop the timer when all the SIPs have been created
             if ((created + errors) == size) {
-              eta.setText(AppProperties.getLocalizedString("CreationModalProcessing.finished"));
+              eta.setText(I18n.t("CreationModalProcessing.finished"));
               progress.setProgress(100);
               finished();
             }
@@ -194,7 +210,7 @@ public class CreationModalProcessing extends BorderPane {
     };
 
     timer = new Timer();
-    timer.schedule(updater, 0, 600);
+    timer.schedule(updater, 0, 200);
   }
 
   private void updateETA(double etaDouble) {
@@ -223,7 +239,7 @@ public class CreationModalProcessing extends BorderPane {
       eta.setText(result);
     } else {
       etaBox.getChildren().clear();
-      eta.setText(AppProperties.getLocalizedString("CreationModalProcessing.impossibleEstimate"));
+      eta.setText(I18n.t("CreationModalProcessing.impossibleEstimate"));
     }
   }
 
@@ -246,13 +262,12 @@ public class CreationModalProcessing extends BorderPane {
       Alert alert = new Alert(Alert.AlertType.ERROR);
       alert.initStyle(StageStyle.UNDECORATED);
       alert.initOwner(stage);
-      alert.setTitle(AppProperties.getLocalizedString("CreationModalProcessing.alert.title"));
-      String header = String.format(AppProperties.getLocalizedString("CreationModalProcessing.alert.header"),
-        sip.getTitle());
+      alert.setTitle(I18n.t("CreationModalProcessing.alert.title"));
+      String header = String.format(I18n.t("CreationModalProcessing.alert.header"), sip.getTitle());
       alert.setHeaderText(header);
       StringBuilder content = new StringBuilder(ex.getLocalizedMessage());
       content.append("\n");
-      content.append(AppProperties.getLocalizedString("CreationModalProcessing.cause"));
+      content.append(I18n.t("CreationModalProcessing.cause"));
       content.append(": ").append(ex.getCause().getLocalizedMessage());
       alert.setContentText(content.toString());
       alert.getDialogPane().setStyle(AppProperties.getStyle("export.alert"));
@@ -266,7 +281,7 @@ public class CreationModalProcessing extends BorderPane {
       }
       String exceptionText = sw.toString();
 
-      Label label = new Label(AppProperties.getLocalizedString("CreationModalProcessing.alert.stacktrace"));
+      Label label = new Label(I18n.t("CreationModalProcessing.alert.stacktrace"));
 
       TextArea textArea = new TextArea(exceptionText);
       textArea.setEditable(false);

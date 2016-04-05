@@ -5,6 +5,7 @@ import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
+import org.roda_project.commons_ip.utils.EARKEnums;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -16,6 +17,7 @@ import java.util.*;
 public class SipPreview extends DescriptionObject implements Observer {
   private Set<SipRepresentation> representations;
   private Set<TreeNode> documentation;
+  private EARKEnums.ContentType contentType;
   private boolean contentModified = false;
   private boolean removed = false;
 
@@ -34,10 +36,12 @@ public class SipPreview extends DescriptionObject implements Observer {
     documentation = new HashSet<>();
     setTitle(name);
     List<DescObjMetadata> tempList = new ArrayList<>();
-    tempList.add(metadata);
+    if(metadata != null)
+      tempList.add(metadata);
     setMetadata(tempList);
     setDescriptionlevel("item");
     setId(UUID.randomUUID().toString());
+    contentType = EARKEnums.ContentType.mixed;
 
     // set paths as mapped
     for (SipRepresentation sr : representations) {
@@ -45,6 +49,14 @@ public class SipPreview extends DescriptionObject implements Observer {
         PathCollection.addPath(tn.getPath().toString(), SourceTreeItemState.MAPPED);
       }
     }
+  }
+
+  public void setContentType(EARKEnums.ContentType contentType) {
+    this.contentType = contentType;
+  }
+
+  public EARKEnums.ContentType getContentType() {
+    return contentType;
   }
 
   /**

@@ -1,22 +1,21 @@
 package org.roda.rodain.source.ui;
 
-import java.nio.file.Path;
-
 import javafx.scene.control.TreeItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.testing.Utils;
 import org.testfx.framework.junit.ApplicationTest;
+
+import java.nio.file.Path;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -31,6 +30,8 @@ public class IgnoreTest extends ApplicationTest {
     RodaIn main = new RodaIn();
     main.start(stage);
 
+    sleep(3000);
+
     fileExplorer = RodaIn.getFileExplorer();
     fileExplorer.setFileExplorerRoot(testDir);
   }
@@ -42,7 +43,12 @@ public class IgnoreTest extends ApplicationTest {
 
   @Test
   public void ignore() {
-    sleep(1000);
+    sleep(7000);
+    try {
+      push(KeyCode.ENTER);
+      push(KeyCode.ENTER);
+    } catch (Exception e) {
+    }
     TreeItem<String> root = fileExplorer.getTreeView().getRoot().getChildren().get(0);
 
     clickOn("dir4");
@@ -62,20 +68,25 @@ public class IgnoreTest extends ApplicationTest {
     doubleClickOn(dir4.getValue());
     SourceTreeDirectory dirA = (SourceTreeDirectory) dir4.getChildren().get(0);
     assert dirA.getState() == SourceTreeItemState.IGNORED;
+    sleep(1000);
 
-    doubleClickOn("dirA");
+    if (!dirA.isExpanded())
+      doubleClickOn("dirA");
     sleep(1000);
     SourceTreeDirectory dirAA = (SourceTreeDirectory) dirA.getChildren().get(0);
     dirAA.removeIgnore();
     sleep(1000);
     assert dirAA.getState() == SourceTreeItemState.NORMAL;
+    if (dirAA.isExpanded())
+      doubleClickOn("dirAA");
 
     SourceTreeDirectory dirAB = (SourceTreeDirectory) dirA.getChildren().get(1);
     dirAB.removeIgnore();
     sleep(1000);
     assert dirAB.getState() == SourceTreeItemState.NORMAL;
 
-    doubleClickOn("dirAB");
+    if (!dirAB.isExpanded())
+      doubleClickOn("dirAB");
     sleep(1000);
     SourceTreeFile file1AB = (SourceTreeFile) dirAB.getChildren().get(0);
     assert file1AB.getState() == SourceTreeItemState.NORMAL;
@@ -89,7 +100,7 @@ public class IgnoreTest extends ApplicationTest {
     assert fileA.getState() == SourceTreeItemState.IGNORED;
 
     clickOn("dir4");
-    clickOn(AppProperties.getLocalizedString("ignore"));
+    clickOn(I18n.t("ignore"));
     assert dir4.getState() == SourceTreeItemState.IGNORED;
     assert fileA.getState() == SourceTreeItemState.IGNORED;
     assert dirA.getState() == SourceTreeItemState.IGNORED;

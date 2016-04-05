@@ -17,7 +17,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
-import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.RuleTypes;
@@ -50,7 +50,7 @@ public class RuleCell extends HBox implements Observer {
   private boolean expanded = false, expanding = false;
   private int expandedHeight = 300, collapsedHeight = 115;
 
-  private String titleFormat = AppProperties.getLocalizedString("RuleCell.createdItem");
+  private String titleFormat = I18n.t("RuleCell.createdItem");
   private Label lCreated;
 
   /**
@@ -95,7 +95,7 @@ public class RuleCell extends HBox implements Observer {
     Label id = new Label("#" + rule.getId());
     id.getStyleClass().add("title");
 
-    Button remove = new Button(AppProperties.getLocalizedString("remove"));
+    Button remove = new Button(I18n.t("remove"));
     remove.setId("removeRule" + rule.getId());
     remove.setAlignment(Pos.CENTER);
 
@@ -126,16 +126,16 @@ public class RuleCell extends HBox implements Observer {
     String type;
     switch (ruleType) {
       case SINGLE_SIP:
-        type = AppProperties.getLocalizedString("association.singleSip.title");
+        type = I18n.t("association.singleSip.title");
         break;
       case SIP_PER_FILE:
-        type = AppProperties.getLocalizedString("association.sipPerFile.title");
+        type = I18n.t("association.sipPerFile.title");
         break;
       case SIP_WITH_STRUCTURE:
-        type = AppProperties.getLocalizedString("association.sipWithStructure.title");
+        type = I18n.t("association.sipWithStructure.title");
         break;
       case SIP_PER_SELECTION:
-        type = AppProperties.getLocalizedString("association.sipSelection.title");
+        type = I18n.t("association.sipSelection.title");
         break;
       default:
         type = "Unknown association type";
@@ -159,7 +159,7 @@ public class RuleCell extends HBox implements Observer {
     HBox contentSummary = buildContentSummary(dirs, fil);
 
     toggleBox = new HBox();
-    toggleLink = new Hyperlink(AppProperties.getLocalizedString("expand"));
+    toggleLink = new Hyperlink(I18n.t("expand"));
     toggleLink.setTextAlignment(TextAlignment.CENTER);
     toggleBox.getChildren().add(toggleLink);
     HBox.setHgrow(toggleBox, Priority.ALWAYS);
@@ -216,7 +216,7 @@ public class RuleCell extends HBox implements Observer {
       public void handle(ActionEvent event) {
         expanded = true;
         expanding = false;
-        toggleLink.setText(AppProperties.getLocalizedString("collapse"));
+        toggleLink.setText(I18n.t("collapse"));
       }
     });
     animation.play();
@@ -234,7 +234,7 @@ public class RuleCell extends HBox implements Observer {
         expanded = false;
         expanding = false;
         sourceBoxWrapper.getChildren().remove(sourceBox);
-        toggleLink.setText(AppProperties.getLocalizedString("expand"));
+        toggleLink.setText(I18n.t("expand"));
       }
     });
     animation.play();
@@ -246,9 +246,9 @@ public class RuleCell extends HBox implements Observer {
     if (!dirs.isEmpty()) {
       sb.append(dirs.size());
       if (dirs.size() == 1)
-        sb.append(AppProperties.getLocalizedString("directory"));
+        sb.append(I18n.t("directory"));
       else
-        sb.append(AppProperties.getLocalizedString("directories"));
+        sb.append(I18n.t("directories"));
       Label dirsLabel = new Label(sb.toString());
       dirsLabel.setGraphic(new ImageView(SourceTreeDirectory.folderCollapseImage));
       result.getChildren().add(dirsLabel);
@@ -257,9 +257,9 @@ public class RuleCell extends HBox implements Observer {
     if (!fil.isEmpty()) {
       sb.append(fil.size());
       if (fil.size() == 1)
-        sb.append(AppProperties.getLocalizedString("file"));
+        sb.append(I18n.t("file"));
       else
-        sb.append(AppProperties.getLocalizedString("files"));
+        sb.append(I18n.t("files"));
       Label filLabel = new Label(sb.toString());
       filLabel.setGraphic(new ImageView(SourceTreeFile.fileImage));
       result.getChildren().add(filLabel);

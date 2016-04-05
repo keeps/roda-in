@@ -5,10 +5,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
 
-import org.roda.rodain.source.ui.items.SourceTreeDirectory;
-import org.roda.rodain.source.ui.items.SourceTreeFile;
-import org.roda.rodain.source.ui.items.SourceTreeLoadMore;
-import org.roda.rodain.source.ui.items.SourceTreeLoading;
+import org.roda.rodain.source.ui.items.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -27,6 +24,7 @@ public class SourceClickedEventHandler implements EventHandler<MouseEvent> {
   public void handle(MouseEvent mouseEvent) {
     if (mouseEvent.getClickCount() == 1) {
       fep.rootSelected(false);
+      fep.selectedIsIgnored(false);
       TreeItem<String> item = treeView.getSelectionModel().getSelectedItem();
       if (item instanceof SourceTreeLoadMore) {
         final SourceTreeDirectory parent = (SourceTreeDirectory) item.getParent();
@@ -41,9 +39,14 @@ public class SourceClickedEventHandler implements EventHandler<MouseEvent> {
         if (directory.getParentDir() == null) {
           fep.rootSelected(true);
         }
+        if(directory.getState() == SourceTreeItemState.IGNORED){
+          fep.selectedIsIgnored(true);
+        }
       } else if (item instanceof SourceTreeFile) {
-        SourceTreeFile directory = (SourceTreeFile) item;
-        fep.updateAttributes(directory.getPath());
+        SourceTreeFile file = (SourceTreeFile) item;
+        fep.updateAttributes(file.getPath());
+        if(file.getState() == SourceTreeItemState.IGNORED)
+          fep.selectedIsIgnored(true);
       }
     }
   }

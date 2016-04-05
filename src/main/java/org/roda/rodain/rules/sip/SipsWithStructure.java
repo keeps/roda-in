@@ -208,7 +208,7 @@ public class SipsWithStructure extends SipPreviewCreator {
       PathCollection.addPath(pseudoDescriptionObject.getPath().toString(), SourceTreeItemState.MAPPED);
     });
     setChanged();
-    notifyObservers();
+    notifyObservers("Finished");
   }
 
   private void createSip(TreeNode node) {

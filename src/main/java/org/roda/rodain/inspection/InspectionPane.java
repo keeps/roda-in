@@ -1,10 +1,11 @@
 package org.roda.rodain.inspection;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -16,15 +17,17 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.StringConverter;
-import javafx.util.converter.LocalDateStringConverter;
+import javafx.stage.StageStyle;
 import org.apache.commons.lang.StringUtils;
 import org.fxmisc.richtext.CodeArea;
 import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.inspection.documentation.DocumentationCreator;
 import org.roda.rodain.inspection.documentation.SipDocumentationTreeView;
+import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.filters.ContentFilter;
@@ -38,8 +41,10 @@ import org.roda.rodain.schema.ui.SipPreviewNode;
 import org.roda.rodain.source.ui.SourceTreeCell;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
+import org.roda.rodain.utils.ModalStage;
 import org.roda.rodain.utils.UIPair;
 import org.roda.rodain.utils.Utils;
+import org.roda_project.commons_ip.utils.EARKEnums;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -49,8 +54,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -59,26 +62,29 @@ import java.util.*;
  */
 public class InspectionPane extends BorderPane {
   private static final Logger log = LoggerFactory.getLogger(InspectionPane.class.getName());
-  private VBox topBox;
+  private HBox topBox;
   private VBox center;
-  private HBox topSpace;
+  private HBox topSubtitle;
+  private Stage stage;
 
   private SipPreviewNode currentSIPNode;
   private SchemaNode currentSchema;
   private DescriptionObject currentDescOb;
-  private ImageView topIcon;
   private Label paneTitle;
 
   private VBox centerHelp;
   // Metadata
-  private VBox metadata;
+  private VBox metadata, metadataHelpBox;
   private CodeArea metaText;
   private GridPane metadataGrid;
   private ScrollPane metadataFormWrapper;
   private ToggleButton toggleForm;
   private HBox metadataLoadingPane, metadataTopBox;
-  private TextField titleTextField;
-  private Button validationButton;
+  private Button validationButton, addMetadata, removeMetadata;
+  private ComboBox<UIPair> metadataCombo;
+  private Set<Control> topButtons;
+  private Separator metadataTopSeparator;
+  private boolean textBoxCancelledChange = false;
   // SIP Content
   private BorderPane content;
   private VBox dataBox, documentationHelp;
@@ -87,8 +93,7 @@ public class InspectionPane extends BorderPane {
   private SipContentDirectory sipRoot, docsRoot;
   private HBox loadingPane, contentBottom, docsBottom;
   private static Image loadingGif;
-  private Task<Void> contentTask, docsTask;
-  private Task<Boolean> metadataTask;
+  private Task<Void> contentTask, docsTask, metadataTask;
   private Button ignore, removeRepresentation;
   private ToggleButton toggleDocumentation;
   // Rules
@@ -103,6 +108,10 @@ public class InspectionPane extends BorderPane {
    *          The primary stage of the application
    */
   public InspectionPane(Stage stage) {
+    this.stage = stage;
+
+    setPadding(new Insets(10, 10, 0, 10));
+
     createCenterHelp();
     createDocumentationHelp();
     createTop();
@@ -112,7 +121,7 @@ public class InspectionPane extends BorderPane {
     createLoadingPanes();
 
     center = new VBox(10);
-    center.setPadding(new Insets(0, 10, 10, 10));
+    center.setPadding(new Insets(10, 0, 10, 0));
 
     setCenter(centerHelp);
 
@@ -121,14 +130,16 @@ public class InspectionPane extends BorderPane {
   }
 
   private void createTop() {
-    Label top = new Label(" ");
-    topBox = new VBox();
-    topBox.getChildren().add(top);
-    topBox.setPadding(new Insets(10, 0, 10, 0));
-    topBox.setAlignment(Pos.CENTER_LEFT);
+    Label title = new Label(I18n.t("InspectionPane.title").toUpperCase());
+    title.getStyleClass().add("title");
+    topSubtitle = new HBox(1);
+    HBox.setHgrow(topSubtitle, Priority.ALWAYS);
 
-    topSpace = new HBox();
-    HBox.setHgrow(topSpace, Priority.ALWAYS);
+    topBox = new HBox(15);
+    topBox.getStyleClass().add("title-box");
+    topBox.getChildren().addAll(title, topSubtitle);
+    topBox.setPadding(new Insets(15, 15, 15, 15));
+    topBox.setAlignment(Pos.CENTER_LEFT);
   }
 
   private void createMetadata() {
@@ -149,104 +160,76 @@ public class InspectionPane extends BorderPane {
     metadataFormWrapper.setContent(metadataGrid);
     metadataFormWrapper.setFitToWidth(true);
 
-    metadataTopBox = new HBox();
-    metadataTopBox.getStyleClass().add("hbox");
-    metadataTopBox.setPadding(new Insets(5, 10, 5, 10));
-    metadataTopBox.setAlignment(Pos.CENTER_LEFT);
+    createMetadataHelp();
+    createMetadataTop();
+    createMetadataTextBox();
+    metadata.getChildren().addAll(metadataTopBox, metaText);
+  }
 
-    Label titleLabel = new Label(AppProperties.getLocalizedString("InspectionPane.metadata"));
-    HBox space = new HBox();
-    HBox.setHgrow(space, Priority.ALWAYS);
+  private void createMetadataHelp() {
+    metadataHelpBox = new VBox();
+    metadataHelpBox.setPadding(new Insets(0, 10, 0, 10));
+    VBox.setVgrow(metadataHelpBox, Priority.ALWAYS);
+    metadataHelpBox.setAlignment(Pos.CENTER);
 
-    toggleForm = new ToggleButton();
-    Image selected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CODE, Color.WHITE);
-    Image unselected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.LIST, Color.WHITE);
-    ImageView toggleImage = new ImageView();
-    toggleForm.setGraphic(toggleImage);
-    toggleImage.imageProperty().bind(Bindings.when(toggleForm.selectedProperty()).then(selected).otherwise(unselected));
+    VBox box = new VBox(40);
+    box.setAlignment(Pos.CENTER);
+    box.setPadding(new Insets(10, 10, 10, 10));
+    box.setMaxWidth(355);
+    box.setMaxHeight(200);
+    box.setMinHeight(200);
 
-    validationButton = new Button();
-    validationButton
-      .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CHECK, Color.WHITE)));
-    validationButton.setOnAction(event -> {
-      if (metadata.getChildren().contains(metadataFormWrapper)) {
-        saveMetadata();
-      }
-      StringBuilder message = new StringBuilder();
-      ValidationPopOver popOver = new ValidationPopOver();
-      popOver.show(validationButton);
+    HBox titleBox = new HBox();
+    titleBox.setAlignment(Pos.CENTER);
+    Label title = new Label(I18n.t("InspectionPane.addMetadata"));
+    title.getStyleClass().add("helpTitle");
+    title.setTextAlignment(TextAlignment.CENTER);
+    titleBox.getChildren().add(title);
 
-      Task<Boolean> validationTask = new Task<Boolean>() {
-        @Override
-        protected Boolean call() throws Exception {
-          boolean result = false;
-          try {
-            if (currentDescOb != null) {
-              List<DescObjMetadata> metadataList = currentDescOb.getMetadata();
-              if (metadataList != null && !metadataList.isEmpty()) {
-                DescObjMetadata metadata = metadataList.get(0);
-                if (Utils.validateSchema(metaText.getText(), metadata.getSchema())) {
-                  result = true;
-                }
-              }
-            }
-          } catch (SAXException e) {
-            log.info("Error validating schema", e);
-            message.append(e.getMessage());
-          }
-          return result;
-        }
-      };
-      validationTask.setOnSucceeded(Void -> {
-        if (validationTask.getValue()) {
-          popOver.updateContent(true, message.toString());
+    Button addMetadata = new Button(I18n.t("add"));
+    addMetadata.setMinHeight(65);
+    addMetadata.setMinWidth(130);
+    addMetadata.setMaxWidth(130);
+    addMetadata.setOnAction(event -> addMetadataAction());
+    addMetadata.getStyleClass().add("helpButton");
 
-          if (currentDescOb != null) {
-            List<DescObjMetadata> metadataList = currentDescOb.getMetadata();
-            if (metadataList != null && !metadataList.isEmpty()) {
-              DescObjMetadata metadataObj = metadataList.get(0);
-              if (metadataObj.getTemplateType() != null && "ead".equals(metadataObj.getTemplateType())) {
-                toggleForm.setVisible(true);
-                if (metadata.getChildren().contains(metaText)) {
-                  toggleForm.setSelected(false);
-                } else
-                  toggleForm.setSelected(true);
-              }
-            }
-          }
-        } else {
-          popOver.updateContent(false, message.toString());
-          toggleForm.setVisible(false);
-        }
-      });
-      new Thread(validationTask).start();
+    box.getChildren().addAll(titleBox, addMetadata);
+    metadataHelpBox.getChildren().add(box);
+  }
 
-    });
-
-    toggleForm.selectedProperty().addListener((observable, oldValue, newValue) -> {
-      saveMetadata();
-      // newValue == true means that the form will be displayed
-      if (newValue) {
-        metadata.getChildren().remove(metaText);
-        metadataGrid.getChildren().clear();
-        updateForm();
-        if (!metadata.getChildren().contains(metadataFormWrapper)) {
-          metadata.getChildren().add(metadataFormWrapper);
-        }
-      } else { // from the form to the metadata text
-        metadata.getChildren().remove(metadataFormWrapper);
-        if (!metadata.getChildren().contains(metaText))
-          metadata.getChildren().add(metaText);
-      }
-    });
-
-    metadataTopBox.getChildren().addAll(titleLabel, space, toggleForm, validationButton);
-
+  private void createMetadataTextBox() {
     metaText = new CodeArea();
     VBox.setVgrow(metaText, Priority.ALWAYS);
-    metadata.getChildren().addAll(metadataTopBox, metaText);
-    metaText.textProperty().addListener(
-      (observable, oldValue, newValue) -> metaText.setStyleSpans(0, XMLEditor.computeHighlighting(newValue)));
+    metaText.textProperty().addListener((observable, oldValue, newValue) -> {
+      metaText.setStyleSpans(0, XMLEditor.computeHighlighting(newValue));
+      UIPair selectedPair = metadataCombo.getSelectionModel().getSelectedItem();
+      DescObjMetadata selected = (DescObjMetadata) selectedPair.getKey();
+      if (oldValue != null && !"".equals(oldValue) && topButtons.contains(toggleForm) && !textBoxCancelledChange) {
+        String changeContent = I18n.t("InspectionPane.changeTemplate.content");
+        Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
+        dlg.initStyle(StageStyle.UNDECORATED);
+        dlg.setHeaderText(I18n.t("InspectionPane.changeTemplate.header"));
+        dlg.setTitle(I18n.t("InspectionPane.changeTemplate.title"));
+        dlg.setContentText(changeContent);
+        dlg.initModality(Modality.APPLICATION_MODAL);
+        dlg.initOwner(stage);
+        dlg.showAndWait();
+
+        if (dlg.getResult().getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+          selected.setContentDecoded(newValue);
+          selected.setValues(null);
+          selected.setType(MetadataTypes.NEW_FILE);
+          topButtons.remove(toggleForm);
+          updateMetadataTop();
+
+        } else {
+          textBoxCancelledChange = true;
+          updateTextArea(oldValue);
+        }
+      } else {
+        textBoxCancelledChange = false;
+      }
+    });
     // set the tab size to 2 spaces
     metaText.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
       if (event.getCode() == KeyCode.TAB) {
@@ -264,20 +247,196 @@ public class InspectionPane extends BorderPane {
      */
     metaText.focusedProperty().addListener((observable, oldValue, newValue) -> {
       if (!newValue) { // lost focus, so update
-        saveMetadata();
+        textBoxCancelledChange = true;
+        saveMetadataPrivate();
       }
     });
   }
 
-  private void updateForm() {
-    Map<String, MetadataValue> metadataValues;
-    try {
-      metadataValues = getMetadataValues();
-    } catch (SAXException e) {
-      log.info("Error validating metadata with the EAD2002 schema", e);
-      noForm();
+  private void createMetadataTop() {
+    metadataTopBox = new HBox();
+    metadataTopBox.getStyleClass().add("hbox");
+    metadataTopBox.setPadding(new Insets(5, 15, 5, 15));
+    metadataTopBox.setAlignment(Pos.CENTER_LEFT);
+
+    Label titleLabel = new Label(I18n.t("InspectionPane.metadata").toUpperCase());
+    titleLabel.getStyleClass().add("title");
+    HBox space = new HBox();
+    HBox.setHgrow(space, Priority.ALWAYS);
+
+    toggleForm = new ToggleButton();
+    toggleForm.setTooltip(new Tooltip(I18n.t("InspectionPane.textContent")));
+    Platform.runLater(() -> {
+      Image selected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CODE, Color.WHITE);
+      Image unselected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.LIST, Color.WHITE);
+      ImageView toggleImage = new ImageView();
+      toggleForm.setGraphic(toggleImage);
+      toggleImage.imageProperty()
+        .bind(Bindings.when(toggleForm.selectedProperty()).then(selected).otherwise(unselected));
+    });
+    toggleForm.selectedProperty().addListener((observable, oldValue, newValue) -> {
+      textBoxCancelledChange = true;
+      saveMetadataPrivate();
+      // newValue == true means that the form will be displayed
+      if (newValue) {
+        toggleForm.setTooltip(new Tooltip(I18n.t("InspectionPane.textContent")));
+        textBoxCancelledChange = false;
+        metadata.getChildren().remove(metaText);
+        metadataGrid.getChildren().clear();
+        updateForm();
+        if (!metadata.getChildren().contains(metadataFormWrapper)) {
+          metadata.getChildren().add(metadataFormWrapper);
+        }
+      } else { // from the form to the metadata text
+        toggleForm.setTooltip(new Tooltip(I18n.t("InspectionPane.form")));
+        metadata.getChildren().remove(metadataFormWrapper);
+        if (!metadata.getChildren().contains(metaText))
+          metadata.getChildren().add(metaText);
+      }
+    });
+
+    validationButton = new Button();
+    validationButton.setTooltip(new Tooltip(I18n.t("InspectionPane.validate")));
+    Platform.runLater(() -> validationButton
+      .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CHECK, Color.WHITE))));
+
+    validationButton.setOnAction(event -> validationAction());
+
+    addMetadata = new Button();
+    addMetadata.setTooltip(new Tooltip(I18n.t("InspectionPane.addMetadata")));
+    Platform.runLater(() -> addMetadata
+      .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.PLUS, Color.WHITE))));
+    addMetadata.setOnAction(event -> addMetadataAction());
+
+    removeMetadata = new Button();
+    removeMetadata.setTooltip(new Tooltip(I18n.t("InspectionPane.removeMetadata")));
+    Platform.runLater(() -> removeMetadata
+      .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.MINUS, Color.WHITE))));
+    removeMetadata.setOnAction(event -> removeMetadataAction());
+
+    metadataTopSeparator = new Separator(Orientation.VERTICAL);
+
+    topButtons = new HashSet<>();
+    topButtons.add(addMetadata);
+    topButtons.add(toggleForm);
+    topButtons.add(validationButton);
+
+    metadataCombo = new ComboBox<>();
+    metadataCombo.valueProperty().addListener((observable, oldValue, newValue) -> {
+      // only display the comboBox if there's more than one metadata object
+      if (metadataCombo.getItems().size() > 1) {
+        topButtons.add(metadataCombo);
+        topButtons.add(removeMetadata);
+      } else {
+        topButtons.remove(metadataCombo);
+        topButtons.remove(removeMetadata);
+      }
+      updateMetadataTop();
+    });
+    metadataCombo.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+      if (newValue != null) {
+        if (oldValue != null)
+          saveMetadataPrivate((DescObjMetadata) oldValue.getKey());
+        // we need this to prevent the alert from being shown
+        textBoxCancelledChange = true;
+        updateSelectedMetadata((DescObjMetadata) newValue.getKey());
+      } else {
+        showMetadataHelp();
+      }
+    });
+
+    metadataTopBox.getChildren().addAll(titleLabel, space);
+    updateMetadataTop();
+  }
+
+  private void updateMetadataTop() {
+    metadataTopBox.getChildren().removeAll(addMetadata, removeMetadata, toggleForm, validationButton, metadataCombo);
+    metadataTopBox.getChildren().remove(metadataTopSeparator);
+
+    if (topButtons.contains(toggleForm))
+      metadataTopBox.getChildren().add(toggleForm);
+
+    if (topButtons.contains(validationButton))
+      metadataTopBox.getChildren().add(validationButton);
+
+    if (topButtons.contains(toggleForm) || topButtons.contains(validationButton))
+      metadataTopBox.getChildren().add(metadataTopSeparator);
+
+    if (topButtons.contains(addMetadata))
+      metadataTopBox.getChildren().add(addMetadata);
+
+    if (topButtons.contains(removeMetadata))
+      metadataTopBox.getChildren().add(removeMetadata);
+
+    if (topButtons.contains(metadataCombo))
+      metadataTopBox.getChildren().add(metadataCombo);
+  }
+
+  private void removeMetadataAction() {
+    if (metadataCombo.getSelectionModel().getSelectedIndex() == -1)
       return;
+
+    String remContent = I18n.t("InspectionPane.removeMetadata.content");
+    Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
+    dlg.initStyle(StageStyle.UNDECORATED);
+    dlg.setHeaderText(I18n.t("InspectionPane.removeMetadata.header"));
+    dlg.setTitle(I18n.t("InspectionPane.removeMetadata.title"));
+    dlg.setContentText(remContent);
+    dlg.initModality(Modality.APPLICATION_MODAL);
+    dlg.initOwner(stage);
+    dlg.showAndWait();
+
+    if (dlg.getResult().getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+      DescObjMetadata toRemove = (DescObjMetadata) metadataCombo.getSelectionModel().getSelectedItem().getKey();
+      currentDescOb.getMetadata().remove(toRemove);
+      metadataCombo.getItems().remove(metadataCombo.getSelectionModel().getSelectedItem());
+      metadataCombo.getSelectionModel().selectFirst();
+      RodaIn.getSchemePane().setModifiedPlan(true);
     }
+  }
+
+  private void addMetadataAction() {
+    ModalStage modalStage = new ModalStage(stage);
+    AddMetadataPane addMetadataPane = new AddMetadataPane(modalStage, currentDescOb);
+    modalStage.setRoot(addMetadataPane);
+  }
+
+  private void validationAction() {
+    if (metadata.getChildren().contains(metadataFormWrapper)) {
+      textBoxCancelledChange = true;
+      saveMetadataPrivate();
+    }
+    StringBuilder message = new StringBuilder();
+    ValidationPopOver popOver = new ValidationPopOver();
+    popOver.show(validationButton);
+
+    Task<Boolean> validationTask = new Task<Boolean>() {
+      @Override
+      protected Boolean call() throws Exception {
+        boolean result = false;
+        try {
+          if (currentDescOb != null) {
+            UIPair selectedInCombo = metadataCombo.getSelectionModel().getSelectedItem();
+            if (selectedInCombo != null) {
+              DescObjMetadata dom = (DescObjMetadata) selectedInCombo.getKey();
+              if (Utils.validateSchema(metaText.getText(), dom.getSchema())) {
+                result = true;
+              }
+            }
+          }
+        } catch (SAXException e) {
+          log.info("Error validating schema", e);
+          message.append(e.getMessage());
+        }
+        return result;
+      }
+    };
+    validationTask.setOnSucceeded(Void -> popOver.updateContent(validationTask.getValue(), message.toString()));
+    new Thread(validationTask).start();
+  }
+
+  private void updateForm() {
+    Map<String, MetadataValue> metadataValues = getMetadataValues();
     if (metadataValues == null || metadataValues.isEmpty()) {
       noForm();
       return;
@@ -287,94 +446,26 @@ public class InspectionPane extends BorderPane {
       Label label = new Label(metadataValue.getTitle());
       label.getStyleClass().add("formLabel");
 
-      Control control;
-      switch (metadataValue.getFieldType()) {
-        case "date":
-          String pattern = "yyyy-MM-dd";
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
-          LocalDateStringConverter ldsc = new LocalDateStringConverter(formatter, null);
-
-          DatePicker datePicker = new DatePicker(ldsc.fromString(metadataValue.getValue()));
-          datePicker.setMaxWidth(Double.MAX_VALUE);
-          datePicker.setConverter(new StringConverter<LocalDate>() {
-            private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern);
-
-            @Override
-            public String toString(LocalDate localDate) {
-              if (localDate == null)
-                return "";
-              return dateTimeFormatter.format(localDate);
-            }
-
-            @Override
-            public LocalDate fromString(String dateString) {
-              if (dateString == null || dateString.trim().isEmpty())
-                return null;
-              return LocalDate.parse(dateString, dateTimeFormatter);
-            }
-          });
-          datePicker.valueProperty()
-            .addListener((observable1, oldValue1, newValue1) -> metadataValue.setValue(ldsc.toString(newValue1)));
-          control = datePicker;
-          break;
-        case "combo":
-          ComboBox<UIPair> itemTypes = new ComboBox<>();
-          itemTypes.setMaxWidth(Double.MAX_VALUE);
-          control = itemTypes;
-          itemTypes.setId("itemLevels");
-          ObservableList<UIPair> itemList = FXCollections.observableArrayList(metadataValue.getFieldOptions());
-          itemTypes.setItems(itemList);
-          // Select current value
-          for (UIPair pair : itemTypes.getItems()) {
-            if (metadataValue.getValue().equals(pair.getKey())) {
-              itemTypes.getSelectionModel().select(pair);
-              break;
-            }
+      TextField textField = new TextField(metadataValue.getValue());
+      HBox.setHgrow(textField, Priority.ALWAYS);
+      textField.setUserData(metadataValue);
+      textField.textProperty().addListener((observable2, oldValue2, newValue2) -> {
+        metadataValue.setValue(newValue2);
+      });
+      if (metadataValue.getId().equals("title")) {
+        textField.setId("descObjTitle");
+        paneTitle.textProperty().bind(textField.textProperty());
+        if (currentSIPNode != null) {
+          textField.textProperty().bindBidirectional(currentSIPNode.valueProperty());
+        } else {
+          if (currentSchema != null) {
+            textField.textProperty().bindBidirectional(currentSchema.valueProperty());
           }
-          itemTypes.valueProperty().addListener((observable1, oldValue1, newValue1) -> {
-            metadataValue.setValue(newValue1.getKey().toString());
-            if (metadataValue.getId().equals("level")) {
-              if (currentSchema != null) {
-                currentSchema.updateDescLevel(newValue1.getKey().toString());
-                topIcon.setImage(currentSchema.getIconBlack());
-              }
-              if (currentSIPNode != null) {
-                currentSIPNode.setDescriptionLevel(newValue1.getKey().toString());
-                topIcon.setImage(currentSIPNode.getIconBlack());
-              }
-              if (titleTextField != null) {
-                // force update
-                String title = titleTextField.getText();
-                titleTextField.setText("");
-                titleTextField.setText(title);
-              }
-            }
-          });
-          break;
-        default:
-          TextField textField = new TextField(metadataValue.getValue());
-          HBox.setHgrow(textField, Priority.ALWAYS);
-          textField.setUserData(metadataValue);
-          control = textField;
-          textField.textProperty().addListener((observable2, oldValue2, newValue2) -> {
-            metadataValue.setValue(newValue2);
-          });
-          if (metadataValue.getId().equals("title")) {
-            textField.setId("descObjTitle");
-            titleTextField = textField;
-            paneTitle.textProperty().bind(textField.textProperty());
-            if (currentSIPNode != null) {
-              textField.textProperty().bindBidirectional(currentSIPNode.valueProperty());
-            } else {
-              if (currentSchema != null) {
-                textField.textProperty().bindBidirectional(currentSchema.valueProperty());
-              }
-            }
-          }
-          break;
+        }
       }
+
       metadataGrid.add(label, 0, i);
-      metadataGrid.add(control, 1, i);
+      metadataGrid.add(textField, 1, i);
       i++;
     }
   }
@@ -382,59 +473,78 @@ public class InspectionPane extends BorderPane {
   private void noForm() {
     metadata.getChildren().clear();
     metadata.getChildren().addAll(metadataTopBox, metaText);
-    toggleForm.setVisible(false);
+    topButtons.remove(toggleForm);
+    updateMetadataTop();
   }
 
-  private Map<String, MetadataValue> getMetadataValues() throws SAXException {
+  private Map<String, MetadataValue> getMetadataValues() {
     if (currentDescOb != null) {
-      return currentDescOb.getMetadataValues();
-    } else {
-      // error, there is no SIP or SchemaNode selected
-      return null;
+      UIPair selectedPair = metadataCombo.getSelectionModel().getSelectedItem();
+      if (selectedPair != null) {
+        DescObjMetadata dom = (DescObjMetadata) selectedPair.getKey();
+        if (dom != null)
+          return currentDescOb.getMetadataValueMap(dom);
+      }
     }
+    // error, there is no SIP or SchemaNode selected
+    return null;
   }
 
-  /**
-   * Saves the metadata from the text area in the SIP.
-   */
-  public void saveMetadata() {
-    if (metadata.getChildren().contains(metadataFormWrapper)) {
-      if (currentDescOb != null) {
-        currentDescOb.applyMetadataValues();
-        updateTextArea(currentDescOb.getMetadataWithReplaces().get(0).getContentDecoded());
-      }
+  private void saveMetadataPrivate(DescObjMetadata selectedDescObjMetadata) {
+    String oldMetadata = null, newMetadata = null;
+    if (currentDescOb != null) {
+      newMetadata = metaText.getText();
+      oldMetadata = selectedDescObjMetadata.getContentDecoded();
+    }
+    // only update if there's been modifications or there's no old
+    // metadata and the new isn't empty
+    boolean update = false;
+    if (selectedDescObjMetadata.getType() == MetadataTypes.TEMPLATE) {
+      currentDescOb.updatedMetadata(selectedDescObjMetadata);
     } else {
-      String oldMetadata = null, newMetadata = null;
-      if (currentDescOb != null) {
-        newMetadata = metaText.getText();
-        List<DescObjMetadata> metadatas = currentDescOb.getMetadataWithReplaces();
-        if (!metadatas.isEmpty()) {
-          oldMetadata = metadatas.get(0).getContentDecoded();
-        }
-      }
-      // only update if there's been modifications or there's no old
-      // metadata and the new isn't empty
-      boolean update = false;
       if (newMetadata != null) {
         if (oldMetadata == null)
           update = true;
         else if (!oldMetadata.equals(newMetadata))
           update = true;
       }
+    }
 
-      if (update) {
-        if (currentDescOb != null) {
-          List<DescObjMetadata> metadatas = currentDescOb.getMetadataWithReplaces();
-          if (!metadatas.isEmpty()) {
-            metadatas.get(0).setContentDecoded(newMetadata);
-          } else {
-            DescObjMetadata newObjMetadata = new DescObjMetadata();
-            newObjMetadata.setContentEncoding("Base64");
-            newObjMetadata.setContentDecoded(newMetadata);
-            metadatas.add(newObjMetadata);
-          }
-        }
+    if (update) {
+      if (currentDescOb != null) {
+        selectedDescObjMetadata.setContentDecoded(newMetadata);
+      } else {
+        DescObjMetadata newObjMetadata = new DescObjMetadata();
+        newObjMetadata.setContentEncoding("Base64");
+        newObjMetadata.setContentDecoded(newMetadata);
+        currentDescOb.getMetadata().add(newObjMetadata);
       }
+    }
+  }
+
+  public void saveMetadata() {
+    textBoxCancelledChange = true;
+    saveMetadataPrivate();
+  }
+
+  /**
+   * Saves the metadata from the text area in the SIP.
+   */
+  private void saveMetadataPrivate() {
+    if (metadataCombo == null)
+      return;
+    UIPair selectedObject = metadataCombo.getSelectionModel().getSelectedItem();
+    DescObjMetadata selectedDescObjMetadata;
+    if (selectedObject != null && selectedObject.getKey() instanceof DescObjMetadata)
+      selectedDescObjMetadata = (DescObjMetadata) selectedObject.getKey();
+    else
+      return;
+    if (metadata.getChildren().contains(metadataFormWrapper)) {
+      if (currentDescOb != null) {
+        updateTextArea(currentDescOb.getMetadataWithReplaces(selectedDescObjMetadata));
+      }
+    } else {
+      saveMetadataPrivate(selectedDescObjMetadata);
     }
   }
 
@@ -452,7 +562,7 @@ public class InspectionPane extends BorderPane {
 
     HBox titleBox = new HBox();
     titleBox.setAlignment(Pos.CENTER);
-    Label title = new Label(AppProperties.getLocalizedString("InspectionPane.help.title"));
+    Label title = new Label(I18n.t("InspectionPane.help.title"));
     title.getStyleClass().add("helpTitle");
     title.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(title);
@@ -476,7 +586,7 @@ public class InspectionPane extends BorderPane {
 
     HBox titleBox = new HBox();
     titleBox.setAlignment(Pos.CENTER);
-    Label title = new Label(AppProperties.getLocalizedString("InspectionPane.docsHelp.title"));
+    Label title = new Label(I18n.t("InspectionPane.docsHelp.title"));
     title.getStyleClass().add("helpTitle");
     title.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(title);
@@ -488,7 +598,7 @@ public class InspectionPane extends BorderPane {
       Dragboard db = event.getDragboard();
       if (event.getGestureSource() instanceof SourceTreeCell || db.hasFiles()) {
         event.acceptTransferModes(TransferMode.COPY);
-        title.setText(AppProperties.getLocalizedString("InspectionPane.onDropDocs"));
+        title.setText(I18n.t("InspectionPane.onDropDocs"));
       }
       event.consume();
     });
@@ -513,7 +623,7 @@ public class InspectionPane extends BorderPane {
     });
 
     documentationHelp.setOnDragExited(event -> {
-      title.setText(AppProperties.getLocalizedString("InspectionPane.docsHelp.title"));
+      title.setText(I18n.t("InspectionPane.docsHelp.title"));
       event.consume();
     });
   }
@@ -526,10 +636,11 @@ public class InspectionPane extends BorderPane {
 
     HBox top = new HBox();
     top.getStyleClass().add("hbox");
-    top.setPadding(new Insets(5, 10, 5, 10));
+    top.setPadding(new Insets(4, 15, 3, 15));
 
-    Label title = new Label(AppProperties.getLocalizedString("data"));
+    Label title = new Label(I18n.t("data").toUpperCase());
     title.setPadding(new Insets(5, 0, 0, 0));
+    title.getStyleClass().add("title");
     top.getChildren().add(title);
     content.setTop(top);
 
@@ -556,19 +667,23 @@ public class InspectionPane extends BorderPane {
     sipDocumentation = new SipDocumentationTreeView();
 
     toggleDocumentation = new ToggleButton();
-    Image selected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.OPEN_FOLDER, Color.WHITE);
-    Image unselected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.BOOK, Color.WHITE);
-    ImageView toggleImage = new ImageView();
-    toggleDocumentation.setGraphic(toggleImage);
-    toggleImage.imageProperty()
-      .bind(Bindings.when(toggleDocumentation.selectedProperty()).then(selected).otherwise(unselected));
+    toggleDocumentation.setTooltip(new Tooltip(I18n.t("documentation")));
+    Platform.runLater(() -> {
+      Image selected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.OPEN_FOLDER, Color.WHITE);
+      Image unselected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.BOOK, Color.WHITE);
+      ImageView toggleImage = new ImageView();
+      toggleDocumentation.setGraphic(toggleImage);
+      toggleImage.imageProperty()
+        .bind(Bindings.when(toggleDocumentation.selectedProperty()).then(selected).otherwise(unselected));
+    });
     title.textProperty().bind(Bindings.when(toggleDocumentation.selectedProperty())
-      .then(AppProperties.getLocalizedString("documentation")).otherwise(AppProperties.getLocalizedString("data")));
+      .then(I18n.t("documentation").toUpperCase()).otherwise(I18n.t("data").toUpperCase()));
 
     toggleDocumentation.selectedProperty().addListener((observable, oldValue, newValue) -> {
       dataBox.getChildren().clear();
       // newValue == true means that the documentation will be displayed
       if (newValue) {
+        toggleDocumentation.setTooltip(new Tooltip(I18n.t("data")));
         if (docsRoot.getChildren().isEmpty()) {
           dataBox.getChildren().add(documentationHelp);
           content.setBottom(new HBox());
@@ -577,6 +692,7 @@ public class InspectionPane extends BorderPane {
           content.setBottom(docsBottom);
         }
       } else { // from the documentation to the representations
+        toggleDocumentation.setTooltip(new Tooltip(I18n.t("documentation")));
         dataBox.getChildren().add(sipFiles);
         content.setBottom(contentBottom);
       }
@@ -607,7 +723,8 @@ public class InspectionPane extends BorderPane {
     contentBottom.setPadding(new Insets(10, 10, 10, 10));
     contentBottom.setAlignment(Pos.CENTER);
 
-    ignore = new Button(AppProperties.getLocalizedString("ignore"));
+    ignore = new Button(I18n.t("ignore"));
+    ignore.getStyleClass().add("button-secondary");
     ignore.setOnAction(event -> {
       InspectionTreeItem selected = (InspectionTreeItem) sipFiles.getSelectionModel().getSelectedItem();
       if (selected == null)
@@ -623,7 +740,8 @@ public class InspectionPane extends BorderPane {
     });
     ignore.minWidthProperty().bind(this.widthProperty().multiply(0.25));
 
-    Button addRepresentation = new Button(AppProperties.getLocalizedString("InspectionPane.addRepresentation"));
+    Button addRepresentation = new Button(I18n.t("InspectionPane.addRepresentation"));
+    addRepresentation.getStyleClass().add("button-secondary");
     addRepresentation.setOnAction(event -> {
       int repCount = currentSIPNode.getSip().getRepresentations().size() + 1;
       SipRepresentation sipRep = new SipRepresentation("rep" + repCount);
@@ -633,7 +751,8 @@ public class InspectionPane extends BorderPane {
     });
     addRepresentation.minWidthProperty().bind(this.widthProperty().multiply(0.25));
 
-    removeRepresentation = new Button(AppProperties.getLocalizedString("InspectionPane.removeRepresentation"));
+    removeRepresentation = new Button(I18n.t("InspectionPane.removeRepresentation"));
+    removeRepresentation.getStyleClass().add("button-secondary");
     removeRepresentation.setOnAction(event -> {
       InspectionTreeItem selectedRaw = (InspectionTreeItem) sipFiles.getSelectionModel().getSelectedItem();
       if (selectedRaw instanceof SipContentRepresentation) {
@@ -652,10 +771,9 @@ public class InspectionPane extends BorderPane {
     docsBottom.setPadding(new Insets(10, 10, 10, 10));
     docsBottom.setAlignment(Pos.CENTER_LEFT);
 
-    Button remove = new Button(AppProperties.getLocalizedString("remove"));
+    Button remove = new Button(I18n.t("remove"));
     remove.setOnAction(event -> {
-      List<InspectionTreeItem> selectedItems = new ArrayList<InspectionTreeItem>(
-        sipDocumentation.getSelectionModel().getSelectedItems());
+      List<InspectionTreeItem> selectedItems = new ArrayList<>(sipDocumentation.getSelectionModel().getSelectedItems());
       for (InspectionTreeItem selected : selectedItems) {
         Set<Path> paths = new HashSet<>();
         if (selected instanceof SipContentDirectory || selected instanceof SipContentFile) {
@@ -776,9 +894,10 @@ public class InspectionPane extends BorderPane {
 
     HBox top = new HBox();
     top.getStyleClass().add("hbox");
-    top.setPadding(new Insets(10, 10, 10, 10));
+    top.setPadding(new Insets(10, 15, 10, 15));
 
-    Label title = new Label(AppProperties.getLocalizedString("InspectionPane.rules"));
+    Label title = new Label(I18n.t("InspectionPane.rules").toUpperCase());
+    title.getStyleClass().add("title");
     top.getChildren().add(title);
     rules.setTop(top);
     ruleList = new ListView<>();
@@ -793,7 +912,7 @@ public class InspectionPane extends BorderPane {
 
     HBox titleBox = new HBox();
     titleBox.setAlignment(Pos.CENTER);
-    Label emptyText = new Label(AppProperties.getLocalizedString("InspectionPane.help.ruleList"));
+    Label emptyText = new Label(I18n.t("InspectionPane.help.ruleList"));
     emptyText.getStyleClass().add("helpTitle");
     emptyText.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(emptyText);
@@ -801,7 +920,7 @@ public class InspectionPane extends BorderPane {
     emptyRulesPane.setOnDragOver(event -> {
       if (currentSchema != null && event.getGestureSource() instanceof SourceTreeCell) {
         event.acceptTransferModes(TransferMode.COPY);
-        emptyText.setText(AppProperties.getLocalizedString("InspectionPane.onDrop"));
+        emptyText.setText(I18n.t("InspectionPane.onDrop"));
       }
       event.consume();
     });
@@ -812,13 +931,57 @@ public class InspectionPane extends BorderPane {
     });
 
     emptyRulesPane.setOnDragExited(event -> {
-      emptyText.setText(AppProperties.getLocalizedString("InspectionPane.help.ruleList"));
+      emptyText.setText(I18n.t("InspectionPane.help.ruleList"));
       event.consume();
     });
 
     box.getChildren().addAll(titleBox);
     emptyRulesPane.getChildren().add(box);
     rules.setCenter(emptyRulesPane);
+  }
+
+  private void updateSelectedMetadata(DescObjMetadata dom) {
+    metadata.getChildren().removeAll(metadataFormWrapper, metaText, metadataHelpBox);
+    if (!metadata.getChildren().contains(metadataLoadingPane))
+      metadata.getChildren().add(metadataLoadingPane);
+
+    metadataTask = new Task<Void>() {
+      @Override
+      protected Void call() throws Exception {
+        // metadata
+        if (dom != null) {
+          String meta = currentDescOb.getMetadataWithReplaces(dom);
+          updateTextArea(meta);
+        }
+        return null;
+      }
+    };
+
+    Task thisMetadataTask = metadataTask;
+    metadataTask.setOnSucceeded((Void) -> {
+      if (metadataTask != null && metadataTask == thisMetadataTask) {
+        Map<String, MetadataValue> values = currentDescOb.getMetadataValueMap(dom);
+        boolean show = values != null && !values.isEmpty();
+        showMetadataPane(show);
+      }
+
+      String schema = dom.getSchema();
+      if (schema == null || "".equals(schema)) {
+        topButtons.remove(validationButton);
+      } else
+        topButtons.add(validationButton);
+      updateMetadataTop();
+    });
+    metadataTask.setOnFailed(event -> {
+      // recreate the metadata text box and retry
+      createMetadataTextBox();
+      metadata.getChildren().clear();
+      metadata.getChildren().addAll(metadataTopBox, metaText);
+      int selectedIndex = metadataCombo.getSelectionModel().getSelectedIndex();
+      updateMetadataCombo();
+      metadataCombo.getSelectionModel().select(selectedIndex);
+    });
+    new Thread(metadataTask).start();
   }
 
   /**
@@ -851,57 +1014,31 @@ public class InspectionPane extends BorderPane {
     }
 
     /* Top */
-    paneTitle = new Label(sip.getValue());
-    paneTitle.setWrapText(true);
-    paneTitle.getStyleClass().add("title");
-
+    createTopSubtitle(sip.getIconWhite(), sip.getValue());
     HBox top = new HBox(5);
-    top.setPadding(new Insets(0, 10, 10, 10));
-    top.setAlignment(Pos.CENTER_LEFT);
-    topIcon = new ImageView(sip.getIconBlack());
-    top.getChildren().addAll(topIcon, paneTitle);
-    Separator separatorTop = new Separator();
-
-    topBox.setPadding(new Insets(10, 0, 10, 0));
-    topBox.getChildren().clear();
-    topBox.getChildren().addAll(top, separatorTop);
-
-    List<DescObjMetadata> metadataList = currentDescOb.getMetadataWithReplaces();
-    if (metadataList != null && !metadataList.isEmpty()) {
-      String schema = metadataList.get(0).getSchema();
-      if (schema == null || "".equals(schema)) {
-        validationButton.setVisible(false);
-      } else
-        validationButton.setVisible(true);
+    HBox space = new HBox();
+    HBox.setHgrow(space, Priority.ALWAYS);
+    // we need to account for the size of the combo-box, otherwise the top box
+    // is too tall
+    topBox.setPadding(new Insets(11, 15, 11, 15));
+    // Content Type combo box
+    ComboBox<EARKEnums.ContentType> contentType = new ComboBox<>();
+    List<EARKEnums.ContentType> contTypeList = new ArrayList<>();
+    for (EARKEnums.ContentType ct : EARKEnums.ContentType.values()) {
+      contTypeList.add(ct);
     }
+    // sort the list as strings
+    Collections.sort(contTypeList, (o1, o2) -> o1.toString().compareTo(o2.toString()));
+    contentType.setItems(FXCollections.observableList(contTypeList));
+    contentType.getSelectionModel().select(sip.getSip().getContentType());
+    contentType.valueProperty().addListener((obs, old, newValue) -> sip.getSip().setContentType(newValue));
+    contentType.setMinWidth(85);
 
-    metadata.getChildren().clear();
-    metadata.getChildren().addAll(metadataTopBox, metadataLoadingPane);
-    metadataTask = new Task<Boolean>() {
-      @Override
-      protected Boolean call() throws Exception {
-        // metadata
-        boolean result = false;
-        List<DescObjMetadata> metadataList = currentDescOb.getMetadataWithReplaces();
-        if (metadataList != null && !metadataList.isEmpty()) {
-          String meta = metadataList.get(0).getContentDecoded();
-          updateTextArea(meta);
-          try {
-            result = Utils.isEAD(metaText.getText());
-          } catch (SAXException e) {
-            log.info("Error validating metadata with the EAD2002 schema", e);
-          }
-        }
-        return result;
-      }
-    };
+    top.getChildren().addAll(space, contentType);
 
-    Task thisMetadataTask = metadataTask;
-    metadataTask.setOnSucceeded((Void) -> {
-      if (metadataTask != null && metadataTask == thisMetadataTask)
-        showMetadataPane(metadataTask.getValue());
-    });
-    new Thread(metadataTask).start();
+    topSubtitle.getChildren().addAll(space, top);
+
+    updateMetadataCombo();
 
     /* Center */
     center.getChildren().clear();
@@ -950,68 +1087,55 @@ public class InspectionPane extends BorderPane {
     }
 
     /* top */
-    // title
-    paneTitle = new Label(node.getValue());
-    paneTitle.setWrapText(true);
-    paneTitle.getStyleClass().add("title");
-
-    HBox top = new HBox(5);
-    top.setPadding(new Insets(5, 10, 10, 10));
-    top.setAlignment(Pos.CENTER_LEFT);
-    topIcon = new ImageView(node.getIconBlack());
-    top.getChildren().addAll(topIcon, paneTitle);
-
-    Separator separatorTop = new Separator();
-    topBox.setPadding(new Insets(5, 0, 5, 0));
-    topBox.getChildren().clear();
-    topBox.getChildren().addAll(top, separatorTop);
+    topBox.setPadding(new Insets(15, 15, 15, 15));
+    createTopSubtitle(node.getIconWhite(), node.getValue());
 
     /* center */
     center.getChildren().clear();
     metadata.getChildren().clear();
     metadata.getChildren().addAll(metadataTopBox, metadataLoadingPane);
 
-    List<DescObjMetadata> metadataList = currentDescOb.getMetadataWithReplaces();
-    if (metadataList != null && !metadataList.isEmpty()) {
-      String schema = metadataList.get(0).getSchema();
-      if (schema == null || "".equals(schema)) {
-        validationButton.setVisible(false);
-      } else
-        validationButton.setVisible(true);
-    }
-
-    metadataTask = new Task<Boolean>() {
-      @Override
-      protected Boolean call() throws Exception {
-        // metadata
-        List<DescObjMetadata> metadatas = currentDescOb.getMetadataWithReplaces();
-        if (!metadatas.isEmpty()) {
-          // For now we only get the first metadata object
-          updateTextArea(metadatas.get(0).getContentDecoded());
-        } else
-          metaText.clear();
-        boolean result = false;
-        try {
-          result = Utils.isEAD(metaText.getText());
-        } catch (SAXException e) {
-          log.info("Error validating metadata with the EAD2002 schema", e);
-        }
-        return result;
-      }
-    };
-    Task thisMetadataTask = metadataTask;
-    metadataTask.setOnSucceeded((Void) -> {
-      if (metadataTask != null && metadataTask == thisMetadataTask) {
-        showMetadataPane(metadataTask.getValue());
-      }
-    });
-    new Thread(metadataTask).start();
+    updateMetadataCombo();
 
     // rules
     updateRuleList();
 
     center.getChildren().addAll(metadata, rules);
     setCenter(center);
+  }
+
+  private void createTopSubtitle(Image icon, String text) {
+    ImageView iconView = new ImageView(icon);
+    paneTitle = new Label(text);
+    paneTitle.setWrapText(true);
+    paneTitle.getStyleClass().add("top-subtitle");
+    topSubtitle.setAlignment(Pos.CENTER_LEFT);
+    topSubtitle.getChildren().clear();
+    topSubtitle.getChildren().addAll(iconView, paneTitle);
+  }
+
+  private void updateMetadataCombo() {
+    metadataCombo.getSelectionModel().clearSelection();
+    metadataCombo.getItems().clear();
+    List<DescObjMetadata> metadataList = currentDescOb.getMetadata();
+    List<UIPair> comboList = new ArrayList<>();
+    for (DescObjMetadata dom : metadataList) {
+      comboList.add(new UIPair(dom, dom.getId()));
+    }
+    if (comboList.isEmpty()) {
+      showMetadataHelp();
+    } else {
+      metadataCombo.getItems().addAll(comboList);
+      metadataCombo.getSelectionModel().selectFirst();
+    }
+  }
+
+  private void showMetadataHelp() {
+    topButtons.clear();
+    topButtons.add(addMetadata);
+    updateMetadataTop();
+    metadata.getChildren().clear();
+    metadata.getChildren().addAll(metadataTopBox, metadataHelpBox);
   }
 
   private void updateTextArea(String content) {
@@ -1027,16 +1151,18 @@ public class InspectionPane extends BorderPane {
     setTop(new HBox());
   }
 
-  private void showMetadataPane(boolean isEAD) {
+  private void showMetadataPane(boolean toShow) {
     metadata.getChildren().clear();
     metadata.getChildren().add(metadataTopBox);
 
-    if (isEAD) {
-      toggleForm.setVisible(true);
+    if (toShow) {
+      topButtons.add(toggleForm);
+      updateMetadataTop();
       toggleForm.setSelected(false);
       toggleForm.fire();
     } else {
-      toggleForm.setVisible(false);
+      topButtons.remove(toggleForm);
+      updateMetadataTop();
       metadata.getChildren().add(metaText);
     }
   }
@@ -1135,14 +1261,34 @@ public class InspectionPane extends BorderPane {
   }
 
   public List<InspectionTreeItem> getDocumentationSelectedItems() {
-    List<InspectionTreeItem> result = new ArrayList<InspectionTreeItem>(
-      sipDocumentation.getSelectionModel().getSelectedItems());
+    List<InspectionTreeItem> result = new ArrayList<>(sipDocumentation.getSelectionModel().getSelectedItems());
     return result;
   }
 
   public List<InspectionTreeItem> getDataSelectedItems() {
-    List<InspectionTreeItem> result = new ArrayList<InspectionTreeItem>(
-      sipFiles.getSelectionModel().getSelectedItems());
+    List<InspectionTreeItem> result = new ArrayList<>(sipFiles.getSelectionModel().getSelectedItems());
     return result;
+  }
+
+  public void updateMetadataList(DescriptionObject descriptionObject) {
+    if (descriptionObject == currentDescOb) {
+      updateMetadataCombo();
+      metadataCombo.getSelectionModel().clearSelection();
+      metadataCombo.getSelectionModel().selectLast();
+      RodaIn.getSchemePane().setModifiedPlan(true);
+    }
+  }
+
+  public void showAddMetadataError(DescObjMetadata metadataToAdd) {
+    String showContent = String.format(I18n.t("InspectionPane.addMetadataError.content"), metadataToAdd.getId());
+    Alert dlg = new Alert(Alert.AlertType.INFORMATION);
+    dlg.initStyle(StageStyle.UNDECORATED);
+    dlg.setHeaderText(I18n.t("InspectionPane.addMetadataError.header"));
+    dlg.setTitle(I18n.t("InspectionPane.addMetadataError.title"));
+    dlg.setContentText(showContent);
+    dlg.initModality(Modality.APPLICATION_MODAL);
+    dlg.initOwner(stage);
+    dlg.getDialogPane().setMinHeight(180);
+    dlg.show();
   }
 }

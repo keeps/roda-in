@@ -13,8 +13,8 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.Footer;
+import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.source.representation.SourceDirectory;
@@ -50,7 +50,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
   private TreeItem<String> dummyRoot;
   private Map<String, SourceTreeDirectory> realRoots;
-  private boolean rootSelected;
+  private boolean rootSelected, selectedIsIgnored;
 
   private ComputeDirectorySize computeSize;
 
@@ -65,13 +65,14 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
   /**
    * Creates a new FileExplorerPane object.
-   * 
+   *
    * @param stage
    *          The stage of the application.
    */
   public FileExplorerPane(Stage stage) {
     super();
     this.stage = stage;
+    setPadding(new Insets(10, 10, 0, 10));
 
     createCenterHelp();
     createTop();
@@ -106,12 +107,13 @@ public class FileExplorerPane extends BorderPane implements Observer {
   }
 
   private void createTop() {
-    Label title = new Label(AppProperties.getLocalizedString("FileExplorerPane.title"));
+    Label title = new Label(I18n.t("FileExplorerPane.title").toUpperCase());
     title.getStyleClass().add("title");
 
     top = new HBox();
+    top.getStyleClass().add("title-box");
     top.setAlignment(Pos.CENTER_LEFT);
-    top.setPadding(new Insets(10, 10, 10, 10));
+    top.setPadding(new Insets(15, 15, 15, 15));
     top.getChildren().add(title);
   }
 
@@ -119,7 +121,8 @@ public class FileExplorerPane extends BorderPane implements Observer {
     bottom = new HBox(10);
     bottom.setPadding(new Insets(10, 10, 10, 10));
 
-    ignore = new Button(AppProperties.getLocalizedString("ignore"));
+    ignore = new Button(I18n.t("ignore"));
+    ignore.getStyleClass().add("button-secondary");
     ignore.setId("bt_ignore");
     ignore.setMinWidth(100);
     ignore.setOnAction(event -> {
@@ -135,15 +138,31 @@ public class FileExplorerPane extends BorderPane implements Observer {
           this.setCenter(centerHelp);
           this.setBottom(new HBox());
         }
+      } else if (selectedIsIgnored) {
+        List<TreeItem<String>> selectedItems = treeView.getSelectionModel().getSelectedItems();
+        if (selectedItems == null)
+          return;
+        for (TreeItem ti : selectedItems) {
+          SourceTreeItem sti = (SourceTreeItem) ti;
+          if (sti.getState() == SourceTreeItemState.IGNORED)
+            sti.removeIgnore();
+        }
+        selectedIsIgnored = false;
+        ignore.setText(I18n.t("ignore"));
       } else {
         ignore();
+        if (showIgnored) {
+          selectedIsIgnored = true;
+          ignore.setText(I18n.t("SourceTreeCell.remove"));
+        }
       }
     });
 
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
-    Button associate = new Button(AppProperties.getLocalizedString("associate"));
+    Button associate = new Button(I18n.t("associate"));
+    associate.disableProperty().bind(RodaIn.getSchemePane().hasClassificationScheme().not());
     associate.setMinWidth(100);
     associate.setOnAction(event -> RodaIn.getSchemePane().startAssociation());
 
@@ -164,14 +183,14 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
     HBox titleBox = new HBox();
     titleBox.setAlignment(Pos.CENTER);
-    Label title = new Label("1. " + AppProperties.getLocalizedString("FileExplorerPane.help.title"));
+    Label title = new Label("1. " + I18n.t("FileExplorerPane.help.title"));
     title.getStyleClass().add("helpTitle");
     title.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(title);
 
     HBox loadBox = new HBox();
     loadBox.setAlignment(Pos.CENTER);
-    Button load = new Button(AppProperties.getLocalizedString("FileExplorerPane.chooseDir"));
+    Button load = new Button(I18n.t("FileExplorerPane.chooseDir"));
     load.setOnAction(event -> chooseNewRoot());
     load.setMinHeight(65);
     load.setMinWidth(220);
@@ -186,18 +205,19 @@ public class FileExplorerPane extends BorderPane implements Observer {
   private void createFileExplorer() {
     // create tree pane
     final VBox treeBox = new VBox();
-    Separator separatorTop = new Separator();
+    treeBox.setPadding(new Insets(10, 0, 0, 0));
     Separator separatorBottom = new Separator();
 
     dummyRoot = new TreeItem<>();
     realRoots = new HashMap<>();
 
     treeView = new TreeView<>();
+    treeView.getStyleClass().add("main-tree");
     treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     treeView.setShowRoot(false);
     treeView.setRoot(dummyRoot);
     // add everything to the tree pane
-    treeBox.getChildren().addAll(separatorTop, treeView, separatorBottom);
+    treeBox.getChildren().addAll(treeView, separatorBottom);
     VBox.setVgrow(treeView, Priority.ALWAYS);
     treeView.setCellFactory(param -> {
       SourceTreeCell cell = new SourceTreeCell();
@@ -219,7 +239,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
    */
   public void chooseNewRoot() {
     DirectoryChooser chooser = new DirectoryChooser();
-    chooser.setTitle(AppProperties.getLocalizedString("directorychooser.title"));
+    chooser.setTitle(I18n.t("directorychooser.title"));
     File selectedDirectory = chooser.showDialog(stage);
     if (selectedDirectory == null)
       return;
@@ -229,7 +249,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
   /**
    * Sets a new root to file explorer
-   * 
+   *
    * @param rootPath
    *          The new root path
    */
@@ -261,12 +281,11 @@ public class FileExplorerPane extends BorderPane implements Observer {
   }
 
   private void alertAddFolder(String oldPath, String newPath) {
-    String content = String.format(AppProperties.getLocalizedString("FileExplorerPane.alertAddFolder.content"), oldPath,
-      newPath);
+    String content = String.format(I18n.t("FileExplorerPane.alertAddFolder.content"), oldPath, newPath);
     Alert dlg = new Alert(Alert.AlertType.INFORMATION);
     dlg.initStyle(StageStyle.UNDECORATED);
-    dlg.setHeaderText(AppProperties.getLocalizedString("FileExplorerPane.alertAddFolder.header"));
-    dlg.setTitle(AppProperties.getLocalizedString("FileExplorerPane.alertAddFolder.title"));
+    dlg.setHeaderText(I18n.t("FileExplorerPane.alertAddFolder.header"));
+    dlg.setTitle(I18n.t("FileExplorerPane.alertAddFolder.title"));
     dlg.setContentText(content);
     dlg.initModality(Modality.APPLICATION_MODAL);
     dlg.initOwner(stage);
@@ -277,7 +296,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
   /**
    * Updates the interface with the attributes of the path in argument.
-   * 
+   *
    * @param path
    *          The path to be used in the update
    */
@@ -321,7 +340,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
   /**
    * Returns the tree view of the file explorer pane.
-   * 
+   *
    * @return
    */
   public TreeView<String> getTreeView() {
@@ -339,17 +358,17 @@ public class FileExplorerPane extends BorderPane implements Observer {
       if (dirCount != 0) {
         result.append(dirCount + " ");
         if (dirCount == 1)
-          result.append(AppProperties.getLocalizedString("directory"));
+          result.append(I18n.t("directory"));
         else
-          result.append(AppProperties.getLocalizedString("directories"));
+          result.append(I18n.t("directories"));
         result.append(", ");
       }
 
       result.append(fileCount).append(" ");
       if (fileCount == 1)
-        result.append(AppProperties.getLocalizedString("file"));
+        result.append(I18n.t("file"));
       else
-        result.append(AppProperties.getLocalizedString("files"));
+        result.append(I18n.t("files"));
 
       result.append(", ");
       result.append(Utils.formatSize(size));
@@ -388,7 +407,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
    * Ignores the items received in parameter. If an item is normal, this method
    * ignores it. Depending on the state of the showIgnored flag, it shows or
    * hides the ignored items.
-   * 
+   *
    * @param items
    *          The set of items to be ignored
    */
@@ -476,9 +495,18 @@ public class FileExplorerPane extends BorderPane implements Observer {
   public void rootSelected(boolean b) {
     rootSelected = b;
     if (b) {
-      ignore.setText(AppProperties.getLocalizedString("FileExplorerPane.removeFolder"));
+      ignore.setText(I18n.t("FileExplorerPane.removeFolder"));
     } else {
-      ignore.setText(AppProperties.getLocalizedString("ignore"));
+      ignore.setText(I18n.t("ignore"));
+    }
+  }
+
+  public void selectedIsIgnored(boolean b) {
+    selectedIsIgnored = b;
+    if (b) {
+      ignore.setText(I18n.t("SourceTreeCell.remove"));
+    } else {
+      ignore.setText(I18n.t("ignore"));
     }
   }
 }

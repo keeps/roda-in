@@ -1,6 +1,6 @@
 package org.roda.rodain.source.ui.items;
 
-import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.core.I18n;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -8,7 +8,7 @@ import org.roda.rodain.core.AppProperties;
  */
 public class SourceTreeLoading extends SourceTreeItem {
   public SourceTreeLoading() {
-    super(AppProperties.getLocalizedString("SourceTreeLoading.title"), null);
+    super(I18n.t("SourceTreeLoading.title"), null);
   }
 
   /**

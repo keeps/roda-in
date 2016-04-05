@@ -1,23 +1,22 @@
 package org.roda.rodain.source.ui;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import javafx.geometry.VerticalDirection;
-import javafx.scene.Scene;
 import javafx.scene.control.TreeItem;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.roda.rodain.core.AppProperties;
-import org.roda.rodain.core.Footer;
+import org.roda.rodain.core.I18n;
+import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.testing.Utils;
 import org.testfx.framework.junit.ApplicationTest;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -30,13 +29,14 @@ public class FileExplorerPaneTest extends ApplicationTest {
 
   @Override
   public void start(Stage stage) throws Exception {
-    new Footer(); // footer needs to be initialized because of setStatus
-    AppProperties.initialize();
-    fileExplorer = new FileExplorerPane(stage);
+    RodaIn main = new RodaIn();
+    main.start(stage);
+
+    sleep(5000);
+
+    fileExplorer = RodaIn.getFileExplorer();
     fileExplorer.setFileExplorerRoot(testDir);
-    Scene scene = new Scene(fileExplorer, 600, 600);
-    stage.setScene(scene);
-    stage.show();
+    sleep(5000);
   }
 
   @BeforeClass
@@ -58,7 +58,11 @@ public class FileExplorerPaneTest extends ApplicationTest {
 
   @Test
   public void dir1() {
-    sleep(1000);
+    sleep(5000);
+    try {
+      push(KeyCode.ENTER);
+    } catch (Exception e) {
+    }
     TreeItem<String> root = fileExplorer.getTreeView().getRoot().getChildren().get(0);
     TreeItem<String> dir1 = root.getChildren().get(0);
     assert dir1 != null;
@@ -70,7 +74,7 @@ public class FileExplorerPaneTest extends ApplicationTest {
     assert dir1.getChildren().get(0) instanceof SourceTreeFile;
 
     scroll(70, VerticalDirection.DOWN);
-    clickOn(AppProperties.getLocalizedString("SourceTreeLoadMore.title"));
+    clickOn(I18n.t("SourceTreeLoadMore.title"));
     assert dir1.getChildren().size() == 120;
 
     SourceTreeFile file = (SourceTreeFile) dir1.getChildren().get(0);
@@ -80,11 +84,18 @@ public class FileExplorerPaneTest extends ApplicationTest {
     sb.append("dir1").append(File.separator);
     sb.append("file0.txt");
     assert file.getPath().equals(sb.toString());
+    for (TreeItem t : root.getChildren()) {
+      t.setExpanded(false);
+    }
   }
 
   @Test
   public void dir2() {
-    sleep(1000);
+    sleep(5000);
+    try {
+      push(KeyCode.ENTER);
+    } catch (Exception e) {
+    }
     TreeItem<String> root = fileExplorer.getTreeView().getRoot().getChildren().get(0);
     TreeItem<String> dir2 = root.getChildren().get(1);
     assert dir2 != null;
@@ -96,13 +107,20 @@ public class FileExplorerPaneTest extends ApplicationTest {
     assert dir2.getChildren().get(0) instanceof SourceTreeDirectory;
 
     scroll(70, VerticalDirection.DOWN);
-    clickOn(AppProperties.getLocalizedString("SourceTreeLoadMore.title"));
+    clickOn(I18n.t("SourceTreeLoadMore.title"));
     assert dir2.getChildren().size() == 120;
+    for (TreeItem t : root.getChildren()) {
+      t.setExpanded(false);
+    }
   }
 
   @Test
   public void dir3() {
-    sleep(1000);
+    sleep(5000);
+    try {
+      push(KeyCode.ENTER);
+    } catch (Exception e) {
+    }
     TreeItem<String> root = fileExplorer.getTreeView().getRoot().getChildren().get(0);
     TreeItem<String> dir3 = root.getChildren().get(2);
     assert dir3 != null;
@@ -113,7 +131,7 @@ public class FileExplorerPaneTest extends ApplicationTest {
     assert dir3.getChildren().size() == LOAD_MORE_SIZE + 1;
 
     scroll(70, VerticalDirection.DOWN);
-    clickOn(AppProperties.getLocalizedString("SourceTreeLoadMore.title"));
+    clickOn(I18n.t("SourceTreeLoadMore.title"));
     assert dir3.getChildren().size() == 140;
 
     List<Object> files = dir3.getChildren().stream().filter(p -> p instanceof SourceTreeFile)
@@ -123,11 +141,18 @@ public class FileExplorerPaneTest extends ApplicationTest {
 
     assert files.size() == 70;
     assert dirs.size() == 70;
+    for (TreeItem t : root.getChildren()) {
+      t.setExpanded(false);
+    }
   }
 
   @Test
   public void dir4() {
-    sleep(1000);
+    sleep(5000);
+    try {
+      push(KeyCode.ENTER);
+    } catch (Exception e) {
+    }
     TreeItem<String> root = fileExplorer.getTreeView().getRoot().getChildren().get(0);
     TreeItem<String> dir4 = root.getChildren().get(3);
     assert dir4 != null;
@@ -156,6 +181,8 @@ public class FileExplorerPaneTest extends ApplicationTest {
     assert dirAAC.getChildren().size() == 10;
     SourceTreeFile file = (SourceTreeFile) dirAAC.getChildren().get(0);
     assert "file0.txt".equals(file.getValue());
-
+    for (TreeItem t : root.getChildren()) {
+      t.setExpanded(false);
+    }
   }
 }

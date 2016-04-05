@@ -1,21 +1,22 @@
 .modal {
-    -fx-border-color: #089de3;
+    -fx-border-color: -fx-dark;
     -fx-border-width: 2px;
     -fx-background-color: white;
     -fx-text-fill: black;
 }
 
 .hbox {
-    -fx-background-color: #089de3;
+    -fx-background-color: -fx-dark;
 }
+
 #title {
-    -fx-font-size: x-large;
+    -fx-font-size: large;
     -fx-text-fill: white;
     -fx-font-weight: bold;
 }
 
 .modal #sub-title {
-    -fx-font-size: x-large;
+    -fx-font-size: large;
     -fx-font-weight: bold;
 }
 
@@ -36,7 +37,7 @@
 
 /* SIP creator modal*/
 .sipcreator {
-    -fx-border-color: #089de3;
+    -fx-border-color: -fx-dark;
     -fx-border-width: 2px;
     -fx-background-color: white;
     -fx-text-fill: black;
@@ -48,22 +49,22 @@
 }
 
 .sipcreator .progress-bar > .bar {
-    -fx-background-color: #089de3;
+    -fx-background-color: -fx-medium;
     -fx-border-width: 2px;
 }
 
 /* List-view */
-.list-view{
+.list-view {
     -fx-background-color: white;
 }
 
-.list-cell{
+.list-cell {
     -fx-padding: 5px;
     -fx-background-color: white;
 }
 
 .list-cell:focused {
-    -fx-background-color: lightgray;
+    -fx-background-color: -fx-alt-light;
 }
 
 .list-view *.scroll-bar:horizontal *.increment-button,
@@ -100,23 +101,7 @@
     -fx-shape: null;
 }
 
-/* Combo-box */
-.list-cell:focused .combo-box{
-    -fx-background-color: lightgray;
-}
-
-.list-cell:focused .combo-box-base .list-cell{
-    -fx-background-color: lightgray;
-}
-
-.list-cell:focused .combo-box .list-view .list-cell{
-    -fx-background-color: white;
-}
-
-.list-cell:focused .combo-box .list-view .list-cell:selected{
-    -fx-background-color: darkgray;
-}
-
-.list-cell:focused .combo-box .list-view .list-cell:hover{
-    -fx-background-color: lightgray;
+/*Combo-box */
+.list-cell .combo-box {
+    -fx-border-color: -fx-dark;
 }

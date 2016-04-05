@@ -2,6 +2,7 @@ package org.roda.rodain.creation;
 
 import org.apache.commons.io.FileUtils;
 import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.core.I18n;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,7 @@ public class SimpleSipCreator extends Thread {
   private static final Logger log = LoggerFactory.getLogger(SimpleSipCreator.class.getName());
   protected final static String actionCreatingFolders = AppProperties
     .getLocalizedString("SimpleSipCreator.creatingStructure");
-  protected final static String actionCopyingData = AppProperties.getLocalizedString("SimpleSipCreator.copyingData");
+  protected final static String actionCopyingData = I18n.t("SimpleSipCreator.copyingData");
   protected final static String actionCopyingMetadata = AppProperties
     .getLocalizedString("SimpleSipCreator.copyingMetadata");
   protected final static String actionFinalizingSip = AppProperties

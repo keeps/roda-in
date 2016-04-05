@@ -9,7 +9,7 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.VisitorStack;
 import org.roda.rodain.rules.VisitorState;
@@ -32,8 +32,8 @@ public class RuleModalProcessing extends BorderPane {
 
   // top
   private Label sipsCreatedLabel, filesProcessedLabel;
-  private String sipsCreatedFormat = AppProperties.getLocalizedString("RuleModalProcessing.createdPreviews");
-  private String filesProcessedFormat = AppProperties.getLocalizedString("RuleModalProcessing.processedDirsFiles");
+  private String sipsCreatedFormat = I18n.t("RuleModalProcessing.createdPreviews");
+  private String filesProcessedFormat = I18n.t("RuleModalProcessing.processedDirsFiles");
 
   private Timer timer;
 
@@ -73,7 +73,7 @@ public class RuleModalProcessing extends BorderPane {
     top.getStyleClass().add("hbox");
     top.setPadding(new Insets(10, 10, 10, 0));
 
-    Label title = new Label(AppProperties.getLocalizedString("RuleModalProcessing.creatingPreview"));
+    Label title = new Label(I18n.t("RuleModalProcessing.creatingPreview").toUpperCase());
     title.setId("title");
 
     top.getChildren().add(title);
@@ -100,7 +100,7 @@ public class RuleModalProcessing extends BorderPane {
     HBox bottom = new HBox();
     bottom.setPadding(new Insets(0, 10, 10, 10));
     bottom.setAlignment(Pos.CENTER_RIGHT);
-    Button cancel = new Button(AppProperties.getLocalizedString("cancel"));
+    Button cancel = new Button(I18n.t("cancel"));
     cancel.setOnAction(event -> cancel());
 
     bottom.getChildren().add(cancel);

@@ -14,7 +14,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -25,6 +27,8 @@ public class SipPerFile extends SipPreviewCreator {
   private static final Logger log = LoggerFactory.getLogger(SipPerFile.class.getName());
   private static final int UPDATEFREQUENCY = 500; // in milliseconds
   private long lastUIUpdate = 0;
+
+  private Map<String, Set<Path>> metadata;
 
   /**
    * Creates a new SipPreviewCreator where there's a new SIP created for each
@@ -44,7 +48,28 @@ public class SipPerFile extends SipPreviewCreator {
   public SipPerFile(String id, Set<ContentFilter> filters, MetadataTypes metaType, Path metadataPath,
     String templateType, String templateVersion) {
     super(id, filters, metaType, metadataPath, templateType, templateVersion);
+    metadata = new HashMap<>();
 
+    if (metadataPath != null && metaType == MetadataTypes.DIFF_DIRECTORY) {
+      try {
+        Files.walkFileTree(metadataPath, new SimpleFileVisitor<Path>() {
+          @Override
+          public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+            String key = FilenameUtils.removeExtension(file.getFileName().toString());
+            Set<Path> paths = metadata.get(key);
+            if (paths == null)
+              paths = new HashSet<>();
+            paths.add(file);
+            metadata.put(key, paths);
+            return FileVisitResult.CONTINUE;
+          }
+        });
+      } catch (AccessDeniedException e) {
+        log.info("Access denied to file", e);
+      } catch (IOException e) {
+        log.error("Error walking the file tree", e);
+      }
+    }
   }
 
   @Override
@@ -128,17 +153,17 @@ public class SipPerFile extends SipPreviewCreator {
     Set<TreeNode> files = new HashSet<>();
     files.add(node);
 
-    DescObjMetadata metadata;
+    DescObjMetadata dom = null;
     if (metaType == MetadataTypes.TEMPLATE)
-      metadata = new DescObjMetadata(metaType, templateType, templateVersion);
-    else
-      metadata = new DescObjMetadata(metaType, metaPath);
+      dom = new DescObjMetadata(metaType, templateType, templateVersion);
+    else if (metaPath != null)
+      dom = new DescObjMetadata(metaType, metaPath);
 
     SipRepresentation rep = new SipRepresentation("rep1");
     rep.setFiles(files);
     Set<SipRepresentation> repSet = new HashSet<>();
     repSet.add(rep);
-    SipPreview sipPreview = new SipPreview(path.getFileName().toString(), repSet, metadata);
+    SipPreview sipPreview = new SipPreview(path.getFileName().toString(), repSet, dom);
     node.addObserver(sipPreview);
 
     sips.add(sipPreview);
@@ -177,9 +202,7 @@ public class SipPerFile extends SipPreviewCreator {
       dir = sipPath.getParent().toFile();
 
     PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + templateType);
-    File[] foundFiles = dir.listFiles((dir1, name) -> {
-      return matcher.matches(Paths.get(name));
-    });
+    File[] foundFiles = dir.listFiles((dir1, name) -> matcher.matches(Paths.get(name)));
 
     if (foundFiles != null && foundFiles.length > 0) {
       return foundFiles[0].toPath();
@@ -188,15 +211,18 @@ public class SipPerFile extends SipPreviewCreator {
   }
 
   private Path getFileFromDir(Path path) {
-    String fileName = FilenameUtils.removeExtension(path.getFileName().toString());
-    File dir = new File(metadataPath.toString());
-    File[] foundFiles = dir.listFiles((dir1, name) -> {
-      return name.startsWith(fileName + ".");
-    });
+    String fileNameWithExtension = path.getFileName().toString();
+    String fileName = FilenameUtils.removeExtension(fileNameWithExtension);
 
-    if (foundFiles.length > 0) {
-      return foundFiles[0].toPath();
+    Set<Path> paths = metadata.get(fileName);
+    Path result = null;
+    if (paths != null) {
+      for (Path p : paths) {
+        if (!p.getFileName().toString().equals(fileNameWithExtension))
+          result = p;
+
+      }
     }
-    return null;
+    return result;
   }
 }

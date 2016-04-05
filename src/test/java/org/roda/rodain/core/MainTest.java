@@ -36,6 +36,8 @@ public class MainTest extends ApplicationTest {
     RodaIn main = new RodaIn();
     main.start(stage);
 
+    sleep(3000);
+
     schemaPane = RodaIn.getSchemePane();
     fileExplorer = RodaIn.getFileExplorer();
 
@@ -59,11 +61,11 @@ public class MainTest extends ApplicationTest {
       push(KeyCode.ENTER);
     } catch (Exception e) {
     }
-    sleep(1000);
-    clickOn(AppProperties.getLocalizedString("SchemaPane.add"));
-    sleep(1000);
+    sleep(12000);
+    clickOn(I18n.t("SchemaPane.add"));
+    sleep(2000);
     clickOn(".schemaNode");
-    sleep(500);
+    sleep(1000);
     clickOn("#descObjTitle");
     eraseText(50);
     write("Node1");
@@ -72,9 +74,9 @@ public class MainTest extends ApplicationTest {
     TreeItem<String> item = RodaIn.getSchemePane().getTreeView().getSelectionModel().getSelectedItem();
     assert "Node1".equals(item.getValue());
 
-    clickOn(AppProperties.getLocalizedString("SchemaPane.add"));
+    clickOn(I18n.t("SchemaPane.add"));
     sleep(500);
-    clickOn(AppProperties.getLocalizedString("SchemaPane.newNode"));
+    clickOn(I18n.t("SchemaPane.newNode"));
     sleep(500);
     clickOn("#descObjTitle");
     eraseText(50);
@@ -93,8 +95,6 @@ public class MainTest extends ApplicationTest {
     assert dobj.getDescriptionlevel() != null;
 
     sleep(2000);
-    clickOn("#itemLevels").clickOn("Sub-fonds");
-
     drag("Node2").dropTo(".tree-view");
     assert RodaIn.getSchemePane().getTreeView().getRoot().getChildren().size() == 2;
     sleep(1000);
@@ -130,9 +130,9 @@ public class MainTest extends ApplicationTest {
 
     sleep(5000); // wait for the tree to be created
     doubleClickOn("dir4");
-    sleep(1000); // wait for the node to expand
+    sleep(2000); // wait for the node to expand
     drag("dirB").dropTo("UCP");
-    sleep(1000); // wait for the modal to open
+    sleep(2000); // wait for the modal to open
     clickOn("#assoc3");
     clickOn("#btConfirm");
     sleep(2000); // wait for the modal to update
@@ -174,29 +174,29 @@ public class MainTest extends ApplicationTest {
     drag().dropTo("UCP");
     sleep(1000); // wait for the modal to open
     clickOn("#assoc2");
-    clickOn(AppProperties.getLocalizedString("continue"));
+    clickOn(I18n.t("continue"));
     sleep(1000); // wait for the modal to update
     clickOn("#meta4");
-    clickOn(AppProperties.getLocalizedString("confirm"));
+    clickOn(I18n.t("confirm"));
     sleep(5000); // wait for the SIPs creation
 
-    clickOn(AppProperties.getLocalizedString("Main.file"));
-    clickOn(AppProperties.getLocalizedString("Main.exportSips"));
+    clickOn(I18n.t("Main.file"));
+    clickOn(I18n.t("Main.exportSips"));
     output = Utils.homeDir.resolve("SIPs output");
     output.toFile().mkdir();
     CreationModalPreparation.setOutputFolder(output.toString());
-    clickOn(AppProperties.getLocalizedString("start"));
+    clickOn(I18n.t("start"));
 
     sleep(5000);
-    clickOn(AppProperties.getLocalizedString("close"));
+    clickOn(I18n.t("close"));
 
-    clickOn(AppProperties.getLocalizedString("Main.file"));
-    clickOn(AppProperties.getLocalizedString("Main.exportSips"));
+    clickOn(I18n.t("Main.file"));
+    clickOn(I18n.t("Main.exportSips"));
     clickOn("#sipTypes").clickOn("BagIt");
     CreationModalPreparation.setOutputFolder(output.toString());
-    clickOn(AppProperties.getLocalizedString("start"));
+    clickOn(I18n.t("start"));
     sleep(5000);
-    clickOn(AppProperties.getLocalizedString("close"));
+    clickOn(I18n.t("close"));
 
     clickOn("FTP");
     sleep(1000);

@@ -29,7 +29,7 @@ public class AppProperties {
   private static final String CONFIGFOLDER = "roda-in";
   private static PropertiesConfiguration style = load("styles"), config = load("config"), ext_config,
     descLevels = load("roda-description-levels-hierarchy");
-  private static ResourceBundle resourceBundle;
+  private static ResourceBundle resourceBundle, defaultResourceBundler;
   private static Locale locale;
 
   private static Set<Path> allSchemas;
@@ -66,7 +66,7 @@ public class AppProperties {
             external.addProperty(key, internal.getProperty(key));
             store = true;
           }
-          if (key.startsWith("metadata.template")) {
+          if (key.startsWith("metadata.template.") && internal.getProperty(key) == null) {
             external.setProperty(key, internal.getProperty(key));
             store = true;
           }
@@ -120,6 +120,8 @@ public class AppProperties {
       }
 
       resourceBundle = ResourceBundle.getBundle("properties/lang", locale, new FolderBasedUTF8Control());
+      defaultResourceBundler = ResourceBundle.getBundle("properties/lang", Locale.ENGLISH,
+        new FolderBasedUTF8Control());
     } catch (IOException e) {
       log.error("Error copying config file", e);
     } catch (MissingResourceException e) {
@@ -270,7 +272,7 @@ public class AppProperties {
       return (String) res;
     }
     // if it isn't a string then it must be a list Ex: a,b,c,d
-    return String.join(",", config.getStringArray(key));
+    return String.join(",", (List<String>) res);
   }
 
   /**
@@ -295,7 +297,14 @@ public class AppProperties {
    * @return The value of the property using
    */
   public static String getLocalizedString(String key) {
-    return resourceBundle.getString(key);
+    String result;
+    try {
+      result = resourceBundle.getString(key);
+    } catch (MissingResourceException e) {
+      log.warn(String.format("Missing translation for %s in language: %s", key, locale.getDisplayName()));
+      result = defaultResourceBundler.getString(key);
+    }
+    return result;
   }
 
   /**
