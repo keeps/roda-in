@@ -125,8 +125,8 @@ public class CreationModalPreparation extends BorderPane {
 
     sipTypes = new ComboBox<>();
     sipTypes.setId("sipTypes");
-    sipTypes.getItems().addAll("BagIt", "EARK");
-    sipTypes.getSelectionModel().select("EARK");
+    sipTypes.getItems().addAll("BagIt", "E-ARK");
+    sipTypes.getSelectionModel().select("E-ARK");
 
     sipTypesBox.getChildren().addAll(sipTypesLabel, space, sipTypes);
     return sipTypesBox;
