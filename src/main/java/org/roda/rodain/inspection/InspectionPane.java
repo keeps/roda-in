@@ -247,7 +247,8 @@ public class InspectionPane extends BorderPane {
      */
     metaText.focusedProperty().addListener((observable, oldValue, newValue) -> {
       if (!newValue) { // lost focus, so update
-        saveMetadata();
+        textBoxCancelledChange = true;
+        saveMetadataPrivate();
       }
     });
   }
@@ -275,7 +276,7 @@ public class InspectionPane extends BorderPane {
     });
     toggleForm.selectedProperty().addListener((observable, oldValue, newValue) -> {
       textBoxCancelledChange = true;
-      saveMetadata();
+      saveMetadataPrivate();
       // newValue == true means that the form will be displayed
       if (newValue) {
         toggleForm.setTooltip(new Tooltip(I18n.t("InspectionPane.textContent")));
@@ -335,7 +336,7 @@ public class InspectionPane extends BorderPane {
     metadataCombo.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
       if (newValue != null) {
         if (oldValue != null)
-          saveMetadata((DescObjMetadata) oldValue.getKey());
+          saveMetadataPrivate((DescObjMetadata) oldValue.getKey());
         // we need this to prevent the alert from being shown
         textBoxCancelledChange = true;
         updateSelectedMetadata((DescObjMetadata) newValue.getKey());
@@ -403,7 +404,7 @@ public class InspectionPane extends BorderPane {
   private void validationAction() {
     if (metadata.getChildren().contains(metadataFormWrapper)) {
       textBoxCancelledChange = true;
-      saveMetadata();
+      saveMetadataPrivate();
     }
     StringBuilder message = new StringBuilder();
     ValidationPopOver popOver = new ValidationPopOver();
@@ -489,7 +490,7 @@ public class InspectionPane extends BorderPane {
     return null;
   }
 
-  private void saveMetadata(DescObjMetadata selectedDescObjMetadata) {
+  private void saveMetadataPrivate(DescObjMetadata selectedDescObjMetadata) {
     String oldMetadata = null, newMetadata = null;
     if (currentDescOb != null) {
       newMetadata = metaText.getText();
@@ -521,10 +522,15 @@ public class InspectionPane extends BorderPane {
     }
   }
 
+  public void saveMetadata() {
+    textBoxCancelledChange = true;
+    saveMetadataPrivate();
+  }
+
   /**
    * Saves the metadata from the text area in the SIP.
    */
-  public void saveMetadata() {
+  private void saveMetadataPrivate() {
     if (metadataCombo == null)
       return;
     UIPair selectedObject = metadataCombo.getSelectionModel().getSelectedItem();
@@ -538,7 +544,7 @@ public class InspectionPane extends BorderPane {
         updateTextArea(currentDescOb.getMetadataWithReplaces(selectedDescObjMetadata));
       }
     } else {
-      saveMetadata(selectedDescObjMetadata);
+      saveMetadataPrivate(selectedDescObjMetadata);
     }
   }
 

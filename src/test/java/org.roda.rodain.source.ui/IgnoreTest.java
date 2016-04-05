@@ -43,7 +43,12 @@ public class IgnoreTest extends ApplicationTest {
 
   @Test
   public void ignore() {
-    sleep(3000);
+    sleep(7000);
+    try {
+      push(KeyCode.ENTER);
+      push(KeyCode.ENTER);
+    } catch (Exception e) {
+    }
     TreeItem<String> root = fileExplorer.getTreeView().getRoot().getChildren().get(0);
 
     clickOn("dir4");
@@ -63,20 +68,25 @@ public class IgnoreTest extends ApplicationTest {
     doubleClickOn(dir4.getValue());
     SourceTreeDirectory dirA = (SourceTreeDirectory) dir4.getChildren().get(0);
     assert dirA.getState() == SourceTreeItemState.IGNORED;
+    sleep(1000);
 
-    doubleClickOn("dirA");
+    if (!dirA.isExpanded())
+      doubleClickOn("dirA");
     sleep(1000);
     SourceTreeDirectory dirAA = (SourceTreeDirectory) dirA.getChildren().get(0);
     dirAA.removeIgnore();
     sleep(1000);
     assert dirAA.getState() == SourceTreeItemState.NORMAL;
+    if (dirAA.isExpanded())
+      doubleClickOn("dirAA");
 
     SourceTreeDirectory dirAB = (SourceTreeDirectory) dirA.getChildren().get(1);
     dirAB.removeIgnore();
     sleep(1000);
     assert dirAB.getState() == SourceTreeItemState.NORMAL;
 
-    doubleClickOn("dirAB");
+    if (!dirAB.isExpanded())
+      doubleClickOn("dirAB");
     sleep(1000);
     SourceTreeFile file1AB = (SourceTreeFile) dirAB.getChildren().get(0);
     assert file1AB.getState() == SourceTreeItemState.NORMAL;
