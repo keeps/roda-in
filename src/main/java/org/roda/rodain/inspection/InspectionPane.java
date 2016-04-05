@@ -402,6 +402,7 @@ public class InspectionPane extends BorderPane {
 
   private void validationAction() {
     if (metadata.getChildren().contains(metadataFormWrapper)) {
+      textBoxCancelledChange = true;
       saveMetadata();
     }
     StringBuilder message = new StringBuilder();

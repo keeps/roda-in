@@ -66,7 +66,7 @@ public class AppProperties {
             external.addProperty(key, internal.getProperty(key));
             store = true;
           }
-          if (key.startsWith("metadata.template")) {
+          if (key.startsWith("metadata.template.") && internal.getProperty(key) == null) {
             external.setProperty(key, internal.getProperty(key));
             store = true;
           }
@@ -272,7 +272,7 @@ public class AppProperties {
       return (String) res;
     }
     // if it isn't a string then it must be a list Ex: a,b,c,d
-    return String.join(",", config.getStringArray(key));
+    return String.join(",", (List<String>) res);
   }
 
   /**
