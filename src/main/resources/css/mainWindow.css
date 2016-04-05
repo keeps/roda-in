@@ -14,8 +14,8 @@
 }
 
 .split-pane *.split-pane-divider {
-    -fx-padding: 0 10 0 10;
-    -fx-background-color: white;
+    -fx-padding: 1px;
+    -fx-background-color: #d8d8d8;
 }
 
 /* Inspection */
@@ -175,7 +175,7 @@
 }
 
 .main-tree {
-    -fx-border-color: -fx-dark;
+    /*-fx-border-color: -fx-dark;*/
 }
 
 /* Schema */

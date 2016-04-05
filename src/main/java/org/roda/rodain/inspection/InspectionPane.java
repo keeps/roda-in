@@ -110,7 +110,7 @@ public class InspectionPane extends BorderPane {
   public InspectionPane(Stage stage) {
     this.stage = stage;
 
-    setPadding(new Insets(10, 10, 0, 0));
+    setPadding(new Insets(10, 10, 0, 10));
 
     createCenterHelp();
     createDocumentationHelp();

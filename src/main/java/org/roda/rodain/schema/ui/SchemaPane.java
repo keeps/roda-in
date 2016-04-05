@@ -1,6 +1,12 @@
 package org.roda.rodain.schema.ui;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -25,6 +31,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.RodaIn;
@@ -40,12 +47,7 @@ import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -75,7 +77,7 @@ public class SchemaPane extends BorderPane {
    */
   public SchemaPane(Stage stage) {
     super();
-    setPadding(new Insets(10, 0, 0, 0));
+    setPadding(new Insets(10, 10, 0, 10));
     primaryStage = stage;
     schemaNodes = new HashSet<>();
 

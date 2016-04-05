@@ -1,21 +1,23 @@
 * {
     -fx-dark: #089de3;
     -fx-medium: #5bbeff;
-    -fx-light: #9CBFD9;
+    -fx-light: #9ad1f5;
     -fx-alt-dark: #9DA4A9;
     -fx-alt-light: #D3D7DA;
+    -fx-bckg: white;
 }
 
 .root {
     -fx-font-family: "Ubuntu Light";
+    -fx-background: -fx-bckg;
 }
 
 .border-pane {
-    -fx-background-color: white;
+    -fx-background-color: -fx-bckg;
 }
 
 .split-pane {
-    -fx-background-color: white;
+    -fx-background-color: -fx-bckg;
 }
 
 .boldText {
