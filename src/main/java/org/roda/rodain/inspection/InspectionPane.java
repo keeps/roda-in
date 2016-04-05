@@ -121,7 +121,7 @@ public class InspectionPane extends BorderPane {
     createLoadingPanes();
 
     center = new VBox(10);
-    center.setPadding(new Insets(10, 5, 10, 5));
+    center.setPadding(new Insets(10, 0, 10, 0));
 
     setCenter(centerHelp);
 

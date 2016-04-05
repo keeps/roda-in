@@ -22,7 +22,7 @@ import java.util.Map;
  * @author Andre Pereira apereira@keep.pt
  * @since 07-12-2015.
  */
-@JsonIgnoreProperties({"path", "loaded", "version", "templateType"})
+@JsonIgnoreProperties({"path", "loaded", "version"})
 public class DescObjMetadata {
   private static final Logger log = LoggerFactory.getLogger(DescObjMetadata.class.getName());
   private String id, content, contentEncoding;

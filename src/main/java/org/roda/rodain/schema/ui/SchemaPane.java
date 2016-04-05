@@ -200,6 +200,7 @@ public class SchemaPane extends BorderPane {
 
     // create the tree view
     treeView = new TreeView<>(rootNode);
+    treeView.getStyleClass().add("main-tree");
     treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     VBox.setVgrow(treeView, Priority.ALWAYS);
     treeView.setShowRoot(false);
