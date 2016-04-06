@@ -22,6 +22,7 @@ import org.roda.rodain.core.I18n;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.RuleTypes;
 import org.roda.rodain.schema.ui.SchemaNode;
+import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.UIPair;
@@ -174,8 +175,20 @@ public class RuleModalPane extends BorderPane {
     assocList.setItems(hboxList);
     assocList.getSelectionModel().selectFirst();
 
+    int fileCount = 0;
+    for (SourceTreeItem sti : sourceSet) {
+      if (sti instanceof SourceTreeFile) {
+        fileCount++;
+      }
+    }
     if (sourceSet.size() == 1) {
       cellSingleSip.setDisable(true);
+      if (fileCount == 1) {
+        cellSipPerFile.setDisable(true);
+      }
+    }
+    if (fileCount != 0) {
+      cellStructure.setDisable(true);
     }
 
     boxAssociation.getChildren().addAll(subtitle, assocList);
