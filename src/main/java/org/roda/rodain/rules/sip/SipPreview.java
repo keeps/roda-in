@@ -36,7 +36,7 @@ public class SipPreview extends DescriptionObject implements Observer {
     documentation = new HashSet<>();
     setTitle(name);
     List<DescObjMetadata> tempList = new ArrayList<>();
-    if(metadata != null)
+    if (metadata != null)
       tempList.add(metadata);
     setMetadata(tempList);
     setDescriptionlevel("item");
@@ -146,6 +146,11 @@ public class SipPreview extends DescriptionObject implements Observer {
     removed = true;
     setChanged();
     notifyObservers();
+  }
+
+  public void removeFromRule() {
+    setChanged();
+    notifyObservers("Remove from rule");
   }
 
   /**

@@ -118,7 +118,8 @@ public class RuleModalController {
           break;
       }
 
-      Rule rule = new Rule(sourceSet, assocType, metadataPath, templateType, metaType, templateVersion);
+      Rule rule = new Rule(sourceSet, assocType, metadataPath, templateType, metaType, templateVersion,
+        schema.getDob().getId());
       rule.addObserver(schema);
 
       TreeVisitor visitor = rule.apply();

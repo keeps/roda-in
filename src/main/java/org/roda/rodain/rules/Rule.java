@@ -29,8 +29,7 @@ public class Rule extends Observable implements Observer, Comparable {
   private static int ruleCount = 0;
 
   private Set<SourceTreeItem> source;
-  private String templateType;
-  private String templateVersion;
+  private String templateType, templateVersion, parentID;
   private Path metadataPath;
   private RuleTypes assocType;
   private MetadataTypes metaType;
@@ -57,7 +56,7 @@ public class Rule extends Observable implements Observer, Comparable {
    *          The type of metadata to be applied to the SIPs.
    */
   public Rule(Set<SourceTreeItem> source, RuleTypes assocType, Path metadataPath, String template,
-    MetadataTypes metaType, String templateVersion) {
+    MetadataTypes metaType, String templateVersion, String parentID) {
     ruleCount++;
     this.source = source;
     this.assocType = assocType;
@@ -65,6 +64,7 @@ public class Rule extends Observable implements Observer, Comparable {
     this.templateVersion = templateVersion;
     this.metadataPath = metadataPath;
     this.metaType = metaType;
+    this.parentID = parentID;
     filters = new HashSet<>();
     id = ruleCount;
 
@@ -247,6 +247,7 @@ public class Rule extends Observable implements Observer, Comparable {
         sips = visit.getSips();
         while (visit.hasNext()) {
           SipPreview sipPreview = visit.getNext();
+          sipPreview.setParentId(parentID);
           SipPreviewNode sipNode;
           if ("item".equals(sipPreview.getDescriptionlevel()))
             sipNode = new SipPreviewNode(sipPreview, itemIconBlack, itemIconWhite);
@@ -274,6 +275,13 @@ public class Rule extends Observable implements Observer, Comparable {
           notifyObservers("Removed rule");
         } else
           notifyObservers("Removed SIP");
+      } else {
+        // Remove the SIP from this rule
+        if (arg instanceof String && arg.equals("Remove from rule")) {
+          String id = sip.getId();
+          sips.remove(id);
+          sipNodes.remove(id);
+        }
       }
     }
   }
@@ -301,6 +309,7 @@ public class Rule extends Observable implements Observer, Comparable {
     if (pseudoItem instanceof PseudoSIP) {
       PseudoSIP pseudoSIP = (PseudoSIP) pseudoItem;
       SipPreview sipPreview = sipPreviewMap.get(pseudoSIP.getNode().getPath());
+      sipPreview.setParentId(parentID);
       sips.put(sipPreview.getId(), sipPreview);
       SipPreviewNode sipNode;
       if ("item".equals(sipPreview.getDescriptionlevel()))

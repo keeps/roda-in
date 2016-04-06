@@ -35,7 +35,6 @@ public class AppProperties {
   private static Set<Path> allSchemas;
 
   private AppProperties() {
-
   }
 
   /**

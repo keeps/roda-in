@@ -1,12 +1,6 @@
 package org.roda.rodain.schema.ui;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-import java.util.stream.Collectors;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -31,7 +25,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.RodaIn;
@@ -47,7 +40,12 @@ import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -614,18 +612,18 @@ public class SchemaPane extends BorderPane {
   private void setOnDragDetected(SchemaTreeCell cell) {
     cell.setOnDragDetected(event -> {
       TreeItem item = cell.getTreeItem();
+      Dragboard db = cell.startDragAndDrop(TransferMode.MOVE);
+      ClipboardContent content = new ClipboardContent();
+      String s = "";
       if (item instanceof SchemaNode) {
-        if (item != null) {
-          Dragboard db = cell.startDragAndDrop(TransferMode.MOVE);
-          ClipboardContent content = new ClipboardContent();
-          String s = "scheme node - " + ((SchemaNode) item).getDob().getId();
-          if (s != null) {
-            content.putString(s);
-            db.setContent(content);
-          }
-          event.consume();
-        }
+        s = "scheme node - " + ((SchemaNode) item).getDob().getId();
       }
+      if (item instanceof SipPreviewNode) {
+        s = "sip preview - " + ((SipPreviewNode) item).getSip().getId();
+      }
+      content.putString(s);
+      db.setContent(content);
+      event.consume();
     });
   }
 
@@ -707,6 +705,37 @@ public class SchemaPane extends BorderPane {
             node.getChildren().add(selected);
             schemaNode.getDob().setParentId(node.getDob().getId());
             node.sortChildren();
+          }
+        }
+        if (db.getString().startsWith("sip preview")) {
+          SchemaNode target = null;
+          if (treeItem instanceof SipPreviewNode) {
+            target = (SchemaNode) treeItem.getParent();
+          } else
+            target = (SchemaNode) treeItem;
+          if (target == null) {
+            target = rootNode;
+          }
+
+          List<TreeItem<String>> selectedItems = new ArrayList<>(treeView.getSelectionModel().getSelectedItems());
+          for (TreeItem t : selectedItems) {
+            if (t instanceof SipPreviewNode) {
+              SipPreviewNode sourceSIP = (SipPreviewNode) t;
+
+              // Remove the SIP from its parent and rule
+              SchemaNode parent = (SchemaNode) sourceSIP.getParent();
+              parent.removeChild(sourceSIP);
+              sourceSIP.getSip().removeFromRule();
+
+              // Add the SIP to the new parent
+              String newParentID = null;
+              if (target != rootNode)
+                newParentID = target.getDob().getId();
+              sourceSIP.getSip().setParentId(newParentID);
+              target.addChild(UUID.randomUUID().toString(), sourceSIP);
+              target.getChildren().add(sourceSIP);
+              target.sortChildren();
+            }
           }
         } else {
           if (treeItem != null) {

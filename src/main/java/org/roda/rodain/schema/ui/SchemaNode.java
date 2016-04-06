@@ -33,8 +33,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
   /**
    * Creates a new SchemaNode
    *
-   * @param dobject
-   *          The DescriptionObject that defines the SchemaNode
+   * @param dobject The DescriptionObject that defines the SchemaNode
    */
   public SchemaNode(DescriptionObject dobject) {
     super(dobject.getTitle());
@@ -65,10 +64,8 @@ public class SchemaNode extends TreeItem<String> implements Observer {
   /**
    * Updates the node when a Rule has been modified.
    *
-   * @param o
-   *          The observable object
-   * @param arg
-   *          The arguments sent by the object
+   * @param o   The observable object
+   * @param arg The arguments sent by the object
    */
   @Override
   public void update(final Observable o, Object arg) {
@@ -119,8 +116,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
   /**
    * Adds a new Rule to the SchemaNode.
    *
-   * @param r
-   *          The Rule to be added
+   * @param r The Rule to be added
    */
   public void addRule(Rule r) {
     int count = r.getSipCount();
@@ -153,8 +149,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
   /**
    * Adds a new node to the children nodes list.
    *
-   * @param node
-   *          The node to be added to the list.
+   * @param node The node to be added to the list.
    */
   public void addChildrenNode(SchemaNode node) {
     schemaNodes.add(node);
@@ -306,7 +301,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
 
   /**
    * @return A map of all the SIPs in the SchemaNode and in the SchemaNode's
-   *         children
+   * children
    */
   public Map<SipPreview, String> getSipPreviews() {
     Map<SipPreview, String> result = new HashMap<>();
@@ -316,7 +311,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
         result.put(sp, dob.getId());
 
     sips.forEach((id, sipPreviewNodes) -> sipPreviewNodes
-      .forEach(sipPreviewNode -> result.put(sipPreviewNode.getSip(), dob.getId())));
+        .forEach(sipPreviewNode -> result.put(sipPreviewNode.getSip(), dob.getId())));
 
     ruleNodes.forEach((s, schNodes) -> schNodes.forEach(schemaNode -> result.putAll(schemaNode.getSipPreviews())));
 
