@@ -22,8 +22,7 @@ public class Main {
    * @param args
    */
   public static void main(String[] args) {
-    System.setProperty("roda-in-log-path", AppProperties.getRodainPath().resolve("roda-in.log").toString());
-    System.setProperty("roda-in-archive-log-path", AppProperties.getRodainPath().resolve("Log archive").toString());
+    System.setProperty("roda-in-log-path", AppProperties.getRodainPath().toString());
     configureLogback();
 
     // get the java version
