@@ -162,6 +162,12 @@ public class RodaIn extends Application {
         splashStage.close();
     });
 
+    initTask.exceptionProperty().addListener((observable, oldValue, newValue) -> {
+      if (newValue != null) {
+        log.error("Error initializing application", newValue);
+      }
+    });
+
     initTask.setOnFailed(event -> {
       log.error("Failed application initialization");
       if (splashStage != null)

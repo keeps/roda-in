@@ -56,9 +56,9 @@
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
-                    <descriptors>
-                        <descriptor>src/main/assembly/assembly-exclude-descriptor.xml</descriptor>
-                    </descriptors>
+                    <!--<descriptors>-->
+                    <!--<descriptor>src/main/assembly/assembly-exclude-descriptor.xml</descriptor>-->
+                    <!--</descriptors>-->
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
                 <executions>

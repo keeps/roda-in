@@ -106,7 +106,6 @@ public class AppProperties {
           }
         }
       }
-
       // load config
       ext_config = new PropertiesConfiguration();
       ext_config.load(new FileInputStream(configPath.toFile()));
@@ -267,6 +266,8 @@ public class AppProperties {
     } else {
       res = config.getProperty(key);
     }
+    if (res == null)
+      return null;
     if (res instanceof String) {
       return (String) res;
     }
