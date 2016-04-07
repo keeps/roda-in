@@ -24,7 +24,19 @@
         <did>
             <unittitle>{{title}}</unittitle>
             <unitid>{{id}}</unitid>
-            <unitdate normal="{{dateInitial}}/{{dateFinal}}">{{dateInitial}}/{{dateFinal}}</unitdate>
+            {{#dateInitial}}
+              {{#dateFinal}}
+              <unitdate normal="{{dateInitial}}/{{dateFinal}}">{{dateInitial}}/{{dateFinal}}</unitdate>
+              {{/dateFinal}}
+              {{^dateFinal}}
+              <unitdate normal="{{dateInitial}}">{{dateInitial}}</unitdate>
+              {{/dateFinal}}
+            {{/dateInitial}}
+            {{^dateInitial}}
+              {{#dateFinal}}
+              <unitdate normal="{{dateFinal}}">{{dateFinal}}</unitdate>
+              {{/dateFinal}}
+            {{/dateInitial}}
             <origination label="producer">{{producer}}</origination>
             <origination label="creator">{{creator}}</origination>
             <langmaterial>{{language}}</langmaterial>
