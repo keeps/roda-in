@@ -4,7 +4,6 @@ import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.filters.ContentFilter;
-import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -120,27 +118,8 @@ public class SipPerFile extends SipPreviewCreator {
     if (filter(path) || cancelled)
       return;
 
-    Path metaPath = getMetadataPath(path);
     TreeNode node = new TreeNode(path);
-    Set<TreeNode> files = new HashSet<>();
-    files.add(node);
-
-    DescObjMetadata dom = null;
-    if (metaType == MetadataTypes.TEMPLATE)
-      dom = new DescObjMetadata(metaType, templateType, templateVersion);
-    else if (metaPath != null)
-      dom = new DescObjMetadata(metaType, metaPath);
-
-    SipRepresentation rep = new SipRepresentation("rep1");
-    rep.setFiles(files);
-    Set<SipRepresentation> repSet = new HashSet<>();
-    repSet.add(rep);
-    SipPreview sipPreview = new SipPreview(path.getFileName().toString(), repSet, dom);
-    node.addObserver(sipPreview);
-
-    sips.add(sipPreview);
-    sipsMap.put(sipPreview.getId(), sipPreview);
-    added++;
+    createSip(path, node);
 
     long now = System.currentTimeMillis();
     if (now - lastUIUpdate > UPDATEFREQUENCY) {

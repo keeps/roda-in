@@ -4,6 +4,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.filters.ContentFilter;
+import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.utils.TreeVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -203,6 +204,51 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
   public void end() {
     setChanged();
     notifyObservers("Finished");
+  }
+
+  protected SipPreview createSip(Path path, TreeNode node) {
+    Path metaPath = getMetadataPath(path);
+
+    Set<TreeNode> filesSet = new HashSet<>();
+    // start as false otherwise when there's only files they would be jumped
+    boolean onlyFiles = false;
+    // check if there's a folder with only files inside
+    // in that case we will jump the folder and add the files to the root of the
+    // representation
+    if (Files.isDirectory(node.getPath())) {
+      onlyFiles = true;
+      for (String pt : node.getKeys()) {
+        if (Files.isDirectory(Paths.get(pt))) {
+          onlyFiles = false;
+          break;
+        }
+      }
+    }
+    if (onlyFiles) {
+      filesSet.addAll(node.getChildren().values());
+    } else {
+      filesSet.add(node);
+    }
+    // create a new Sip
+    DescObjMetadata metadata = null;
+    if (metaType == MetadataTypes.TEMPLATE)
+      metadata = new DescObjMetadata(metaType, templateType, templateVersion);
+    else {
+      if (metaPath != null)
+        metadata = new DescObjMetadata(metaType, metaPath);
+    }
+
+    SipRepresentation rep = new SipRepresentation("rep1");
+    rep.setFiles(filesSet);
+    Set<SipRepresentation> repSet = new HashSet<>();
+    repSet.add(rep);
+    SipPreview sipPreview = new SipPreview(path.getFileName().toString(), repSet, metadata);
+    node.addObserver(sipPreview);
+
+    sips.add(sipPreview);
+    sipsMap.put(sipPreview.getId(), sipPreview);
+    added++;
+    return sipPreview;
   }
 
   protected Path getMetadataPath(Path sipPath) {

@@ -4,7 +4,6 @@ import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.filters.ContentFilter;
-import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.slf4j.Logger;
@@ -212,32 +211,15 @@ public class SipsWithStructure extends SipPreviewCreator {
 
   private void createSip(TreeNode node) {
     Path path = node.getPath();
-    Path metaPath = getMetadataPath(path);
-    // create a new Sip
-    Set<TreeNode> files = new HashSet<>();
-    files.add(node);
-
-    DescObjMetadata metadata;
-    if (metaType == MetadataTypes.TEMPLATE)
-      metadata = new DescObjMetadata(metaType, templateType, templateVersion);
-    else
-      metadata = new DescObjMetadata(metaType, metaPath);
-
-    SipRepresentation rep = new SipRepresentation("rep1");
-    rep.setFiles(files);
-    Set<SipRepresentation> repSet = new HashSet<>();
-    repSet.add(rep);
-    SipPreview sipPreview = new SipPreview(path.getFileName().toString(), repSet, metadata);
-    node.addObserver(sipPreview);
+    SipPreview sipPreview = createSip(path, node);
 
     // set the SIP's description level as file if there's more than one file in
     // the content
-    if (node.getAllFiles().size() > 1) {
+    if (node.getChildren().size() > 1) {
       sipPreview.setDescriptionlevel("file");
     }
 
     sipPreviewMap.put(path, sipPreview);
-    added++;
   }
 
   public Map<Path, PseudoItem> getRecord() {

@@ -71,7 +71,8 @@ public class SchemaPane extends BorderPane {
   /**
    * Creates a new SchemaPane object.
    *
-   * @param stage The primary stage of the application.
+   * @param stage
+   *          The primary stage of the application.
    */
   public SchemaPane(Stage stage) {
     super();
@@ -300,8 +301,9 @@ public class SchemaPane extends BorderPane {
    * Creates a ClassificationSchema object from the InputStream and builds a
    * tree using it.
    *
-   * @param stream The stream with the JSON file used to create the
-   *               ClassificationSchema
+   * @param stream
+   *          The stream with the JSON file used to create the
+   *          ClassificationSchema
    */
   public void loadClassificationSchemeFromStream(InputStream stream) {
     try {
@@ -357,9 +359,10 @@ public class SchemaPane extends BorderPane {
           }
           roots.add(nodes.get(descObj.getId()));
         } else {
-          // Get a list with the items where the id equals the node's parent's id
+          // Get a list with the items where the id equals the node's parent's
+          // id
           List<DescriptionObject> parents = dos.stream().filter(p -> p.getId().equals(descObj.getParentId()))
-              .collect(Collectors.toList());
+            .collect(Collectors.toList());
           // If the input file is well formed, there should be one item in the
           // list, no more and no less
           if (parents.size() != 1) {
@@ -370,7 +373,8 @@ public class SchemaPane extends BorderPane {
           }
           DescriptionObject parent = parents.get(0);
           SchemaNode parentNode;
-          // If the parent node hasn't been processed yet, add it to the nodes map
+          // If the parent node hasn't been processed yet, add it to the nodes
+          // map
           if (nodes.containsKey(parent.getId())) {
             parentNode = nodes.get(parent.getId());
           } else {
@@ -378,7 +382,8 @@ public class SchemaPane extends BorderPane {
             nodes.put(parent.getId(), parentNode);
           }
           SchemaNode node;
-          // If the node hasn't been added yet, create it and add it to the nodes
+          // If the node hasn't been added yet, create it and add it to the
+          // nodes
           // map
           if (nodes.containsKey(descObj.getId())) {
             node = nodes.get(descObj.getId());
@@ -445,7 +450,6 @@ public class SchemaPane extends BorderPane {
     bottom.setPadding(new Insets(10, 10, 10, 10));
 
     Button removeLevel = new Button(I18n.t("SchemaPane.remove"));
-    removeLevel.getStyleClass().add("button-secondary");
     removeLevel.setId("removeLevel");
     removeLevel.setMinWidth(100);
     removeLevel.setOnAction(event -> {
@@ -462,7 +466,6 @@ public class SchemaPane extends BorderPane {
     });
 
     Button addLevel = new Button(I18n.t("SchemaPane.add"));
-    addLevel.getStyleClass().add("button-secondary");
     addLevel.setMinWidth(100);
 
     addLevel.setOnAction(event -> addNewLevel());

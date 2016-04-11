@@ -74,7 +74,7 @@ public class TreeNode extends Observable {
   /**
    * @return The direct children of the TreeNode.
    */
-  public Map<String, TreeNode> getAllFiles() {
+  public Map<String, TreeNode> getChildren() {
     return files;
   }
 
