@@ -45,10 +45,7 @@ public class AppProperties {
     Path configPath = rodainPath.resolve("config.properties");
 
     try {
-      // create folder in home if it doesn't exist
-      if (!Files.exists(rodainPath)) {
-        rodainPath.toFile().mkdir();
-      }
+      createFolderStructure();
       // copy config file
       if (!Files.exists(configPath)) {
         Files.copy(ClassLoader.getSystemResourceAsStream("properties/config.properties"), configPath);
@@ -81,16 +78,22 @@ public class AppProperties {
       for (String templ : templates) {
         String templateName = "metadata.template." + templ.trim() + ".file";
         String fileName = config.getString(templateName);
-        Files.copy(ClassLoader.getSystemResourceAsStream("templates/" + fileName), rodainPath.resolve(fileName),
-          StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(ClassLoader.getSystemResourceAsStream("templates/" + fileName),
+          rodainPath.resolve("samples").resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+        // copy the sample to the templates folder too, if it doesn't exist
+        // already
+        if (!Files.exists(rodainPath.resolve("templates").resolve(fileName))) {
+          Files.copy(ClassLoader.getSystemResourceAsStream("templates/" + fileName),
+            rodainPath.resolve("templates").resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+        }
 
         String schemaName = "metadata.template." + templ.trim() + ".schema";
         String schemaFileName = config.getString(schemaName);
         Files.copy(ClassLoader.getSystemResourceAsStream("templates/" + schemaFileName),
-          rodainPath.resolve(schemaFileName), StandardCopyOption.REPLACE_EXISTING);
+          rodainPath.resolve("schemas").resolve(schemaFileName), StandardCopyOption.REPLACE_EXISTING);
       }
       // ensure that the xlink.xsd file is in the application home folder
-      Files.copy(ClassLoader.getSystemResourceAsStream("xlink.xsd"), rodainPath.resolve("xlink.xsd"),
+      Files.copy(ClassLoader.getSystemResourceAsStream("xlink.xsd"), rodainPath.resolve("schemas").resolve("xlink.xsd"),
         StandardCopyOption.REPLACE_EXISTING);
 
       // get all schema files in the roda-in home directory
@@ -131,6 +134,29 @@ public class AppProperties {
     } finally {
       // force the default locale for the JVM
       Locale.setDefault(locale);
+    }
+  }
+
+  private static void createFolderStructure() {
+    // create folder in home if it doesn't exist
+    if (!Files.exists(rodainPath)) {
+      rodainPath.toFile().mkdir();
+    }
+    // create schemas folder
+    if (!Files.exists(rodainPath.resolve("schemas"))) {
+      rodainPath.resolve("schemas").toFile().mkdir();
+    }
+    // create templates folder
+    if (!Files.exists(rodainPath.resolve("templates"))) {
+      rodainPath.resolve("templates").toFile().mkdir();
+    }
+    // create samples folder
+    if (!Files.exists(rodainPath.resolve("samples"))) {
+      rodainPath.resolve("samples").toFile().mkdir();
+    }
+    // create log folder
+    if (!Files.exists(rodainPath.resolve("log"))) {
+      rodainPath.resolve("log").toFile().mkdir();
     }
   }
 
@@ -211,7 +237,7 @@ public class AppProperties {
   public static Path getSchemaPath(String templateName) {
     String completeKey = "metadata.template." + templateName + ".schema";
     if (ext_config.containsKey(completeKey)) {
-      Path filePath = rodainPath.resolve(ext_config.getString(completeKey));
+      Path filePath = rodainPath.resolve("schemas").resolve(ext_config.getString(completeKey));
       if (Files.exists(filePath)) {
         return filePath;
       }
@@ -227,7 +253,7 @@ public class AppProperties {
   private static String getFile(String completeKey) {
     try {
       if (ext_config.containsKey(completeKey)) {
-        Path filePath = rodainPath.resolve(ext_config.getString(completeKey));
+        Path filePath = rodainPath.resolve("templates").resolve(ext_config.getString(completeKey));
         if (Files.exists(filePath)) {
           return Utils.readFile(filePath.toString(), Charset.defaultCharset());
         }
