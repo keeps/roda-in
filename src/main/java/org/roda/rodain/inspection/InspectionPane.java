@@ -1139,8 +1139,10 @@ public class InspectionPane extends BorderPane {
   }
 
   private void updateTextArea(String content) {
-    metaText.replaceText(content);
-    metaText.setStyleSpans(0, XMLEditor.computeHighlighting(content));
+    Platform.runLater(() -> {
+      metaText.replaceText(content);
+      metaText.setStyleSpans(0, XMLEditor.computeHighlighting(content));
+    });
   }
 
   /**

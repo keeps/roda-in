@@ -28,6 +28,7 @@ import javafx.stage.StageStyle;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.RodaIn;
+import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.rules.ui.RuleModalController;
 import org.roda.rodain.schema.ClassificationSchema;
@@ -70,8 +71,7 @@ public class SchemaPane extends BorderPane {
   /**
    * Creates a new SchemaPane object.
    *
-   * @param stage
-   *          The primary stage of the application.
+   * @param stage The primary stage of the application.
    */
   public SchemaPane(Stage stage) {
     super();
@@ -299,10 +299,9 @@ public class SchemaPane extends BorderPane {
   /**
    * Creates a ClassificationSchema object from the InputStream and builds a
    * tree using it.
-   * 
-   * @param stream
-   *          The stream with the JSON file used to create the
-   *          ClassificationSchema
+   *
+   * @param stream The stream with the JSON file used to create the
+   *               ClassificationSchema
    */
   public void loadClassificationSchemeFromStream(InputStream stream) {
     try {
@@ -347,65 +346,69 @@ public class SchemaPane extends BorderPane {
     Map<String, SchemaNode> nodes = new HashMap<>();
     Set<SchemaNode> roots = new HashSet<>();
 
-    for (DescriptionObject descObj : dos) {
-      // Check if the node is a root node
-      if (descObj.getParentId() == null) {
-        // Create a new node if it hasn't been created
-        if (!nodes.containsKey(descObj.getId())) {
-          SchemaNode root = new SchemaNode(descObj);
-          nodes.put(descObj.getId(), root);
-        }
-        roots.add(nodes.get(descObj.getId()));
-      } else {
-        // Get a list with the items where the id equals the node's parent's id
-        List<DescriptionObject> parents = dos.stream().filter(p -> p.getId().equals(descObj.getParentId()))
-          .collect(Collectors.toList());
-        // If the input file is well formed, there should be one item in the
-        // list, no more and no less
-        if (parents.size() != 1) {
-          String format = "The node \"%s\" has %d parents";
-          String message = String.format(format, descObj.getTitle(), parents.size());
-          log.info("Error creating the scheme tree", new MalformedSchemaException(message));
-          continue;
-        }
-        DescriptionObject parent = parents.get(0);
-        SchemaNode parentNode;
-        // If the parent node hasn't been processed yet, add it to the nodes map
-        if (nodes.containsKey(parent.getId())) {
-          parentNode = nodes.get(parent.getId());
+    try {
+      for (DescriptionObject descObj : dos) {
+        // Check if the node is a root node
+        if (descObj.getParentId() == null) {
+          // Create a new node if it hasn't been created
+          if (!nodes.containsKey(descObj.getId())) {
+            SchemaNode root = new SchemaNode(descObj);
+            nodes.put(descObj.getId(), root);
+          }
+          roots.add(nodes.get(descObj.getId()));
         } else {
-          parentNode = new SchemaNode(parent);
-          nodes.put(parent.getId(), parentNode);
+          // Get a list with the items where the id equals the node's parent's id
+          List<DescriptionObject> parents = dos.stream().filter(p -> p.getId().equals(descObj.getParentId()))
+              .collect(Collectors.toList());
+          // If the input file is well formed, there should be one item in the
+          // list, no more and no less
+          if (parents.size() != 1) {
+            String format = "The node \"%s\" has %d parents";
+            String message = String.format(format, descObj.getTitle(), parents.size());
+            log.info("Error creating the scheme tree", new MalformedSchemaException(message));
+            continue;
+          }
+          DescriptionObject parent = parents.get(0);
+          SchemaNode parentNode;
+          // If the parent node hasn't been processed yet, add it to the nodes map
+          if (nodes.containsKey(parent.getId())) {
+            parentNode = nodes.get(parent.getId());
+          } else {
+            parentNode = new SchemaNode(parent);
+            nodes.put(parent.getId(), parentNode);
+          }
+          SchemaNode node;
+          // If the node hasn't been added yet, create it and add it to the nodes
+          // map
+          if (nodes.containsKey(descObj.getId())) {
+            node = nodes.get(descObj.getId());
+          } else {
+            node = new SchemaNode(descObj);
+            nodes.put(descObj.getId(), node);
+          }
+          parentNode.getChildren().add(node);
+          parentNode.addChildrenNode(node);
         }
-        SchemaNode node;
-        // If the node hasn't been added yet, create it and add it to the nodes
-        // map
-        if (nodes.containsKey(descObj.getId())) {
-          node = nodes.get(descObj.getId());
-        } else {
-          node = new SchemaNode(descObj);
-          nodes.put(descObj.getId(), node);
-        }
-        parentNode.getChildren().add(node);
-        parentNode.addChildrenNode(node);
       }
-    }
 
-    // Add all the root nodes as children of the hidden rootNode
-    for (SchemaNode sn : roots) {
-      rootNode.getChildren().add(sn);
-      schemaNodes.add(sn);
+      // Add all the root nodes as children of the hidden rootNode
+      for (SchemaNode sn : roots) {
+        rootNode.getChildren().add(sn);
+        schemaNodes.add(sn);
+      }
+      // if there were no nodes in the file, show the help panel
+      if (roots.isEmpty()) {
+        setTop(new HBox());
+        setCenter(centerHelp);
+        setBottom(new HBox());
+      } else {
+        sortRootChildren();
+        hasClassificationScheme.setValue(true);
+      }
+      modifiedPlan = false;
+    } catch (Exception e) {
+      log.error("Error updating the classification plan", e);
     }
-    // if there were no nodes in the file, show the help panel
-    if (roots.isEmpty()) {
-      setTop(new HBox());
-      setCenter(centerHelp);
-      setBottom(new HBox());
-    } else {
-      sortRootChildren();
-      hasClassificationScheme.setValue(true);
-    }
-    modifiedPlan = false;
   }
 
   private boolean confirmUpdate() {
@@ -477,35 +480,49 @@ public class SchemaPane extends BorderPane {
   private void confirmRemove(List<TreeItem<String>> selectedItems, ButtonType type) {
     if (type.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
       treeView.getSelectionModel().clearSelection();
+      Set<SipPreview> sipNodes = new HashSet<>();
+      Set<SipPreview> fromRules = new HashSet<>();
       for (TreeItem<String> selected : selectedItems) {
         if (selected instanceof SipPreviewNode) {
           SipPreview currentSIP = ((SipPreviewNode) selected).getSip();
-          RuleModalController.removeSipPreview(currentSIP);
-          Task<Void> removeTask = new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
-              currentSIP.removeSIP();
-              return null;
-            }
-          };
-          new Thread(removeTask).start();
+          sipNodes.add(currentSIP);
         }
         if (selected instanceof SchemaNode) {
+          for (Rule r : ((SchemaNode) selected).getRules()) {
+            fromRules.addAll(r.getSips());
+          }
           // remove all the rules under this SchemaNode
           ((SchemaNode) selected).remove();
         }
         // remove the node from the tree
         removeNode(selected);
       }
+
+      sipNodes.removeAll(fromRules);
+
+      for (SipPreview currentSIP : sipNodes) {
+        RuleModalController.removeSipPreview(currentSIP);
+        Task<Void> removeTask = new Task<Void>() {
+          @Override
+          protected Void call() throws Exception {
+            currentSIP.removeSIP();
+            return null;
+          }
+        };
+        new Thread(removeTask).start();
+      }
     }
   }
 
   private void removeNode(TreeItem<String> selected) {
     TreeItem parent = selected.getParent();
-    if (parent instanceof SchemaNode) {
-      ((SchemaNode) parent).removeChild(selected);
-    } else
-      parent.getChildren().remove(selected);
+    if (parent != null) {
+      if (parent instanceof SchemaNode) {
+        ((SchemaNode) parent).removeChild(selected);
+        parent.getChildren().remove(selected);
+      } else
+        parent.getChildren().remove(selected);
+    }
     schemaNodes.remove(selected);
     treeView.getSelectionModel().clearSelection();
   }
@@ -706,8 +723,7 @@ public class SchemaPane extends BorderPane {
             schemaNode.getDob().setParentId(node.getDob().getId());
             node.sortChildren();
           }
-        }
-        if (db.getString().startsWith("sip preview")) {
+        } else if (db.getString().startsWith("sip preview")) {
           SchemaNode target = null;
           if (treeItem instanceof SipPreviewNode) {
             target = (SchemaNode) treeItem.getParent();
