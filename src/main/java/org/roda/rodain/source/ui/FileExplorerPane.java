@@ -48,7 +48,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
   private VBox centerHelp;
   private Button ignore;
 
-  private TreeItem<String> dummyRoot;
+  private SourceTreeDirectory dummyRoot;
   private Map<String, SourceTreeDirectory> realRoots;
   private boolean rootSelected, selectedIsIgnored;
 
@@ -122,7 +122,6 @@ public class FileExplorerPane extends BorderPane implements Observer {
     bottom.setPadding(new Insets(10, 10, 10, 10));
 
     ignore = new Button(I18n.t("ignore"));
-    ignore.getStyleClass().add("button-secondary");
     ignore.setId("bt_ignore");
     ignore.setMinWidth(100);
     ignore.setOnAction(event -> {
@@ -208,7 +207,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     treeBox.setPadding(new Insets(10, 0, 0, 0));
     Separator separatorBottom = new Separator();
 
-    dummyRoot = new TreeItem<>();
+    dummyRoot = new SourceTreeDirectory();
     realRoots = new HashMap<>();
 
     treeView = new TreeView<>();

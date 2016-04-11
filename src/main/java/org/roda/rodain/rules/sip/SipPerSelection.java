@@ -3,15 +3,11 @@ package org.roda.rodain.rules.sip;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.filters.ContentFilter;
-import org.roda.rodain.schema.DescObjMetadata;
 
-import java.io.File;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
-import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -109,30 +105,6 @@ public class SipPerSelection extends SipPreviewCreator {
     }
   }
 
-  private void createSip(Path path, TreeNode node) {
-    Path metaPath = getMetadataPath(path);
-    // create a new Sip
-    Set<TreeNode> files = new HashSet<>();
-    files.add(node);
-
-    DescObjMetadata metadata;
-    if (metaType == MetadataTypes.TEMPLATE)
-      metadata = new DescObjMetadata(metaType, templateType, templateVersion);
-    else
-      metadata = new DescObjMetadata(metaType, metaPath);
-
-    SipRepresentation rep = new SipRepresentation("rep1");
-    rep.setFiles(files);
-    Set<SipRepresentation> repSet = new HashSet<>();
-    repSet.add(rep);
-    SipPreview sipPreview = new SipPreview(path.getFileName().toString(), repSet, metadata);
-    node.addObserver(sipPreview);
-
-    sips.add(sipPreview);
-    sipsMap.put(sipPreview.getId(), sipPreview);
-    added++;
-  }
-
   /**
    * If the path is in the selected set of paths creates a new SIP using the
    * file, otherwise, adds the visited file to its parent.
@@ -154,31 +126,5 @@ public class SipPerSelection extends SipPreviewCreator {
       }
       nodes.peekLast().add(path);
     }
-  }
-
-  private Path getMetadataPath(Path sipPath) {
-    Path result = null;
-    if (metaType == MetadataTypes.SINGLE_FILE) {
-      result = metadataPath;
-    } else if (metaType == MetadataTypes.SAME_DIRECTORY) {
-      result = searchMetadata(sipPath);
-    }
-    return result;
-  }
-
-  private Path searchMetadata(Path sipPath) {
-    File dir = sipPath.toFile();
-    if (!dir.isDirectory())
-      dir = sipPath.getParent().toFile();
-
-    PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + templateType);
-    File[] foundFiles = dir.listFiles((dir1, name) -> {
-      return matcher.matches(Paths.get(name));
-    });
-
-    if (foundFiles != null && foundFiles.length > 0) {
-      return foundFiles[0].toPath();
-    }
-    return null;
   }
 }

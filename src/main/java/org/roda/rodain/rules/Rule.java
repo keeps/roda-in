@@ -179,7 +179,7 @@ public class Rule extends Observable implements Observer, Comparable {
    * @see SipSingle
    */
   public TreeVisitor apply() {
-    sips = new HashMap<>();
+    sips = new ConcurrentHashMap<>();
     sipNodes = new ConcurrentHashMap<>();
     schemaNodes = Collections.synchronizedSet(new HashSet<>());
 

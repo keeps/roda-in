@@ -105,7 +105,7 @@ public class SipContentDirectory extends TreeItem<Object> implements InspectionT
     TreeNode parentTreeNode = par.getTreeNode();
     parentTreeNode.remove(treeNode.getPath()); // remove this treeNode from the
     // parent
-    parentTreeNode.addAll(treeNode.getAllFiles()); // add this treeNode's
+    parentTreeNode.addAll(treeNode.getChildren()); // add this treeNode's
     // children to this node's
     // parent
     par.sortChildren();

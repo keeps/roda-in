@@ -98,15 +98,17 @@ public class SipSingle extends SipPreviewCreator {
    */
   @Override
   public void end() {
-    Path metaPath = getMetadata();
     // create a new Sip
     Path path = Paths.get(getStartPath());
+    Path metaPath = getMetadataPath(path);
 
-    DescObjMetadata metadata;
+    DescObjMetadata metadata = null;
     if (metaType == MetadataTypes.TEMPLATE)
       metadata = new DescObjMetadata(metaType, templateType, templateVersion);
-    else
-      metadata = new DescObjMetadata(metaType, metaPath);
+    else {
+      if (metaPath != null)
+        metadata = new DescObjMetadata(metaType, metaPath);
+    }
 
     SipRepresentation rep = new SipRepresentation("rep1");
     rep.setFiles(files);

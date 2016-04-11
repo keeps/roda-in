@@ -128,7 +128,15 @@ public class DescriptionObject extends Observable {
       Map<String, String> data = new HashMap<>();
       Map<String, MetadataValue> values = getMetadataValueMap(dom);
       if (values != null) {
-        values.forEach((s, metadataValue) -> data.put(s, metadataValue.getValue()));
+        values.forEach((s, metadataValue) -> {
+          String val = metadataValue.getValue();
+          if (val != null) {
+            val = val.replaceAll("\\s", "");
+            if (!"".equals(val)) {
+              data.put(s, metadataValue.getValue());
+            }
+          }
+        });
       }
       content = tmpl.execute(data);
       // we need to clean the '\r' character in windows,

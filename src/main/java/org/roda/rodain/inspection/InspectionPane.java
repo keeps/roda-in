@@ -665,7 +665,8 @@ public class InspectionPane extends BorderPane {
     HBox.setHgrow(space, Priority.ALWAYS);
 
     sipDocumentation = new SipDocumentationTreeView();
-
+    docsRoot = new SipContentDirectory(new TreeNode(Paths.get("")), null);
+    sipDocumentation.setRoot(docsRoot);
     toggleDocumentation = new ToggleButton();
     toggleDocumentation.setTooltip(new Tooltip(I18n.t("documentation")));
     Platform.runLater(() -> {
@@ -693,7 +694,9 @@ public class InspectionPane extends BorderPane {
         }
       } else { // from the documentation to the representations
         toggleDocumentation.setTooltip(new Tooltip(I18n.t("documentation")));
+        dataBox.getChildren().clear();
         dataBox.getChildren().add(sipFiles);
+        content.setCenter(dataBox);
         content.setBottom(contentBottom);
       }
     });
@@ -827,6 +830,8 @@ public class InspectionPane extends BorderPane {
       sipRoot = newRoot;
       if (active) {
         sipFiles.setRoot(sipRoot);
+        dataBox.getChildren().clear();
+        dataBox.getChildren().add(sipFiles);
         content.setCenter(dataBox);
         content.setBottom(contentBottom);
       }
@@ -835,8 +840,7 @@ public class InspectionPane extends BorderPane {
   }
 
   private void createDocumentation(SipPreviewNode sip, boolean active) {
-    SipContentDirectory newRoot = new SipContentDirectory(new TreeNode(Paths.get("")), null);
-
+    docsRoot.getChildren().clear();
     if (active) {
       content.setCenter(loadingPane);
       content.setBottom(new HBox());
@@ -846,19 +850,21 @@ public class InspectionPane extends BorderPane {
       @Override
       protected Void call() throws Exception {
         for (TreeNode treeNode : sip.getSip().getDocumentation()) {
-          TreeItem<Object> startingItem = recCreateSipContent(treeNode, newRoot);
+          TreeItem<Object> startingItem = recCreateSipContent(treeNode, docsRoot);
           startingItem.setExpanded(true);
-          newRoot.getChildren().add(startingItem);
+          docsRoot.getChildren().add(startingItem);
         }
-        newRoot.sortChildren();
+        docsRoot.sortChildren();
         return null;
       }
     };
     docsTask.setOnSucceeded(event -> {
-      docsRoot = newRoot;
       if (active) {
-        sipDocumentation.setRoot(docsRoot);
         if (!docsRoot.getChildren().isEmpty()) {
+          if (!dataBox.getChildren().contains(sipDocumentation)) {
+            dataBox.getChildren().clear();
+            dataBox.getChildren().add(sipDocumentation);
+          }
           content.setCenter(dataBox);
           content.setBottom(docsBottom);
         } else {
@@ -867,6 +873,7 @@ public class InspectionPane extends BorderPane {
         }
       }
     });
+
     new Thread(docsTask).start();
   }
 
@@ -1047,15 +1054,6 @@ public class InspectionPane extends BorderPane {
     boolean documentation = toggleDocumentation.isSelected();
     createContent(sip, !documentation);
     createDocumentation(sip, documentation);
-    if (documentation) {
-      if (docsRoot.getChildren().isEmpty()) {
-        content.setBottom(new HBox());
-      } else {
-        content.setBottom(docsBottom);
-      }
-    } else {
-      content.setBottom(contentBottom);
-    }
 
     center.getChildren().addAll(metadata, content);
     setCenter(center);
@@ -1139,8 +1137,10 @@ public class InspectionPane extends BorderPane {
   }
 
   private void updateTextArea(String content) {
-    metaText.replaceText(content);
-    metaText.setStyleSpans(0, XMLEditor.computeHighlighting(content));
+    Platform.runLater(() -> {
+      metaText.replaceText(content);
+      metaText.setStyleSpans(0, XMLEditor.computeHighlighting(content));
+    });
   }
 
   /**

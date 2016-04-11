@@ -396,7 +396,7 @@ public class RuleModalPane extends BorderPane {
           if (assocList.getSelectionModel().getSelectedIndex() != -1) {
             setCenter(boxMetadata);
             currentState = States.METADATA;
-            enableMetaOptions();
+            // enableMetaOptions();
             buttons.getChildren().clear();
             buttons.getChildren().addAll(btCancel, space, btBack, btContinue);
             btContinue.setText(I18n.t("confirm"));
@@ -452,7 +452,7 @@ public class RuleModalPane extends BorderPane {
         if (currentState == States.ASSOCIATION) {
           setCenter(boxMetadata);
           currentState = States.METADATA;
-          enableMetaOptions();
+          // enableMetaOptions();
         } else if (currentState == States.METADATA) {
           setCenter(boxAssociation);
           currentState = States.ASSOCIATION;

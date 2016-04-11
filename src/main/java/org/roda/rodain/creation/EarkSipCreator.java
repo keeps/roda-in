@@ -164,7 +164,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
       List<String> newRelativePath = new ArrayList<>(relativePath);
       newRelativePath.add(tn.getPath().getFileName().toString());
       // recursive call to all the node's children
-      for (TreeNode node : tn.getAllFiles().values()) {
+      for (TreeNode node : tn.getChildren().values()) {
         addFileToRepresentation(node, newRelativePath, rep);
       }
     } else {
@@ -182,7 +182,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
       List<String> newRelativePath = new ArrayList<>(relativePath);
       newRelativePath.add(tn.getPath().getFileName().toString());
       // recursive call to all the node's children
-      for (TreeNode node : tn.getAllFiles().values()) {
+      for (TreeNode node : tn.getChildren().values()) {
         addDocToZip(node, newRelativePath, earkSip);
       }
     } else {

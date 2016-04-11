@@ -186,7 +186,7 @@ public class BagitSipCreator extends SimpleSipCreator {
     Path nodePath = node.getPath();
     long result = 0;
     if (Files.isDirectory(nodePath)) {
-      for (TreeNode tn : node.getAllFiles().values()) {
+      for (TreeNode tn : node.getChildren().values()) {
         result += nodeSize(tn);
       }
     } else {
@@ -208,7 +208,7 @@ public class BagitSipCreator extends SimpleSipCreator {
     if (Files.isDirectory(nodePath)) {
       Path directory = dest.resolve(nodePath.getFileName().toString());
       new File(directory.toString()).mkdir();
-      for (TreeNode tn : node.getAllFiles().values()) {
+      for (TreeNode tn : node.getChildren().values()) {
         recCreateFiles(tn, directory);
       }
     } else {

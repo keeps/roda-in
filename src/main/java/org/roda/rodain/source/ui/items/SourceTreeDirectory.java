@@ -1,17 +1,9 @@
 package org.roda.rodain.source.ui.items;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
-
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.filters.IgnoredFilter;
@@ -19,6 +11,13 @@ import org.roda.rodain.source.representation.SourceDirectory;
 import org.roda.rodain.source.representation.SourceItem;
 import org.roda.rodain.source.ui.ExpandedEventHandler;
 import org.roda.rodain.source.ui.FileExplorerPane;
+
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -74,6 +73,16 @@ public class SourceTreeDirectory extends SourceTreeItem {
         source.expanded = false;
       }
     });
+  }
+
+  public SourceTreeDirectory() {
+    super("", null);
+    fullPath = "";
+    directory = null;
+    state = SourceTreeItemState.NORMAL;
+    ignored = new HashSet<>();
+    mapped = new HashSet<>();
+    files = new HashSet<>();
   }
 
   /**
