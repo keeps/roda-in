@@ -98,9 +98,9 @@ public class SipSingle extends SipPreviewCreator {
    */
   @Override
   public void end() {
-    Path metaPath = getMetadata();
     // create a new Sip
     Path path = Paths.get(getStartPath());
+    Path metaPath = getMetadataPath(path);
 
     DescObjMetadata metadata;
     if (metaType == MetadataTypes.TEMPLATE)

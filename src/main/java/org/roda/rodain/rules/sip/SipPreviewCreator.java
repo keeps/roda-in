@@ -1,11 +1,16 @@
 package org.roda.rodain.rules.sip;
 
+import org.apache.commons.io.FilenameUtils;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.filters.ContentFilter;
 import org.roda.rodain.utils.TreeVisitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.nio.file.Path;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
@@ -14,6 +19,7 @@ import java.util.*;
  * @since 20-10-2015.
  */
 public class SipPreviewCreator extends Observable implements TreeVisitor {
+  private static final Logger log = LoggerFactory.getLogger(SipPreviewCreator.class.getName());
   private String startPath;
   // This map is returned, in full, to the SipPreviewNode when there's an update
   protected Map<String, SipPreview> sipsMap;
@@ -30,6 +36,7 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
   protected MetadataTypes metaType;
   protected Path metadataPath;
   protected String templateType, templateVersion;
+  private Map<String, Set<Path>> metadata;
 
   protected boolean cancelled = false;
 
@@ -60,6 +67,28 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
     this.templateType = templateType;
     this.templateVersion = templateVersion;
     files = new HashSet<>();
+    metadata = new HashMap<>();
+
+    if (metadataPath != null && metaType == MetadataTypes.DIFF_DIRECTORY) {
+      try {
+        Files.walkFileTree(metadataPath, new SimpleFileVisitor<Path>() {
+          @Override
+          public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+            String key = FilenameUtils.removeExtension(file.getFileName().toString());
+            Set<Path> paths = metadata.get(key);
+            if (paths == null)
+              paths = new HashSet<>();
+            paths.add(file);
+            metadata.put(key, paths);
+            return FileVisitResult.CONTINUE;
+          }
+        });
+      } catch (AccessDeniedException e) {
+        log.info("Access denied to file", e);
+      } catch (IOException e) {
+        log.error("Error walking the file tree", e);
+      }
+    }
   }
 
   /**
@@ -176,10 +205,53 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
     notifyObservers("Finished");
   }
 
-  protected Path getMetadata() {
+  protected Path getMetadataPath(Path sipPath) {
+    Path result;
+    switch (metaType) {
+      case SINGLE_FILE:
+        result = metadataPath;
+        break;
+      case DIFF_DIRECTORY:
+        result = getFileFromDir(sipPath);
+        break;
+      case SAME_DIRECTORY:
+        result = searchMetadata(sipPath);
+        break;
+      default:
+        return null;
+    }
+    return result;
+  }
+
+  private Path searchMetadata(Path sipPath) {
+    File dir = sipPath.toFile();
+    if (!dir.isDirectory())
+      dir = sipPath.getParent().toFile();
+
+    PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + templateType);
+    File[] foundFiles = dir.listFiles((dir1, name) -> {
+      return matcher.matches(Paths.get(name));
+    });
+
+    if (foundFiles != null && foundFiles.length > 0) {
+      return foundFiles[0].toPath();
+    }
+    return null;
+  }
+
+  private Path getFileFromDir(Path path) {
+    String fileNameWithExtension = path.getFileName().toString();
+    String fileName = FilenameUtils.removeExtension(fileNameWithExtension);
+
+    Set<Path> paths = metadata.get(fileName);
     Path result = null;
-    if (metaType == MetadataTypes.SINGLE_FILE)
-      result = metadataPath;
+    if (paths != null) {
+      for (Path p : paths) {
+        if (!p.getFileName().toString().equals(fileNameWithExtension))
+          result = p;
+
+      }
+    }
     return result;
   }
 

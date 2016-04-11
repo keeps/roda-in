@@ -1,6 +1,5 @@
 package org.roda.rodain.rules.sip;
 
-import org.apache.commons.io.FilenameUtils;
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.MetadataTypes;
 import org.roda.rodain.rules.TreeNode;
@@ -10,13 +9,10 @@ import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -27,8 +23,6 @@ public class SipPerFile extends SipPreviewCreator {
   private static final Logger log = LoggerFactory.getLogger(SipPerFile.class.getName());
   private static final int UPDATEFREQUENCY = 500; // in milliseconds
   private long lastUIUpdate = 0;
-
-  private Map<String, Set<Path>> metadata;
 
   /**
    * Creates a new SipPreviewCreator where there's a new SIP created for each
@@ -48,28 +42,6 @@ public class SipPerFile extends SipPreviewCreator {
   public SipPerFile(String id, Set<ContentFilter> filters, MetadataTypes metaType, Path metadataPath,
     String templateType, String templateVersion) {
     super(id, filters, metaType, metadataPath, templateType, templateVersion);
-    metadata = new HashMap<>();
-
-    if (metadataPath != null && metaType == MetadataTypes.DIFF_DIRECTORY) {
-      try {
-        Files.walkFileTree(metadataPath, new SimpleFileVisitor<Path>() {
-          @Override
-          public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-            String key = FilenameUtils.removeExtension(file.getFileName().toString());
-            Set<Path> paths = metadata.get(key);
-            if (paths == null)
-              paths = new HashSet<>();
-            paths.add(file);
-            metadata.put(key, paths);
-            return FileVisitResult.CONTINUE;
-          }
-        });
-      } catch (AccessDeniedException e) {
-        log.info("Access denied to file", e);
-      } catch (IOException e) {
-        log.error("Error walking the file tree", e);
-      }
-    }
   }
 
   @Override
@@ -176,53 +148,5 @@ public class SipPerFile extends SipPreviewCreator {
       notifyObservers();
       lastUIUpdate = now;
     }
-  }
-
-  private Path getMetadataPath(Path path) {
-    Path result;
-    switch (metaType) {
-      case SINGLE_FILE:
-        result = metadataPath;
-        break;
-      case DIFF_DIRECTORY:
-        result = getFileFromDir(path);
-        break;
-      case SAME_DIRECTORY:
-        result = searchMetadata(path);
-        break;
-      default:
-        return null;
-    }
-    return result;
-  }
-
-  private Path searchMetadata(Path sipPath) {
-    File dir = sipPath.toFile();
-    if (!dir.isDirectory())
-      dir = sipPath.getParent().toFile();
-
-    PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + templateType);
-    File[] foundFiles = dir.listFiles((dir1, name) -> matcher.matches(Paths.get(name)));
-
-    if (foundFiles != null && foundFiles.length > 0) {
-      return foundFiles[0].toPath();
-    }
-    return null;
-  }
-
-  private Path getFileFromDir(Path path) {
-    String fileNameWithExtension = path.getFileName().toString();
-    String fileName = FilenameUtils.removeExtension(fileNameWithExtension);
-
-    Set<Path> paths = metadata.get(fileName);
-    Path result = null;
-    if (paths != null) {
-      for (Path p : paths) {
-        if (!p.getFileName().toString().equals(fileNameWithExtension))
-          result = p;
-
-      }
-    }
-    return result;
   }
 }

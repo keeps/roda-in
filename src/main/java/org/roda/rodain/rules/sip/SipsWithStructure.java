@@ -10,7 +10,6 @@ import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -239,32 +238,6 @@ public class SipsWithStructure extends SipPreviewCreator {
 
     sipPreviewMap.put(path, sipPreview);
     added++;
-  }
-
-  private Path getMetadataPath(Path sipPath) {
-    Path result = null;
-    if (metaType == MetadataTypes.SINGLE_FILE) {
-      result = metadataPath;
-    } else if (metaType == MetadataTypes.SAME_DIRECTORY) {
-      result = searchMetadata(sipPath);
-    }
-    return result;
-  }
-
-  private Path searchMetadata(Path sipPath) {
-    File dir = sipPath.toFile();
-    if (!dir.isDirectory())
-      dir = sipPath.getParent().toFile();
-
-    PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + templateType);
-    File[] foundFiles = dir.listFiles((dir1, name) -> {
-      return matcher.matches(Paths.get(name));
-    });
-
-    if (foundFiles != null && foundFiles.length > 0) {
-      return foundFiles[0].toPath();
-    }
-    return null;
   }
 
   public Map<Path, PseudoItem> getRecord() {
