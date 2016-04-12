@@ -30,9 +30,7 @@ import org.roda.rodain.core.Footer;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.Rule;
-import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
-import org.roda.rodain.rules.sip.SipRepresentation;
 import org.roda.rodain.rules.ui.RuleModalController;
 import org.roda.rodain.schema.ClassificationSchema;
 import org.roda.rodain.schema.DescriptionObject;
@@ -48,9 +46,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -240,6 +235,7 @@ public class SchemaPane extends BorderPane {
           ((SipPreviewNode) newValue).setBlackIconSelected(false);
           forceUpdate(newValue);
           RodaIn.getInspectionPane().update((SipPreviewNode) newValue);
+          Footer.setClassPlanStatus(SchemeItemToString.getInstance().create(newValue));
         }
         if (newValue instanceof SchemaNode) {
           ((SchemaNode) newValue).setBlackIconSelected(false);
@@ -248,15 +244,6 @@ public class SchemaPane extends BorderPane {
         }
       }
     });
-  }
-
-  private void updateFooter(TreeItem item) {
-    StringBuilder sb = new StringBuilder();
-    sb.append(item.getValue()).append(": ");
-    if (item instanceof SipPreviewNode) {
-
-    }
-    Footer.setClassPlanStatus(sb.toString());
   }
 
   private void createRootNode() {

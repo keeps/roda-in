@@ -1,15 +1,18 @@
 package org.roda.rodain.schema.ui;
 
+import javafx.scene.control.TreeItem;
+import org.roda.rodain.core.I18n;
+import org.roda.rodain.rules.TreeNode;
+import org.roda.rodain.rules.sip.SipPreview;
+import org.roda.rodain.rules.sip.SipRepresentation;
+import org.roda.rodain.utils.Utils;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.roda.rodain.rules.TreeNode;
-import org.roda.rodain.rules.sip.SipPreview;
-import org.roda.rodain.rules.sip.SipRepresentation;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -32,9 +35,31 @@ public class SchemeItemToString {
     return instance;
   }
 
-  public String create(SipPreviewNode sipPreviewNode) {
+  public String create(TreeItem<String> item) {
+    files = 0;
+    folders = 0;
+    representations = 0;
+    size = 0;
+    sb = new StringBuilder();
+    sb.append(item.getValue()).append(": ");
+    if (item instanceof SipPreviewNode) {
+      create((SipPreviewNode) item);
+      sb.append(representations).append(" ").append("reps");
+      sb.append(", ");
+      sb.append(folders).append(" ").append(I18n.t("folders"));
+      sb.append(", ");
+      sb.append(files).append(" ").append(I18n.t("files"));
+      sb.append(", ");
+      sb.append(Utils.formatSize(size));
+    } else if (item instanceof SchemaNode) {
+      create((SchemaNode) item);
+    }
+    return sb.toString();
+  }
+
+  private void create(SipPreviewNode sipPreviewNode) {
     SipPreview sip = sipPreviewNode.getSip();
-    representations = sip.getRepresentations().size();
+    representations += sip.getRepresentations().size();
     Set<Path> paths = new HashSet<>();
     for (SipRepresentation rep : sip.getRepresentations()) {
       for (TreeNode tn : rep.getFiles()) {
@@ -42,9 +67,6 @@ public class SchemeItemToString {
         paths.addAll(tn.getFullTreePathsAsPaths());
       }
     }
-    files = 0;
-    folders = 0;
-    size = 0;
     try {
       for (Path p : paths) {
         if (Files.isDirectory(p)) {
@@ -57,5 +79,9 @@ public class SchemeItemToString {
     } catch (IOException e) {
       e.printStackTrace();
     }
+  }
+
+  private void create(SchemaNode schemaNode) {
+
   }
 }
