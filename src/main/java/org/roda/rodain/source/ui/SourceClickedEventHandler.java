@@ -35,17 +35,17 @@ public class SourceClickedEventHandler implements EventHandler<MouseEvent> {
         parent.loadMore();
       } else if (item instanceof SourceTreeDirectory) {
         SourceTreeDirectory directory = (SourceTreeDirectory) item;
-        fep.updateAttributes(directory.getPath());
+        fep.updateAttributes();
         if (directory.getParentDir() == null) {
           fep.rootSelected(true);
         }
-        if(directory.getState() == SourceTreeItemState.IGNORED){
+        if (directory.getState() == SourceTreeItemState.IGNORED) {
           fep.selectedIsIgnored(true);
         }
       } else if (item instanceof SourceTreeFile) {
         SourceTreeFile file = (SourceTreeFile) item;
-        fep.updateAttributes(file.getPath());
-        if(file.getState() == SourceTreeItemState.IGNORED)
+        fep.updateAttributes();
+        if (file.getState() == SourceTreeItemState.IGNORED)
           fep.selectedIsIgnored(true);
       }
     }

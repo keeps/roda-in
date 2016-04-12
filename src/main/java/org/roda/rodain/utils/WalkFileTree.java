@@ -45,10 +45,10 @@ public class WalkFileTree extends Thread {
       final Path path = Paths.get(startPath);
       // walkFileTree doesn't work if the start path is a file, so we call the
       // method directly
-      if (!Files.isDirectory(path)) {
-        handler.visitFile(path, null);
-      } else {
-        try {
+      try {
+        if (!Files.isDirectory(path)) {
+          handler.visitFile(path, Files.readAttributes(path, BasicFileAttributes.class));
+        } else {
           Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
@@ -76,11 +76,11 @@ public class WalkFileTree extends Thread {
               return isTerminated();
             }
           });
-        } catch (AccessDeniedException e) {
-          log.info("Access denied to file", e);
-        } catch (IOException e) {
-          log.error("Error walking the file tree", e);
         }
+      } catch (AccessDeniedException e) {
+        log.info("Access denied to file", e);
+      } catch (IOException e) {
+        log.error("Error walking the file tree", e);
       }
     }
     handler.end();

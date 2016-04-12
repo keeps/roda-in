@@ -1,6 +1,7 @@
 package org.roda.rodain.source.ui;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -27,11 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
 /**
@@ -276,7 +274,9 @@ public class FileExplorerPane extends BorderPane implements Observer {
     PathCollection.addItem(rootNode);
     rootNode.setExpanded(true);
     dummyRoot.getChildren().add(rootNode);
-    updateAttributes(rootPath);
+    Set<String> singlePath = new HashSet<>();
+    singlePath.add(rootPath.toString());
+    updateAttributes(singlePath);
   }
 
   private void alertAddFolder(String oldPath, String newPath) {
@@ -293,47 +293,39 @@ public class FileExplorerPane extends BorderPane implements Observer {
     dlg.show();
   }
 
-  /**
-   * Updates the interface with the attributes of the path in argument.
-   *
-   * @param path
-   *          The path to be used in the update
-   */
-  public void updateAttributes(Path path) {
-    // we need to stop the directory size compute thread to avoid more than one
-    // thread updating the ui at the same time
-    stopComputeThread();
-    try {
-      BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class);
-      if (attr.isDirectory()) {
-        computeSize = new ComputeDirectorySize();
-        computeSize.addObserver(this);
-        Set<String> singlePath = new HashSet<>();
-        singlePath.add(path.toString());
-        computeThread = new WalkFileTree(singlePath, computeSize);
-        computeThread.start();
-      } else
-        updateSize(1, 0, attr.size()); // it's a file
-    } catch (IOException e) {
-      log.error("Error reading file attributes", e);
-    }
+  public void updateAttributes() {
+    ObservableList<TreeItem<String>> items = treeView.getSelectionModel().getSelectedItems();
+    Set<String> paths = new HashSet<>();
+    items.forEach(sourceTreeItem -> paths.add(((SourceTreeItem) sourceTreeItem).getPath()));
+    updateAttributes(paths);
   }
 
   /**
-   * @param pathString
-   *          The path, in the form of a string, to be used to update the
-   *          interface.
-   * @see #updateAttributes(Path)
+   * Updates the interface with the attributes of the selected items
    */
-  public void updateAttributes(String pathString) {
-    Path path = Paths.get(pathString);
-    updateAttributes(path);
+  private void updateAttributes(Set<String> paths) {
+    // we need to stop the directory size compute thread to avoid more than one
+    // thread updating the ui at the same time
+    stopComputeThread();
+    computeSize = new ComputeDirectorySize();
+    computeSize.addObserver(this);
+    computeThread = new WalkFileTree(paths, computeSize);
+    computeThread.start();
   }
 
   @Override
   public void update(Observable o, Object arg) {
     if (o == computeSize) {
-      updateSize(computeSize.getFilesCount(), computeSize.getDirectoryCount(), computeSize.getSize());
+      ObservableList<TreeItem<String>> items = treeView.getSelectionModel().getSelectedItems();
+      if (!items.isEmpty()) {
+        String start;
+        if (items.size() == 1) {
+          start = items.get(0).getValue();
+        } else {
+          start = items.size() + " " + I18n.t("items");
+        }
+        updateSize(start, computeSize.getFilesCount(), computeSize.getDirectoryCount(), computeSize.getSize());
+      }
     }
   }
 
@@ -351,9 +343,10 @@ public class FileExplorerPane extends BorderPane implements Observer {
       computeThread.interrupt();
   }
 
-  public void updateSize(final long fileCount, final long dirCount, final long size) {
+  public void updateSize(final String start, final long fileCount, final long dirCount, final long size) {
     Platform.runLater(() -> {
-      StringBuilder result = new StringBuilder();
+      StringBuilder result = new StringBuilder(start);
+      result.append(": ");
       if (dirCount != 0) {
         result.append(dirCount + " ");
         if (dirCount == 1)

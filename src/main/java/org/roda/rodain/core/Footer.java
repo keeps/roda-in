@@ -42,11 +42,6 @@ public class Footer extends VBox {
    *          The String to be set as the status.
    */
   public static void setStatus(final String st) {
-    Platform.runLater(new Runnable() {
-      @Override
-      public void run() {
-        status.setText(st);
-      }
-    });
+    Platform.runLater(() -> status.setText(st));
   }
 }
