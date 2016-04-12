@@ -6,6 +6,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.roda.rodain.creation.ui.CreationModalPreparation;
@@ -30,10 +31,13 @@ public class MainTest extends ApplicationTest {
   private static Path testDir, output;
   private SchemaPane schemaPane;
   private FileExplorerPane fileExplorer;
+  private static RodaIn main;
+  private Stage stage;
 
   @Override
   public void start(Stage stage) throws Exception {
-    RodaIn main = new RodaIn();
+    this.stage = stage;
+    main = new RodaIn();
     main.start(stage);
 
     sleep(3000);
@@ -49,6 +53,12 @@ public class MainTest extends ApplicationTest {
   @Before
   public void setUpBeforeClass() throws Exception {
     testDir = Utils.createFolderStructure();
+  }
+
+  @AfterClass
+  public static void tearDownAfterClass() throws Exception {
+    PathCollection.reset();
+    main.stop();
   }
 
   @Test
@@ -111,6 +121,11 @@ public class MainTest extends ApplicationTest {
   public void schemePane() {
     sleep(5000); // wait for the classification scheme to load
 
+    Platform.runLater(() -> {
+      stage.setMaximized(false);
+      stage.setMaximized(true);
+    });
+
     clickOn("UCP");
     TreeItem selected = schemaPane.getTreeView().getSelectionModel().getSelectedItem();
     int selectedIndex = schemaPane.getTreeView().getSelectionModel().getSelectedIndex();
@@ -126,7 +141,11 @@ public class MainTest extends ApplicationTest {
 
   @Test
   public void association() {
-    Platform.runLater(() -> fileExplorer.setFileExplorerRoot(testDir));
+    Platform.runLater(() -> {
+      fileExplorer.setFileExplorerRoot(testDir);
+      stage.setMaximized(false);
+      stage.setMaximized(true);
+    });
 
     sleep(5000); // wait for the tree to be created
     doubleClickOn("dir4");

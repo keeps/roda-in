@@ -1,12 +1,15 @@
 package org.roda.rodain.source.ui;
 
+import javafx.application.Platform;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.control.TreeItem;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.roda.rodain.core.I18n;
+import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
@@ -26,9 +29,11 @@ public class FileExplorerPaneTest extends ApplicationTest {
   private static int LOAD_MORE_SIZE = 100;
   private static Path testDir;
   private FileExplorerPane fileExplorer;
+  private Stage stage;
 
   @Override
   public void start(Stage stage) throws Exception {
+    this.stage = stage;
     RodaIn main = new RodaIn();
     main.start(stage);
 
@@ -42,6 +47,11 @@ public class FileExplorerPaneTest extends ApplicationTest {
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
     testDir = Utils.createFolderStructure();
+  }
+
+  @AfterClass
+  public static void tearDownAfterClass() throws Exception {
+    PathCollection.reset();
   }
 
   @Test
@@ -59,6 +69,10 @@ public class FileExplorerPaneTest extends ApplicationTest {
   @Test
   public void dir1() {
     sleep(5000);
+    Platform.runLater(() -> {
+      stage.setMaximized(false);
+      stage.setMaximized(true);
+    });
     try {
       push(KeyCode.ENTER);
     } catch (Exception e) {
@@ -92,6 +106,10 @@ public class FileExplorerPaneTest extends ApplicationTest {
   @Test
   public void dir2() {
     sleep(5000);
+    Platform.runLater(() -> {
+      stage.setMaximized(false);
+      stage.setMaximized(true);
+    });
     try {
       push(KeyCode.ENTER);
     } catch (Exception e) {
@@ -106,7 +124,7 @@ public class FileExplorerPaneTest extends ApplicationTest {
     assert dir2.getChildren().size() == LOAD_MORE_SIZE + 1;
     assert dir2.getChildren().get(0) instanceof SourceTreeDirectory;
 
-    scroll(70, VerticalDirection.DOWN);
+    scroll(150, VerticalDirection.DOWN);
     clickOn(I18n.t("SourceTreeLoadMore.title"));
     assert dir2.getChildren().size() == 120;
     for (TreeItem t : root.getChildren()) {
@@ -117,6 +135,10 @@ public class FileExplorerPaneTest extends ApplicationTest {
   @Test
   public void dir3() {
     sleep(5000);
+    Platform.runLater(() -> {
+      stage.setMaximized(false);
+      stage.setMaximized(true);
+    });
     try {
       push(KeyCode.ENTER);
     } catch (Exception e) {
@@ -130,7 +152,7 @@ public class FileExplorerPaneTest extends ApplicationTest {
     sleep(1000);
     assert dir3.getChildren().size() == LOAD_MORE_SIZE + 1;
 
-    scroll(70, VerticalDirection.DOWN);
+    scroll(150, VerticalDirection.DOWN);
     clickOn(I18n.t("SourceTreeLoadMore.title"));
     assert dir3.getChildren().size() == 140;
 
@@ -149,6 +171,10 @@ public class FileExplorerPaneTest extends ApplicationTest {
   @Test
   public void dir4() {
     sleep(5000);
+    Platform.runLater(() -> {
+      stage.setMaximized(false);
+      stage.setMaximized(true);
+    });
     try {
       push(KeyCode.ENTER);
     } catch (Exception e) {

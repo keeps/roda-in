@@ -1,13 +1,16 @@
 package org.roda.rodain.source.ui;
 
+import javafx.application.Platform;
 import javafx.scene.control.TreeItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.roda.rodain.core.I18n;
+import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
@@ -24,9 +27,11 @@ import java.nio.file.Path;
 public class IgnoreTest extends ApplicationTest {
   private static Path testDir;
   private FileExplorerPane fileExplorer;
+  private Stage stage;
 
   @Override
   public void start(Stage stage) throws Exception {
+    this.stage = stage;
     RodaIn main = new RodaIn();
     main.start(stage);
 
@@ -41,9 +46,18 @@ public class IgnoreTest extends ApplicationTest {
     testDir = Utils.createFolderStructure();
   }
 
+  @AfterClass
+  public static void tearDownAfterClass() throws Exception {
+    PathCollection.reset();
+  }
+
   @Test
   public void ignore() {
     sleep(7000);
+    Platform.runLater(() -> {
+      stage.setMaximized(false);
+      stage.setMaximized(true);
+    });
     try {
       push(KeyCode.ENTER);
       push(KeyCode.ENTER);
