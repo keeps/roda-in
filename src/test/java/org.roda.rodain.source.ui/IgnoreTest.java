@@ -52,7 +52,7 @@ public class IgnoreTest extends ApplicationTest {
   }
 
   @Test
-  public void ignore() {
+  public void ignoreAndUnignoreToTestThePathCollectionIgnoreAlgorithm() {
     sleep(7000);
     Platform.runLater(() -> {
       stage.setMaximized(false);

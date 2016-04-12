@@ -62,7 +62,7 @@ public class MainTest extends ApplicationTest {
   }
 
   @Test
-  public void newSchemePane() {
+  public void createNewClassificationPlanWithRemovals() {
     sleep(5000);
     push(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN));
     sleep(3000);
@@ -118,7 +118,7 @@ public class MainTest extends ApplicationTest {
   }
 
   @Test
-  public void schemePane() {
+  public void loadAClassificationPlan() {
     sleep(5000); // wait for the classification scheme to load
 
     Platform.runLater(() -> {
@@ -140,7 +140,7 @@ public class MainTest extends ApplicationTest {
   }
 
   @Test
-  public void association() {
+  public void associateFilesAndFoldersToAnItemAndExportTheSIPs() {
     Platform.runLater(() -> {
       fileExplorer.setFileExplorerRoot(testDir);
       stage.setMaximized(false);

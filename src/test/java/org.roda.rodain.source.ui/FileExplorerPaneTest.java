@@ -1,14 +1,12 @@
 package org.roda.rodain.source.ui;
 
 import javafx.application.Platform;
-import javafx.geometry.VerticalDirection;
 import javafx.scene.control.TreeItem;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
@@ -55,7 +53,7 @@ public class FileExplorerPaneTest extends ApplicationTest {
   }
 
   @Test
-  public void root() {
+  public void rootHasRightNumberOfChildren() {
     sleep(1000);
     TreeItem<String> root = fileExplorer.getTreeView().getRoot().getChildren().get(0);
     // Root exists, is a SourceTreeDirectory and its path is testDir
@@ -67,7 +65,7 @@ public class FileExplorerPaneTest extends ApplicationTest {
   }
 
   @Test
-  public void dir1() {
+  public void dir1HasTheCorrectContent() {
     sleep(5000);
     Platform.runLater(() -> {
       stage.setMaximized(false);
@@ -80,6 +78,7 @@ public class FileExplorerPaneTest extends ApplicationTest {
     TreeItem<String> root = fileExplorer.getTreeView().getRoot().getChildren().get(0);
     TreeItem<String> dir1 = root.getChildren().get(0);
     assert dir1 != null;
+    assert dir1 instanceof SourceTreeDirectory;
     assert "dir1".equals(dir1.getValue());
 
     doubleClickOn("dir1");
@@ -87,8 +86,8 @@ public class FileExplorerPaneTest extends ApplicationTest {
     assert dir1.getChildren().size() == LOAD_MORE_SIZE + 1;
     assert dir1.getChildren().get(0) instanceof SourceTreeFile;
 
-    scroll(70, VerticalDirection.DOWN);
-    clickOn(I18n.t("SourceTreeLoadMore.title"));
+    ((SourceTreeDirectory) dir1).loadMore();
+    sleep(1000);
     assert dir1.getChildren().size() == 120;
 
     SourceTreeFile file = (SourceTreeFile) dir1.getChildren().get(0);
@@ -104,7 +103,7 @@ public class FileExplorerPaneTest extends ApplicationTest {
   }
 
   @Test
-  public void dir2() {
+  public void dir2HasTheCorrectContent() {
     sleep(5000);
     Platform.runLater(() -> {
       stage.setMaximized(false);
@@ -117,6 +116,7 @@ public class FileExplorerPaneTest extends ApplicationTest {
     TreeItem<String> root = fileExplorer.getTreeView().getRoot().getChildren().get(0);
     TreeItem<String> dir2 = root.getChildren().get(1);
     assert dir2 != null;
+    assert dir2 instanceof SourceTreeDirectory;
     assert "dir2".equals(dir2.getValue());
 
     doubleClickOn("dir2");
@@ -124,8 +124,8 @@ public class FileExplorerPaneTest extends ApplicationTest {
     assert dir2.getChildren().size() == LOAD_MORE_SIZE + 1;
     assert dir2.getChildren().get(0) instanceof SourceTreeDirectory;
 
-    scroll(150, VerticalDirection.DOWN);
-    clickOn(I18n.t("SourceTreeLoadMore.title"));
+    ((SourceTreeDirectory) dir2).loadMore();
+    sleep(1000);
     assert dir2.getChildren().size() == 120;
     for (TreeItem t : root.getChildren()) {
       t.setExpanded(false);
@@ -133,7 +133,7 @@ public class FileExplorerPaneTest extends ApplicationTest {
   }
 
   @Test
-  public void dir3() {
+  public void dir3HasTheCorrectContent() {
     sleep(5000);
     Platform.runLater(() -> {
       stage.setMaximized(false);
@@ -146,14 +146,15 @@ public class FileExplorerPaneTest extends ApplicationTest {
     TreeItem<String> root = fileExplorer.getTreeView().getRoot().getChildren().get(0);
     TreeItem<String> dir3 = root.getChildren().get(2);
     assert dir3 != null;
+    assert dir3 instanceof SourceTreeDirectory;
     assert "dir3".equals(dir3.getValue());
 
     doubleClickOn("dir3");
     sleep(1000);
     assert dir3.getChildren().size() == LOAD_MORE_SIZE + 1;
 
-    scroll(150, VerticalDirection.DOWN);
-    clickOn(I18n.t("SourceTreeLoadMore.title"));
+    ((SourceTreeDirectory) dir3).loadMore();
+    sleep(1000);
     assert dir3.getChildren().size() == 140;
 
     List<Object> files = dir3.getChildren().stream().filter(p -> p instanceof SourceTreeFile)
@@ -169,7 +170,7 @@ public class FileExplorerPaneTest extends ApplicationTest {
   }
 
   @Test
-  public void dir4() {
+  public void dir4HasTheCorrectContent() {
     sleep(5000);
     Platform.runLater(() -> {
       stage.setMaximized(false);
@@ -182,6 +183,7 @@ public class FileExplorerPaneTest extends ApplicationTest {
     TreeItem<String> root = fileExplorer.getTreeView().getRoot().getChildren().get(0);
     TreeItem<String> dir4 = root.getChildren().get(3);
     assert dir4 != null;
+    assert dir4 instanceof SourceTreeDirectory;
     assert "dir4".equals(dir4.getValue());
 
     sleep(1000);
