@@ -7,10 +7,14 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
-
 import org.roda.rodain.source.ui.FileExplorerPane;
+import org.roda.rodain.utils.Utils;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * The Node used as the footer of the UI to show a fileExplorerStatus message.
@@ -19,10 +23,11 @@ import org.roda.rodain.source.ui.FileExplorerPane;
  * @since 28-09-2015.
  */
 public class Footer extends VBox {
-  private static Label fileExplorerStatus, classPlanStatus;
+  private static Label fileExplorerStatus, classPlanStatus, memoryUsage;
   private static HBox fileExplorerBox;
   private static SplitPane splitPane;
   private static Footer instance = null;
+  private static Timer timer;
 
   /**
    * Creates a new Footer object
@@ -43,13 +48,26 @@ public class Footer extends VBox {
     fileExplorerStatus.setTextAlignment(TextAlignment.CENTER);
     fileExplorerBox.getChildren().add(fileExplorerStatus);
 
+    HBox otherBox = new HBox();
     classPlanStatus = new Label();
     classPlanStatus.setPadding(new Insets(5, 5, 5, 5));
     classPlanStatus.setAlignment(Pos.CENTER_LEFT);
     classPlanStatus.setTextAlignment(TextAlignment.CENTER);
 
-    splitPane.getItems().addAll(fileExplorerBox, classPlanStatus);
+    HBox space = new HBox();
+    HBox.setHgrow(space, Priority.ALWAYS);
+
+    memoryUsage = new Label();
+    memoryUsage.setPadding(new Insets(5, 5, 5, 5));
+    memoryUsage.setAlignment(Pos.CENTER_RIGHT);
+    memoryUsage.setTextAlignment(TextAlignment.CENTER);
+
+    otherBox.getChildren().addAll(classPlanStatus, space, memoryUsage);
+
+    splitPane.getItems().addAll(fileExplorerBox, otherBox);
     this.getChildren().addAll(separator, splitPane);
+
+    memoryAutoUpdater();
   }
 
   public static Footer getInstance() {
@@ -82,5 +100,18 @@ public class Footer extends VBox {
   public static void addBindings(FileExplorerPane fileExplorerPane) {
     fileExplorerBox.minWidthProperty().bind(fileExplorerPane.widthProperty());
     fileExplorerBox.maxWidthProperty().bind(fileExplorerPane.widthProperty());
+  }
+
+  private void memoryAutoUpdater() {
+    TimerTask updater = new TimerTask() {
+      @Override
+      public void run() {
+        String value = Utils.formatSize(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
+        Platform.runLater(() -> memoryUsage.setText(value));
+      }
+    };
+
+    timer = new Timer();
+    timer.schedule(updater, 5000, 500);
   }
 }
