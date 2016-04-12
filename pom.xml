@@ -116,6 +116,12 @@
                 <version>2.17</version>
                 <configuration>
                     <reuseForks>false</reuseForks>
+                    <systemPropertyVariables>
+                        <testfx.robot>glass</testfx.robot>
+                        <glass.platform>Monocle</glass.platform>
+                        <monocle.platform>Headless</monocle.platform>
+                        <prism.order>sw</prism.order>
+                    </systemPropertyVariables>
                     <additionalClasspathElements>
                         <additionalClasspathElement>${java.home}/lib/ext/jfxrt.jar</additionalClasspathElement>
                     </additionalClasspathElements>
