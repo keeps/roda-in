@@ -317,15 +317,15 @@ public class FileExplorerPane extends BorderPane implements Observer {
   public void update(Observable o, Object arg) {
     if (o == computeSize) {
       ObservableList<TreeItem<String>> items = treeView.getSelectionModel().getSelectedItems();
+      String start = null;
       if (!items.isEmpty()) {
-        String start;
         if (items.size() == 1) {
           start = items.get(0).getValue();
         } else {
           start = items.size() + " " + I18n.t("items");
         }
-        updateSize(start, computeSize.getFilesCount(), computeSize.getDirectoryCount(), computeSize.getSize());
       }
+      updateSize(start, computeSize.getFilesCount(), computeSize.getDirectoryCount(), computeSize.getSize());
     }
   }
 
@@ -345,8 +345,10 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
   public void updateSize(final String start, final long fileCount, final long dirCount, final long size) {
     Platform.runLater(() -> {
-      StringBuilder result = new StringBuilder(start);
-      result.append(": ");
+      StringBuilder result = new StringBuilder();
+      if (start != null)
+        result.append(start).append(": ");
+
       if (dirCount != 0) {
         result.append(dirCount + " ");
         if (dirCount == 1)
@@ -364,7 +366,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
       result.append(", ");
       result.append(Utils.formatSize(size));
-      Footer.setStatus(result.toString());
+      Footer.setFileExplorerStatus(result.toString());
     });
   }
 
