@@ -20,11 +20,24 @@ public class WalkFileTree extends Thread {
 
   private int processedFiles = 0, processedDirs = 0;
 
+  /**
+   * Creates a new WalkFileTree object.
+   * 
+   * @param startPath
+   *          The Set of paths used to start the file tree walking.
+   * @param handler
+   *          The TreeVisitor that will use the information captured by the
+   *          WalkFileTree object
+   */
   public WalkFileTree(Set<String> startPath, TreeVisitor handler) {
     this.paths = startPath;
     this.handler = handler;
   }
 
+  /**
+   * Iterates the paths received in the constructor and uses each one in
+   * Files.walkFileTree().
+   */
   @Override
   public void run() {
     for (String startPath : paths) {
@@ -73,14 +86,23 @@ public class WalkFileTree extends Thread {
     handler.end();
   }
 
+  /**
+   * Cancels the execution of the WalkFileTree object.
+   */
   public void cancel() {
     cancelled = true;
   }
 
+  /**
+   * @return The count of processed directories
+   */
   public int getProcessedDirs() {
     return processedDirs;
   }
 
+  /**
+   * @return The count of processed files
+   */
   public int getProcessedFiles() {
     return processedFiles;
   }

@@ -12,6 +12,9 @@ import org.roda.rodain.core.I18n;
 public class SourceTreeLoadMore extends SourceTreeItem {
   public static final Image fileImage = new Image(ClassLoader.getSystemResourceAsStream("icons/list-add.png"));
 
+  /**
+   * Creates a new SourceTreeLoadMore object.
+   */
   public SourceTreeLoadMore() {
     super(I18n.t("SourceTreeLoadMore.title"), null);
     this.setGraphic(new ImageView(fileImage));

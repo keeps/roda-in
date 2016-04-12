@@ -56,12 +56,6 @@ public class FontAwesomeImageCreator {
 
   /**
    * Converts an unicode char to an Image using the FontAwesome font.
-   * <p/>
-   * <p>
-   * Based on the code presented here: <a href=
-   * "http://news.kynosarges.org/2014/01/07/javafx-text-icons-as-images-files/">
-   * javafx-text-icons-as-images-files </a>
-   * </p>
    *
    * @param unicode
    *          The String with the unicode which will be turned into an image.
@@ -73,6 +67,23 @@ public class FontAwesomeImageCreator {
     return generate(unicode, color, SIZE);
   }
 
+  /**
+   * Converts an unicode char to an Image using the FontAwesome font.
+   * <p/>
+   * <p>
+   * Based on the code presented here: <a href=
+   * "http://news.kynosarges.org/2014/01/07/javafx-text-icons-as-images-files/">
+   * javafx-text-icons-as-images-files </a>
+   * </p>
+   *
+   * @param unicode
+   *          The String with the unicode which will be turned into an image.
+   * @param color
+   *          The color of the font.
+   * @param size
+   *          The size of the image.
+   * @return An Image with the unicode char converted to an image.
+   */
   public static Image generate(String unicode, Paint color, int size) {
     Font newFont;
     if (size == SIZE) {
