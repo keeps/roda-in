@@ -221,7 +221,6 @@ public class InspectionPane extends BorderPane {
           selected.setType(MetadataTypes.NEW_FILE);
           topButtons.remove(toggleForm);
           updateMetadataTop();
-
         } else {
           textBoxCancelledChange = true;
           updateTextArea(oldValue);
