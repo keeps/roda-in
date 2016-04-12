@@ -26,7 +26,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.roda.rodain.core.AppProperties;
-import org.roda.rodain.core.Footer;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.Rule;
@@ -235,13 +234,14 @@ public class SchemaPane extends BorderPane {
           ((SipPreviewNode) newValue).setBlackIconSelected(false);
           forceUpdate(newValue);
           RodaIn.getInspectionPane().update((SipPreviewNode) newValue);
-          Footer.setClassPlanStatus(SchemeItemToString.getInstance().create(newValue));
         }
         if (newValue instanceof SchemaNode) {
           ((SchemaNode) newValue).setBlackIconSelected(false);
           forceUpdate(newValue);
           RodaIn.getInspectionPane().update((SchemaNode) newValue);
         }
+        SchemeItemToString sits = new SchemeItemToString(treeView.getSelectionModel().getSelectedItems());
+        sits.createAndUpdateFooter();
       }
     });
   }
