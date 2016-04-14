@@ -44,7 +44,7 @@ import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.ModalStage;
 import org.roda.rodain.utils.UIPair;
 import org.roda.rodain.utils.Utils;
-import org.roda_project.commons_ip.utils.EARKEnums;
+import org.roda_project.commons_ip.model.impl.eark.EARKEnums;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -1049,16 +1049,18 @@ public class InspectionPane extends BorderPane {
     // is too tall
     topBox.setPadding(new Insets(11, 15, 11, 15));
     // Content Type combo box
-    ComboBox<EARKEnums.ContentType> contentType = new ComboBox<>();
-    List<EARKEnums.ContentType> contTypeList = new ArrayList<>();
-    for (EARKEnums.ContentType ct : EARKEnums.ContentType.values()) {
-      contTypeList.add(ct);
+    ComboBox<UIPair> contentType = new ComboBox<>();
+    List<UIPair> contTypeList = new ArrayList<>();
+    for (EARKEnums.IPContentType ct : EARKEnums.IPContentType.values()) {
+      contTypeList.add(new UIPair(ct, ct.getType()));
     }
     // sort the list as strings
     Collections.sort(contTypeList, (o1, o2) -> o1.toString().compareTo(o2.toString()));
     contentType.setItems(FXCollections.observableList(contTypeList));
-    contentType.getSelectionModel().select(sip.getSip().getContentType());
-    contentType.valueProperty().addListener((obs, old, newValue) -> sip.getSip().setContentType(newValue));
+    contentType.getSelectionModel()
+      .select(new UIPair(sip.getSip().getContentType(), sip.getSip().getContentType().getType()));
+    contentType.valueProperty()
+      .addListener((obs, old, newValue) -> sip.getSip().setContentType((EARKEnums.IPContentType) newValue.getKey()));
     contentType.setMinWidth(85);
 
     top.getChildren().addAll(space, contentType);

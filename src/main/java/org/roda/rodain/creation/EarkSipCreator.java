@@ -10,6 +10,7 @@ import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.rules.sip.SipRepresentation;
 import org.roda.rodain.schema.DescObjMetadata;
 import org.roda_project.commons_ip.model.*;
+import org.roda_project.commons_ip.model.impl.eark.EARKEnums;
 import org.roda_project.commons_ip.model.impl.eark.EARKSIP;
 import org.roda_project.commons_ip.utils.METSEnums;
 import org.roda_project.commons_ip.utils.SIPException;
@@ -115,6 +116,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
       currentAction = actionCopyingData;
       for (SipRepresentation sr : sip.getRepresentations()) {
         IPRepresentation rep = new IPRepresentation(sr.getName());
+        rep.setContentType(EARKEnums.RepresentationContentType.mixed);
         Set<TreeNode> files = sr.getFiles();
         currentSIPadded = 0;
         currentSIPsize = 0;
