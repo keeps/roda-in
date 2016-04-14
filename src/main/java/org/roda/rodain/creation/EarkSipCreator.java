@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +64,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
   }
 
   private void createEarkSip(SipPreview sip) {
-    Path rodainPath = AppProperties.getRodainPath();
+    Path tempDir = Paths.get(System.getProperty("java.io.tmpdir"));
     try {
       SIP earkSip = new EARKSIP(sip.getId(), sip.getContentType(), "RODA-in");
       earkSip.addObserver(this);
@@ -102,7 +103,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
         if (metadataPath == null) {
           String content = sip.getMetadataWithReplaces(descObjMetadata);
 
-          metadataPath = rodainPath.resolve(descObjMetadata.getId());
+          metadataPath = tempDir.resolve(descObjMetadata.getId());
           FileUtils.writeStringToFile(metadataPath.toFile(), content);
         }
 

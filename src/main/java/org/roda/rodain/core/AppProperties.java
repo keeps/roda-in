@@ -158,8 +158,8 @@ public class AppProperties {
       rodainPath.resolve("samples").toFile().mkdir();
     }
     // create LOGGER folder
-    if (!Files.exists(rodainPath.resolve("LOGGER"))) {
-      rodainPath.resolve("LOGGER").toFile().mkdir();
+    if (!Files.exists(rodainPath.resolve("log"))) {
+      rodainPath.resolve("log").toFile().mkdir();
     }
   }
 
