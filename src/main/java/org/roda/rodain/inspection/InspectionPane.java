@@ -469,11 +469,9 @@ public class InspectionPane extends BorderPane {
           if (currentSIPNode != null) {
             currentSIPNode.updateDescriptionLevel(newValue);
             itemToForceUpdate = currentSIPNode;
-            Platform.runLater(() -> createTopSubtitle(currentSIPNode.getIconWhite(), currentSIPNode.getValue()));
           } else if (currentSchema != null) {
             currentSchema.updateDescriptionLevel(newValue);
             itemToForceUpdate = currentSchema;
-            Platform.runLater(() -> createTopSubtitle(currentSchema.getIconWhite(), currentSchema.getValue()));
           }
           // Force update
           if (itemToForceUpdate != null) {
@@ -748,7 +746,6 @@ public class InspectionPane extends BorderPane {
     contentBottom.setAlignment(Pos.CENTER);
 
     ignore = new Button(I18n.t("ignore"));
-    ignore.getStyleClass().add("button-secondary");
     ignore.setOnAction(event -> {
       InspectionTreeItem selected = (InspectionTreeItem) sipFiles.getSelectionModel().getSelectedItem();
       if (selected == null)
@@ -765,7 +762,6 @@ public class InspectionPane extends BorderPane {
     ignore.minWidthProperty().bind(this.widthProperty().multiply(0.25));
 
     Button addRepresentation = new Button(I18n.t("InspectionPane.addRepresentation"));
-    addRepresentation.getStyleClass().add("button-secondary");
     addRepresentation.setOnAction(event -> {
       int repCount = currentSIPNode.getSip().getRepresentations().size() + 1;
       SipRepresentation sipRep = new SipRepresentation("rep" + repCount);
@@ -776,7 +772,6 @@ public class InspectionPane extends BorderPane {
     addRepresentation.minWidthProperty().bind(this.widthProperty().multiply(0.25));
 
     removeRepresentation = new Button(I18n.t("InspectionPane.removeRepresentation"));
-    removeRepresentation.getStyleClass().add("button-secondary");
     removeRepresentation.setOnAction(event -> {
       InspectionTreeItem selectedRaw = (InspectionTreeItem) sipFiles.getSelectionModel().getSelectedItem();
       if (selectedRaw instanceof SipContentRepresentation) {
@@ -1042,7 +1037,11 @@ public class InspectionPane extends BorderPane {
     }
 
     /* Top */
-    createTopSubtitle(sip.getIconWhite(), sip.getValue());
+    ImageView iconView = new ImageView(sip.getIconWhite());
+    createTopSubtitle(iconView, sip.getValue());
+    sip.graphicProperty()
+      .addListener((observable, oldValue, newValue) -> iconView.setImage(((ImageView) newValue).getImage()));
+
     HBox top = new HBox(5);
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
@@ -1107,7 +1106,10 @@ public class InspectionPane extends BorderPane {
 
     /* top */
     topBox.setPadding(new Insets(15, 15, 15, 15));
-    createTopSubtitle(node.getIconWhite(), node.getValue());
+    ImageView iconView = new ImageView(node.getIconWhite());
+    node.graphicProperty()
+      .addListener((observable, oldValue, newValue) -> iconView.setImage(((ImageView) newValue).getImage()));
+    createTopSubtitle(iconView, node.getValue());
 
     /* center */
     center.getChildren().clear();
@@ -1123,14 +1125,13 @@ public class InspectionPane extends BorderPane {
     setCenter(center);
   }
 
-  private void createTopSubtitle(Image icon, String text) {
-    ImageView iconView = new ImageView(icon);
+  private void createTopSubtitle(ImageView icon, String text) {
     paneTitle = new Label(text);
     paneTitle.setWrapText(true);
     paneTitle.getStyleClass().add("top-subtitle");
     topSubtitle.setAlignment(Pos.CENTER_LEFT);
     topSubtitle.getChildren().clear();
-    topSubtitle.getChildren().addAll(iconView, paneTitle);
+    topSubtitle.getChildren().addAll(icon, paneTitle);
   }
 
   private void updateMetadataCombo() {

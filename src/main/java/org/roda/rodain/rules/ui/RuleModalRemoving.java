@@ -1,7 +1,5 @@
 package org.roda.rodain.rules.ui;
 
-import java.util.*;
-
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -9,10 +7,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.sip.SipPreview;
+
+import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -108,8 +107,10 @@ public class RuleModalRemoving extends BorderPane implements Observer {
   /**
    * Updates the progress of the rule removal.
    *
-   * @param o    The Observable object, should be a Rule.
-   * @param args The arguments of the update.
+   * @param o
+   *          The Observable object, should be a Rule.
+   * @param args
+   *          The arguments of the update.
    */
   @Override
   public void update(Observable o, Object args) {
@@ -185,7 +186,7 @@ public class RuleModalRemoving extends BorderPane implements Observer {
     Platform.runLater(() -> {
       progress.setProgress(progressValue);
       sipsRemovedLabel.setText(String.format(I18n.t("RuleModalRemoving.removedFormat"), (int) (progressValue * 100)));
-      if (progressValue == 1) {
+      if (Math.round(progressValue) == 1) {
         close();
       }
     });

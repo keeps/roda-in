@@ -43,14 +43,14 @@ public class Footer extends VBox {
 
     fileExplorerBox = new HBox();
     fileExplorerStatus = new Label();
-    fileExplorerStatus.setPadding(new Insets(5, 5, 5, 5));
+    fileExplorerStatus.setPadding(new Insets(5, 5, 5, 15));
     fileExplorerStatus.setAlignment(Pos.CENTER_LEFT);
     fileExplorerStatus.setTextAlignment(TextAlignment.CENTER);
     fileExplorerBox.getChildren().add(fileExplorerStatus);
 
     HBox otherBox = new HBox();
     classPlanStatus = new Label();
-    classPlanStatus.setPadding(new Insets(5, 5, 5, 5));
+    classPlanStatus.setPadding(new Insets(5, 5, 5, 15));
     classPlanStatus.setAlignment(Pos.CENTER_LEFT);
     classPlanStatus.setTextAlignment(TextAlignment.CENTER);
 
@@ -58,7 +58,7 @@ public class Footer extends VBox {
     HBox.setHgrow(space, Priority.ALWAYS);
 
     memoryUsage = new Label();
-    memoryUsage.setPadding(new Insets(5, 5, 5, 5));
+    memoryUsage.setPadding(new Insets(5, 15, 5, 5));
     memoryUsage.setAlignment(Pos.CENTER_RIGHT);
     memoryUsage.setTextAlignment(TextAlignment.CENTER);
 

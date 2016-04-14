@@ -215,17 +215,20 @@ public class SchemaNode extends TreeItem<String> implements Observer {
   }
 
   public void updateDescriptionLevel(String descLevel) {
+    dob.setDescriptionlevel(descLevel);
     try {
       ResourceBundle hierarchyConfig = ResourceBundle.getBundle("properties/roda-description-levels-hierarchy");
-      String category = hierarchyConfig.getString("category." + descLevel);
-      String unicode = hierarchyConfig.getString("icon." + category);
+      String[] levels = hierarchyConfig.getString("levels_ordered").split(",");
+      if (Arrays.asList(levels).contains(descLevel)) {
+        String category = hierarchyConfig.getString("category." + descLevel);
+        String unicode = hierarchyConfig.getString("icon." + category);
 
-      dob.setDescriptionlevel(descLevel);
-      Platform.runLater(() -> {
-        iconBlack = FontAwesomeImageCreator.generate(unicode);
-        iconWhite = FontAwesomeImageCreator.generate(unicode, Color.WHITE);
-        this.setGraphic(new ImageView(getIcon()));
-      });
+        Platform.runLater(() -> {
+          iconBlack = FontAwesomeImageCreator.generate(unicode);
+          iconWhite = FontAwesomeImageCreator.generate(unicode, Color.WHITE);
+          this.setGraphic(new ImageView(getIcon()));
+        });
+      }
     } catch (Exception e) {
       // We don't need to process this exception, since it's expected that there
       // will be a lot of them thrown. It could happen because the user still

@@ -8,6 +8,8 @@ import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.rules.sip.SipRepresentation;
 import org.roda.rodain.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,7 +25,8 @@ import java.util.Set;
  * @since 12-04-2016.
  */
 public class SchemeItemToString {
-  private int representations, files, folders;
+  private static final Logger log = LoggerFactory.getLogger(SchemeItemToString.class.getName());
+  private int representations, files, folders, sips;
   private long size;
   private StringBuilder sb;
   private List<TreeItem<String>> input;
@@ -49,6 +52,7 @@ public class SchemeItemToString {
             sipPreviews.addAll(((SchemaNode) item).getSipPreviews().keySet());
           }
         }
+        sips = sipPreviews.size();
         compute(sipPreviews);
         return null;
       }
@@ -61,9 +65,12 @@ public class SchemeItemToString {
         if (item instanceof SipPreviewNode) {
           sb.append(representations).append(" ").append("reps");
           sb.append(", ");
+        } else {
+          sb.append(sips).append(" SIP").append(", ");
         }
       } else {
         sb.append(input.size()).append(" ").append(I18n.t("items")).append(": ");
+        sb.append(sips).append(" SIP").append(", ");
       }
       sb.append(folders).append(" ").append(I18n.t("folders"));
       sb.append(", ");
@@ -95,7 +102,7 @@ public class SchemeItemToString {
           }
         }
       } catch (IOException e) {
-        e.printStackTrace();
+        log.warn("Error reading attributes of file/folder", e);
       }
     }
   }
