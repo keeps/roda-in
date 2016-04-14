@@ -160,6 +160,9 @@ public class RodaIn extends Application {
       stage.setMaximized(true);
       if (splashStage != null)
         splashStage.close();
+
+      // Add the bindings after stage.show(), otherwise they'll start as 0
+      Footer.addBindings(fileExplorer);
     });
 
     initTask.exceptionProperty().addListener((observable, oldValue, newValue) -> {
@@ -178,12 +181,13 @@ public class RodaIn extends Application {
   }
 
   private void createFrameStructure() {
-    // Create Footer
-    Footer footer = new Footer();
-
     mainPane = new BorderPane();
     mainPane.getStyleClass().add("border-pane");
     mainPane.setCenter(createSplitPane());
+
+    // Create Footer after the center because Footer needs to bind to some
+    // properties of panes in the center
+    Footer footer = Footer.getInstance();
     mainPane.setBottom(footer);
   }
 

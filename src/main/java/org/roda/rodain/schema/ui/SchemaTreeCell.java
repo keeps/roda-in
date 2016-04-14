@@ -53,7 +53,7 @@ public class SchemaTreeCell extends TreeCell<String> {
         if (!getStyleClass().contains("schemaNode"))
           getStyleClass().add("schemaNode");
         SchemaNode itemNode = (SchemaNode) treeItem;
-        icon = new ImageView(itemNode.getImage());
+        icon = new ImageView(itemNode.getIcon());
         updateDObj(item);
         addHbox = true;
       } else {

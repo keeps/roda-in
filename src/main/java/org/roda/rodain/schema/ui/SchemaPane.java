@@ -26,6 +26,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.core.Footer;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.Rule;
@@ -230,16 +231,21 @@ public class SchemaPane extends BorderPane {
           ((SchemaNode) oldValue).setBlackIconSelected(true);
           forceUpdate(oldValue);
         }
-        if (newValue instanceof SipPreviewNode) {
-          ((SipPreviewNode) newValue).setBlackIconSelected(false);
-          forceUpdate(newValue);
-          RodaIn.getInspectionPane().update((SipPreviewNode) newValue);
-        }
-        if (newValue instanceof SchemaNode) {
-          ((SchemaNode) newValue).setBlackIconSelected(false);
-          forceUpdate(newValue);
-          RodaIn.getInspectionPane().update((SchemaNode) newValue);
-        }
+        if (newValue != null) {
+          if (newValue instanceof SipPreviewNode) {
+            ((SipPreviewNode) newValue).setBlackIconSelected(false);
+            forceUpdate(newValue);
+            RodaIn.getInspectionPane().update((SipPreviewNode) newValue);
+          }
+          if (newValue instanceof SchemaNode) {
+            ((SchemaNode) newValue).setBlackIconSelected(false);
+            forceUpdate(newValue);
+            RodaIn.getInspectionPane().update((SchemaNode) newValue);
+          }
+          SchemeItemToString sits = new SchemeItemToString(treeView.getSelectionModel().getSelectedItems());
+          sits.createAndUpdateFooter();
+        } else
+          Footer.setClassPlanStatus("");
       }
     });
   }
@@ -564,7 +570,7 @@ public class SchemaPane extends BorderPane {
       if (!selected.isExpanded())
         selected.setExpanded(true);
     } else {
-      newNode.updateDescLevel("fonds");
+      newNode.updateDescriptionLevel("fonds");
       rootNode.getChildren().add(newNode);
       rootNode.addChildrenNode(newNode);
       sortRootChildren();

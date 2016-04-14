@@ -22,7 +22,7 @@ public class SchemaClickedEventHandler implements EventHandler<MouseEvent> {
   }
 
   /**
-   * Updates the InspectionPane with the item that has received the clicked
+   * Updates the InspectionPane with the items that has received the clicked
    * event.
    *
    * @param mouseEvent

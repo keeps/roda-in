@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration debug="false">
+    <property name="LOG_PATH" value="${roda-in-log-path:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}}"/>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
-        <!--<filter class="ch.qos.logback.classic.filter.ThresholdFilter">-->
-        <!--<level>error</level>-->
-        <!--</filter>-->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>warn</level>
+        </filter>
     </appender>
 
     <appender name="LOGFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${roda-in-log-path}/roda-in.log</file>
+        <file>${LOG_PATH}/roda-in.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <Pattern>
                 %d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n
@@ -20,7 +21,7 @@
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily -->
-            <fileNamePattern>${roda-in-log-path}/Log archive/log.%d{yyyy-MM-dd}.%i.log
+            <fileNamePattern>${LOG_PATH}/Log archive/log.%d{yyyy-MM-dd}.%i.log
             </fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
