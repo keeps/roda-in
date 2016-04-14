@@ -27,7 +27,7 @@ import java.util.Set;
  * @since 19-10-2015.
  */
 public class RuleModalController {
-  private static final Logger log = LoggerFactory.getLogger(RuleModalController.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(RuleModalController.class.getName());
   private static ModalStage stage;
   private static RuleModalPane pane;
   private static Set<SourceTreeItem> sourceSet;
@@ -145,7 +145,7 @@ public class RuleModalController {
         RodaIn.getSchemePane().showTree();
       });
     } catch (Exception e) {
-      log.error("Exception in confirm rule", e);
+      LOGGER.error("Exception in confirm rule", e);
     }
   }
 

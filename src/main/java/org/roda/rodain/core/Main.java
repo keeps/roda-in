@@ -14,7 +14,7 @@ import java.io.PrintStream;
  * @since 19/01/2016.
  */
 public class Main {
-  private static final Logger log = LoggerFactory.getLogger(RodaIn.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(RodaIn.class.getName());
 
   /**
    * Starts the application.
@@ -22,7 +22,7 @@ public class Main {
    * @param args
    */
   public static void main(String[] args) {
-    System.setProperty("roda-in-log-path", AppProperties.getRodainPath().resolve("log").toString());
+    System.setProperty("roda-in-LOGGER-path", AppProperties.getRodainPath().resolve("LOGGER").toString());
     configureLogback();
 
     // get the java version
@@ -30,7 +30,7 @@ public class Main {
     double javaVersion = Double.parseDouble(javaString);
     if (javaVersion < 1.8) {
       String format = I18n.t("Main.useJava8");
-      log.error(String.format(format, javaVersion));
+      LOGGER.error(String.format(format, javaVersion));
       return;
     }
 
@@ -47,7 +47,7 @@ public class Main {
       context.reset();
       configurator.doConfigure(ClassLoader.getSystemResource("logback.xml"));
     } catch (JoranException e) {
-      log.error("Error configuring logback", e);
+      LOGGER.error("Error configuring logback", e);
     }
   }
 }

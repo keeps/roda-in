@@ -18,7 +18,7 @@ import java.util.Set;
  * @since 05-10-2015.
  */
 public class SipPerFile extends SipPreviewCreator {
-  private static final Logger log = LoggerFactory.getLogger(SipPerFile.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(SipPerFile.class.getName());
   private static final int UPDATEFREQUENCY = 500; // in milliseconds
   private long lastUIUpdate = 0;
 
@@ -61,9 +61,9 @@ public class SipPerFile extends SipPreviewCreator {
         }
       });
     } catch (AccessDeniedException e) {
-      log.info("Access denied to file", e);
+      LOGGER.info("Access denied to file", e);
     } catch (IOException e) {
-      log.error("Error walking the file tree", e);
+      LOGGER.error("Error walking the file tree", e);
     }
   }
 

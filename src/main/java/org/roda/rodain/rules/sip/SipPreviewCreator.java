@@ -20,7 +20,7 @@ import java.util.*;
  * @since 20-10-2015.
  */
 public class SipPreviewCreator extends Observable implements TreeVisitor {
-  private static final Logger log = LoggerFactory.getLogger(SipPreviewCreator.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(SipPreviewCreator.class.getName());
   private String startPath;
   // This map is returned, in full, to the SipPreviewNode when there's an update
   protected Map<String, SipPreview> sipsMap;
@@ -85,9 +85,9 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
           }
         });
       } catch (AccessDeniedException e) {
-        log.info("Access denied to file", e);
+        LOGGER.info("Access denied to file", e);
       } catch (IOException e) {
-        log.error("Error walking the file tree", e);
+        LOGGER.error("Error walking the file tree", e);
       }
     }
   }
@@ -230,19 +230,19 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
       filesSet.add(node);
     }
     // create a new Sip
-    DescObjMetadata metadata = null;
+    DescObjMetadata descObjMetadata = null;
     if (metaType == MetadataTypes.TEMPLATE)
-      metadata = new DescObjMetadata(metaType, templateType, templateVersion);
+      descObjMetadata = new DescObjMetadata(metaType, templateType, templateVersion);
     else {
       if (metaPath != null)
-        metadata = new DescObjMetadata(metaType, metaPath);
+        descObjMetadata = new DescObjMetadata(metaType, metaPath);
     }
 
     SipRepresentation rep = new SipRepresentation("rep1");
     rep.setFiles(filesSet);
     Set<SipRepresentation> repSet = new HashSet<>();
     repSet.add(rep);
-    SipPreview sipPreview = new SipPreview(path.getFileName().toString(), repSet, metadata);
+    SipPreview sipPreview = new SipPreview(path.getFileName().toString(), repSet, descObjMetadata);
     node.addObserver(sipPreview);
 
     sips.add(sipPreview);
@@ -275,9 +275,7 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
       dir = sipPath.getParent().toFile();
 
     PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + templateType);
-    File[] foundFiles = dir.listFiles((dir1, name) -> {
-      return matcher.matches(Paths.get(name));
-    });
+    File[] foundFiles = dir.listFiles((dir1, name) -> matcher.matches(Paths.get(name)));
 
     if (foundFiles != null && foundFiles.length > 0) {
       return foundFiles[0].toPath();

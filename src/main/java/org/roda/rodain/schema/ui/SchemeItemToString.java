@@ -1,16 +1,5 @@
 package org.roda.rodain.schema.ui;
 
-import javafx.concurrent.Task;
-import javafx.scene.control.TreeItem;
-import org.roda.rodain.core.Footer;
-import org.roda.rodain.core.I18n;
-import org.roda.rodain.rules.TreeNode;
-import org.roda.rodain.rules.sip.SipPreview;
-import org.roda.rodain.rules.sip.SipRepresentation;
-import org.roda.rodain.utils.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,12 +9,24 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javafx.concurrent.Task;
+import javafx.scene.control.TreeItem;
+
+import org.roda.rodain.core.Footer;
+import org.roda.rodain.core.I18n;
+import org.roda.rodain.rules.TreeNode;
+import org.roda.rodain.rules.sip.SipPreview;
+import org.roda.rodain.rules.sip.SipRepresentation;
+import org.roda.rodain.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 12-04-2016.
  */
 public class SchemeItemToString {
-  private static final Logger log = LoggerFactory.getLogger(SchemeItemToString.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(SchemeItemToString.class.getName());
   private int representations, files, folders, sips;
   private long size;
   private StringBuilder sb;
@@ -102,7 +103,7 @@ public class SchemeItemToString {
           }
         }
       } catch (IOException e) {
-        log.warn("Error reading attributes of file/folder", e);
+        LOGGER.warn("Error reading attributes of file/folder", e);
       }
     }
   }

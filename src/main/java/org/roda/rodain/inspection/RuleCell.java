@@ -42,7 +42,6 @@ public class RuleCell extends HBox implements Observer {
   private Rule rule;
   private SchemaNode schemaNode;
   private VBox sourceBox;
-  // private Separator separator;
   private VBox sourceBoxWrapper;
 
   private HBox toggleBox;
@@ -194,8 +193,6 @@ public class RuleCell extends HBox implements Observer {
       file.setText(s);
       sourceBox.getChildren().add(file);
     }
-
-    // separator = new Separator();
     sourceBoxWrapper = new VBox();
     content.getChildren().addAll(lType, contentSummary, sourceBoxWrapper, toggleBox);
 

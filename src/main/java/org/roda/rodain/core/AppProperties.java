@@ -22,7 +22,7 @@ import java.util.*;
  * @since 28/12/2015.
  */
 public class AppProperties {
-  private static final Logger log = LoggerFactory.getLogger(AppProperties.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(AppProperties.class.getName());
 
   private static final Path rodainPath = computeRodainPath();
   private static final String ENV_VARIABLE = "RODAIN_HOME";
@@ -127,13 +127,13 @@ public class AppProperties {
       defaultResourceBundler = ResourceBundle.getBundle("properties/lang", Locale.ENGLISH,
         new FolderBasedUTF8Control());
     } catch (IOException e) {
-      log.error("Error copying config file", e);
+      LOGGER.error("Error copying config file", e);
     } catch (MissingResourceException e) {
-      log.info("Can't find the language resource for the current locale", e);
+      LOGGER.info("Can't find the language resource for the current locale", e);
       locale = Locale.forLanguageTag("en");
       resourceBundle = ResourceBundle.getBundle("properties/lang", locale, new FolderBasedUTF8Control());
     } catch (ConfigurationException e) {
-      log.error("Error loading the config file", e);
+      LOGGER.error("Error loading the config file", e);
     } finally {
       // force the default locale for the JVM
       Locale.setDefault(locale);
@@ -157,9 +157,9 @@ public class AppProperties {
     if (!Files.exists(rodainPath.resolve("samples"))) {
       rodainPath.resolve("samples").toFile().mkdir();
     }
-    // create log folder
-    if (!Files.exists(rodainPath.resolve("log"))) {
-      rodainPath.resolve("log").toFile().mkdir();
+    // create LOGGER folder
+    if (!Files.exists(rodainPath.resolve("LOGGER"))) {
+      rodainPath.resolve("LOGGER").toFile().mkdir();
     }
   }
 
@@ -195,7 +195,7 @@ public class AppProperties {
     try {
       result = new PropertiesConfiguration("properties/" + fileName + ".properties");
     } catch (ConfigurationException e) {
-      log.error("Error loading the config file", e);
+      LOGGER.error("Error loading the config file", e);
     }
     return result;
   }
@@ -224,7 +224,7 @@ public class AppProperties {
           try {
             result = Utils.readFile(sch.toString(), Charset.defaultCharset());
           } catch (IOException e) {
-            log.error("Unable to read schema file", e);
+            LOGGER.error("Unable to read schema file", e);
           }
         }
       }
@@ -269,7 +269,7 @@ public class AppProperties {
       InputStream contentStream = temp.openStream();
       return Utils.convertStreamToString(contentStream);
     } catch (IOException e) {
-      log.error("Error reading metadata file", e);
+      LOGGER.error("Error reading metadata file", e);
     }
     return "";
   }
@@ -330,7 +330,7 @@ public class AppProperties {
     try {
       result = resourceBundle.getString(key);
     } catch (MissingResourceException e) {
-      log.warn(String.format("Missing translation for %s in language: %s", key, locale.getDisplayName()));
+      LOGGER.warn(String.format("Missing translation for %s in language: %s", key, locale.getDisplayName()));
       result = defaultResourceBundler.getString(key);
     }
     return result;
@@ -355,7 +355,7 @@ public class AppProperties {
     try {
       ext_config.save(rodainPath.resolve("config.properties").toFile());
     } catch (ConfigurationException e) {
-      log.error("Error loading the config file", e);
+      LOGGER.error("Error loading the config file", e);
     }
   }
 }

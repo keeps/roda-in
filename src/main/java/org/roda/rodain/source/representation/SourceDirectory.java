@@ -17,7 +17,7 @@ import java.util.TreeMap;
  * @since 17-09-2015.
  */
 public class SourceDirectory implements SourceItem {
-  private static final Logger log = LoggerFactory.getLogger(SourceDirectory.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(SourceDirectory.class.getName());
   private Path path;
   private int itemsToLoad = 0;
   private TreeMap<String, SourceItem> children;
@@ -109,7 +109,7 @@ public class SourceDirectory implements SourceItem {
       if (directoryStream != null)
         directoryStream.close();
     } catch (IOException e) {
-      log.error("Error closing directory stream", e);
+      LOGGER.error("Error closing directory stream", e);
     }
   }
 
@@ -121,9 +121,9 @@ public class SourceDirectory implements SourceItem {
       directoryStream = Files.newDirectoryStream(path);
       iterator = directoryStream.iterator();
     } catch (AccessDeniedException e) {
-      log.info("No access to file", e);
+      LOGGER.info("No access to file", e);
     } catch (IOException e) {
-      log.error("Error accessing file", e);
+      LOGGER.error("Error accessing file", e);
     }
   }
 

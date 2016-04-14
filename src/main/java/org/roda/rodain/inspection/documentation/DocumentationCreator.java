@@ -1,21 +1,21 @@
 package org.roda.rodain.inspection.documentation;
 
-import org.roda.rodain.rules.TreeNode;
-import org.roda.rodain.rules.filters.ContentFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
+
+import org.roda.rodain.rules.TreeNode;
+import org.roda.rodain.rules.filters.ContentFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 08-03-2016.
  */
 public class DocumentationCreator extends Observable {
-  private static final Logger log = LoggerFactory.getLogger(DocumentationCreator.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(DocumentationCreator.class.getName());
   private Deque<TreeNode> nodes;
   private Set<TreeNode> files;
   private Set<Path> paths;
@@ -66,9 +66,9 @@ public class DocumentationCreator extends Observable {
             }
           });
         } catch (AccessDeniedException e) {
-          log.info("Access denied to file", e);
+          LOGGER.info("Access denied to file", e);
         } catch (IOException e) {
-          log.error("Error walking the file tree", e);
+          LOGGER.error("Error walking the file tree", e);
         }
       }
     }

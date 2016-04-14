@@ -13,7 +13,7 @@ import java.util.Set;
  * @since 01-10-2015.
  */
 public class WalkFileTree extends Thread {
-  private static final Logger log = LoggerFactory.getLogger(WalkFileTree.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(WalkFileTree.class.getName());
   private Set<String> paths;
   private TreeVisitor handler;
   private boolean cancelled = false;
@@ -78,9 +78,9 @@ public class WalkFileTree extends Thread {
           });
         }
       } catch (AccessDeniedException e) {
-        log.info("Access denied to file", e);
+        LOGGER.info("Access denied to file", e);
       } catch (IOException e) {
-        log.error("Error walking the file tree", e);
+        LOGGER.error("Error walking the file tree", e);
       }
     }
     handler.end();

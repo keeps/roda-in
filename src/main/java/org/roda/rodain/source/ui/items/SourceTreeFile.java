@@ -139,7 +139,7 @@ public class SourceTreeFile extends SourceTreeItem {
    */
   @Override
   public void update(Observable o, Object arg) {
-    if (o instanceof Rule && arg instanceof String && arg.equals("Removed rule")) {
+    if (o instanceof Rule && arg instanceof String && "Removed rule".equals(arg)) {
       Rule rul = (Rule) o;
       removeMapping(rul);
     }

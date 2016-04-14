@@ -1,5 +1,22 @@
 package org.roda.rodain.creation;
 
+import java.io.*;
+import java.nio.file.Path;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
 import org.apache.commons.io.FileUtils;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
@@ -12,28 +29,12 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-import java.io.*;
-import java.nio.file.Path;
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 19/11/2015.
  */
 public class SimpleSipCreator extends Thread {
-  private static final Logger log = LoggerFactory.getLogger(SimpleSipCreator.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(SimpleSipCreator.class.getName());
   protected final static String actionCreatingFolders = AppProperties
     .getLocalizedString("SimpleSipCreator.creatingStructure");
   protected final static String actionCopyingData = I18n.t("SimpleSipCreator.copyingData");
@@ -118,7 +119,7 @@ public class SimpleSipCreator extends Thread {
     try {
       FileUtils.deleteDirectory(dir.toFile());
     } catch (IOException e) {
-      log.error("Error deleting directory", e);
+      LOGGER.error("Error deleting directory", e);
     }
   }
 
@@ -145,7 +146,7 @@ public class SimpleSipCreator extends Thread {
         result.put(fieldName, fieldValue);
       }
     } catch (Exception e) {
-      log.info("Error parsing the XML file, falling back to simple metadata mode", e);
+      LOGGER.info("Error parsing the XML file, falling back to simple metadata mode", e);
       // if there's been an error when transforming the XML, remove all
       // new-lines from the metadata text and add it to the result as a single
       // line

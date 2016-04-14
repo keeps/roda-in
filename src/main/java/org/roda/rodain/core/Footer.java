@@ -116,4 +116,8 @@ public class Footer extends VBox {
     timer = new Timer();
     timer.schedule(updater, 1000, 1000);
   }
+
+  public void cancelMemoryAutoUpdater() {
+    timer.cancel();
+  }
 }

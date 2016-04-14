@@ -26,7 +26,7 @@ import java.util.Scanner;
  * @since 24-09-2015.
  */
 public class Utils {
-  private static final Logger log = LoggerFactory.getLogger(Utils.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class.getName());
 
   private Utils() {
   }
@@ -88,7 +88,7 @@ public class Utils {
     try {
       isValid = validateSchemaWithoutCatch(content, IOUtils.toInputStream(schemaString, "UTF-8"));
     } catch (IOException e) {
-      log.error("Can't access the schema file", e);
+      LOGGER.error("Can't access the schema file", e);
     }
 
     return isValid;

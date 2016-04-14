@@ -23,7 +23,7 @@ import java.io.IOException;
  * @since 24-02-2016.
  */
 public class ValidationPopOver extends PopOver {
-  private static final Logger log = LoggerFactory.getLogger(ValidationPopOver.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(ValidationPopOver.class.getName());
   private Image loadingGif;
 
   /**
@@ -36,7 +36,7 @@ public class ValidationPopOver extends PopOver {
       if (loadingGif == null)
         loadingGif = new Image(ClassLoader.getSystemResource("loading.GIF").openStream());
     } catch (IOException e) {
-      log.error("Error reading loading GIF", e);
+      LOGGER.error("Error reading loading GIF", e);
     }
 
     setDetachable(false);

@@ -45,7 +45,7 @@ import java.util.Set;
  * @since 16-09-2015.
  */
 public class RodaIn extends Application {
-  private static final Logger log = LoggerFactory.getLogger(RodaIn.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(RodaIn.class.getName());
   private static Stage stage;
 
   private BorderPane mainPane;
@@ -75,7 +75,7 @@ public class RodaIn extends Application {
     try {
       splash = new ImageView(new Image(ClassLoader.getSystemResource("roda-in-splash.png").openStream()));
     } catch (IOException e) {
-      log.error("Error reading logo file", e);
+      LOGGER.error("Error reading logo file", e);
     }
 
     splashPane = new Pane();
@@ -118,7 +118,7 @@ public class RodaIn extends Application {
     try {
       stage.getIcons().add(new Image(ClassLoader.getSystemResource("roda2-logo.png").openStream()));
     } catch (IOException e) {
-      log.error("Error reading logo file", e);
+      LOGGER.error("Error reading logo file", e);
     }
 
     Task<Void> initTask = new Task<Void>() {
@@ -167,12 +167,12 @@ public class RodaIn extends Application {
 
     initTask.exceptionProperty().addListener((observable, oldValue, newValue) -> {
       if (newValue != null) {
-        log.error("Error initializing application", newValue);
+        LOGGER.error("Error initializing application", newValue);
       }
     });
 
     initTask.setOnFailed(event -> {
-      log.error("Failed application initialization");
+      LOGGER.error("Failed application initialization");
       if (splashStage != null)
         splashStage.close();
     });
@@ -365,6 +365,7 @@ public class RodaIn extends Application {
       exportCS(AppProperties.getRodainPath().resolve(".plan.temp").toString());
     }
     VisitorStack.end();
+    Footer.getInstance().cancelMemoryAutoUpdater();
     Platform.exit();
   }
 

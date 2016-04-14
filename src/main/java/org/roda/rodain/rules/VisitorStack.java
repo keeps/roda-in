@@ -18,7 +18,7 @@ import java.util.concurrent.Future;
  * @since 06-10-2015.
  */
 public class VisitorStack extends Observable {
-  private static final Logger log = LoggerFactory.getLogger(VisitorStack.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(VisitorStack.class.getName());
   private static ExecutorService visitors;
   private HashMap<String, Future> futures;
   private String runningTask;
@@ -57,7 +57,7 @@ public class VisitorStack extends Observable {
         try {
           walker.join();
         } catch (InterruptedException e) {
-          log.debug(e.getMessage());
+          LOGGER.debug(e.getMessage());
           walker.interrupt();
         }
         return null;

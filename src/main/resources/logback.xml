@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration debug="false">
     <property name="LOG_PATH" value="${roda-in-log-path:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}}"/>
+    <!--Suppress logback's initial debug output-->
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener"/>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -36,6 +38,10 @@
     </logger>
 
     <logger name="logToFile" level="error" additivity="false">
+        <appender-ref ref="LOGFILE"/>
+    </logger>
+
+    <logger name="org.apache.commons.configuration.PropertiesConfiguration" additivity="false">
         <appender-ref ref="LOGFILE"/>
     </logger>
 

@@ -15,7 +15,7 @@ import java.io.IOException;
  * @since 21-09-2015.
  */
 public class ContentClickedEventHandler implements EventHandler<MouseEvent> {
-  private static final Logger log = LoggerFactory.getLogger(ContentClickedEventHandler.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(ContentClickedEventHandler.class.getName());
   private static String OS = System.getProperty("os.name").toLowerCase();
   private TreeView<Object> treeView;
 
@@ -70,7 +70,7 @@ public class ContentClickedEventHandler implements EventHandler<MouseEvent> {
       ProcessBuilder pb = new ProcessBuilder(command, file);
       pb.start();
     } catch (IOException e) {
-      log.info("Error opening file from SIP content", e);
+      LOGGER.info("Error opening file from SIP content", e);
       return false;
     }
     return true;

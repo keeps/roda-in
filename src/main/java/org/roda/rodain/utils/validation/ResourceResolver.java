@@ -15,7 +15,7 @@ import java.net.URL;
  * @since 29-02-2016.
  */
 public class ResourceResolver implements LSResourceResolver {
-  private static final Logger log = LoggerFactory.getLogger(ResourceResolver.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(ResourceResolver.class.getName());
 
   @Override
   public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseURI) {
@@ -27,9 +27,9 @@ public class ResourceResolver implements LSResourceResolver {
       // the XSD's are expected to be in the root of the classpath
       resourceAsStream = this.getClass().getClassLoader().getResourceAsStream(systemId);
       // we use this catch exception to check if the systemID is a URL or a
-      // file, that's why we don't re-throw it or log it
+      // file, that's why we don't re-throw it or LOGGER it
     } catch (IOException e) {
-      log.error("Can't get file from URL", e);
+      LOGGER.error("Can't get file from URL", e);
     }
     return new Input(publicId, systemId, resourceAsStream);
   }

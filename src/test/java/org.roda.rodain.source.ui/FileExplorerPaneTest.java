@@ -54,7 +54,7 @@ public class FileExplorerPaneTest extends ApplicationTest {
 
   @Test
   public void rootHasRightNumberOfChildren() {
-    sleep(1000);
+    sleep(5000);
     TreeItem<String> root = fileExplorer.getTreeView().getRoot().getChildren().get(0);
     // Root exists, is a SourceTreeDirectory and its path is testDir
     assert root != null;

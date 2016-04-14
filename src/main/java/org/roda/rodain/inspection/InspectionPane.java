@@ -61,7 +61,7 @@ import java.util.*;
  * @since 26-10-2015.
  */
 public class InspectionPane extends BorderPane {
-  private static final Logger log = LoggerFactory.getLogger(InspectionPane.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(InspectionPane.class.getName());
   private HBox topBox;
   private VBox center;
   private HBox topSubtitle;
@@ -186,14 +186,14 @@ public class InspectionPane extends BorderPane {
     title.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(title);
 
-    Button addMetadata = new Button(I18n.t("add"));
-    addMetadata.setMinHeight(65);
-    addMetadata.setMinWidth(130);
-    addMetadata.setMaxWidth(130);
-    addMetadata.setOnAction(event -> addMetadataAction());
-    addMetadata.getStyleClass().add("helpButton");
+    Button addMetadataBtn = new Button(I18n.t("add"));
+    addMetadataBtn.setMinHeight(65);
+    addMetadataBtn.setMinWidth(130);
+    addMetadataBtn.setMaxWidth(130);
+    addMetadataBtn.setOnAction(event -> addMetadataAction());
+    addMetadataBtn.getStyleClass().add("helpButton");
 
-    box.getChildren().addAll(titleBox, addMetadata);
+    box.getChildren().addAll(titleBox, addMetadataBtn);
     metadataHelpBox.getChildren().add(box);
   }
 
@@ -223,7 +223,7 @@ public class InspectionPane extends BorderPane {
           updateMetadataTop();
         } else {
           textBoxCancelledChange = true;
-          updateTextArea(oldValue);
+          updateTextArea(currentDescOb.getMetadataWithReplaces(selected));
         }
       } else {
         textBoxCancelledChange = false;
@@ -424,7 +424,7 @@ public class InspectionPane extends BorderPane {
             }
           }
         } catch (SAXException e) {
-          log.info("Error validating schema", e);
+          LOGGER.info("Error validating schema", e);
           message.append(e.getMessage());
         }
         return result;
@@ -448,9 +448,7 @@ public class InspectionPane extends BorderPane {
       TextField textField = new TextField(metadataValue.getValue());
       HBox.setHgrow(textField, Priority.ALWAYS);
       textField.setUserData(metadataValue);
-      textField.textProperty().addListener((observable2, oldValue2, newValue2) -> {
-        metadataValue.setValue(newValue2);
-      });
+      textField.textProperty().addListener((observable2, oldValue2, newValue2) -> metadataValue.setValue(newValue2));
       if (metadataValue.getId().equals("title")) {
         textField.setId("descObjTitle");
         paneTitle.textProperty().bind(textField.textProperty());
@@ -736,7 +734,7 @@ public class InspectionPane extends BorderPane {
       loadingPane.getChildren().add(new ImageView(loadingGif));
       metadataLoadingPane.getChildren().add(new ImageView(loadingGif));
     } catch (IOException e) {
-      log.error("Error reading loading GIF", e);
+      LOGGER.error("Error reading loading GIF", e);
     }
   }
 
@@ -981,7 +979,7 @@ public class InspectionPane extends BorderPane {
     };
 
     Task thisMetadataTask = metadataTask;
-    metadataTask.setOnSucceeded((Void) -> {
+    metadataTask.setOnSucceeded(Void -> {
       if (metadataTask != null && metadataTask == thisMetadataTask) {
         Map<String, MetadataValue> values = currentDescOb.getMetadataValueMap(dom);
         boolean show = values != null && !values.isEmpty();
@@ -1285,13 +1283,11 @@ public class InspectionPane extends BorderPane {
   }
 
   public List<InspectionTreeItem> getDocumentationSelectedItems() {
-    List<InspectionTreeItem> result = new ArrayList<>(sipDocumentation.getSelectionModel().getSelectedItems());
-    return result;
+    return new ArrayList<>(sipDocumentation.getSelectionModel().getSelectedItems());
   }
 
   public List<InspectionTreeItem> getDataSelectedItems() {
-    List<InspectionTreeItem> result = new ArrayList<>(sipFiles.getSelectionModel().getSelectedItems());
-    return result;
+    return new ArrayList<>(sipFiles.getSelectionModel().getSelectedItems());
   }
 
   public void updateMetadataList(DescriptionObject descriptionObject) {

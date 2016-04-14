@@ -24,7 +24,7 @@ import java.util.Map;
  */
 @JsonIgnoreProperties({"path", "loaded", "version"})
 public class DescObjMetadata {
-  private static final Logger log = LoggerFactory.getLogger(DescObjMetadata.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(DescObjMetadata.class.getName());
   private String id, content, contentEncoding;
   private Map<String, Object> additionalProperties = new HashMap<>();
   private Map<String, MetadataValue> values;
@@ -160,7 +160,7 @@ public class DescObjMetadata {
         }
       }
     } catch (IOException e) {
-      log.error("Error reading metadata file", e);
+      LOGGER.error("Error reading metadata file", e);
     }
   }
 

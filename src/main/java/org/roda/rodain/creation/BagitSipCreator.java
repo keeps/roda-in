@@ -27,7 +27,7 @@ import java.util.Set;
  * @since 19/11/2015.
  */
 public class BagitSipCreator extends SimpleSipCreator {
-  private static final Logger log = LoggerFactory.getLogger(BagitSipCreator.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(BagitSipCreator.class.getName());
   private static final String DATAFOLDER = "data";
 
   private Instant startTime;
@@ -49,7 +49,7 @@ public class BagitSipCreator extends SimpleSipCreator {
           try {
             allSipsSize += nodeSize(tn);
           } catch (IOException e) {
-            log.error("Can't access file: " + tn.getPath(), e);
+            LOGGER.error("Can't access file: " + tn.getPath(), e);
           }
         }
       }
@@ -117,7 +117,7 @@ public class BagitSipCreator extends SimpleSipCreator {
       createdSipsCount++;
       b.close();
     } catch (Exception e) {
-      log.error("Error creating SIP", e);
+      LOGGER.error("Error creating SIP", e);
       unsuccessful.add(sip);
       CreationModalProcessing.showError(sip, e);
       deleteDirectory(name);
@@ -250,7 +250,7 @@ public class BagitSipCreator extends SimpleSipCreator {
       in.close();
       out.close();
     } catch (IOException e) {
-      log.error("Error writing(copying) file. Source: " + path + "; Destination: " + dest, e);
+      LOGGER.error("Error writing(copying) file. Source: " + path + "; Destination: " + dest, e);
     }
   }
 }

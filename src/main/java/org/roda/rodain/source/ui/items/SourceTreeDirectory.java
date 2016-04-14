@@ -115,9 +115,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
         return null;
       }
     };
-    task.setOnSucceeded(event -> {
-      getChildren().setAll(newChildren);
-    });
+    task.setOnSucceeded(event -> getChildren().setAll(newChildren));
 
     new Thread(task).start();
   }
@@ -203,9 +201,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
         return null;
       }
     };
-    task.setOnSucceeded(event -> {
-      getChildren().setAll(children);
-    });
+    task.setOnSucceeded(event -> getChildren().setAll(children));
 
     new Thread(task).start();
   }
@@ -285,9 +281,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
         return null;
       }
     };
-    task.setOnSucceeded(event -> {
-      getChildren().setAll(children);
-    });
+    task.setOnSucceeded(event -> getChildren().setAll(children));
     new Thread(task).start();
   }
 
@@ -503,10 +497,9 @@ public class SourceTreeDirectory extends SourceTreeItem {
     };
 
     // After everything is loaded, we add all the items to the TreeView at once.
-    task.setOnSucceeded(event -> {
-      // Set the children
-      getChildren().setAll(children);
-    });
+    task.setOnSucceeded(event ->
+    // Set the children
+    getChildren().setAll(children));
 
     new Thread(task).start();
   }

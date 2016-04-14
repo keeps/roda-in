@@ -1,6 +1,12 @@
 package org.roda.rodain.schema.ui;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -25,6 +31,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.Footer;
 import org.roda.rodain.core.I18n;
@@ -42,19 +49,14 @@ import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 28-09-2015.
  */
 public class SchemaPane extends BorderPane {
-  private static final Logger log = LoggerFactory.getLogger(SchemaPane.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(SchemaPane.class.getName());
   private TreeView<String> treeView;
   private VBox treeBox;
   private SchemaNode rootNode;
@@ -96,7 +98,7 @@ public class SchemaPane extends BorderPane {
         ClassificationSchema schema = loadClassificationSchemaFile(lastClassScheme);
         updateClassificationSchema(schema, true);
       } catch (IOException e) {
-        log.error("Error reading classification scheme specification", e);
+        LOGGER.error("Error reading classification scheme specification", e);
       }
     }
 
@@ -299,7 +301,7 @@ public class SchemaPane extends BorderPane {
       ClassificationSchema schema = loadClassificationSchemaFile(inputFile);
       updateClassificationSchema(schema);
     } catch (IOException e) {
-      log.error("Error reading classification scheme specification", e);
+      LOGGER.error("Error reading classification scheme specification", e);
     }
   }
 
@@ -320,7 +322,7 @@ public class SchemaPane extends BorderPane {
       ClassificationSchema scheme = objectMapper.readValue(stream, ClassificationSchema.class);
       updateClassificationSchema(scheme);
     } catch (IOException e) {
-      log.error("Error reading classification scheme from stream", e);
+      LOGGER.error("Error reading classification scheme from stream", e);
     }
   }
 
@@ -342,9 +344,8 @@ public class SchemaPane extends BorderPane {
   }
 
   private void updateClassificationSchema(ClassificationSchema cs, boolean skipConfirmation) {
-    if (!skipConfirmation)
-      if (!confirmUpdate())
-        return;
+    if (!skipConfirmation && !confirmUpdate())
+      return;
 
     setTop(topBox);
     setCenter(treeBox);
@@ -374,7 +375,7 @@ public class SchemaPane extends BorderPane {
           if (parents.size() != 1) {
             String format = "The node \"%s\" has %d parents";
             String message = String.format(format, descObj.getTitle(), parents.size());
-            log.info("Error creating the scheme tree", new MalformedSchemaException(message));
+            LOGGER.info("Error creating the scheme tree", new MalformedSchemaException(message));
             continue;
           }
           DescriptionObject parent = parents.get(0);
@@ -418,7 +419,7 @@ public class SchemaPane extends BorderPane {
       }
       modifiedPlan = false;
     } catch (Exception e) {
-      log.error("Error updating the classification plan", e);
+      LOGGER.error("Error updating the classification plan", e);
     }
   }
 

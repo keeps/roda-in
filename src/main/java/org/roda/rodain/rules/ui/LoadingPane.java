@@ -21,7 +21,7 @@ import java.io.IOException;
  * @since 27-10-2015.
  */
 public class LoadingPane extends BorderPane {
-  private static final Logger log = LoggerFactory.getLogger(LoadingPane.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(LoadingPane.class.getName());
   private static Image loadingGif;
   private SchemaNode schema;
 
@@ -44,7 +44,7 @@ public class LoadingPane extends BorderPane {
         loadingGif = new Image(ClassLoader.getSystemResource("loading.GIF").openStream());
       centerBox.getChildren().add(new ImageView(loadingGif));
     } catch (IOException e) {
-      log.error("Error reading loading GIF", e);
+      LOGGER.error("Error reading loading GIF", e);
     }
     setCenter(centerBox);
   }
@@ -59,8 +59,7 @@ public class LoadingPane extends BorderPane {
     box.setPadding(new Insets(10, 10, 10, 10));
     pane.getChildren().add(box);
 
-    Label title = new Label(
-      I18n.t("LoadingPane.createAssociation") + " \"" + schema.getDob().getTitle() + "\"");
+    Label title = new Label(I18n.t("LoadingPane.createAssociation") + " \"" + schema.getDob().getTitle() + "\"");
     title.setId("title");
 
     box.getChildren().add(title);

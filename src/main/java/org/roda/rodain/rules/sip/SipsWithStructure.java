@@ -19,7 +19,7 @@ import java.util.*;
  * @since 10-03-2016.
  */
 public class SipsWithStructure extends SipPreviewCreator {
-  private static final Logger log = LoggerFactory.getLogger(SipsWithStructure.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(SipsWithStructure.class.getName());
   private Deque<Folder> folders;
   private Set<PseudoItem> tree;
   private Map<Path, PseudoItem> record;
@@ -85,9 +85,9 @@ public class SipsWithStructure extends SipPreviewCreator {
         }
       });
     } catch (AccessDeniedException e) {
-      log.info("Access denied to file", e);
+      LOGGER.info("Access denied to file", e);
     } catch (IOException e) {
-      log.error("Error walking the file tree", e);
+      LOGGER.error("Error walking the file tree", e);
     }
   }
 
@@ -202,9 +202,8 @@ public class SipsWithStructure extends SipPreviewCreator {
 
     // Map the paths of the description objects only AFTER the SIPs are created
     // to avoid unwanted filtering
-    descObjs.forEach(pseudoDescriptionObject -> {
-      PathCollection.addPath(pseudoDescriptionObject.getPath().toString(), SourceTreeItemState.MAPPED);
-    });
+    descObjs.forEach(pseudoDescriptionObject -> PathCollection.addPath(pseudoDescriptionObject.getPath().toString(),
+      SourceTreeItemState.MAPPED));
     setChanged();
     notifyObservers("Finished");
   }

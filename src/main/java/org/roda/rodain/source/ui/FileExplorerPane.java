@@ -24,8 +24,6 @@ import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.Utils;
 import org.roda.rodain.utils.WalkFileTree;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -37,7 +35,6 @@ import java.util.*;
  * @since 24-09-2015.
  */
 public class FileExplorerPane extends BorderPane implements Observer {
-  private static final Logger log = LoggerFactory.getLogger(FileExplorerPane.class.getName());
   private Stage stage;
   private HBox top;
   private StackPane fileExplorer;

@@ -91,7 +91,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
         }
 
         // we don't need to add the nodes and SIPs if the rule has been removed
-        if (arg.equals("Removed rule")) {
+        if ("Removed rule".equals(arg)) {
           return;
         }
         Set<SipPreviewNode> nodes = new HashSet<>(rule.getSipNodes());

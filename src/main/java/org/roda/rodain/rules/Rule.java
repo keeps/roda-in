@@ -277,10 +277,10 @@ public class Rule extends Observable implements Observer, Comparable {
           notifyObservers("Removed SIP");
       } else {
         // Remove the SIP from this rule
-        if (arg instanceof String && arg.equals("Remove from rule")) {
-          String id = sip.getId();
-          sips.remove(id);
-          sipNodes.remove(id);
+        if (arg instanceof String && "Remove from rule".equals(arg)) {
+          String sipId = sip.getId();
+          sips.remove(sipId);
+          sipNodes.remove(sipId);
         }
       }
     }

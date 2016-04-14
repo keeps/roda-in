@@ -30,7 +30,7 @@ import java.util.Set;
  * @since 19/11/2015.
  */
 public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
-  private static final Logger log = LoggerFactory.getLogger(EarkSipCreator.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(EarkSipCreator.class.getName());
   private int countFilesOfZip;
   private int currentSIPadded = 0;
   private int currentSIPsize = 0;
@@ -93,7 +93,6 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
             earkSip.addSchema(new IPFile(schemaPath));
         }
 
-        // metadataType = METSEnums.MetadataType.OTHER.setOtherType("celexrdf");
         Path metadataPath = null;
         if (descObjMetadata.getType() != MetadataTypes.TEMPLATE && descObjMetadata.getType() != MetadataTypes.NEW_FILE
           && !descObjMetadata.isLoaded()) {
@@ -144,17 +143,17 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
 
       createdSipsCount++;
     } catch (SIPException e) {
-      log.error("Commons IP exception", e);
+      LOGGER.error("Commons IP exception", e);
       unsuccessful.add(sip);
       CreationModalProcessing.showError(sip, e);
     } catch (InterruptedException e) {
       canceled = true;
     } catch (IOException e) {
-      log.error("Error accessing the files", e);
+      LOGGER.error("Error accessing the files", e);
       unsuccessful.add(sip);
       CreationModalProcessing.showError(sip, e);
     } catch (Exception e) {
-      log.error("Error exporting E-ARK SIP", e);
+      LOGGER.error("Error exporting E-ARK SIP", e);
       unsuccessful.add(sip);
       CreationModalProcessing.showError(sip, e);
     }

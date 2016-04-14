@@ -117,10 +117,8 @@ public class RuleModalRemoving extends BorderPane implements Observer {
     if (!(args instanceof Float)) {
       if (o instanceof Rule && args instanceof String) {
         Rule r = (Rule) o;
-        if (rules.containsKey(r.getId())) {
-          if ("removed rule".equals(((String) args).toLowerCase())) {
-            rules.remove(r.getId());
-          }
+        if (rules.containsKey(r.getId()) && "removed rule".equalsIgnoreCase((String) args)) {
+          rules.remove(r.getId());
         }
       }
       if (o instanceof SipPreview) {
@@ -135,10 +133,13 @@ public class RuleModalRemoving extends BorderPane implements Observer {
       updateProgress(computeProgress());
       return;
     }
-    if (o instanceof SipPreview) {
+    if (o instanceof SipPreview)
+
+    {
       SipPreview sip = (SipPreview) o;
       sips.put(sip.getId(), (float) args);
     }
+
     updateProgress(computeProgress());
   }
 

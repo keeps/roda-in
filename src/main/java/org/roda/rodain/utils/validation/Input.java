@@ -14,7 +14,7 @@ import java.io.Reader;
  * @since 29-02-2016.
  */
 public class Input implements LSInput {
-  private static final Logger log = LoggerFactory.getLogger(Input.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(Input.class.getName());
   private BufferedInputStream inputStream;
   private String publicId;
   private String systemId;
@@ -66,16 +66,15 @@ public class Input implements LSInput {
       try {
         byte[] input = new byte[inputStream.available()];
         inputStream.read(input);
-        String result = new String(input);
-        return result;
+        return new String(input);
       } catch (IOException e) {
-        log.error("Unable to get string", e);
+        LOGGER.error("Unable to get string", e);
         return null;
       } finally {
         try {
           inputStream.close();
         } catch (IOException e) {
-          log.error("Error closing stream", e);
+          LOGGER.error("Error closing stream", e);
         }
       }
     }
