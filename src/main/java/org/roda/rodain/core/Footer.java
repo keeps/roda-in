@@ -106,12 +106,14 @@ public class Footer extends VBox {
     TimerTask updater = new TimerTask() {
       @Override
       public void run() {
-        String value = Utils.formatSize(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
+        long total = Runtime.getRuntime().totalMemory();
+        long free = Runtime.getRuntime().freeMemory();
+        String value = String.format(I18n.t("Footer.memory"), Utils.formatSize(total - free), Utils.formatSize(total));
         Platform.runLater(() -> memoryUsage.setText(value));
       }
     };
 
     timer = new Timer();
-    timer.schedule(updater, 5000, 500);
+    timer.schedule(updater, 1000, 1000);
   }
 }
