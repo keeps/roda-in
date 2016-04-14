@@ -61,15 +61,24 @@ public class SipPreviewNode extends TreeItem<String> implements Observer {
     return iconWhite;
   }
 
-  public void setDescriptionLevel(String descLevel) {
-    sip.setDescriptionlevel(descLevel);
-    ResourceBundle hierarchyConfig = ResourceBundle.getBundle("properties/roda-description-levels-hierarchy");
-    String category = hierarchyConfig.getString("category." + sip.getDescriptionlevel());
-    String unicode = hierarchyConfig.getString("icon." + category);
+  public void updateDescriptionLevel(String descLevel) {
+    try {
+      ResourceBundle hierarchyConfig = ResourceBundle.getBundle("properties/roda-description-levels-hierarchy");
+      String category = hierarchyConfig.getString("category." + descLevel);
+      String unicode = hierarchyConfig.getString("icon." + category);
 
-    iconBlack = FontAwesomeImageCreator.generate(unicode);
-    iconWhite = FontAwesomeImageCreator.generate(unicode, Color.WHITE);
-    this.setGraphic(new ImageView(iconBlack));
+      sip.setDescriptionlevel(descLevel);
+      Platform.runLater(() -> {
+        iconBlack = FontAwesomeImageCreator.generate(unicode);
+        iconWhite = FontAwesomeImageCreator.generate(unicode, Color.WHITE);
+        this.setGraphic(new ImageView(getIcon()));
+      });
+    } catch (Exception e) {
+      // We don't need to process this exception, since it's expected that there
+      // will be a lot of them thrown. It could happen because the user still
+      // hasn't finished writing the new description level title
+      return;
+    }
   }
 
   public void setBlackIconSelected(boolean value) {

@@ -462,6 +462,27 @@ public class InspectionPane extends BorderPane {
           }
         }
       }
+      if (metadataValue.getId().equals("level")) {
+        textField.textProperty().addListener((observable, oldValue, newValue) -> {
+          TreeItem<String> itemToForceUpdate = null;
+          // Update the icons of the description level
+          if (currentSIPNode != null) {
+            currentSIPNode.updateDescriptionLevel(newValue);
+            itemToForceUpdate = currentSIPNode;
+            Platform.runLater(() -> createTopSubtitle(currentSIPNode.getIconWhite(), currentSIPNode.getValue()));
+          } else if (currentSchema != null) {
+            currentSchema.updateDescriptionLevel(newValue);
+            itemToForceUpdate = currentSchema;
+            Platform.runLater(() -> createTopSubtitle(currentSchema.getIconWhite(), currentSchema.getValue()));
+          }
+          // Force update
+          if (itemToForceUpdate != null) {
+            String value = itemToForceUpdate.getValue();
+            itemToForceUpdate.setValue("");
+            itemToForceUpdate.setValue(value);
+          }
+        });
+      }
 
       metadataGrid.add(label, 0, i);
       metadataGrid.add(textField, 1, i);
@@ -540,6 +561,7 @@ public class InspectionPane extends BorderPane {
       return;
     if (metadata.getChildren().contains(metadataFormWrapper)) {
       if (currentDescOb != null) {
+        currentDescOb.updatedMetadata(selectedDescObjMetadata);
         updateTextArea(currentDescOb.getMetadataWithReplaces(selectedDescObjMetadata));
       }
     } else {

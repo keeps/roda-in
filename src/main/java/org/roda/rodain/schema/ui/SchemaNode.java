@@ -33,7 +33,8 @@ public class SchemaNode extends TreeItem<String> implements Observer {
   /**
    * Creates a new SchemaNode
    *
-   * @param dobject The DescriptionObject that defines the SchemaNode
+   * @param dobject
+   *          The DescriptionObject that defines the SchemaNode
    */
   public SchemaNode(DescriptionObject dobject) {
     super(dobject.getTitle());
@@ -45,7 +46,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     ruleNodes = new HashMap<>();
 
     if (dob.getDescriptionlevel() != null)
-      updateDescLevel(dob.getDescriptionlevel());
+      updateDescriptionLevel(dob.getDescriptionlevel());
   }
 
   public SchemaNode(DescriptionObject dobject, Image iconBlack, Image iconWhite) {
@@ -64,8 +65,10 @@ public class SchemaNode extends TreeItem<String> implements Observer {
   /**
    * Updates the node when a Rule has been modified.
    *
-   * @param o   The observable object
-   * @param arg The arguments sent by the object
+   * @param o
+   *          The observable object
+   * @param arg
+   *          The arguments sent by the object
    */
   @Override
   public void update(final Observable o, Object arg) {
@@ -116,7 +119,8 @@ public class SchemaNode extends TreeItem<String> implements Observer {
   /**
    * Adds a new Rule to the SchemaNode.
    *
-   * @param r The Rule to be added
+   * @param r
+   *          The Rule to be added
    */
   public void addRule(Rule r) {
     int count = r.getSipCount();
@@ -149,7 +153,8 @@ public class SchemaNode extends TreeItem<String> implements Observer {
   /**
    * Adds a new node to the children nodes list.
    *
-   * @param node The node to be added to the list.
+   * @param node
+   *          The node to be added to the list.
    */
   public void addChildrenNode(SchemaNode node) {
     schemaNodes.add(node);
@@ -209,17 +214,24 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     getChildren().setAll(aux);
   }
 
-  public void updateDescLevel(String descLevel) {
-    dob.setDescriptionlevel(descLevel);
-    ResourceBundle hierarchyConfig = ResourceBundle.getBundle("properties/roda-description-levels-hierarchy");
-    String category = hierarchyConfig.getString("category." + dob.getDescriptionlevel());
-    String unicode = hierarchyConfig.getString("icon." + category);
+  public void updateDescriptionLevel(String descLevel) {
+    try {
+      ResourceBundle hierarchyConfig = ResourceBundle.getBundle("properties/roda-description-levels-hierarchy");
+      String category = hierarchyConfig.getString("category." + descLevel);
+      String unicode = hierarchyConfig.getString("icon." + category);
 
-    Platform.runLater(() -> {
-      iconBlack = FontAwesomeImageCreator.generate(unicode);
-      iconWhite = FontAwesomeImageCreator.generate(unicode, Color.WHITE);
-      this.setGraphic(new ImageView(iconBlack));
-    });
+      dob.setDescriptionlevel(descLevel);
+      Platform.runLater(() -> {
+        iconBlack = FontAwesomeImageCreator.generate(unicode);
+        iconWhite = FontAwesomeImageCreator.generate(unicode, Color.WHITE);
+        this.setGraphic(new ImageView(getIcon()));
+      });
+    } catch (Exception e) {
+      // We don't need to process this exception, since it's expected that there
+      // will be a lot of them thrown. It could happen because the user still
+      // hasn't finished writing the new description level title
+      return;
+    }
   }
 
   private Set<Rule> getAllRules() {
@@ -270,7 +282,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
   /**
    * @return The icon of the SchemaNode
    */
-  public Image getImage() {
+  public Image getIcon() {
     if (blackIconSelected) {
       return iconBlack;
     } else
@@ -301,7 +313,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
 
   /**
    * @return A map of all the SIPs in the SchemaNode and in the SchemaNode's
-   * children
+   *         children
    */
   public Map<SipPreview, String> getSipPreviews() {
     Map<SipPreview, String> result = new HashMap<>();
@@ -311,7 +323,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
         result.put(sp, dob.getId());
 
     sips.forEach((id, sipPreviewNodes) -> sipPreviewNodes
-        .forEach(sipPreviewNode -> result.put(sipPreviewNode.getSip(), dob.getId())));
+      .forEach(sipPreviewNode -> result.put(sipPreviewNode.getSip(), dob.getId())));
 
     ruleNodes.forEach((s, schNodes) -> schNodes.forEach(schemaNode -> result.putAll(schemaNode.getSipPreviews())));
 
