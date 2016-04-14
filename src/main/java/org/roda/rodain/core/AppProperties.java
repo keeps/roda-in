@@ -92,8 +92,11 @@ public class AppProperties {
         Files.copy(ClassLoader.getSystemResourceAsStream("templates/" + schemaFileName),
           rodainPath.resolve("schemas").resolve(schemaFileName), StandardCopyOption.REPLACE_EXISTING);
       }
-      // ensure that the xlink.xsd file is in the application home folder
+      // ensure that the xlink.xsd and xml.xsd files are in the application home
+      // folder
       Files.copy(ClassLoader.getSystemResourceAsStream("xlink.xsd"), rodainPath.resolve("schemas").resolve("xlink.xsd"),
+        StandardCopyOption.REPLACE_EXISTING);
+      Files.copy(ClassLoader.getSystemResourceAsStream("xml.xsd"), rodainPath.resolve("schemas").resolve("xml.xsd"),
         StandardCopyOption.REPLACE_EXISTING);
 
       // get all schema files in the roda-in home directory
