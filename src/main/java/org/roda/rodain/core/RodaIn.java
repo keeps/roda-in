@@ -187,8 +187,10 @@ public class RodaIn extends Application {
 
     // Create Footer after the center because Footer needs to bind to some
     // properties of panes in the center
-    Footer footer = Footer.getInstance();
-    mainPane.setBottom(footer);
+    Platform.runLater(() -> {
+      Footer footer = Footer.getInstance();
+      mainPane.setBottom(footer);
+    });
   }
 
   private SplitPane createSplitPane() {
