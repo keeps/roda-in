@@ -1,19 +1,10 @@
 package org.roda.rodain.rules.ui;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -24,7 +15,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.rules.MetadataOptions;
@@ -36,6 +26,13 @@ import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.UIPair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -144,14 +141,11 @@ public class RuleModalPane extends BorderPane {
       @Override
       public void changed(ObservableValue<? extends HBoxCell> observable, final HBoxCell oldValue, HBoxCell newValue) {
         if (newValue != null && newValue.isDisabled()) {
-          Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-              if (oldValue != null)
-                assocList.getSelectionModel().select(oldValue);
-              else
-                assocList.getSelectionModel().clearSelection();
-            }
+          Platform.runLater(() -> {
+            if (oldValue != null)
+              assocList.getSelectionModel().select(oldValue);
+            else
+              assocList.getSelectionModel().clearSelection();
           });
         }
       }
@@ -238,6 +232,8 @@ public class RuleModalPane extends BorderPane {
       for (String type : metaTypes) {
         String title = AppProperties.getConfig("metadata.type." + type + ".title");
         String value = AppProperties.getConfig("metadata.type." + type + ".value");
+        if (title == null || value == null)
+          continue;
         typesList.add(new UIPair(value, title));
       }
     }
@@ -281,31 +277,30 @@ public class RuleModalPane extends BorderPane {
   }
 
   private HBox optionsSingleFile(List<UIPair> metaTypeList) {
-    HBox box = new HBox();
+    HBox box = new HBox(5);
     box.setAlignment(Pos.CENTER_LEFT);
 
     chooseFile = new Button(I18n.t("RuleModalPane.chooseFile"));
-    chooseFile.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent e) {
-        metaList.getSelectionModel().clearSelection();
-        metaList.getSelectionModel().select(cellSingleFile);
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle(I18n.t("filechooser.title"));
-        File selectedFile = chooser.showOpenDialog(stage);
-        if (selectedFile == null)
-          return;
-        fromFile = selectedFile.toPath().toString();
-        chooseFile.setText(selectedFile.toPath().getFileName().toString());
-        chooseFile.setUserData(fromFile);
-      }
+    chooseFile.setOnAction(event -> {
+      metaList.getSelectionModel().clearSelection();
+      metaList.getSelectionModel().select(cellSingleFile);
+      FileChooser chooser = new FileChooser();
+      chooser.setTitle(I18n.t("filechooser.title"));
+      File selectedFile = chooser.showOpenDialog(stage);
+      if (selectedFile == null)
+        return;
+      fromFile = selectedFile.toPath().toString();
+      chooseFile.setText(selectedFile.toPath().getFileName().toString());
+      chooseFile.setUserData(fromFile);
     });
 
+    Label typeLabel = new Label(I18n.t("type") + ":");
     comboTypesSingleFile = new ComboBox<>(FXCollections.observableList(metaTypeList));
+    comboTypesSingleFile.getSelectionModel().selectFirst();
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
-    box.getChildren().addAll(chooseFile, space, comboTypesSingleFile);
+    box.getChildren().addAll(chooseFile, space, typeLabel, comboTypesSingleFile);
     return box;
   }
 
@@ -316,40 +311,41 @@ public class RuleModalPane extends BorderPane {
     Label lab = new Label(I18n.t("RuleModalPane.metadataPattern"));
     sameFolderTxtField = new TextField("metadata.xml");
 
+    Label typeLabel = new Label(I18n.t("type") + ":");
     comboTypesSameDir = new ComboBox<>(FXCollections.observableList(metaTypeList));
+    comboTypesSameDir.getSelectionModel().selectFirst();
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
-    box.getChildren().addAll(lab, sameFolderTxtField, space, comboTypesSameDir);
+    box.getChildren().addAll(lab, sameFolderTxtField, space, typeLabel, comboTypesSameDir);
     return box;
   }
 
   private HBox optionsDiffFolder(List<UIPair> metaTypeList) {
-    HBox box = new HBox();
+    HBox box = new HBox(5);
     box.setAlignment(Pos.CENTER_LEFT);
 
     chooseDir = new Button(I18n.t("RuleModalPane.chooseDirectory"));
-    chooseDir.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent e) {
-        metaList.getSelectionModel().clearSelection();
-        metaList.getSelectionModel().select(cellDiffFolder);
-        DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle(I18n.t("directorychooser.title"));
-        File selectedDirectory = chooser.showDialog(stage);
-        if (selectedDirectory == null)
-          return;
-        diffDir = selectedDirectory.toPath().toString();
-        chooseDir.setText(selectedDirectory.toPath().getFileName().toString());
-        chooseDir.setUserData(diffDir);
-      }
+    chooseDir.setOnAction(event -> {
+      metaList.getSelectionModel().clearSelection();
+      metaList.getSelectionModel().select(cellDiffFolder);
+      DirectoryChooser chooser = new DirectoryChooser();
+      chooser.setTitle(I18n.t("directorychooser.title"));
+      File selectedDirectory = chooser.showDialog(stage);
+      if (selectedDirectory == null)
+        return;
+      diffDir = selectedDirectory.toPath().toString();
+      chooseDir.setText(selectedDirectory.toPath().getFileName().toString());
+      chooseDir.setUserData(diffDir);
     });
 
+    Label typeLabel = new Label(I18n.t("type") + ":");
     comboTypesDiffFolder = new ComboBox<>(FXCollections.observableList(metaTypeList));
+    comboTypesDiffFolder.getSelectionModel().selectFirst();
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
-    box.getChildren().addAll(chooseDir, space, comboTypesDiffFolder);
+    box.getChildren().addAll(chooseDir, space, typeLabel, comboTypesDiffFolder);
     return box;
   }
 
@@ -409,33 +405,27 @@ public class RuleModalPane extends BorderPane {
     btContinue.setId("btConfirm");
     btContinue.setMaxWidth(120);
     btContinue.setMinWidth(120);
-    Platform.runLater(new Runnable() {
-      @Override
-      public void run() {
-        Image im = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CHEVRON_RIGHT, Color.WHITE);
-        ImageView imv = new ImageView(im);
-        btContinue.setGraphic(imv);
-      }
+    Platform.runLater(() -> {
+      Image im = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CHEVRON_RIGHT, Color.WHITE);
+      ImageView imv = new ImageView(im);
+      btContinue.setGraphic(imv);
     });
     btContinue.setGraphicTextGap(10);
     btContinue.setContentDisplay(ContentDisplay.RIGHT);
 
-    btContinue.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent e) {
-        if (currentState == States.ASSOCIATION) {
-          if (assocList.getSelectionModel().getSelectedIndex() != -1) {
-            setCenter(boxMetadata);
-            currentState = States.METADATA;
-            // enableMetaOptions();
-            buttons.getChildren().clear();
-            buttons.getChildren().addAll(btCancel, space, btBack, btContinue);
-            btContinue.setText(I18n.t("confirm"));
-            btContinue.setGraphicTextGap(16);
-          }
-        } else if (currentState == States.METADATA && metadataCheckContinue()) {
-          RuleModalController.confirm();
+    btContinue.setOnAction(event -> {
+      if (currentState == States.ASSOCIATION) {
+        if (assocList.getSelectionModel().getSelectedIndex() != -1) {
+          setCenter(boxMetadata);
+          currentState = States.METADATA;
+          // enableMetaOptions();
+          buttons.getChildren().clear();
+          buttons.getChildren().addAll(btCancel, space, btBack, btContinue);
+          btContinue.setText(I18n.t("confirm"));
+          btContinue.setGraphicTextGap(16);
         }
+      } else if (currentState == States.METADATA && metadataCheckContinue()) {
+        RuleModalController.confirm();
       }
     });
   }
@@ -444,54 +434,40 @@ public class RuleModalPane extends BorderPane {
     btCancel = new Button(I18n.t("cancel"));
     btCancel.setMaxWidth(120);
     btCancel.setMinWidth(120);
-    Platform.runLater(new Runnable() {
-      @Override
-      public void run() {
-        Image im = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.TIMES, Color.WHITE);
-        ImageView imv = new ImageView(im);
-        btCancel.setGraphic(imv);
-      }
+    Platform.runLater(() -> {
+      Image im = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.TIMES, Color.WHITE);
+      ImageView imv = new ImageView(im);
+      btCancel.setGraphic(imv);
     });
     btCancel.setGraphicTextGap(20);
     btCancel.setContentDisplay(ContentDisplay.RIGHT);
 
-    btCancel.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent e) {
-        RuleModalController.cancel();
-      }
-    });
+    btCancel.setOnAction(event -> RuleModalController.cancel());
   }
 
   private void createBackButton() {
     btBack = new Button(I18n.t("back"));
     btBack.setMaxWidth(120);
     btBack.setMinWidth(120);
-    Platform.runLater(new Runnable() {
-      @Override
-      public void run() {
-        Image im = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CHEVRON_LEFT, Color.WHITE);
-        ImageView imv = new ImageView(im);
-        btBack.setGraphic(imv);
-      }
+    Platform.runLater(() -> {
+      Image im = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CHEVRON_LEFT, Color.WHITE);
+      ImageView imv = new ImageView(im);
+      btBack.setGraphic(imv);
     });
     btBack.setGraphicTextGap(30);
 
-    btBack.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent actionEvent) {
-        if (currentState == States.ASSOCIATION) {
-          setCenter(boxMetadata);
-          currentState = States.METADATA;
-          // enableMetaOptions();
-        } else if (currentState == States.METADATA) {
-          setCenter(boxAssociation);
-          currentState = States.ASSOCIATION;
-          buttons.getChildren().clear();
-          buttons.getChildren().addAll(btCancel, space, btContinue);
-          btContinue.setText(I18n.t("continue"));
-          btContinue.setGraphicTextGap(10);
-        }
+    btBack.setOnAction(event -> {
+      if (currentState == States.ASSOCIATION) {
+        setCenter(boxMetadata);
+        currentState = States.METADATA;
+        // enableMetaOptions();
+      } else if (currentState == States.METADATA) {
+        setCenter(boxAssociation);
+        currentState = States.ASSOCIATION;
+        buttons.getChildren().clear();
+        buttons.getChildren().addAll(btCancel, space, btContinue);
+        btContinue.setText(I18n.t("continue"));
+        btContinue.setGraphicTextGap(10);
       }
     });
   }
