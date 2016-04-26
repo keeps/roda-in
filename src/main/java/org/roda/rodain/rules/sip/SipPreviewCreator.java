@@ -1,7 +1,7 @@
 package org.roda.rodain.rules.sip;
 
 import org.apache.commons.io.FilenameUtils;
-import org.roda.rodain.rules.MetadataTypes;
+import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.filters.ContentFilter;
 import org.roda.rodain.schema.DescObjMetadata;
@@ -34,7 +34,8 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
 
   private String id;
   private Set<ContentFilter> filters;
-  protected MetadataTypes metaType;
+  protected String metadataType;
+  protected MetadataOptions metadataOption;
   protected Path metadataPath;
   protected String templateType, templateVersion;
   private Map<String, Set<Path>> metadata;
@@ -49,28 +50,29 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
    *          The id of the SipPreviewCreator.
    * @param filters
    *          The set of content filters
-   * @param metaType
+   * @param metadataOption
    *          The type of metadata to be applied to each SIP
    * @param metadataPath
    *          The path of the metadata
    * @param templateType
    *          The type of the metadata template
    */
-  public SipPreviewCreator(String id, Set<ContentFilter> filters, MetadataTypes metaType, Path metadataPath,
-    String templateType, String templateVersion) {
+  public SipPreviewCreator(String id, Set<ContentFilter> filters, MetadataOptions metadataOption, String metadataType,
+    Path metadataPath, String templateType, String templateVersion) {
     this.filters = filters;
     sipsMap = new HashMap<>();
     sips = new ArrayList<>();
     nodes = new ArrayDeque<>();
     this.id = id;
-    this.metaType = metaType;
+    this.metadataOption = metadataOption;
+    this.metadataType = metadataType;
     this.metadataPath = metadataPath;
     this.templateType = templateType;
     this.templateVersion = templateVersion;
     files = new HashSet<>();
     metadata = new HashMap<>();
 
-    if (metadataPath != null && metaType == MetadataTypes.DIFF_DIRECTORY) {
+    if (metadataPath != null && metadataOption == MetadataOptions.DIFF_DIRECTORY) {
       try {
         Files.walkFileTree(metadataPath, new SimpleFileVisitor<Path>() {
           @Override
@@ -231,11 +233,11 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
     }
     // create a new Sip
     DescObjMetadata descObjMetadata = null;
-    if (metaType == MetadataTypes.TEMPLATE)
-      descObjMetadata = new DescObjMetadata(metaType, templateType, templateVersion);
+    if (metadataOption == MetadataOptions.TEMPLATE)
+      descObjMetadata = new DescObjMetadata(metadataOption, templateType, templateVersion);
     else {
       if (metaPath != null)
-        descObjMetadata = new DescObjMetadata(metaType, metaPath);
+        descObjMetadata = new DescObjMetadata(metadataOption, metaPath, metadataType);
     }
 
     SipRepresentation rep = new SipRepresentation("rep1");
@@ -253,7 +255,7 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
 
   protected Path getMetadataPath(Path sipPath) {
     Path result;
-    switch (metaType) {
+    switch (metadataOption) {
       case SINGLE_FILE:
         result = metadataPath;
         break;

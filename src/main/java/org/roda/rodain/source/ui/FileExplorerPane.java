@@ -316,7 +316,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
       ObservableList<TreeItem<String>> items = treeView.getSelectionModel().getSelectedItems();
       String start = null;
       if (!items.isEmpty()) {
-        if (items.size() == 1) {
+        if (items.size() == 1 && items.get(0) != null) {
           start = items.get(0).getValue();
         } else {
           start = items.size() + " " + I18n.t("items");

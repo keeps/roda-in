@@ -32,7 +32,7 @@
 
 <!--
         Customisation entities for the ATTLIST of each element
-        type. Define one of these if your schema takes advantage
+        creatorOption. Define one of these if your schema takes advantage
         of the anyAttribute='##other' in the schema for schemas
   -->
 
@@ -114,7 +114,7 @@
         restriction is shared between simpleType and
         simpleContent and complexContent (in XMLSchema.xsd).
         restriction1 is for the latter cases, when this
-        is restricting a complex type, as is attrDecls.
+        is restricting a complex creatorOption, as is attrDecls.
   -->
 <!ELEMENT %list; ((%annotation;)?,(%simpleType;)?)>
 <!ATTLIST %list;

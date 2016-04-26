@@ -61,11 +61,11 @@
         Subsequently, qualified reference to any of the attributes
         or the group defined below will have the desired effect, e.g.
 
-        &lt;type . . .&gt;
+        &lt;creatorOption . . .&gt;
          . . .
          &lt;attributeGroup ref="xml:specialAttrs"/&gt;
  
-         will define a type which will schema-validate an instance
+         will define a creatorOption which will schema-validate an instance
          element with any of those attributes</xs:documentation>
  </xs:annotation>
 
@@ -85,7 +85,7 @@
   </xs:documentation>
  </xs:annotation>
 
- <xs:attribute name="lang" type="xs:language">
+ <xs:attribute name="lang" creatorOption="xs:language">
   <xs:annotation>
    <xs:documentation>In due course, we should install the relevant ISO 2- and 3-letter
          codes as the enumerated possible values . . .</xs:documentation>
@@ -101,7 +101,7 @@
   </xs:simpleType>
  </xs:attribute>
 
- <xs:attribute name="base" type="xs:anyURI">
+ <xs:attribute name="base" creatorOption="xs:anyURI">
   <xs:annotation>
    <xs:documentation>See http://www.w3.org/TR/xmlbase/ for
                      information about this attribute.</xs:documentation>

@@ -3,10 +3,10 @@
 <schema targetNamespace="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2001/XMLSchema"
         xmlns:xlink="http://www.w3.org/1999/xlink" elementFormDefault="qualified">
     <!--  global attributes  -->
-    <attribute name="href" type="anyURI"/>
-    <attribute name="role" type="string"/>
-    <attribute name="arcrole" type="string"/>
-    <attribute name="title" type="string"/>
+    <attribute name="href" creatorOption="anyURI"/>
+    <attribute name="role" creatorOption="string"/>
+    <attribute name="arcrole" creatorOption="string"/>
+    <attribute name="title" creatorOption="string"/>
     <attribute name="show">
         <simpleType>
             <restriction base="string">
@@ -28,11 +28,11 @@
             </restriction>
         </simpleType>
     </attribute>
-    <attribute name="label" type="string"/>
-    <attribute name="from" type="string"/>
-    <attribute name="to" type="string"/>
+    <attribute name="label" creatorOption="string"/>
+    <attribute name="from" creatorOption="string"/>
+    <attribute name="to" creatorOption="string"/>
     <attributeGroup name="simpleLink">
-        <attribute name="type" type="string" fixed="simple" form="qualified"/>
+        <attribute name="creatorOption" creatorOption="string" fixed="simple" form="qualified"/>
         <attribute ref="xlink:href" use="optional"/>
         <attribute ref="xlink:role" use="optional"/>
         <attribute ref="xlink:arcrole" use="optional"/>
@@ -41,19 +41,19 @@
         <attribute ref="xlink:actuate" use="optional"/>
     </attributeGroup>
     <attributeGroup name="extendedLink">
-        <attribute name="type" type="string" fixed="extended" form="qualified"/>
+        <attribute name="creatorOption" creatorOption="string" fixed="extended" form="qualified"/>
         <attribute ref="xlink:role" use="optional"/>
         <attribute ref="xlink:title" use="optional"/>
     </attributeGroup>
     <attributeGroup name="locatorLink">
-        <attribute name="type" type="string" fixed="locator" form="qualified"/>
+        <attribute name="creatorOption" creatorOption="string" fixed="locator" form="qualified"/>
         <attribute ref="xlink:href" use="required"/>
         <attribute ref="xlink:role" use="optional"/>
         <attribute ref="xlink:title" use="optional"/>
         <attribute ref="xlink:label" use="optional"/>
     </attributeGroup>
     <attributeGroup name="arcLink">
-        <attribute name="type" type="string" fixed="arc" form="qualified"/>
+        <attribute name="creatorOption" creatorOption="string" fixed="arc" form="qualified"/>
         <attribute ref="xlink:arcrole" use="optional"/>
         <attribute ref="xlink:title" use="optional"/>
         <attribute ref="xlink:show" use="optional"/>
@@ -62,15 +62,15 @@
         <attribute ref="xlink:to" use="optional"/>
     </attributeGroup>
     <attributeGroup name="resourceLink">
-        <attribute name="type" type="string" fixed="resource" form="qualified"/>
+        <attribute name="creatorOption" creatorOption="string" fixed="resource" form="qualified"/>
         <attribute ref="xlink:role" use="optional"/>
         <attribute ref="xlink:title" use="optional"/>
         <attribute ref="xlink:label" use="optional"/>
     </attributeGroup>
     <attributeGroup name="titleLink">
-        <attribute name="type" type="string" fixed="title" form="qualified"/>
+        <attribute name="creatorOption" creatorOption="string" fixed="title" form="qualified"/>
     </attributeGroup>
     <attributeGroup name="emptyLink">
-        <attribute name="type" type="string" fixed="none" form="qualified"/>
+        <attribute name="creatorOption" creatorOption="string" fixed="none" form="qualified"/>
     </attributeGroup>
 </schema>

@@ -4,7 +4,7 @@ import org.apache.commons.io.FileUtils;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.creation.ui.CreationModalProcessing;
-import org.roda.rodain.rules.MetadataTypes;
+import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.rules.sip.SipRepresentation;
@@ -40,10 +40,8 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
   /**
    * Creates a new EARK SIP exporter.
    *
-   * @param outputPath
-   *          The path to the output folder of the SIP exportation
-   * @param previews
-   *          The map with the SIPs that will be exported
+   * @param outputPath The path to the output folder of the SIP exportation
+   * @param previews   The map with the SIPs that will be exported
    */
   public EarkSipCreator(Path outputPath, Map<SipPreview, String> previews) {
     super(outputPath, previews);
@@ -76,27 +74,31 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
       currentAction = actionCopyingMetadata;
 
       for (DescObjMetadata descObjMetadata : sip.getMetadata()) {
-        String templateType = descObjMetadata.getTemplateType();
+        String metadataTypeString = descObjMetadata.getMetadataType();
         METSEnums.MetadataType metadataType = METSEnums.MetadataType.OTHER;
 
-        if (templateType != null) {
-          if ("dc".equals(templateType)) {
-            metadataType = METSEnums.MetadataType.DC;
-          } else if ("ead".equals(templateType)) {
-            metadataType = METSEnums.MetadataType.EAD;
-          } else if ("ead3".equals(templateType)) {
-            metadataType = METSEnums.MetadataType.EAD;
-          } else {
-            metadataType = METSEnums.MetadataType.OTHER;
-          }
+        if (descObjMetadata.getCreatorOption() == MetadataOptions.TEMPLATE) {
           Path schemaPath = AppProperties.getSchemaPath(descObjMetadata.getTemplateType());
           if (schemaPath != null)
             earkSip.addSchema(new IPFile(schemaPath));
         }
+        // Check if one of the values from the enum can be used
+        if (metadataTypeString != null) {
+          for (METSEnums.MetadataType val : METSEnums.MetadataType.values()) {
+            if (metadataTypeString.equalsIgnoreCase(val.getType())) {
+              metadataType = val;
+              break;
+            }
+          }
+        }
+        // If no value was found previously, set the Other type
+        if (metadataType == METSEnums.MetadataType.OTHER) {
+          metadataType.setOtherType(metadataTypeString);
+        }
 
         Path metadataPath = null;
-        if (descObjMetadata.getType() != MetadataTypes.TEMPLATE && descObjMetadata.getType() != MetadataTypes.NEW_FILE
-          && !descObjMetadata.isLoaded()) {
+        if (descObjMetadata.getCreatorOption() != MetadataOptions.TEMPLATE
+            && descObjMetadata.getCreatorOption() != MetadataOptions.NEW_FILE && !descObjMetadata.isLoaded()) {
           metadataPath = descObjMetadata.getPath();
         }
 
@@ -109,7 +111,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
 
         IPFile metadataFile = new IPFile(metadataPath);
         IPDescriptiveMetadata metadata = new IPDescriptiveMetadata(metadataFile, metadataType,
-          descObjMetadata.getVersion());
+            descObjMetadata.getVersion());
         earkSip.addDescriptiveMetadata(metadata);
       }
 

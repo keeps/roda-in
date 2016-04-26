@@ -6,14 +6,14 @@ import com.fasterxml.jackson.annotation.JsonCreator;
  * @author Andre Pereira apereira@keep.pt
  * @since 19-10-2015.
  */
-public enum MetadataTypes {
+public enum MetadataOptions {
   SINGLE_FILE, SAME_DIRECTORY, DIFF_DIRECTORY, TEMPLATE, NEW_FILE;
 
   @JsonCreator
-  public static MetadataTypes getEnumFromValue(String value) {
+  public static MetadataOptions getEnumFromValue(String value) {
     if ("".equals(value))
       return SINGLE_FILE;
-    for (MetadataTypes testEnum : values()) {
+    for (MetadataOptions testEnum : values()) {
       if (testEnum.toString().equals(value)) {
         return testEnum;
       }

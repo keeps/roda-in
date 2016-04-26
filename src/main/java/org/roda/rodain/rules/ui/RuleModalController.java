@@ -4,7 +4,7 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.stage.Stage;
 import org.roda.rodain.core.RodaIn;
-import org.roda.rodain.rules.MetadataTypes;
+import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.RuleTypes;
 import org.roda.rodain.rules.VisitorStack;
@@ -94,19 +94,23 @@ public class RuleModalController {
   public static void confirm() {
     try {
       RuleTypes assocType = pane.getAssociationType();
-      MetadataTypes metaType = pane.getMetadataType();
+      MetadataOptions metadataOption = pane.getMetadataOption();
       Path metadataPath = null;
       String templateType = null;
       String templateVersion = null;
-      switch (metaType) {
+      String metadataType = null;
+      switch (metadataOption) {
         case DIFF_DIRECTORY:
           metadataPath = pane.getDiffDir();
+          metadataType = pane.getMetadataTypeDiffFolder();
           break;
         case SINGLE_FILE:
           metadataPath = pane.getFromFile();
+          metadataType = pane.getMetadataTypeSingleFile();
           break;
         case SAME_DIRECTORY:
           templateType = pane.getSameFolderPattern();
+          metadataType = pane.getMetadataTypeSameFolder();
           break;
         case TEMPLATE:
           String template = pane.getTemplate();
@@ -118,8 +122,8 @@ public class RuleModalController {
           break;
       }
 
-      Rule rule = new Rule(sourceSet, assocType, metadataPath, templateType, metaType, templateVersion,
-        schema.getDob().getId());
+      Rule rule = new Rule(sourceSet, assocType, metadataPath, templateType, metadataOption, metadataType,
+        templateVersion, schema.getDob().getId());
       rule.addObserver(schema);
 
       TreeVisitor visitor = rule.apply();

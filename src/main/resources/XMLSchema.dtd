@@ -55,7 +55,7 @@
 <!ENTITY % appinfo "%p;appinfo">
 <!ENTITY % documentation "%p;documentation">
 
-<!-- Customisation entities for the ATTLIST of each element type.
+<!-- Customisation entities for the ATTLIST of each element creatorOption.
      Define one of these if your schema takes advantage of the
      anyAttribute='##other' in the schema for schemas -->
 
@@ -136,7 +136,7 @@
      It is NOT used for schema-to-schema reference, internal or
      external. -->
 
-<!-- a type is a named content type specification which allows attribute
+<!-- a creatorOption is a named content creatorOption specification which allows attribute
      declarations-->
 <!-- -->
 
@@ -153,7 +153,7 @@
           mixed (true|false) 'false'
           %complexTypeAttrs;>
 
-<!-- particleAndAttrs is shorthand for a root type -->
+<!-- particleAndAttrs is shorthand for a root creatorOption -->
 <!-- mixed is disallowed if simpleContent, overriden if complexContent
      has one too. -->
 
@@ -184,18 +184,18 @@
           %extensionAttrs;>
 
 <!-- an element is declared by either:
- a name and a type (either nested or referenced via the type attribute)
+ a name and a creatorOption (either nested or referenced via the creatorOption attribute)
  or a ref to an existing element declaration -->
 
 <!ELEMENT %element; ((%annotation;)?, (%complexType;| %simpleType;)?,
                      (%unique; | %key; | %keyref;)*)>
-<!-- simpleType or complexType only if no type|ref attribute -->
+<!-- simpleType or complexType only if no creatorOption|ref attribute -->
 <!-- ref not allowed at top level -->
 <!ATTLIST %element;
             name               %NCName;               #IMPLIED
             id                 ID                     #IMPLIED
             ref                %QName;                #IMPLIED
-            type               %QName;                #IMPLIED
+            creatorOption               %QName;                #IMPLIED
             minOccurs          %nonNegativeInteger;   #IMPLIED
             maxOccurs          CDATA                  #IMPLIED
             nillable           %boolean;              #IMPLIED
@@ -207,10 +207,10 @@
             fixed              CDATA                  #IMPLIED
             form               %formValues;           #IMPLIED
             %elementAttrs;>
-<!-- type and ref are mutually exclusive.
+<!-- creatorOption and ref are mutually exclusive.
      name and ref are mutually exclusive, one is required -->
-<!-- In the absence of type AND ref, type defaults to type of
-     substitutionGroup, if any, else the ur-type, i.e. unconstrained -->
+<!-- In the absence of creatorOption AND ref, creatorOption defaults to creatorOption of
+     substitutionGroup, if any, else the ur-creatorOption, i.e. unconstrained -->
 <!-- default and fixed are mutually exclusive -->
 
 <!ELEMENT %group; ((%annotation;)?,(%mgs;)?)>
@@ -283,24 +283,24 @@
             %anyAttributeAttrs;>
 <!-- namespace is interpreted as for 'any' above -->
 
-<!-- simpleType only if no type|ref attribute -->
+<!-- simpleType only if no creatorOption|ref attribute -->
 <!-- ref not allowed at top level, name iff at top level -->
 <!ELEMENT %attribute; ((%annotation;)?, (%simpleType;)?)>
 <!ATTLIST %attribute;
           name      %NCName;      #IMPLIED
           id        ID            #IMPLIED
           ref       %QName;       #IMPLIED
-          type      %QName;       #IMPLIED
+          creatorOption      %QName;       #IMPLIED
           use       (prohibited|optional|required) #IMPLIED
           default   CDATA         #IMPLIED
           fixed     CDATA         #IMPLIED
           form      %formValues;  #IMPLIED
           %attributeAttrs;>
-<!-- type and ref are mutually exclusive.
+<!-- creatorOption and ref are mutually exclusive.
      name and ref are mutually exclusive, one is required -->
 <!-- default for use is optional when nested, none otherwise -->
 <!-- default and fixed are mutually exclusive -->
-<!-- type attr and simpleType content are mutually exclusive -->
+<!-- creatorOption attr and simpleType content are mutually exclusive -->
 
 <!-- an attributeGroup is a named collection of attribute decls, or a
      reference thereto -->

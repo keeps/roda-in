@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
 import org.roda.rodain.core.I18n;
-import org.roda.rodain.rules.MetadataTypes;
+import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.sip.MetadataValue;
 
 import java.text.SimpleDateFormat;
@@ -22,7 +22,7 @@ public class DescriptionObject extends Observable {
   public DescriptionObject() {
     title = I18n.t("root");
     id = UUID.randomUUID().toString();
-    metadata.add(new DescObjMetadata(MetadataTypes.TEMPLATE, "ead", "2002"));
+    metadata.add(new DescObjMetadata(MetadataOptions.TEMPLATE, "ead", "2002"));
   }
 
   /**

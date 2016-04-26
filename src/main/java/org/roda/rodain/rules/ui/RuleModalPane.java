@@ -3,6 +3,8 @@ package org.roda.rodain.rules.ui;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import javafx.application.Platform;
@@ -25,7 +27,7 @@ import javafx.stage.Stage;
 
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
-import org.roda.rodain.rules.MetadataTypes;
+import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.RuleTypes;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
@@ -53,20 +55,28 @@ public class RuleModalPane extends BorderPane {
   // Association
   private VBox boxAssociation;
   private ListView<HBoxCell> assocList;
-  // Metadata
+  /* Metadata */
   private VBox boxMetadata;
   private ListView<HBoxCell> metaList;
-  private HBoxCell cellSingleFile;
-  private HBoxCell cellSameFolder;
-  private HBoxCell cellDiffFolder;
-  private Button chooseDir, chooseFile;
+  // Templates
   private ComboBox<UIPair> templateTypes;
+  // Single file
+  private HBoxCell cellSingleFile;
+  private Button chooseFile;
+  private ComboBox<UIPair> comboTypesSingleFile;
+  // Same directory
+  private HBoxCell cellSameFolder;
+  private TextField sameFolderTxtField;
+  private ComboBox<UIPair> comboTypesSameDir;
+  // Different directory
+  private HBoxCell cellDiffFolder;
+  private Button chooseDir;
+  private ComboBox<UIPair> comboTypesDiffFolder;
 
   private Button btContinue, btCancel, btBack;
   private HBox space, buttons;
   private States currentState;
   private String fromFile, diffDir;
-  private TextField sameFolderTxtField;
 
   /**
    * Creates a new RuleModalPane, used to create a new Rule.
@@ -211,42 +221,50 @@ public class RuleModalPane extends BorderPane {
       @Override
       public void changed(ObservableValue<? extends HBoxCell> observable, final HBoxCell oldValue, HBoxCell newValue) {
         if (newValue != null && newValue.isDisabled()) {
-          Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-              if (oldValue != null)
-                metaList.getSelectionModel().select(oldValue);
-              else
-                metaList.getSelectionModel().clearSelection();
-            }
+          Platform.runLater(() -> {
+            if (oldValue != null)
+              metaList.getSelectionModel().select(oldValue);
+            else
+              metaList.getSelectionModel().clearSelection();
           });
         }
       }
     });
 
+    List<UIPair> typesList = new ArrayList<>();
+    String metaTypesRaw = AppProperties.getConfig("metadata.types");
+    if (metaTypesRaw != null) {
+      String[] metaTypes = metaTypesRaw.split(",");
+      for (String type : metaTypes) {
+        String title = AppProperties.getConfig("metadata.type." + type + ".title");
+        String value = AppProperties.getConfig("metadata.type." + type + ".value");
+        typesList.add(new UIPair(value, title));
+      }
+    }
+
     String icon = AppProperties.getStyle("metadata.template.icon");
     String title = I18n.t("metadata.template.title");
     String description = I18n.t("metadata.template.description");
     HBoxCell cellTemplate = new HBoxCell("meta4", icon, title, description, optionsTemplate());
-    cellTemplate.setUserData(MetadataTypes.TEMPLATE);
+    cellTemplate.setUserData(MetadataOptions.TEMPLATE);
 
     icon = AppProperties.getStyle("metadata.singleFile.icon");
     title = I18n.t("metadata.singleFile.title");
     description = I18n.t("metadata.singleFile.description");
-    cellSingleFile = new HBoxCell("meta1", icon, title, description, optionsSingleFile());
-    cellSingleFile.setUserData(MetadataTypes.SINGLE_FILE);
+    cellSingleFile = new HBoxCell("meta1", icon, title, description, optionsSingleFile(typesList));
+    cellSingleFile.setUserData(MetadataOptions.SINGLE_FILE);
 
     icon = AppProperties.getStyle("metadata.sameFolder.icon");
     title = I18n.t("metadata.sameFolder.title");
     description = I18n.t("metadata.sameFolder.description");
-    cellSameFolder = new HBoxCell("meta2", icon, title, description, optionsSameFolder());
-    cellSameFolder.setUserData(MetadataTypes.SAME_DIRECTORY);
+    cellSameFolder = new HBoxCell("meta2", icon, title, description, optionsSameFolder(typesList));
+    cellSameFolder.setUserData(MetadataOptions.SAME_DIRECTORY);
 
     icon = AppProperties.getStyle("metadata.diffFolder.icon");
     title = I18n.t("metadata.diffFolder.title");
     description = I18n.t("metadata.diffFolder.description");
-    cellDiffFolder = new HBoxCell("meta3", icon, title, description, optionsDiffFolder());
-    cellDiffFolder.setUserData(MetadataTypes.DIFF_DIRECTORY);
+    cellDiffFolder = new HBoxCell("meta3", icon, title, description, optionsDiffFolder(typesList));
+    cellDiffFolder.setUserData(MetadataOptions.DIFF_DIRECTORY);
 
     ObservableList<HBoxCell> hboxList = FXCollections.observableArrayList();
     hboxList.addAll(cellTemplate, cellSingleFile, cellSameFolder, cellDiffFolder);
@@ -262,7 +280,7 @@ public class RuleModalPane extends BorderPane {
     boxMetadata.getChildren().addAll(subtitle, metaList);
   }
 
-  private HBox optionsSingleFile() {
+  private HBox optionsSingleFile(List<UIPair> metaTypeList) {
     HBox box = new HBox();
     box.setAlignment(Pos.CENTER_LEFT);
 
@@ -283,22 +301,30 @@ public class RuleModalPane extends BorderPane {
       }
     });
 
-    box.getChildren().add(chooseFile);
+    comboTypesSingleFile = new ComboBox<>(FXCollections.observableList(metaTypeList));
+    HBox space = new HBox();
+    HBox.setHgrow(space, Priority.ALWAYS);
+
+    box.getChildren().addAll(chooseFile, space, comboTypesSingleFile);
     return box;
   }
 
-  private HBox optionsSameFolder() {
+  private HBox optionsSameFolder(List<UIPair> metaTypeList) {
     HBox box = new HBox(5);
     box.setAlignment(Pos.CENTER_LEFT);
 
     Label lab = new Label(I18n.t("RuleModalPane.metadataPattern"));
     sameFolderTxtField = new TextField("metadata.xml");
 
-    box.getChildren().addAll(lab, sameFolderTxtField);
+    comboTypesSameDir = new ComboBox<>(FXCollections.observableList(metaTypeList));
+    HBox space = new HBox();
+    HBox.setHgrow(space, Priority.ALWAYS);
+
+    box.getChildren().addAll(lab, sameFolderTxtField, space, comboTypesSameDir);
     return box;
   }
 
-  private HBox optionsDiffFolder() {
+  private HBox optionsDiffFolder(List<UIPair> metaTypeList) {
     HBox box = new HBox();
     box.setAlignment(Pos.CENTER_LEFT);
 
@@ -319,7 +345,11 @@ public class RuleModalPane extends BorderPane {
       }
     });
 
-    box.getChildren().addAll(chooseDir);
+    comboTypesDiffFolder = new ComboBox<>(FXCollections.observableList(metaTypeList));
+    HBox space = new HBox();
+    HBox.setHgrow(space, Priority.ALWAYS);
+
+    box.getChildren().addAll(chooseDir, space, comboTypesDiffFolder);
     return box;
   }
 
@@ -468,42 +498,17 @@ public class RuleModalPane extends BorderPane {
 
   private boolean metadataCheckContinue() {
     try {
-      MetadataTypes metaType = getMetadataType();
+      MetadataOptions metaType = getMetadataOption();
       if (metaType == null)
         return false;
-      if (metaType == MetadataTypes.SINGLE_FILE)
+      if (metaType == MetadataOptions.SINGLE_FILE)
         return chooseFile.getUserData() != null;
-      if (metaType == MetadataTypes.DIFF_DIRECTORY)
+      if (metaType == MetadataOptions.DIFF_DIRECTORY)
         return chooseDir.getUserData() != null;
     } catch (Exception e) {
       LOGGER.error("Error getting metadata type", e);
     }
     return true;
-  }
-
-  private void enableMetaOptions() {
-    try {
-      RuleTypes assocType = getAssociationType();
-      switch (assocType) {
-        case SIP_PER_FILE:
-          cellSameFolder.setDisable(false);
-          cellDiffFolder.setDisable(false);
-          chooseDir.setDisable(false);
-          break;
-        case SIP_PER_SELECTION:
-          cellSameFolder.setDisable(false);
-          cellDiffFolder.setDisable(true);
-          chooseDir.setDisable(true);
-          break;
-        default:
-          cellSameFolder.setDisable(true);
-          cellDiffFolder.setDisable(true);
-          chooseDir.setDisable(true);
-          break;
-      }
-    } catch (Exception e) {
-      LOGGER.error("Error getting association type", e);
-    }
   }
 
   /**
@@ -526,12 +531,12 @@ public class RuleModalPane extends BorderPane {
    *         was no selection.
    * @throws UnexpectedDataTypeException
    */
-  public MetadataTypes getMetadataType() throws UnexpectedDataTypeException {
+  public MetadataOptions getMetadataOption() throws UnexpectedDataTypeException {
     HBoxCell selected = metaList.getSelectionModel().getSelectedItem();
     if (selected == null)
       return null;
-    if (selected.getUserData() instanceof MetadataTypes)
-      return (MetadataTypes) selected.getUserData();
+    if (selected.getUserData() instanceof MetadataOptions)
+      return (MetadataOptions) selected.getUserData();
     else
       throw new UnexpectedDataTypeException();
   }
@@ -568,5 +573,32 @@ public class RuleModalPane extends BorderPane {
       btContinue.setDisable(true);
     }
     return (String) selected.getKey();
+  }
+
+  public String getMetadataTypeSingleFile() {
+    String result = null;
+    UIPair selected = comboTypesSingleFile.getSelectionModel().getSelectedItem();
+    if (selected != null) {
+      result = (String) selected.getKey();
+    }
+    return result;
+  }
+
+  public String getMetadataTypeSameFolder() {
+    String result = null;
+    UIPair selected = comboTypesSameDir.getSelectionModel().getSelectedItem();
+    if (selected != null) {
+      result = (String) selected.getKey();
+    }
+    return result;
+  }
+
+  public String getMetadataTypeDiffFolder() {
+    String result = null;
+    UIPair selected = comboTypesDiffFolder.getSelectionModel().getSelectedItem();
+    if (selected != null) {
+      result = (String) selected.getKey();
+    }
+    return result;
   }
 }

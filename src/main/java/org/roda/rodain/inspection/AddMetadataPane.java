@@ -17,7 +17,7 @@ import javafx.stage.Stage;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.RodaIn;
-import org.roda.rodain.rules.MetadataTypes;
+import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.ui.HBoxCell;
 import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.DescriptionObject;
@@ -243,12 +243,12 @@ public class AddMetadataPane extends BorderPane {
           case TEMPLATE:
             String rawTemplateType = (String) templateTypes.getSelectionModel().getSelectedItem().getKey();
             String[] splitted = rawTemplateType.split("!###!");
-            metadataToAdd = new DescObjMetadata(MetadataTypes.TEMPLATE, splitted[0], splitted[1]);
+            metadataToAdd = new DescObjMetadata(MetadataOptions.TEMPLATE, splitted[0], splitted[1]);
             break;
           case SINGLE_FILE:
             if (selectedPath == null)
               return;
-            metadataToAdd = new DescObjMetadata(MetadataTypes.SINGLE_FILE, selectedPath);
+            metadataToAdd = new DescObjMetadata(MetadataOptions.SINGLE_FILE, selectedPath, "");
             break;
           case EMPTY_FILE:
             String name = emptyFileNameTxtField.getText();

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.net.util.Base64;
 import org.roda.rodain.core.AppProperties;
-import org.roda.rodain.rules.MetadataTypes;
+import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.TemplateToForm;
 import org.roda.rodain.rules.sip.MetadataValue;
 import org.roda.rodain.utils.Utils;
@@ -25,31 +25,33 @@ import java.util.Map;
 @JsonIgnoreProperties({"path", "loaded", "version"})
 public class DescObjMetadata {
   private static final Logger LOGGER = LoggerFactory.getLogger(DescObjMetadata.class.getName());
-  private String id, content, contentEncoding;
+  private String id, content, contentEncoding, metadataType;
   private Map<String, Object> additionalProperties = new HashMap<>();
   private Map<String, MetadataValue> values;
   private Path path;
   private boolean loaded = false;
 
   // template
-  private MetadataTypes type;
+  private MetadataOptions creatorOption;
   private String version, templateType;
 
   public DescObjMetadata() {
-    type = MetadataTypes.NEW_FILE;
+    creatorOption = MetadataOptions.NEW_FILE;
   }
 
-  public DescObjMetadata(MetadataTypes type, String templateType, String version) {
-    this.type = type;
+  public DescObjMetadata(MetadataOptions creatorOption, String templateType, String version) {
+    this.creatorOption = creatorOption;
     this.templateType = templateType;
     this.version = version;
     this.contentEncoding = "Base64";
     this.id = templateType + ".xml";
+    this.metadataType = templateType;
   }
 
-  public DescObjMetadata(MetadataTypes type, Path path) {
-    this.type = type;
+  public DescObjMetadata(MetadataOptions creatorOption, Path path, String metadataType) {
+    this.creatorOption = creatorOption;
     this.path = path;
+    this.metadataType = metadataType;
     this.contentEncoding = "Base64";
     if (path != null) {
       this.id = path.getFileName().toString();
@@ -66,12 +68,16 @@ public class DescObjMetadata {
     return loaded;
   }
 
-  public MetadataTypes getType() {
-    return type;
+  public MetadataOptions getCreatorOption() {
+    return creatorOption;
   }
 
-  public void setType(MetadataTypes type) {
-    this.type = type;
+  public String getMetadataType() {
+    return metadataType;
+  }
+
+  public void setCreatorOption(MetadataOptions creatorOption) {
+    this.creatorOption = creatorOption;
   }
 
   /**
@@ -146,7 +152,7 @@ public class DescObjMetadata {
 
   private void loadMetadata() {
     try {
-      if (type == MetadataTypes.TEMPLATE) {
+      if (creatorOption == MetadataOptions.TEMPLATE) {
         if (templateType != null) {
           String tempContent = AppProperties.getMetadataFile(templateType);
           setContentDecoded(tempContent);

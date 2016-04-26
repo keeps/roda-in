@@ -32,7 +32,8 @@ public class Rule extends Observable implements Observer, Comparable {
   private String templateType, templateVersion, parentID;
   private Path metadataPath;
   private RuleTypes assocType;
-  private MetadataTypes metaType;
+  private MetadataOptions metadataOption;
+  private String metadataType;
   private Set<ContentFilter> filters;
 
   // map of SipPreview id -> SipPreview
@@ -52,18 +53,19 @@ public class Rule extends Observable implements Observer, Comparable {
    *          The path to the metadata file(s)
    * @param template
    *          The type of the chosen template
-   * @param metaType
+   * @param metadataOption
    *          The type of metadata to be applied to the SIPs.
    */
   public Rule(Set<SourceTreeItem> source, RuleTypes assocType, Path metadataPath, String template,
-    MetadataTypes metaType, String templateVersion, String parentID) {
+    MetadataOptions metadataOption, String metadataType, String templateVersion, String parentID) {
     ruleCount++;
     this.source = source;
     this.assocType = assocType;
     this.templateType = template;
     this.templateVersion = templateVersion;
     this.metadataPath = metadataPath;
-    this.metaType = metaType;
+    this.metadataOption = metadataOption;
+    this.metadataType = metadataType;
     this.parentID = parentID;
     filters = new HashSet<>();
     id = ruleCount;
@@ -191,27 +193,27 @@ public class Rule extends Observable implements Observer, Comparable {
         for (SourceTreeItem sti : source) {
           selection.add(sti.getPath());
         }
-        SipPerSelection visitorSelection = new SipPerSelection(id.toString(), selection, filters, metaType,
-          metadataPath, templateType, templateVersion);
+        SipPerSelection visitorSelection = new SipPerSelection(id.toString(), selection, filters, metadataOption,
+          metadataType, metadataPath, templateType, templateVersion);
         visitorSelection.addObserver(this);
         visitor = visitorSelection;
         break;
       case SIP_PER_FILE:
-        SipPerFile visitorFile = new SipPerFile(id.toString(), filters, metaType, metadataPath, templateType,
-          templateVersion);
+        SipPerFile visitorFile = new SipPerFile(id.toString(), filters, metadataOption, metadataType, metadataPath,
+          templateType, templateVersion);
         visitorFile.addObserver(this);
         visitor = visitorFile;
         break;
       case SIP_WITH_STRUCTURE:
-        SipsWithStructure visitorStructure = new SipsWithStructure(id.toString(), filters, metaType, metadataPath,
-          templateType, templateVersion);
+        SipsWithStructure visitorStructure = new SipsWithStructure(id.toString(), filters, metadataOption, metadataType,
+          metadataPath, templateType, templateVersion);
         visitorStructure.addObserver(this);
         visitor = visitorStructure;
         break;
       default:
       case SINGLE_SIP:
-        SipSingle visitorSingle = new SipSingle(id.toString(), filters, metaType, metadataPath, templateType,
-          templateVersion);
+        SipSingle visitorSingle = new SipSingle(id.toString(), filters, metadataOption, metadataType, metadataPath,
+          templateType, templateVersion);
         visitorSingle.addObserver(this);
         visitor = visitorSingle;
         break;

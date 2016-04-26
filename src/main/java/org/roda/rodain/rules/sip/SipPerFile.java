@@ -1,7 +1,7 @@
 package org.roda.rodain.rules.sip;
 
 import org.roda.rodain.core.PathCollection;
-import org.roda.rodain.rules.MetadataTypes;
+import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.filters.ContentFilter;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
@@ -30,16 +30,16 @@ public class SipPerFile extends SipPreviewCreator {
    *          The id of the SipPreviewCreator.
    * @param filters
    *          The set of content filters
-   * @param metaType
+   * @param metadataOption
    *          The type of metadata to be applied to each SIP
    * @param metadataPath
    *          The path of the metadata
    * @param templateType
    *          The type of the metadata template
    */
-  public SipPerFile(String id, Set<ContentFilter> filters, MetadataTypes metaType, Path metadataPath,
-    String templateType, String templateVersion) {
-    super(id, filters, metaType, metadataPath, templateType, templateVersion);
+  public SipPerFile(String id, Set<ContentFilter> filters, MetadataOptions metadataOption, String metadataType,
+    Path metadataPath, String templateType, String templateVersion) {
+    super(id, filters, metadataOption, metadataType, metadataPath, templateType, templateVersion);
   }
 
   @Override

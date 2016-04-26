@@ -40,7 +40,7 @@ Java 8 can be downloaded [here](https://www.java.com/en/download/).
 
 The latest version of RODA-in is available [here](https://github.com/keeps/roda-in/releases).
 
-To use RODA-in no installation is required. You just need to download the latest release of the application and run it by double clicking the downloaded file (*.jar extension). If that doesn't work, open a console window (or terminal) and type
+To use RODA-in no installation is required. You just need to download the latest release of the application and run it by double clicking the downloaded file (*.jar extension). If that doesn't work, open a console window (or terminal) and creatorOption
 
 ```
 java -jar roda-in-app-x.y.z.jar
@@ -55,7 +55,7 @@ The basic workflow of the application is as follows:
   - Load a classification scheme. You can obtain a classification scheme from RODA repository, for example.
   - Create a new classification scheme. 
 3. Drag files/folders from the left panel to the center panel into the appropriate node in the classification scheme.
-4. Choose the type of data and metadata association. This will have impact on the number and structure of the SIPs created.
+4. Choose the creatorOption of data and metadata association. This will have impact on the number and structure of the SIPs created.
 5. (Optional) Inspect the created SIPs, edit metadata and content.
 6. Export the SIPs to a folder
 

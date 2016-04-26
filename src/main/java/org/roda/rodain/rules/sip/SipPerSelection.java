@@ -1,6 +1,6 @@
 package org.roda.rodain.rules.sip;
 
-import org.roda.rodain.rules.MetadataTypes;
+import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.filters.ContentFilter;
 
@@ -29,16 +29,17 @@ public class SipPerSelection extends SipPreviewCreator {
    *          The set of selected paths for the SIPs creation
    * @param filters
    *          The set of content filters
-   * @param metaType
+   * @param metadataOption
    *          The type of metadata to be applied to each SIP
    * @param metadataPath
    *          The path of the metadata
    * @param templateType
    *          The type of the metadata template
    */
-  public SipPerSelection(String id, Set<String> selectedPaths, Set<ContentFilter> filters, MetadataTypes metaType,
-    Path metadataPath, String templateType, String templateVersion) {
-    super(id, filters, metaType, metadataPath, templateType, templateVersion);
+  public SipPerSelection(String id, Set<String> selectedPaths, Set<ContentFilter> filters,
+    MetadataOptions metadataOption, String metadataType, Path metadataPath, String templateType,
+    String templateVersion) {
+    super(id, filters, metadataOption, metadataType, metadataPath, templateType, templateVersion);
     this.selectedPaths = selectedPaths;
   }
 

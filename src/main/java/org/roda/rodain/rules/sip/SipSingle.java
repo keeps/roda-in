@@ -1,6 +1,6 @@
 package org.roda.rodain.rules.sip;
 
-import org.roda.rodain.rules.MetadataTypes;
+import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.filters.ContentFilter;
 import org.roda.rodain.schema.DescObjMetadata;
@@ -24,16 +24,16 @@ public class SipSingle extends SipPreviewCreator {
    *          The id of the SipPreviewCreator.
    * @param filters
    *          The set of content filters
-   * @param metaType
+   * @param metadataOption
    *          The type of metadata to be applied to each SIP
    * @param metadataPath
    *          The path of the metadata
    * @param templateType
    *          The type of the metadata template
    */
-  public SipSingle(String id, Set<ContentFilter> filters, MetadataTypes metaType, Path metadataPath,
-    String templateType, String templateVersion) {
-    super(id, filters, metaType, metadataPath, templateType, templateVersion);
+  public SipSingle(String id, Set<ContentFilter> filters, MetadataOptions metadataOption, String metadataType,
+    Path metadataPath, String templateType, String templateVersion) {
+    super(id, filters, metadataOption, metadataType, metadataPath, templateType, templateVersion);
   }
 
   /**
@@ -103,11 +103,11 @@ public class SipSingle extends SipPreviewCreator {
     Path metaPath = getMetadataPath(path);
 
     DescObjMetadata metadata = null;
-    if (metaType == MetadataTypes.TEMPLATE)
-      metadata = new DescObjMetadata(metaType, templateType, templateVersion);
+    if (metadataOption == MetadataOptions.TEMPLATE)
+      metadata = new DescObjMetadata(metadataOption, templateType, templateVersion);
     else {
       if (metaPath != null)
-        metadata = new DescObjMetadata(metaType, metaPath);
+        metadata = new DescObjMetadata(metadataOption, metaPath, metadataType);
     }
 
     SipRepresentation rep = new SipRepresentation("rep1");

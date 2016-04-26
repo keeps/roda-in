@@ -27,7 +27,7 @@ import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.inspection.documentation.DocumentationCreator;
 import org.roda.rodain.inspection.documentation.SipDocumentationTreeView;
-import org.roda.rodain.rules.MetadataTypes;
+import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.filters.ContentFilter;
@@ -218,7 +218,7 @@ public class InspectionPane extends BorderPane {
         if (dlg.getResult().getButtonData() == ButtonBar.ButtonData.OK_DONE) {
           selected.setContentDecoded(newValue);
           selected.setValues(null);
-          selected.setType(MetadataTypes.NEW_FILE);
+          selected.setCreatorOption(MetadataOptions.NEW_FILE);
           topButtons.remove(toggleForm);
           updateMetadataTop();
         } else {
@@ -515,7 +515,7 @@ public class InspectionPane extends BorderPane {
     // only update if there's been modifications or there's no old
     // metadata and the new isn't empty
     boolean update = false;
-    if (selectedDescObjMetadata.getType() == MetadataTypes.TEMPLATE) {
+    if (selectedDescObjMetadata.getCreatorOption() == MetadataOptions.TEMPLATE) {
       currentDescOb.updatedMetadata(selectedDescObjMetadata);
     } else {
       if (newMetadata != null) {
