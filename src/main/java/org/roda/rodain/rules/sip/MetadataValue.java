@@ -1,21 +1,21 @@
 package org.roda.rodain.rules.sip;
 
-import org.roda.rodain.utils.UIPair;
+import org.roda.rodain.core.I18n;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.MissingResourceException;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 08-02-2016.
  */
-public class MetadataValue {
-  private String title, id;
-  private List<UIPair> fieldOptions;
-  private String value;
+public class MetadataValue implements Comparable {
+  private String id;
+  private Map<String, Object> options;
 
   public MetadataValue() {
-    fieldOptions = new ArrayList<>();
+    options = new HashMap<>();
   }
 
   /**
@@ -23,16 +23,19 @@ public class MetadataValue {
    *
    * @param id
    *          The id of the MetadataValue object.
-   * @param title
-   *          The title of the MetadataValue object.
-   * @param value
-   *          The value of the MetadataValue object.
+   * @param options
+   *          The options map of the MetadataValue
    */
-  public MetadataValue(String id, String title, String value) {
+  public MetadataValue(String id, Map<String, Object> options) {
     this.id = id;
-    this.title = title;
-    this.value = value;
-    this.fieldOptions = new ArrayList<>();
+    if (options == null || options.isEmpty()) {
+      this.options = new HashMap<>();
+    } else
+      this.options = options;
+
+    if (!this.options.containsKey("label")) {
+      this.options.put("label", getTitle(id));
+    }
   }
 
   /**
@@ -42,45 +45,72 @@ public class MetadataValue {
     return id;
   }
 
-  /**
-   * @return The title of the object.
-   */
-  public String getTitle() {
-    return title;
+  public Object get(String key) {
+    return options.get(key);
+  }
+
+  public void set(String key, Object value) {
+    options.put(key, value);
   }
 
   /**
-   * Sets the value of the object.
-   * 
-   * @param value
-   *          The new value
+   * @return The options of the object.
    */
-  public void setValue(String value) {
-    this.value = value;
-  }
-
-  /**
-   * @return The value of the object.
-   */
-  public String getValue() {
-    return value;
-  }
-
-  /**
-   * @return The field options of the object.
-   */
-  public List<UIPair> getFieldOptions() {
-    return fieldOptions;
+  public Map<String, Object> getOptions() {
+    return options;
   }
 
   /**
    * Adds a field option to the object. These are used in the "combo" field type
    * to populate the list.
    * 
-   * @param option
-   *          The new field option
+   * @param key
+   *          The key of the new option
+   * @param value
+   *          The value of the new option
    */
-  public void addFieldOption(UIPair option) {
-    fieldOptions.add(option);
+  public void addOption(String key, String value) {
+    options.put(key, value);
+  }
+
+  private static String getTitle(String var) {
+    String result = var;
+    try {
+      result = I18n.t("metadata." + var);
+    } catch (MissingResourceException e) {
+      // we will use the name of the variable if there's no available title
+      // no need to log the exception or rethrow it
+    }
+    return result;
+  }
+
+  @Override
+  public int compareTo(Object o) {
+    if (o == this) {
+      return 0;
+    }
+    if (o instanceof MetadataValue) {
+      // Compare the order option
+      MetadataValue mv = (MetadataValue) o;
+      Object selfOrder = get("order");
+      Object mvOrder = mv.get("order");
+      if (selfOrder != null) {
+        if (mvOrder != null) {
+          int selfInt = selfOrder instanceof String ? Integer.parseInt((String) selfOrder) : (Integer) selfOrder;
+          int mvInt = mvOrder instanceof String ? Integer.parseInt((String) mvOrder) : (Integer) mvOrder;
+          return Integer.compare(selfInt, mvInt);
+        }
+        return -1;
+      } else if (mvOrder != null) {
+        return 1;
+      }
+      // Compare the labels as a fallback
+      String selfLabel = (String) get("label");
+      String mvLabel = (String) mv.get("label");
+      if (selfLabel != null) {
+        return selfLabel.compareTo(mvLabel);
+      }
+    }
+    return 0;
   }
 }

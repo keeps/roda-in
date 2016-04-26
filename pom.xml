@@ -179,9 +179,9 @@
             <version>1.0.0-alpha12-pre</version>
         </dependency>
         <dependency>
-            <groupId>com.samskivert</groupId>
-            <artifactId>jmustache</artifactId>
-            <version>1.12</version>
+            <groupId>com.github.jknack</groupId>
+            <artifactId>handlebars</artifactId>
+            <version>4.0.5</version>
         </dependency>
         <dependency>
             <groupId>org.fxmisc.richtext</groupId>

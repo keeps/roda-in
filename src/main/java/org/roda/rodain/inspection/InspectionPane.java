@@ -435,20 +435,21 @@ public class InspectionPane extends BorderPane {
   }
 
   private void updateForm() {
-    Map<String, MetadataValue> metadataValues = getMetadataValues();
+    Set<MetadataValue> metadataValues = getMetadataValues();
     if (metadataValues == null || metadataValues.isEmpty()) {
       noForm();
       return;
     }
     int i = 0;
-    for (MetadataValue metadataValue : metadataValues.values()) {
-      Label label = new Label(metadataValue.getTitle());
+    for (MetadataValue metadataValue : metadataValues) {
+      Label label = new Label((String) metadataValue.get("label"));
       label.getStyleClass().add("formLabel");
 
-      TextField textField = new TextField(metadataValue.getValue());
+      TextField textField = new TextField((String) metadataValue.get("value"));
       HBox.setHgrow(textField, Priority.ALWAYS);
       textField.setUserData(metadataValue);
-      textField.textProperty().addListener((observable2, oldValue2, newValue2) -> metadataValue.setValue(newValue2));
+      textField.textProperty()
+        .addListener((observable2, oldValue2, newValue2) -> metadataValue.set("value", newValue2));
       if (metadataValue.getId().equals("title")) {
         textField.setId("descObjTitle");
         paneTitle.textProperty().bind(textField.textProperty());
@@ -493,7 +494,7 @@ public class InspectionPane extends BorderPane {
     updateMetadataTop();
   }
 
-  private Map<String, MetadataValue> getMetadataValues() {
+  private Set<MetadataValue> getMetadataValues() {
     if (currentDescOb != null) {
       UIPair selectedPair = metadataCombo.getSelectionModel().getSelectedItem();
       if (selectedPair != null) {
@@ -981,7 +982,7 @@ public class InspectionPane extends BorderPane {
     Task thisMetadataTask = metadataTask;
     metadataTask.setOnSucceeded(Void -> {
       if (metadataTask != null && metadataTask == thisMetadataTask) {
-        Map<String, MetadataValue> values = currentDescOb.getMetadataValueMap(dom);
+        Set<MetadataValue> values = currentDescOb.getMetadataValueMap(dom);
         boolean show = values != null && !values.isEmpty();
         showMetadataPane(show);
       }

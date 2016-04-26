@@ -17,6 +17,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -27,7 +28,7 @@ public class DescObjMetadata {
   private static final Logger LOGGER = LoggerFactory.getLogger(DescObjMetadata.class.getName());
   private String id, content, contentEncoding, metadataType;
   private Map<String, Object> additionalProperties = new HashMap<>();
-  private Map<String, MetadataValue> values;
+  private Set<MetadataValue> values;
   private Path path;
   private boolean loaded = false;
 
@@ -83,14 +84,14 @@ public class DescObjMetadata {
   /**
    * @return The set of MetadataValue objects. Used to create the form.
    */
-  public Map<String, MetadataValue> getValues() {
+  public Set<MetadataValue> getValues() {
     if (values == null) {
-      values = TemplateToForm.createMap(getContentDecoded());
+      values = TemplateToForm.createSet(getContentDecoded());
     }
     return values;
   }
 
-  public void setValues(Map<String, MetadataValue> val) {
+  public void setValues(Set<MetadataValue> val) {
     this.values = val;
   }
 

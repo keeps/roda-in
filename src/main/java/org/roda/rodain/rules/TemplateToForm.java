@@ -1,47 +1,34 @@
 package org.roda.rodain.rules;
 
-import com.samskivert.mustache.DefaultCollector;
-import com.samskivert.mustache.Mustache;
-import com.samskivert.mustache.Template;
-import org.roda.rodain.core.I18n;
+import com.github.jknack.handlebars.Handlebars;
+import com.github.jknack.handlebars.Template;
 import org.roda.rodain.rules.sip.MetadataValue;
 
-import java.util.*;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 29-03-2016.
  */
 public class TemplateToForm {
-  private static List<String> list(String content) {
-    List<String> result = new ArrayList<>();
-    Template tmpl = Mustache.compiler().defaultValue("").withCollector(new DefaultCollector() {
-      @Override
-      public Mustache.VariableFetcher createFetcher(Object o, String s) {
-        result.add(s);
-        return super.createFetcher(o, s);
-      }
-    }).compile(content);
-    tmpl.execute(new HashMap<>());
-    return result;
-  }
+  public static Set<MetadataValue> createSet(String content) {
+    Set<MetadataValue> result = new TreeSet<>();
+    Handlebars handlebars = new Handlebars();
 
-  public static Map<String, MetadataValue> createMap(String content) {
-    Map<String, MetadataValue> result = new TreeMap<>();
-    List<String> variables = list(content);
-    for (String var : variables) {
-      result.put(var, new MetadataValue(var, getTitle(var), null));
-    }
-    return result;
-  }
-
-  private static String getTitle(String var) {
-    String result = var;
+    Template template;
     try {
-      result = I18n.t("metadata." + var);
-    } catch (MissingResourceException e) {
-      // we will use the name of the variable if there's no available title
-      // no need to log the exception or rethrow it
+      handlebars.registerHelperMissing((o, options) -> {
+        // if (!options.hash.isEmpty())
+        result.add(new MetadataValue(options.helperName, options.hash));
+        return options.helperName;
+      });
+      template = handlebars.compileInline(content);
+      template.apply(new HashMap<>());
+    } catch (IOException e) {
+      e.printStackTrace();
     }
     return result;
   }

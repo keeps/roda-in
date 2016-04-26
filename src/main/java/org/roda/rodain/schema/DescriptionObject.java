@@ -1,8 +1,8 @@
 package org.roda.rodain.schema;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.samskivert.mustache.Mustache;
-import com.samskivert.mustache.Template;
+import com.github.jknack.handlebars.Handlebars;
+import com.github.jknack.handlebars.Template;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.sip.MetadataValue;
@@ -124,21 +124,33 @@ public class DescriptionObject extends Observable {
   public String getMetadataWithReplaces(DescObjMetadata dom) {
     String content = dom.getContentDecoded();
     if (content != null) {
-      Template tmpl = Mustache.compiler().defaultValue("").compile(content);
-      Map<String, String> data = new HashMap<>();
-      Map<String, MetadataValue> values = getMetadataValueMap(dom);
-      if (values != null) {
-        values.forEach((s, metadataValue) -> {
-          String val = metadataValue.getValue();
-          if (val != null) {
-            val = val.replaceAll("\\s", "");
-            if (!"".equals(val)) {
-              data.put(s, metadataValue.getValue());
-            }
+      try {
+        Handlebars handlebars = new Handlebars();
+        Map<String, String> data = new HashMap<>();
+        handlebars.registerHelperMissing((o, options) -> {
+          if (data.containsKey(options.helperName)) {
+            return data.get(options.helperName);
           }
+          return "";
         });
+        Template tmpl = handlebars.compileInline(content);
+
+        Set<MetadataValue> values = getMetadataValueMap(dom);
+        if (values != null) {
+          values.forEach(metadataValue -> {
+            String val = (String) metadataValue.get("value");
+            if (val != null) {
+              val = val.replaceAll("\\s", "");
+              if (!"".equals(val)) {
+                data.put(metadataValue.getId(), (String) metadataValue.get("value"));
+              }
+            }
+          });
+        }
+        content = tmpl.apply(data);
+      } catch (Exception e) {
+        e.printStackTrace();
       }
-      content = tmpl.execute(data);
       // we need to clean the '\r' character in windows,
       // otherwise the strings are different even if no modification has been
       // made
@@ -148,27 +160,27 @@ public class DescriptionObject extends Observable {
   }
 
   @JsonIgnore
-  public Map<String, MetadataValue> getMetadataValueMap(DescObjMetadata dom) {
+  public Set<MetadataValue> getMetadataValueMap(DescObjMetadata dom) {
     String content = dom.getContentDecoded();
     if (content != null) {
-      Map<String, MetadataValue> values = dom.getValues();
-      values.forEach((s, metadataValue) -> {
-        String toSearch = s.toLowerCase();
+      Set<MetadataValue> values = dom.getValues();
+      values.forEach(metadataValue -> {
+        String toSearch = metadataValue.getId().toLowerCase();
         switch (toSearch) {
           case "title":
-            metadataValue.setValue(title);
+            metadataValue.set("value", title);
             break;
           case "now":
-            metadataValue.setValue(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+            metadataValue.set("value", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
             break;
           case "id":
-            metadataValue.setValue(id);
+            metadataValue.set("value", id);
             break;
           case "level":
-            metadataValue.setValue(descriptionlevel);
+            metadataValue.set("value", descriptionlevel);
             break;
           case "parentid":
-            metadataValue.setValue(parentId);
+            metadataValue.set("value", parentId);
             break;
         }
       });
@@ -178,20 +190,20 @@ public class DescriptionObject extends Observable {
   }
 
   public void updatedMetadata(DescObjMetadata dom) {
-    dom.getValues().forEach((s, metadataValue) -> {
-      String toSearch = s.toLowerCase();
+    dom.getValues().forEach(metadataValue -> {
+      String toSearch = metadataValue.getId().toLowerCase();
       switch (toSearch) {
         case "title":
-          title = metadataValue.getValue();
+          title = (String) metadataValue.get("value");
           break;
         case "id":
-          id = metadataValue.getValue();
+          id = (String) metadataValue.get("value");
           break;
         case "level":
-          descriptionlevel = metadataValue.getValue();
+          descriptionlevel = (String) metadataValue.get("value");
           break;
         case "parentid":
-          parentId = metadataValue.getValue();
+          parentId = (String) metadataValue.get("value");
           break;
       }
     });
