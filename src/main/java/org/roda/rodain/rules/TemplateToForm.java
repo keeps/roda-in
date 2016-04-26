@@ -6,6 +6,7 @@ import org.roda.rodain.rules.sip.MetadataValue;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -16,13 +17,17 @@ import java.util.TreeSet;
 public class TemplateToForm {
   public static Set<MetadataValue> createSet(String content) {
     Set<MetadataValue> result = new TreeSet<>();
+    Set<String> addedTags = new HashSet<>();
     Handlebars handlebars = new Handlebars();
 
     Template template;
     try {
-      handlebars.registerHelperMissing((o, options) -> {
-        // if (!options.hash.isEmpty())
-        result.add(new MetadataValue(options.helperName, options.hash));
+      handlebars.registerHelperMissing((context, options) -> {
+        String tagID = options.helperName;
+        if (context != null && !addedTags.contains(tagID)) {
+          result.add(new MetadataValue(tagID, options.hash));
+          addedTags.add(tagID);
+        }
         return options.helperName;
       });
       template = handlebars.compileInline(content);
