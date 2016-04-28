@@ -3,6 +3,7 @@ package org.roda.rodain.inspection;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -20,8 +21,11 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.StringConverter;
+import javafx.util.converter.LocalDateStringConverter;
 import org.apache.commons.lang.StringUtils;
 import org.fxmisc.richtext.CodeArea;
+import org.json.JSONArray;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.RodaIn;
@@ -54,6 +58,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -445,46 +451,131 @@ public class InspectionPane extends BorderPane {
       Label label = new Label((String) metadataValue.get("label"));
       label.getStyleClass().add("formLabel");
 
-      TextField textField = new TextField((String) metadataValue.get("value"));
-      HBox.setHgrow(textField, Priority.ALWAYS);
-      textField.setUserData(metadataValue);
-      textField.textProperty()
-        .addListener((observable2, oldValue2, newValue2) -> metadataValue.set("value", newValue2));
-      if (metadataValue.getId().equals("title")) {
-        textField.setId("descObjTitle");
-        paneTitle.textProperty().bind(textField.textProperty());
-        if (currentSIPNode != null) {
-          textField.textProperty().bindBidirectional(currentSIPNode.valueProperty());
-        } else {
-          if (currentSchema != null) {
-            textField.textProperty().bindBidirectional(currentSchema.valueProperty());
-          }
+      String controlType = (String) metadataValue.get("type");
+      Control control;
+      if (controlType == null) {
+        control = createFormTextField(metadataValue);
+      } else {
+        switch (controlType) {
+          case "text":
+            control = createFormTextField(metadataValue);
+            break;
+          case "big-text":
+          case "text-area":
+            control = createFormTextArea(metadataValue);
+            break;
+          case "list":
+            control = createFormCombo(metadataValue);
+            break;
+          case "date":
+            control = createFormDatePicker(metadataValue);
+            break;
+          default:
+            control = createFormTextField(metadataValue);
+            break;
         }
-      }
-      if (metadataValue.getId().equals("level")) {
-        textField.textProperty().addListener((observable, oldValue, newValue) -> {
-          TreeItem<String> itemToForceUpdate = null;
-          // Update the icons of the description level
-          if (currentSIPNode != null) {
-            currentSIPNode.updateDescriptionLevel(newValue);
-            itemToForceUpdate = currentSIPNode;
-          } else if (currentSchema != null) {
-            currentSchema.updateDescriptionLevel(newValue);
-            itemToForceUpdate = currentSchema;
-          }
-          // Force update
-          if (itemToForceUpdate != null) {
-            String value = itemToForceUpdate.getValue();
-            itemToForceUpdate.setValue("");
-            itemToForceUpdate.setValue(value);
-          }
-        });
       }
 
       metadataGrid.add(label, 0, i);
-      metadataGrid.add(textField, 1, i);
+      metadataGrid.add(control, 1, i);
       i++;
     }
+  }
+
+  private TextField createFormTextField(MetadataValue metadataValue) {
+    TextField textField = new TextField((String) metadataValue.get("value"));
+    HBox.setHgrow(textField, Priority.ALWAYS);
+    textField.setUserData(metadataValue);
+    textField.textProperty().addListener((observable2, oldValue2, newValue2) -> metadataValue.set("value", newValue2));
+    if (metadataValue.getId().equals("title")) {
+      textField.setId("descObjTitle");
+      paneTitle.textProperty().bind(textField.textProperty());
+      if (currentSIPNode != null) {
+        textField.textProperty().bindBidirectional(currentSIPNode.valueProperty());
+      } else {
+        if (currentSchema != null) {
+          textField.textProperty().bindBidirectional(currentSchema.valueProperty());
+        }
+      }
+    }
+    if (metadataValue.getId().equals("level")) {
+      textField.textProperty().addListener((observable, oldValue, newValue) -> {
+        TreeItem<String> itemToForceUpdate = null;
+        // Update the icons of the description level
+        if (currentSIPNode != null) {
+          currentSIPNode.updateDescriptionLevel(newValue);
+          itemToForceUpdate = currentSIPNode;
+        } else if (currentSchema != null) {
+          currentSchema.updateDescriptionLevel(newValue);
+          itemToForceUpdate = currentSchema;
+        }
+        // Force update
+        if (itemToForceUpdate != null) {
+          String value = itemToForceUpdate.getValue();
+          itemToForceUpdate.setValue("");
+          itemToForceUpdate.setValue(value);
+        }
+      });
+    }
+    return textField;
+  }
+
+  private TextArea createFormTextArea(MetadataValue metadataValue) {
+    TextArea textArea = new TextArea((String) metadataValue.get("value"));
+    HBox.setHgrow(textArea, Priority.ALWAYS);
+    textArea.setUserData(metadataValue);
+    textArea.textProperty().addListener((observable, oldValue, newValue) -> metadataValue.set("value", newValue));
+    textArea.getStyleClass().add("form-text-area");
+    return textArea;
+  }
+
+  private ComboBox<String> createFormCombo(MetadataValue metadataValue) {
+    ObservableList<String> comboList = FXCollections.observableArrayList();
+    String input = (String) metadataValue.get("list");
+    if (input != null) {
+      JSONArray jsonArray = new JSONArray(input);
+      jsonArray.forEach(o -> comboList.add((String) o));
+    }
+    ComboBox<String> comboBox = new ComboBox<>(comboList);
+    HBox.setHgrow(comboBox, Priority.ALWAYS);
+    comboBox.setMaxWidth(Double.MAX_VALUE);
+    comboBox.setUserData(metadataValue);
+    comboBox.valueProperty().addListener((observable, oldValue, newValue) -> metadataValue.set("value", newValue));
+    String currentValue = (String) metadataValue.get("value");
+    if (currentValue != null) {
+      comboBox.getSelectionModel().select(currentValue);
+    }
+    return comboBox;
+  }
+
+  private DatePicker createFormDatePicker(MetadataValue metadataValue) {
+    String pattern = "yyyy-MM-dd";
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+    LocalDateStringConverter ldsc = new LocalDateStringConverter(formatter, null);
+
+    String currentValue = metadataValue.get("value") != null ? (String) metadataValue.get("value") : "";
+    DatePicker datePicker = new DatePicker(ldsc.fromString(currentValue));
+    datePicker.setMaxWidth(Double.MAX_VALUE);
+    datePicker.setConverter(new StringConverter<LocalDate>() {
+      private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern);
+
+      @Override
+      public String toString(LocalDate localDate) {
+        if (localDate == null)
+          return "";
+        return dateTimeFormatter.format(localDate);
+      }
+
+      @Override
+      public LocalDate fromString(String dateString) {
+        if (dateString == null || dateString.trim().isEmpty())
+          return null;
+        return LocalDate.parse(dateString, dateTimeFormatter);
+      }
+    });
+    datePicker.valueProperty()
+      .addListener((observable, oldValue, newValue) -> metadataValue.set("value", ldsc.toString(newValue)));
+    return datePicker;
   }
 
   private void noForm() {
