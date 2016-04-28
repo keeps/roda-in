@@ -158,9 +158,9 @@ public class InspectionPane extends BorderPane {
     metadataGrid.setPadding(new Insets(5, 5, 5, 5));
     metadataGrid.setStyle(AppProperties.getStyle("backgroundWhite"));
     ColumnConstraints column1 = new ColumnConstraints();
-    column1.setPercentWidth(20);
+    column1.setPercentWidth(25);
     ColumnConstraints column2 = new ColumnConstraints();
-    column2.setPercentWidth(80);
+    column2.setPercentWidth(75);
     metadataGrid.getColumnConstraints().addAll(column1, column2);
 
     metadataFormWrapper = new ScrollPane();

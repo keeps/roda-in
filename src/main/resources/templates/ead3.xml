@@ -2,10 +2,10 @@
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
      xsi:schemaLocation="http://ead3.archivists.org/schema/ ../schemas/ead3.xsd">
     <control>
-        <recordid>{{id}}</recordid>
+        <recordid>{{id order=2}}</recordid>
         <filedesc>
             <titlestmt>
-                <titleproper>{{title}}</titleproper>
+                <titleproper>{{title order=3}}</titleproper>
             </titlestmt>
         </filedesc>
         <maintenancestatus value="new"/>
@@ -16,7 +16,7 @@
         <maintenancehistory>
             <maintenanceevent>
                 <eventtype value="created"/>
-                <eventdatetime standarddatetime="{{now}}">{{now}}</eventdatetime>
+                <eventdatetime standarddatetime="{{now order=1 type='date'}}">{{now}}</eventdatetime>
                 <agenttype value="machine"/>
                 <agent>RODA-in version 2</agent>
                 <eventdescription>Creation of EAD record using RODA-in version 2</eventdescription>
@@ -24,15 +24,15 @@
         </maintenancehistory>
     </control>
 
-    <archdesc level="item">
+    <archdesc level="{{level order=4 type='list' list='[fonds,subfonds,series,subseries,file,item]'}}">
         <did>
             <unitid>{{id}}</unitid>
             <unittitle>{{title}}</unittitle>
 
             <unitdatestructured calendar="gregorian">
                 <daterange>
-                    <fromdate standarddate="{{dateInitial}}">{{dateInitial}}</fromdate>
-                    <todate standarddate="{{dateFinal}}">{{dateFinal}}</todate>
+                    <fromdate standarddate="{{dateInitial type='date'}}">{{dateInitial}}</fromdate>
+                    <todate standarddate="{{dateFinal type='date'}}">{{dateFinal}}</todate>
                 </daterange>
             </unitdatestructured>
 
@@ -55,7 +55,7 @@
         </did>
 
         <scopecontent>
-            <p>{{description}}</p>
+            <p>{{description type='text-area'}}</p>
         </scopecontent>
 
         <userestrict>
