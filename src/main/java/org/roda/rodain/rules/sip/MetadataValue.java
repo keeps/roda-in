@@ -60,19 +60,6 @@ public class MetadataValue implements Comparable {
     return options;
   }
 
-  /**
-   * Adds a field option to the object. These are used in the "combo" field type
-   * to populate the list.
-   * 
-   * @param key
-   *          The key of the new option
-   * @param value
-   *          The value of the new option
-   */
-  public void addOption(String key, String value) {
-    options.put(key, value);
-  }
-
   private static String getTitle(String var) {
     String result = var;
     try {

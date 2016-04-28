@@ -18,6 +18,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -28,7 +29,7 @@ public class DescObjMetadata {
   private static final Logger LOGGER = LoggerFactory.getLogger(DescObjMetadata.class.getName());
   private String id, content, contentEncoding, metadataType;
   private Map<String, Object> additionalProperties = new HashMap<>();
-  private Set<MetadataValue> values;
+  private TreeSet<MetadataValue> values;
   private Path path;
   private boolean loaded = false;
 
@@ -91,7 +92,7 @@ public class DescObjMetadata {
     return values;
   }
 
-  public void setValues(Set<MetadataValue> val) {
+  public void setValues(TreeSet<MetadataValue> val) {
     this.values = val;
   }
 

@@ -56,7 +56,7 @@
             which would permit child elements.
 
             All elements are declared as substitutable for the abstract element any,
-            which means that the default creatorOption for all elements is dc:SimpleLiteral.
+            which means that the default type for all elements is dc:SimpleLiteral.
 
         </xs:documentation>
 
@@ -70,7 +70,7 @@
     <xs:complexType name="SimpleLiteral">
         <xs:annotation>
             <xs:documentation xml:lang="en">
-                This is the default creatorOption for all of the DC elements.
+                This is the default type for all of the DC elements.
                 It permits text content only with optional
                 xml:lang attribute.
                 Text is allowed because mixed="true", but sub-elements
@@ -92,7 +92,7 @@
         </xs:complexContent>
     </xs:complexType>
 
-    <xs:element name="any" creatorOption="SimpleLiteral" abstract="true"/>
+    <xs:element name="any" type="SimpleLiteral" abstract="true"/>
 
     <xs:element name="title" substitutionGroup="any"/>
     <xs:element name="creator" substitutionGroup="any"/>
@@ -101,7 +101,7 @@
     <xs:element name="publisher" substitutionGroup="any"/>
     <xs:element name="contributor" substitutionGroup="any"/>
     <xs:element name="date" substitutionGroup="any"/>
-    <xs:element name="creatorOption" substitutionGroup="any"/>
+    <xs:element name="type" substitutionGroup="any"/>
     <xs:element name="format" substitutionGroup="any"/>
     <xs:element name="identifier" substitutionGroup="any"/>
     <xs:element name="source" substitutionGroup="any"/>
@@ -139,6 +139,6 @@
         </xs:choice>
     </xs:complexType>
 
-    <xs:element name="simpledc" creatorOption="elementContainer"/>
+    <xs:element name="simpledc" type="elementContainer"/>
 
 </xs:schema>

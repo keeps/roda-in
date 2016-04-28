@@ -15,8 +15,15 @@ import java.util.TreeSet;
  * @since 29-03-2016.
  */
 public class TemplateToForm {
-  public static Set<MetadataValue> createSet(String content) {
-    Set<MetadataValue> result = new TreeSet<>();
+  /**
+   * The result type MUST be a TreeSet so that when loading an exported
+   * classification scheme, the order of the fields is correct.
+   * 
+   * @param content
+   * @return
+   */
+  public static TreeSet<MetadataValue> createSet(String content) {
+    TreeSet<MetadataValue> result = new TreeSet<>();
     Set<String> addedTags = new HashSet<>();
     Handlebars handlebars = new Handlebars();
 

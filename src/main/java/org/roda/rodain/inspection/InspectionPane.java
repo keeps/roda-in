@@ -2,6 +2,7 @@ package org.roda.rodain.inspection;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -448,8 +449,14 @@ public class InspectionPane extends BorderPane {
     }
     int i = 0;
     for (MetadataValue metadataValue : metadataValues) {
+      // do not process this entry if it's marked as hidden
+      if (getBooleanOption(metadataValue.get("hidden")))
+        continue;
+
       Label label = new Label((String) metadataValue.get("label"));
       label.getStyleClass().add("formLabel");
+      if (getBooleanOption(metadataValue.get(("mandatory"))))
+        label.setStyle(AppProperties.getStyle("boldFont"));
 
       String controlType = (String) metadataValue.get("type");
       Control control;
@@ -460,6 +467,7 @@ public class InspectionPane extends BorderPane {
           case "text":
             control = createFormTextField(metadataValue);
             break;
+          case "textarea":
           case "big-text":
           case "text-area":
             control = createFormTextArea(metadataValue);
@@ -482,6 +490,18 @@ public class InspectionPane extends BorderPane {
     }
   }
 
+  private boolean getBooleanOption(Object option) {
+    boolean result = false;
+    if (option != null) {
+      if (option instanceof Boolean) {
+        result = (Boolean) option;
+      } else if (option instanceof String) {
+        result = Boolean.parseBoolean((String) option);
+      }
+    }
+    return result;
+  }
+
   private TextField createFormTextField(MetadataValue metadataValue) {
     TextField textField = new TextField((String) metadataValue.get("value"));
     HBox.setHgrow(textField, Priority.ALWAYS);
@@ -489,34 +509,8 @@ public class InspectionPane extends BorderPane {
     textField.textProperty().addListener((observable2, oldValue2, newValue2) -> metadataValue.set("value", newValue2));
     if (metadataValue.getId().equals("title")) {
       textField.setId("descObjTitle");
-      paneTitle.textProperty().bind(textField.textProperty());
-      if (currentSIPNode != null) {
-        textField.textProperty().bindBidirectional(currentSIPNode.valueProperty());
-      } else {
-        if (currentSchema != null) {
-          textField.textProperty().bindBidirectional(currentSchema.valueProperty());
-        }
-      }
     }
-    if (metadataValue.getId().equals("level")) {
-      textField.textProperty().addListener((observable, oldValue, newValue) -> {
-        TreeItem<String> itemToForceUpdate = null;
-        // Update the icons of the description level
-        if (currentSIPNode != null) {
-          currentSIPNode.updateDescriptionLevel(newValue);
-          itemToForceUpdate = currentSIPNode;
-        } else if (currentSchema != null) {
-          currentSchema.updateDescriptionLevel(newValue);
-          itemToForceUpdate = currentSchema;
-        }
-        // Force update
-        if (itemToForceUpdate != null) {
-          String value = itemToForceUpdate.getValue();
-          itemToForceUpdate.setValue("");
-          itemToForceUpdate.setValue(value);
-        }
-      });
-    }
+    addListenersToUpdateUI(metadataValue, textField.textProperty());
     return textField;
   }
 
@@ -526,6 +520,7 @@ public class InspectionPane extends BorderPane {
     textArea.setUserData(metadataValue);
     textArea.textProperty().addListener((observable, oldValue, newValue) -> metadataValue.set("value", newValue));
     textArea.getStyleClass().add("form-text-area");
+    addListenersToUpdateUI(metadataValue, textArea.textProperty());
     return textArea;
   }
 
@@ -545,7 +540,45 @@ public class InspectionPane extends BorderPane {
     if (currentValue != null) {
       comboBox.getSelectionModel().select(currentValue);
     }
+    addListenersToUpdateUI(metadataValue, comboBox.valueProperty());
+
     return comboBox;
+  }
+
+  private void addListenersToUpdateUI(MetadataValue metadataValue, Property property) {
+    if (metadataValue.getId().equals("title")) {
+      paneTitle.textProperty().bind(property);
+      if (currentSIPNode != null) {
+        property.bindBidirectional(currentSIPNode.valueProperty());
+      } else {
+        if (currentSchema != null) {
+          property.bindBidirectional(currentSchema.valueProperty());
+        }
+      }
+    }
+    if (metadataValue.getId().equals("level")) {
+      property.addListener((observable, oldValue, newValue) -> {
+        TreeItem<String> itemToForceUpdate = null;
+        // Update the icons of the description level
+        if (currentSIPNode != null) {
+          if (newValue instanceof String) {
+            currentSIPNode.updateDescriptionLevel((String) newValue);
+            itemToForceUpdate = currentSIPNode;
+          }
+        } else if (currentSchema != null) {
+          if (newValue instanceof String) {
+            currentSchema.updateDescriptionLevel((String) newValue);
+            itemToForceUpdate = currentSchema;
+          }
+        }
+        // Force update
+        if (itemToForceUpdate != null) {
+          String value = itemToForceUpdate.getValue();
+          itemToForceUpdate.setValue("");
+          itemToForceUpdate.setValue(value);
+        }
+      });
+    }
   }
 
   private DatePicker createFormDatePicker(MetadataValue metadataValue) {
@@ -575,6 +608,7 @@ public class InspectionPane extends BorderPane {
     });
     datePicker.valueProperty()
       .addListener((observable, oldValue, newValue) -> metadataValue.set("value", ldsc.toString(newValue)));
+    addListenersToUpdateUI(metadataValue, datePicker.valueProperty());
     return datePicker;
   }
 
