@@ -22,13 +22,14 @@ public class TemplateToForm {
 
     Template template;
     try {
+      handlebars.helpers().clear();
       handlebars.registerHelperMissing((context, options) -> {
         String tagID = options.helperName;
         if (context != null && !addedTags.contains(tagID)) {
           result.add(new MetadataValue(tagID, options.hash));
           addedTags.add(tagID);
         }
-        return options.helperName;
+        return options.fn();
       });
       template = handlebars.compileInline(content);
       template.apply(new HashMap<>());
