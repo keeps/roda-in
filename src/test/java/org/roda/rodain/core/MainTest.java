@@ -71,7 +71,7 @@ public class MainTest extends ApplicationTest {
       push(KeyCode.ENTER);
     } catch (Exception e) {
     }
-    sleep(12000);
+    sleep(5000);
     clickOn(I18n.t("SchemaPane.add"));
     sleep(2000);
     clickOn(".schemaNode");
