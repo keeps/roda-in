@@ -189,6 +189,11 @@ public class SipsWithStructure extends SipPreviewCreator {
    */
   @Override
   public void end() {
+    if (cancelled) {
+      setChanged();
+      notifyObservers("Finished");
+      return;
+    }
     Set<PseudoDescriptionObject> descObjs = new HashSet<>();
     record.forEach((path, pseudoItem) -> {
       if (pseudoItem instanceof PseudoSIP) {

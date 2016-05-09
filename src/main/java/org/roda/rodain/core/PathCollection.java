@@ -1,15 +1,16 @@
 package org.roda.rodain.core;
 
-import org.apache.commons.lang.StringUtils;
-import org.roda.rodain.source.ui.items.SourceTreeDirectory;
-import org.roda.rodain.source.ui.items.SourceTreeItem;
-import org.roda.rodain.source.ui.items.SourceTreeItemState;
-
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang.StringUtils;
+import org.roda.rodain.source.ui.items.SourceTreeDirectory;
+import org.roda.rodain.source.ui.items.SourceTreeItem;
+import org.roda.rodain.source.ui.items.SourceTreeItemState;
 
 /**
  * A collection of paths and it's associated state and SourceTreeItem.
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
  * @since 12-11-2015.
  */
 public class PathCollection {
-  private static Map<String, SourceTreeItemState> states = new HashMap<>();
+  private static Map<String, SourceTreeItemState> states = new ConcurrentHashMap<>();
   private static Map<String, SourceTreeItem> items = new HashMap<>();
 
   private PathCollection() {

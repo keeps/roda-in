@@ -1,12 +1,6 @@
 package org.roda.rodain.schema.ui;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-import java.util.stream.Collectors;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -31,7 +25,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.Footer;
 import org.roda.rodain.core.I18n;
@@ -49,7 +42,12 @@ import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -257,15 +255,12 @@ public class SchemaPane extends BorderPane {
     dobj.setParentId(null);
     rootNode = new SchemaNode(dobj);
     rootNode.setExpanded(true);
-    rootNode.getChildren().addListener(new ListChangeListener<TreeItem<String>>() {
-      @Override
-      public void onChanged(Change<? extends TreeItem<String>> c) {
-        if (rootNode.getChildren().isEmpty()) {
-          setCenter(dropBox);
-          RodaIn.getInspectionPane().showHelp();
-        } else {
-          setCenter(treeBox);
-        }
+    rootNode.getChildren().addListener((ListChangeListener<? super TreeItem<String>>) c -> {
+      if (rootNode.getChildren().isEmpty()) {
+        setCenter(dropBox);
+        RodaIn.getInspectionPane().showHelp();
+      } else {
+        setCenter(treeBox);
       }
     });
   }
@@ -484,7 +479,7 @@ public class SchemaPane extends BorderPane {
     export.setMinWidth(100);
     export.setOnAction(event -> RodaIn.exportSIPs());
 
-    bottom.getChildren().addAll(removeLevel, addLevel, space, export);
+    bottom.getChildren().addAll(addLevel, removeLevel, space, export);
   }
 
   private void confirmRemove(List<TreeItem<String>> selectedItems, ButtonType type) {
