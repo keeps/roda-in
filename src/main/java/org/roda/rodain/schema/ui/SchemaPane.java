@@ -499,8 +499,6 @@ public class SchemaPane extends BorderPane {
           // remove all the rules under this SchemaNode
           ((SchemaNode) selected).remove();
         }
-        // remove the node from the tree
-        removeNode(selected);
       }
 
       sipNodes.removeAll(fromRules);
@@ -514,6 +512,10 @@ public class SchemaPane extends BorderPane {
             return null;
           }
         };
+
+        // remove the nodes from the tree
+        removeTask.setOnSucceeded(event -> selectedItems.forEach(this::removeNode));
+
         new Thread(removeTask).start();
       }
     }
@@ -525,9 +527,11 @@ public class SchemaPane extends BorderPane {
       if (parent instanceof SchemaNode) {
         ((SchemaNode) parent).removeChild(selected);
         parent.getChildren().remove(selected);
-      } else
+      } else {
         parent.getChildren().remove(selected);
+      }
     }
+
     schemaNodes.remove(selected);
     treeView.getSelectionModel().clearSelection();
   }
@@ -870,6 +874,9 @@ public class SchemaPane extends BorderPane {
         result.putAll(sn.getSipPreviews());
       }
     }
-    return result;
+
+    // filter out the SIPs marked as "removed"
+    return result.entrySet().stream().parallel().filter(p -> !p.getKey().isRemoved())
+      .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
   }
 }
