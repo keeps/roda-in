@@ -84,4 +84,11 @@ public class SipContentRepresentation extends TreeItem<Object> implements Inspec
   public TreeItem getParentDir() {
     return null;
   }
+
+  /**
+   * Empty because the parent of a representation is always the root of the tree
+   */
+  @Override
+  public void setParentDir(TreeItem t) {
+  }
 }

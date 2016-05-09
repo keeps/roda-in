@@ -158,6 +158,7 @@ public class SipDocumentationTreeView extends TreeView {
                 if (source instanceof SipContentFile)
                   scr.getRepresentation().addFile(source.getPath());
               }
+              source.setParentDir(targetRaw);
 
               targetRaw.getChildren().add(source);
             }

@@ -1,10 +1,8 @@
 package org.roda.rodain.inspection;
 
 import javafx.event.EventHandler;
-import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
-import org.roda.rodain.core.RodaIn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,13 +37,7 @@ public class ContentClickedEventHandler implements EventHandler<MouseEvent> {
    */
   @Override
   public void handle(MouseEvent mouseEvent) {
-    if (mouseEvent.getClickCount() == 1) {
-      TreeItem target = treeView.getSelectionModel().getSelectedItem();
-      if (target instanceof SipContentRepresentation) {
-        RodaIn.getInspectionPane().representationSelected(true);
-      } else
-        RodaIn.getInspectionPane().representationSelected(false);
-    } else if (mouseEvent.getClickCount() == 2) {
+    if (mouseEvent.getClickCount() == 2) {
       Object source = treeView.getSelectionModel().getSelectedItem();
       if (source instanceof SipContentFile) {
         SipContentFile sipFile = (SipContentFile) source;

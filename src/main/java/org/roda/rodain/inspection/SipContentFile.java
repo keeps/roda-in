@@ -1,10 +1,10 @@
 package org.roda.rodain.inspection;
 
-import java.nio.file.Path;
-
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+
+import java.nio.file.Path;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -43,6 +43,17 @@ public class SipContentFile extends TreeItem<Object> implements InspectionTreeIt
   @Override
   public TreeItem getParentDir() {
     return parent;
+  }
+
+  /**
+   * Sets the parent directory
+   *
+   * @param t
+   *          the new parent directory
+   */
+  @Override
+  public void setParentDir(TreeItem t) {
+    parent = t;
   }
 
   /**

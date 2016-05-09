@@ -102,7 +102,7 @@ public class InspectionPane extends BorderPane {
   private HBox loadingPane, contentBottom, docsBottom;
   private static Image loadingGif;
   private Task<Void> contentTask, docsTask, metadataTask;
-  private Button ignore, removeRepresentation;
+  private Button ignore;
   private ToggleButton toggleDocumentation;
   // Rules
   private BorderPane rules;
@@ -871,18 +871,24 @@ public class InspectionPane extends BorderPane {
     contentBottom.setPadding(new Insets(10, 10, 10, 10));
     contentBottom.setAlignment(Pos.CENTER);
 
-    ignore = new Button(I18n.t("ignore"));
+    ignore = new Button(I18n.t("remove"));
     ignore.setOnAction(event -> {
-      InspectionTreeItem selected = (InspectionTreeItem) sipFiles.getSelectionModel().getSelectedItem();
-      if (selected == null)
+      InspectionTreeItem selectedRaw = (InspectionTreeItem) sipFiles.getSelectionModel().getSelectedItem();
+      if (selectedRaw == null)
         return;
-      Set<Path> paths = new HashSet<>();
-      paths.add(selected.getPath());
-      if (currentDescOb != null && currentDescOb instanceof SipPreview) {
-        ((SipPreview) currentDescOb).ignoreContent(paths);
-        TreeItem parent = selected.getParentDir();
-        TreeItem child = (TreeItem) selected;
-        parent.getChildren().remove(child);
+      if (selectedRaw instanceof SipContentRepresentation) {
+        SipContentRepresentation selected = (SipContentRepresentation) selectedRaw;
+        sipRoot.getChildren().remove(selectedRaw);
+        currentSIPNode.getSip().removeRepresentation(selected.getRepresentation());
+      } else {
+        Set<Path> paths = new HashSet<>();
+        paths.add(selectedRaw.getPath());
+        if (currentDescOb != null && currentDescOb instanceof SipPreview) {
+          ((SipPreview) currentDescOb).ignoreContent(paths);
+          TreeItem parent = selectedRaw.getParentDir();
+          TreeItem child = (TreeItem) selectedRaw;
+          parent.getChildren().remove(child);
+        }
       }
     });
     ignore.minWidthProperty().bind(this.widthProperty().multiply(0.25));
@@ -897,18 +903,10 @@ public class InspectionPane extends BorderPane {
     });
     addRepresentation.minWidthProperty().bind(this.widthProperty().multiply(0.25));
 
-    removeRepresentation = new Button(I18n.t("InspectionPane.removeRepresentation"));
-    removeRepresentation.setOnAction(event -> {
-      InspectionTreeItem selectedRaw = (InspectionTreeItem) sipFiles.getSelectionModel().getSelectedItem();
-      if (selectedRaw instanceof SipContentRepresentation) {
-        SipContentRepresentation selected = (SipContentRepresentation) selectedRaw;
-        sipRoot.getChildren().remove(selectedRaw);
-        currentSIPNode.getSip().removeRepresentation(selected.getRepresentation());
-      }
-    });
-    removeRepresentation.minWidthProperty().bind(this.widthProperty().multiply(0.25));
+    HBox space = new HBox();
+    HBox.setHgrow(space, Priority.ALWAYS);
 
-    contentBottom.getChildren().addAll(addRepresentation, removeRepresentation, ignore);
+    contentBottom.getChildren().addAll(addRepresentation, space, ignore);
   }
 
   private void createDocsBottom() {
@@ -1416,16 +1414,6 @@ public class InspectionPane extends BorderPane {
       parent.getChildren().add(startingItem);
     }
     parent.sortChildren();
-  }
-
-  public void representationSelected(boolean b) {
-    if (b) {
-      removeRepresentation.setDisable(false);
-      ignore.setDisable(true);
-    } else {
-      removeRepresentation.setDisable(true);
-      ignore.setDisable(false);
-    }
   }
 
   public List<InspectionTreeItem> getDocumentationSelectedItems() {
