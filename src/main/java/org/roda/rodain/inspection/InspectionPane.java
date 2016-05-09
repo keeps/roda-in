@@ -10,6 +10,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.ComboBoxListCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.Dragboard;
@@ -49,7 +50,7 @@ import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.ModalStage;
 import org.roda.rodain.utils.UIPair;
 import org.roda.rodain.utils.Utils;
-import org.roda_project.commons_ip.model.impl.eark.EARKEnums;
+import org.roda_project.commons_ip.model.IPContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -133,12 +134,13 @@ public class InspectionPane extends BorderPane {
     setCenter(centerHelp);
 
     metadata.minHeightProperty().bind(stage.heightProperty().multiply(0.40));
-    this.minWidthProperty().bind(stage.widthProperty().multiply(0.2));
+    this.minWidthProperty().bind(stage.widthProperty().multiply(0.3));
   }
 
   private void createTop() {
     Label title = new Label(I18n.t("InspectionPane.title").toUpperCase());
     title.getStyleClass().add("title");
+    title.setMinWidth(110);
     topSubtitle = new HBox(1);
     HBox.setHgrow(topSubtitle, Priority.ALWAYS);
 
@@ -1175,8 +1177,9 @@ public class InspectionPane extends BorderPane {
     // Content Type combo box
     ComboBox<UIPair> contentType = new ComboBox<>();
     List<UIPair> contTypeList = new ArrayList<>();
-    for (EARKEnums.IPContentType ct : EARKEnums.IPContentType.values()) {
-      contTypeList.add(new UIPair(ct, ct.getType()));
+    for (IPContentType.IPContentTypeEnum ct : IPContentType.IPContentTypeEnum.values()) {
+      IPContentType ipCT = new IPContentType(ct);
+      contTypeList.add(new UIPair(ipCT, ipCT.getType()));
     }
     // sort the list as strings
     Collections.sort(contTypeList, (o1, o2) -> o1.toString().compareTo(o2.toString()));
@@ -1184,10 +1187,27 @@ public class InspectionPane extends BorderPane {
     contentType.getSelectionModel()
       .select(new UIPair(sip.getSip().getContentType(), sip.getSip().getContentType().getType()));
     contentType.valueProperty()
-      .addListener((obs, old, newValue) -> sip.getSip().setContentType((EARKEnums.IPContentType) newValue.getKey()));
+      .addListener((obs, old, newValue) -> sip.getSip().setContentType((IPContentType) newValue.getKey()));
     contentType.setMinWidth(85);
+    contentType.setCellFactory(param -> new ComboBoxListCell<UIPair>() {
+      @Override
+      public void updateItem(UIPair item, boolean empty) {
+        super.updateItem(item, empty);
+        if (item != null && item.getKey() != null) {
+          String translation = I18n.t("IPContentType." + item.getValue().toString());
+          if (translation == null || "".equals(translation))
+            translation = item.getValue().toString();
+          setTooltip(new Tooltip(translation));
+        }
+      }
+    });
 
-    top.getChildren().addAll(space, contentType);
+    HBox ipTypeWrapper = new HBox();
+    ipTypeWrapper.setAlignment(Pos.CENTER_LEFT);
+    Label ipType = new Label(I18n.t("InspectionPane.IPType"));
+    ipType.getStyleClass().add("top-subtitle");
+    ipTypeWrapper.getChildren().add(ipType);
+    top.getChildren().addAll(space, ipTypeWrapper, contentType);
 
     topSubtitle.getChildren().addAll(space, top);
 

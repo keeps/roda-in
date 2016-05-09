@@ -239,28 +239,25 @@ public class RuleCell extends HBox implements Observer {
 
   private HBox buildContentSummary(Set<String> dirs, Set<String> fil) {
     HBox result = new HBox();
-    StringBuilder sb = new StringBuilder();
+    StringBuilder sb = new StringBuilder("Input: ");
     if (!dirs.isEmpty()) {
       sb.append(dirs.size());
       if (dirs.size() == 1)
         sb.append(I18n.t("directory"));
       else
         sb.append(I18n.t("directories"));
-      Label dirsLabel = new Label(sb.toString());
-      dirsLabel.setGraphic(new ImageView(SourceTreeDirectory.folderCollapseImage));
-      result.getChildren().add(dirsLabel);
+      if (!fil.isEmpty())
+        sb.append(", ");
     }
-    sb = new StringBuilder();
     if (!fil.isEmpty()) {
       sb.append(fil.size());
       if (fil.size() == 1)
         sb.append(I18n.t("file"));
       else
         sb.append(I18n.t("files"));
-      Label filLabel = new Label(sb.toString());
-      filLabel.setGraphic(new ImageView(SourceTreeFile.fileImage));
-      result.getChildren().add(filLabel);
     }
+    Label filDirLabel = new Label(sb.toString());
+    result.getChildren().add(filDirLabel);
     return result;
   }
 

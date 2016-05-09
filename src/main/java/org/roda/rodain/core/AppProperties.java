@@ -326,12 +326,16 @@ public class AppProperties {
    * @return The value of the property using
    */
   public static String getLocalizedString(String key) {
-    String result;
+    String result = null;
     try {
       result = resourceBundle.getString(key);
     } catch (MissingResourceException e) {
       LOGGER.warn(String.format("Missing translation for %s in language: %s", key, locale.getDisplayName()));
-      result = defaultResourceBundler.getString(key);
+      try {
+        result = defaultResourceBundler.getString(key);
+      } catch (Exception e1) {
+        LOGGER.warn(String.format("Missing translation for %s in language: %s", key, Locale.ENGLISH));
+      }
     }
     return result;
   }

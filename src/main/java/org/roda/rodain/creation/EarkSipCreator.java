@@ -10,9 +10,7 @@ import org.roda.rodain.rules.sip.SipPreview;
 import org.roda.rodain.rules.sip.SipRepresentation;
 import org.roda.rodain.schema.DescObjMetadata;
 import org.roda_project.commons_ip.model.*;
-import org.roda_project.commons_ip.model.impl.eark.EARKEnums;
 import org.roda_project.commons_ip.model.impl.eark.EARKSIP;
-import org.roda_project.commons_ip.utils.METSEnums;
 import org.roda_project.commons_ip.utils.SIPException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,8 +38,10 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
   /**
    * Creates a new EARK SIP exporter.
    *
-   * @param outputPath The path to the output folder of the SIP exportation
-   * @param previews   The map with the SIPs that will be exported
+   * @param outputPath
+   *          The path to the output folder of the SIP exportation
+   * @param previews
+   *          The map with the SIPs that will be exported
    */
   public EarkSipCreator(Path outputPath, Map<SipPreview, String> previews) {
     super(outputPath, previews);
@@ -75,7 +75,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
 
       for (DescObjMetadata descObjMetadata : sip.getMetadata()) {
         String metadataTypeString = descObjMetadata.getMetadataType();
-        METSEnums.MetadataType metadataType = METSEnums.MetadataType.OTHER;
+        MetadataType metadataType = new MetadataType(MetadataType.MetadataTypeEnum.OTHER);
 
         if (descObjMetadata.getCreatorOption() == MetadataOptions.TEMPLATE) {
           Path schemaPath = AppProperties.getSchemaPath(descObjMetadata.getTemplateType());
@@ -84,21 +84,21 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
         }
         // Check if one of the values from the enum can be used
         if (metadataTypeString != null) {
-          for (METSEnums.MetadataType val : METSEnums.MetadataType.values()) {
+          for (MetadataType.MetadataTypeEnum val : MetadataType.MetadataTypeEnum.values()) {
             if (metadataTypeString.equalsIgnoreCase(val.getType())) {
-              metadataType = val;
+              metadataType = new MetadataType(val);
               break;
             }
           }
         }
         // If no value was found previously, set the Other type
-        if (metadataType == METSEnums.MetadataType.OTHER) {
+        if (metadataType.getType() == MetadataType.MetadataTypeEnum.OTHER) {
           metadataType.setOtherType(metadataTypeString);
         }
 
         Path metadataPath = null;
         if (descObjMetadata.getCreatorOption() != MetadataOptions.TEMPLATE
-            && descObjMetadata.getCreatorOption() != MetadataOptions.NEW_FILE && !descObjMetadata.isLoaded()) {
+          && descObjMetadata.getCreatorOption() != MetadataOptions.NEW_FILE && !descObjMetadata.isLoaded()) {
           metadataPath = descObjMetadata.getPath();
         }
 
@@ -111,14 +111,15 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
 
         IPFile metadataFile = new IPFile(metadataPath);
         IPDescriptiveMetadata metadata = new IPDescriptiveMetadata(metadataFile, metadataType,
-            descObjMetadata.getVersion());
+          descObjMetadata.getVersion());
         earkSip.addDescriptiveMetadata(metadata);
       }
 
       currentAction = actionCopyingData;
       for (SipRepresentation sr : sip.getRepresentations()) {
         IPRepresentation rep = new IPRepresentation(sr.getName());
-        rep.setContentType(EARKEnums.RepresentationContentType.mixed);
+        rep
+          .setContentType(new RepresentationContentType(RepresentationContentType.RepresentationContentTypeEnum.MIXED));
         Set<TreeNode> files = sr.getFiles();
         currentSIPadded = 0;
         currentSIPsize = 0;
