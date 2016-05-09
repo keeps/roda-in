@@ -5,7 +5,7 @@
 }
 
 .top-subtitle {
-    -fx-font-size: large;
+    -fx-font-size: medium;
     -fx-text-fill: white;
 }
 
@@ -107,9 +107,52 @@
     -fx-border-width: 1px;
 }
 
+.inspectionPart .form-text-area {
+    -fx-background-color: white;
+    -fx-border-color: gray;
+    -fx-border-width: 1px;
+}
+
 .inspectionPart .popover .label {
     -fx-text-fill: black;
     -fx-font-size: medium;
+}
+
+/* Combo-Box */
+.inspectionPart .combo-box-base .list-view .list-cell {
+    -fx-background-color: white;
+    -fx-text-fill: black;
+}
+
+.inspectionPart .combo-box .list-view .list-cell:selected {
+    -fx-background-color: -fx-medium;
+    -fx-text-fill: white;
+}
+
+.inspectionPart .combo-box .list-view {
+    -fx-border-color: transparent;
+}
+
+.inspectionPart .combo-box {
+    -fx-background-color: white;
+    -fx-border-color: gray;
+    -fx-border-width: 1px;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-max-height: 10;
+}
+
+.inspectionPart .combo-box-base .list-cell {
+    -fx-background-color: white;
+    -fx-text-fill: black;
+}
+
+.inspectionPart .combo-box .list-view .list-cell:hover {
+    -fx-background-color: -fx-light;
+}
+
+.inspectionPart .combo-box .arrow {
+    -fx-background-color: black;
 }
 
 .separator .line {

@@ -174,4 +174,15 @@ public class SipContentDirectory extends TreeItem<Object> implements InspectionT
   public Path getPath() {
     return this.fullPath;
   }
+
+  /**
+   * Sets the parent directory
+   *
+   * @param t
+   *          the new parent directory
+   */
+  @Override
+  public void setParentDir(TreeItem t) {
+    parent = t;
+  }
 }

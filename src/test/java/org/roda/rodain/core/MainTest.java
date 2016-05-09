@@ -71,7 +71,7 @@ public class MainTest extends ApplicationTest {
       push(KeyCode.ENTER);
     } catch (Exception e) {
     }
-    sleep(12000);
+    sleep(5000);
     clickOn(I18n.t("SchemaPane.add"));
     sleep(2000);
     clickOn(".schemaNode");
@@ -109,10 +109,12 @@ public class MainTest extends ApplicationTest {
     assert RodaIn.getSchemePane().getTreeView().getRoot().getChildren().size() == 2;
     sleep(1000);
     clickOn("Node2").clickOn("#removeLevel");
+    sleep(5000);
     try {
+      clickOn("OK");
+    } catch (Exception e) {
       push(KeyCode.RIGHT);
       push(KeyCode.ENTER);
-    } catch (Exception e) {
     }
     assert RodaIn.getSchemePane().getTreeView().getRoot().getChildren().size() == 1;
   }

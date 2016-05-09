@@ -1,8 +1,8 @@
 package org.roda.rodain.inspection;
 
-import java.nio.file.Path;
-
 import javafx.scene.control.TreeItem;
+
+import java.nio.file.Path;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -18,4 +18,12 @@ public interface InspectionTreeItem {
    * @return The parent directory of the inspection tree item.
    */
   TreeItem getParentDir();
+
+  /**
+   * Sets the parent directory
+   * 
+   * @param t
+   *          the new parent directory
+   */
+  void setParentDir(TreeItem t);
 }

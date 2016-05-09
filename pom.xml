@@ -6,7 +6,7 @@
 
     <groupId>org.roda</groupId>
     <artifactId>rodain</artifactId>
-    <version>2.0.0-alpha.5.1</version>
+    <version>2.0.0-alpha.6</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -176,12 +176,12 @@
         <dependency>
             <groupId>org.roda-project</groupId>
             <artifactId>commons-ip</artifactId>
-            <version>1.0.0-alpha12-pre</version>
+            <version>1.0.0-alpha12</version>
         </dependency>
         <dependency>
-            <groupId>com.samskivert</groupId>
-            <artifactId>jmustache</artifactId>
-            <version>1.12</version>
+            <groupId>com.github.jknack</groupId>
+            <artifactId>handlebars</artifactId>
+            <version>4.0.5</version>
         </dependency>
         <dependency>
             <groupId>org.fxmisc.richtext</groupId>
@@ -198,6 +198,12 @@
             <artifactId>controlsfx</artifactId>
             <version>8.40.10</version>
         </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20160212</version>
+        </dependency>
+
         <!-- Tests -->
         <dependency>
             <groupId>junit</groupId>

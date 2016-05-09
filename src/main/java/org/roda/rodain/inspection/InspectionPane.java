@@ -2,12 +2,15 @@ package org.roda.rodain.inspection;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.ComboBoxListCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.Dragboard;
@@ -20,8 +23,11 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.StringConverter;
+import javafx.util.converter.LocalDateStringConverter;
 import org.apache.commons.lang.StringUtils;
 import org.fxmisc.richtext.CodeArea;
+import org.json.JSONArray;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.RodaIn;
@@ -44,7 +50,7 @@ import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.ModalStage;
 import org.roda.rodain.utils.UIPair;
 import org.roda.rodain.utils.Utils;
-import org.roda_project.commons_ip.model.impl.eark.EARKEnums;
+import org.roda_project.commons_ip.model.IPContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -54,6 +60,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -94,7 +102,7 @@ public class InspectionPane extends BorderPane {
   private HBox loadingPane, contentBottom, docsBottom;
   private static Image loadingGif;
   private Task<Void> contentTask, docsTask, metadataTask;
-  private Button ignore, removeRepresentation;
+  private Button ignore;
   private ToggleButton toggleDocumentation;
   // Rules
   private BorderPane rules;
@@ -126,12 +134,13 @@ public class InspectionPane extends BorderPane {
     setCenter(centerHelp);
 
     metadata.minHeightProperty().bind(stage.heightProperty().multiply(0.40));
-    this.minWidthProperty().bind(stage.widthProperty().multiply(0.2));
+    this.minWidthProperty().bind(stage.widthProperty().multiply(0.3));
   }
 
   private void createTop() {
     Label title = new Label(I18n.t("InspectionPane.title").toUpperCase());
     title.getStyleClass().add("title");
+    title.setMinWidth(110);
     topSubtitle = new HBox(1);
     HBox.setHgrow(topSubtitle, Priority.ALWAYS);
 
@@ -151,9 +160,9 @@ public class InspectionPane extends BorderPane {
     metadataGrid.setPadding(new Insets(5, 5, 5, 5));
     metadataGrid.setStyle(AppProperties.getStyle("backgroundWhite"));
     ColumnConstraints column1 = new ColumnConstraints();
-    column1.setPercentWidth(20);
+    column1.setPercentWidth(25);
     ColumnConstraints column2 = new ColumnConstraints();
-    column2.setPercentWidth(80);
+    column2.setPercentWidth(75);
     metadataGrid.getColumnConstraints().addAll(column1, column2);
 
     metadataFormWrapper = new ScrollPane();
@@ -435,55 +444,174 @@ public class InspectionPane extends BorderPane {
   }
 
   private void updateForm() {
-    Map<String, MetadataValue> metadataValues = getMetadataValues();
+    Set<MetadataValue> metadataValues = getMetadataValues();
     if (metadataValues == null || metadataValues.isEmpty()) {
       noForm();
       return;
     }
     int i = 0;
-    for (MetadataValue metadataValue : metadataValues.values()) {
-      Label label = new Label(metadataValue.getTitle());
-      label.getStyleClass().add("formLabel");
+    for (MetadataValue metadataValue : metadataValues) {
+      // do not process this entry if it's marked as hidden
+      if (getBooleanOption(metadataValue.get("hidden")))
+        continue;
 
-      TextField textField = new TextField(metadataValue.getValue());
-      HBox.setHgrow(textField, Priority.ALWAYS);
-      textField.setUserData(metadataValue);
-      textField.textProperty().addListener((observable2, oldValue2, newValue2) -> metadataValue.setValue(newValue2));
-      if (metadataValue.getId().equals("title")) {
-        textField.setId("descObjTitle");
-        paneTitle.textProperty().bind(textField.textProperty());
-        if (currentSIPNode != null) {
-          textField.textProperty().bindBidirectional(currentSIPNode.valueProperty());
-        } else {
-          if (currentSchema != null) {
-            textField.textProperty().bindBidirectional(currentSchema.valueProperty());
-          }
+      Label label = new Label((String) metadataValue.get("label"));
+      label.getStyleClass().add("formLabel");
+      if (getBooleanOption(metadataValue.get(("mandatory"))))
+        label.setStyle(AppProperties.getStyle("boldFont"));
+
+      String controlType = (String) metadataValue.get("type");
+      Control control;
+      if (controlType == null) {
+        control = createFormTextField(metadataValue);
+      } else {
+        switch (controlType) {
+          case "text":
+            control = createFormTextField(metadataValue);
+            break;
+          case "textarea":
+          case "big-text":
+          case "text-area":
+            control = createFormTextArea(metadataValue);
+            break;
+          case "list":
+            control = createFormCombo(metadataValue);
+            break;
+          case "date":
+            control = createFormDatePicker(metadataValue);
+            break;
+          default:
+            control = createFormTextField(metadataValue);
+            break;
         }
-      }
-      if (metadataValue.getId().equals("level")) {
-        textField.textProperty().addListener((observable, oldValue, newValue) -> {
-          TreeItem<String> itemToForceUpdate = null;
-          // Update the icons of the description level
-          if (currentSIPNode != null) {
-            currentSIPNode.updateDescriptionLevel(newValue);
-            itemToForceUpdate = currentSIPNode;
-          } else if (currentSchema != null) {
-            currentSchema.updateDescriptionLevel(newValue);
-            itemToForceUpdate = currentSchema;
-          }
-          // Force update
-          if (itemToForceUpdate != null) {
-            String value = itemToForceUpdate.getValue();
-            itemToForceUpdate.setValue("");
-            itemToForceUpdate.setValue(value);
-          }
-        });
       }
 
       metadataGrid.add(label, 0, i);
-      metadataGrid.add(textField, 1, i);
+      metadataGrid.add(control, 1, i);
       i++;
     }
+  }
+
+  private boolean getBooleanOption(Object option) {
+    boolean result = false;
+    if (option != null) {
+      if (option instanceof Boolean) {
+        result = (Boolean) option;
+      } else if (option instanceof String) {
+        result = Boolean.parseBoolean((String) option);
+      }
+    }
+    return result;
+  }
+
+  private TextField createFormTextField(MetadataValue metadataValue) {
+    TextField textField = new TextField((String) metadataValue.get("value"));
+    HBox.setHgrow(textField, Priority.ALWAYS);
+    textField.setUserData(metadataValue);
+    textField.textProperty().addListener((observable2, oldValue2, newValue2) -> metadataValue.set("value", newValue2));
+    if (metadataValue.getId().equals("title")) {
+      textField.setId("descObjTitle");
+    }
+    addListenersToUpdateUI(metadataValue, textField.textProperty());
+    return textField;
+  }
+
+  private TextArea createFormTextArea(MetadataValue metadataValue) {
+    TextArea textArea = new TextArea((String) metadataValue.get("value"));
+    HBox.setHgrow(textArea, Priority.ALWAYS);
+    textArea.setUserData(metadataValue);
+    textArea.textProperty().addListener((observable, oldValue, newValue) -> metadataValue.set("value", newValue));
+    textArea.getStyleClass().add("form-text-area");
+    addListenersToUpdateUI(metadataValue, textArea.textProperty());
+    return textArea;
+  }
+
+  private ComboBox<String> createFormCombo(MetadataValue metadataValue) {
+    ObservableList<String> comboList = FXCollections.observableArrayList();
+    String input = (String) metadataValue.get("list");
+    if (input != null) {
+      JSONArray jsonArray = new JSONArray(input);
+      jsonArray.forEach(o -> comboList.add((String) o));
+    }
+    ComboBox<String> comboBox = new ComboBox<>(comboList);
+    HBox.setHgrow(comboBox, Priority.ALWAYS);
+    comboBox.setMaxWidth(Double.MAX_VALUE);
+    comboBox.setUserData(metadataValue);
+    comboBox.valueProperty().addListener((observable, oldValue, newValue) -> metadataValue.set("value", newValue));
+    String currentValue = (String) metadataValue.get("value");
+    if (currentValue != null) {
+      comboBox.getSelectionModel().select(currentValue);
+    }
+    addListenersToUpdateUI(metadataValue, comboBox.valueProperty());
+
+    return comboBox;
+  }
+
+  private void addListenersToUpdateUI(MetadataValue metadataValue, Property property) {
+    if (metadataValue.getId().equals("title")) {
+      paneTitle.textProperty().bind(property);
+      if (currentSIPNode != null) {
+        property.bindBidirectional(currentSIPNode.valueProperty());
+      } else {
+        if (currentSchema != null) {
+          property.bindBidirectional(currentSchema.valueProperty());
+        }
+      }
+    }
+    if (metadataValue.getId().equals("level")) {
+      property.addListener((observable, oldValue, newValue) -> {
+        TreeItem<String> itemToForceUpdate = null;
+        // Update the icons of the description level
+        if (currentSIPNode != null) {
+          if (newValue instanceof String) {
+            currentSIPNode.updateDescriptionLevel((String) newValue);
+            itemToForceUpdate = currentSIPNode;
+          }
+        } else if (currentSchema != null) {
+          if (newValue instanceof String) {
+            currentSchema.updateDescriptionLevel((String) newValue);
+            itemToForceUpdate = currentSchema;
+          }
+        }
+        // Force update
+        if (itemToForceUpdate != null) {
+          String value = itemToForceUpdate.getValue();
+          itemToForceUpdate.setValue("");
+          itemToForceUpdate.setValue(value);
+        }
+      });
+    }
+  }
+
+  private DatePicker createFormDatePicker(MetadataValue metadataValue) {
+    String pattern = "yyyy-MM-dd";
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+    LocalDateStringConverter ldsc = new LocalDateStringConverter(formatter, null);
+
+    String currentValue = metadataValue.get("value") != null ? (String) metadataValue.get("value") : "";
+    DatePicker datePicker = new DatePicker(ldsc.fromString(currentValue));
+    datePicker.setMaxWidth(Double.MAX_VALUE);
+    datePicker.setConverter(new StringConverter<LocalDate>() {
+      private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern);
+
+      @Override
+      public String toString(LocalDate localDate) {
+        if (localDate == null)
+          return "";
+        return dateTimeFormatter.format(localDate);
+      }
+
+      @Override
+      public LocalDate fromString(String dateString) {
+        if (dateString == null || dateString.trim().isEmpty())
+          return null;
+        return LocalDate.parse(dateString, dateTimeFormatter);
+      }
+    });
+    datePicker.valueProperty()
+      .addListener((observable, oldValue, newValue) -> metadataValue.set("value", ldsc.toString(newValue)));
+    addListenersToUpdateUI(metadataValue, datePicker.valueProperty());
+    return datePicker;
   }
 
   private void noForm() {
@@ -493,7 +621,7 @@ public class InspectionPane extends BorderPane {
     updateMetadataTop();
   }
 
-  private Map<String, MetadataValue> getMetadataValues() {
+  private Set<MetadataValue> getMetadataValues() {
     if (currentDescOb != null) {
       UIPair selectedPair = metadataCombo.getSelectionModel().getSelectedItem();
       if (selectedPair != null) {
@@ -743,18 +871,24 @@ public class InspectionPane extends BorderPane {
     contentBottom.setPadding(new Insets(10, 10, 10, 10));
     contentBottom.setAlignment(Pos.CENTER);
 
-    ignore = new Button(I18n.t("ignore"));
+    ignore = new Button(I18n.t("remove"));
     ignore.setOnAction(event -> {
-      InspectionTreeItem selected = (InspectionTreeItem) sipFiles.getSelectionModel().getSelectedItem();
-      if (selected == null)
+      InspectionTreeItem selectedRaw = (InspectionTreeItem) sipFiles.getSelectionModel().getSelectedItem();
+      if (selectedRaw == null)
         return;
-      Set<Path> paths = new HashSet<>();
-      paths.add(selected.getPath());
-      if (currentDescOb != null && currentDescOb instanceof SipPreview) {
-        ((SipPreview) currentDescOb).ignoreContent(paths);
-        TreeItem parent = selected.getParentDir();
-        TreeItem child = (TreeItem) selected;
-        parent.getChildren().remove(child);
+      if (selectedRaw instanceof SipContentRepresentation) {
+        SipContentRepresentation selected = (SipContentRepresentation) selectedRaw;
+        sipRoot.getChildren().remove(selectedRaw);
+        currentSIPNode.getSip().removeRepresentation(selected.getRepresentation());
+      } else {
+        Set<Path> paths = new HashSet<>();
+        paths.add(selectedRaw.getPath());
+        if (currentDescOb != null && currentDescOb instanceof SipPreview) {
+          ((SipPreview) currentDescOb).ignoreContent(paths);
+          TreeItem parent = selectedRaw.getParentDir();
+          TreeItem child = (TreeItem) selectedRaw;
+          parent.getChildren().remove(child);
+        }
       }
     });
     ignore.minWidthProperty().bind(this.widthProperty().multiply(0.25));
@@ -769,18 +903,10 @@ public class InspectionPane extends BorderPane {
     });
     addRepresentation.minWidthProperty().bind(this.widthProperty().multiply(0.25));
 
-    removeRepresentation = new Button(I18n.t("InspectionPane.removeRepresentation"));
-    removeRepresentation.setOnAction(event -> {
-      InspectionTreeItem selectedRaw = (InspectionTreeItem) sipFiles.getSelectionModel().getSelectedItem();
-      if (selectedRaw instanceof SipContentRepresentation) {
-        SipContentRepresentation selected = (SipContentRepresentation) selectedRaw;
-        sipRoot.getChildren().remove(selectedRaw);
-        currentSIPNode.getSip().removeRepresentation(selected.getRepresentation());
-      }
-    });
-    removeRepresentation.minWidthProperty().bind(this.widthProperty().multiply(0.25));
+    HBox space = new HBox();
+    HBox.setHgrow(space, Priority.ALWAYS);
 
-    contentBottom.getChildren().addAll(addRepresentation, removeRepresentation, ignore);
+    contentBottom.getChildren().addAll(addRepresentation, space, ignore);
   }
 
   private void createDocsBottom() {
@@ -981,7 +1107,7 @@ public class InspectionPane extends BorderPane {
     Task thisMetadataTask = metadataTask;
     metadataTask.setOnSucceeded(Void -> {
       if (metadataTask != null && metadataTask == thisMetadataTask) {
-        Map<String, MetadataValue> values = currentDescOb.getMetadataValueMap(dom);
+        Set<MetadataValue> values = currentDescOb.getMetadataValueMap(dom);
         boolean show = values != null && !values.isEmpty();
         showMetadataPane(show);
       }
@@ -1049,8 +1175,9 @@ public class InspectionPane extends BorderPane {
     // Content Type combo box
     ComboBox<UIPair> contentType = new ComboBox<>();
     List<UIPair> contTypeList = new ArrayList<>();
-    for (EARKEnums.IPContentType ct : EARKEnums.IPContentType.values()) {
-      contTypeList.add(new UIPair(ct, ct.getType()));
+    for (IPContentType.IPContentTypeEnum ct : IPContentType.IPContentTypeEnum.values()) {
+      IPContentType ipCT = new IPContentType(ct);
+      contTypeList.add(new UIPair(ipCT, ipCT.getType()));
     }
     // sort the list as strings
     Collections.sort(contTypeList, (o1, o2) -> o1.toString().compareTo(o2.toString()));
@@ -1058,10 +1185,27 @@ public class InspectionPane extends BorderPane {
     contentType.getSelectionModel()
       .select(new UIPair(sip.getSip().getContentType(), sip.getSip().getContentType().getType()));
     contentType.valueProperty()
-      .addListener((obs, old, newValue) -> sip.getSip().setContentType((EARKEnums.IPContentType) newValue.getKey()));
+      .addListener((obs, old, newValue) -> sip.getSip().setContentType((IPContentType) newValue.getKey()));
     contentType.setMinWidth(85);
+    contentType.setCellFactory(param -> new ComboBoxListCell<UIPair>() {
+      @Override
+      public void updateItem(UIPair item, boolean empty) {
+        super.updateItem(item, empty);
+        if (item != null && item.getKey() != null) {
+          String translation = I18n.t("IPContentType." + item.getValue().toString());
+          if (translation == null || "".equals(translation))
+            translation = item.getValue().toString();
+          setTooltip(new Tooltip(translation));
+        }
+      }
+    });
 
-    top.getChildren().addAll(space, contentType);
+    HBox ipTypeWrapper = new HBox();
+    ipTypeWrapper.setAlignment(Pos.CENTER_LEFT);
+    Label ipType = new Label(I18n.t("InspectionPane.IPType"));
+    ipType.getStyleClass().add("top-subtitle");
+    ipTypeWrapper.getChildren().add(ipType);
+    top.getChildren().addAll(space, ipTypeWrapper, contentType);
 
     topSubtitle.getChildren().addAll(space, top);
 
@@ -1270,16 +1414,6 @@ public class InspectionPane extends BorderPane {
       parent.getChildren().add(startingItem);
     }
     parent.sortChildren();
-  }
-
-  public void representationSelected(boolean b) {
-    if (b) {
-      removeRepresentation.setDisable(false);
-      ignore.setDisable(true);
-    } else {
-      removeRepresentation.setDisable(true);
-      ignore.setDisable(false);
-    }
   }
 
   public List<InspectionTreeItem> getDocumentationSelectedItems() {

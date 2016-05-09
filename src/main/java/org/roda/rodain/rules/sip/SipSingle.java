@@ -98,6 +98,11 @@ public class SipSingle extends SipPreviewCreator {
    */
   @Override
   public void end() {
+    if (cancelled) {
+      setChanged();
+      notifyObservers("Finished");
+      return;
+    }
     // create a new Sip
     Path path = Paths.get(getStartPath());
     Path metaPath = getMetadataPath(path);
