@@ -8,7 +8,7 @@
         </eadid>
         <filedesc>
             <titlestmt>
-                <titleproper>{{title}}</titleproper>
+                <titleproper>{{title order=1}}</titleproper>
             </titlestmt>
         </filedesc>
 

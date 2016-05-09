@@ -498,6 +498,9 @@ public class SchemaPane extends BorderPane {
           }
           // remove all the rules under this SchemaNode
           ((SchemaNode) selected).remove();
+          // schema nodes need to be removed right away, but SIPs are only
+          // removed after the remove task is complete
+          removeNode(selected);
         }
       }
 
