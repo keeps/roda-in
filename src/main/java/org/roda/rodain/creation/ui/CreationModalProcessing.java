@@ -11,7 +11,7 @@ import javafx.stage.StageStyle;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.creation.CreateSips;
-import org.roda.rodain.rules.sip.SipPreview;
+import org.roda.rodain.sip.SipPreview;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

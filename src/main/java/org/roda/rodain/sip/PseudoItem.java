@@ -1,4 +1,4 @@
-package org.roda.rodain.rules.sip;
+package org.roda.rodain.sip;
 
 /**
  * @author Andre Pereira apereira@keep.pt

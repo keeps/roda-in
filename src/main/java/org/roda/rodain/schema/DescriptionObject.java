@@ -5,7 +5,7 @@ import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.rules.MetadataOptions;
-import org.roda.rodain.rules.sip.MetadataValue;
+import org.roda.rodain.sip.MetadataValue;
 
 import java.text.SimpleDateFormat;
 import java.util.*;

@@ -1,10 +1,14 @@
-package org.roda.rodain.rules.sip;
+package org.roda.rodain.sip.creators;
 
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.filters.ContentFilter;
 import org.roda.rodain.schema.DescriptionObject;
+import org.roda.rodain.sip.PseudoDescriptionObject;
+import org.roda.rodain.sip.PseudoItem;
+import org.roda.rodain.sip.PseudoSIP;
+import org.roda.rodain.sip.SipPreview;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

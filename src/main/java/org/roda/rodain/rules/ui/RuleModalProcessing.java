@@ -13,7 +13,7 @@ import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.VisitorStack;
 import org.roda.rodain.rules.VisitorState;
-import org.roda.rodain.rules.sip.SipPreviewCreator;
+import org.roda.rodain.sip.creators.SipPreviewCreator;
 import org.roda.rodain.utils.TreeVisitor;
 import org.roda.rodain.utils.WalkFileTree;
 

@@ -4,7 +4,7 @@ import javafx.application.Platform;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
-import org.roda.rodain.rules.sip.SipRepresentation;
+import org.roda.rodain.sip.SipRepresentation;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
 
 import java.nio.file.Path;

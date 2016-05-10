@@ -7,7 +7,7 @@ import org.apache.commons.net.util.Base64;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.TemplateToForm;
-import org.roda.rodain.rules.sip.MetadataValue;
+import org.roda.rodain.sip.MetadataValue;
 import org.roda.rodain.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

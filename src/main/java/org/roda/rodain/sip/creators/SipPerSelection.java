@@ -1,4 +1,4 @@
-package org.roda.rodain.rules.sip;
+package org.roda.rodain.sip.creators;
 
 import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.TreeNode;

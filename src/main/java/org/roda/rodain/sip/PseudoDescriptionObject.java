@@ -1,4 +1,4 @@
-package org.roda.rodain.rules.sip;
+package org.roda.rodain.sip;
 
 import java.nio.file.Path;
 import java.util.ArrayList;

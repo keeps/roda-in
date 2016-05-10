@@ -1,9 +1,11 @@
-package org.roda.rodain.rules.sip;
+package org.roda.rodain.sip.creators;
 
 import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.filters.ContentFilter;
 import org.roda.rodain.schema.DescObjMetadata;
+import org.roda.rodain.sip.SipPreview;
+import org.roda.rodain.sip.SipRepresentation;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
