@@ -451,8 +451,8 @@ public class FileExplorerPane extends BorderPane implements Observer {
     if (realRoots == null || realRoots.isEmpty())
       return;
 
+    showIgnored = !isShowIgnored();
     for (SourceTreeDirectory root : realRoots.values()) {
-      showIgnored = !isShowIgnored();
       if (isShowIgnored()) {
         root.showIgnored();
       } else {
@@ -469,8 +469,8 @@ public class FileExplorerPane extends BorderPane implements Observer {
     if (realRoots == null || realRoots.isEmpty())
       return;
 
+    showMapped = !isShowMapped();
     for (SourceTreeDirectory root : realRoots.values()) {
-      showMapped = !isShowMapped();
       if (isShowMapped()) {
         root.showMapped();
       } else {
