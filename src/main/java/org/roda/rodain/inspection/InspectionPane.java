@@ -30,22 +30,23 @@ import org.fxmisc.richtext.CodeArea;
 import org.json.JSONArray;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
+import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.core.RodaIn;
-import org.roda.rodain.inspection.documentation.DocumentationCreator;
-import org.roda.rodain.inspection.documentation.SipDocumentationTreeView;
+import org.roda.rodain.inspection.trees.*;
 import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.filters.ContentFilter;
-import org.roda.rodain.sip.MetadataValue;
-import org.roda.rodain.sip.SipPreview;
-import org.roda.rodain.sip.SipRepresentation;
 import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SipPreviewNode;
+import org.roda.rodain.sip.MetadataValue;
+import org.roda.rodain.sip.SipPreview;
+import org.roda.rodain.sip.SipRepresentation;
 import org.roda.rodain.source.ui.SourceTreeCell;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
+import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.ModalStage;
 import org.roda.rodain.utils.UIPair;
@@ -1364,6 +1365,53 @@ public class InspectionPane extends BorderPane {
     }
   }
 
+  public void addDataToSIP(TreeItem target) {
+    Set<Path> paths = new HashSet<>();
+    Set<SourceTreeItem> items = RodaIn.getSourceSelectedItems();
+    for (SourceTreeItem item : items) {
+      paths.add(Paths.get(item.getPath()));
+    }
+
+    addDataToSIP(target, paths);
+  }
+
+  public void addDataToSIP(TreeItem target, Set<Path> paths) {
+    Set<ContentFilter> filters = new HashSet<>();
+    filters.add(new ContentFilter());
+
+    ContentCreator dc = new ContentCreator(filters, paths);
+    Set<TreeNode> result = dc.start();
+
+    // Set paths as mapped
+    for (TreeNode tn : result) {
+      PathCollection.addPath(tn.getPath().toString(), SourceTreeItemState.MAPPED);
+    }
+
+    // Add to the SIP, either to a Directory or to a Representation
+    // Also add to the tree
+    if (target instanceof SipContentDirectory) {
+      SipContentDirectory dir = (SipContentDirectory) target;
+
+      SipContentDirectory parent = (SipContentDirectory) target;
+      for (TreeNode treeNode : result) {
+        dir.getTreeNode().add(treeNode);
+        TreeItem<Object> startingItem = recCreateSipContent(treeNode, parent);
+        parent.getChildren().add(startingItem);
+      }
+      parent.sortChildren();
+    } else if (target instanceof SipContentRepresentation) {
+      SipRepresentation rep = ((SipContentRepresentation) target).getRepresentation();
+
+      SipContentRepresentation parent = (SipContentRepresentation) target;
+      for (TreeNode treeNode : result) {
+        rep.addFile(treeNode);
+        TreeItem<Object> startingItem = recCreateSipContent(treeNode, parent);
+        parent.getChildren().add(startingItem);
+      }
+      parent.sortChildren();
+    }
+  }
+
   /**
    * Adds documentation to the current SIP.
    *
@@ -1398,7 +1446,7 @@ public class InspectionPane extends BorderPane {
     Set<ContentFilter> filters = new HashSet<>();
     filters.add(new ContentFilter());
 
-    DocumentationCreator dc = new DocumentationCreator(filters, paths);
+    ContentCreator dc = new ContentCreator(filters, paths);
     Set<TreeNode> result = dc.start();
 
     if (target instanceof SipContentDirectory) {

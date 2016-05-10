@@ -23,7 +23,7 @@
     <archdesc level="{{level type='list' list='[fonds,subfonds,series,subseries,file,item]' auto-generate='level'}}">
         <did>
             <unittitle>{{title}}</unittitle>
-            <unitid>{{id}}</unitid>
+            <unitid>{{id auto-generate="id"}}</unitid>
             {{#if dateInitial}}
             {{#if dateFinal}}
             <unitdate normal="{{dateInitial type='date'}}/{{dateFinal type='date'}}">{{dateInitial}}/{{dateFinal}}

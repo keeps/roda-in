@@ -1,21 +1,21 @@
-package org.roda.rodain.inspection.documentation;
-
-import java.io.IOException;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
+package org.roda.rodain.inspection.trees;
 
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.filters.ContentFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.*;
+
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 08-03-2016.
  */
-public class DocumentationCreator extends Observable {
-  private static final Logger LOGGER = LoggerFactory.getLogger(DocumentationCreator.class.getName());
+public class ContentCreator extends Observable {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ContentCreator.class.getName());
   private Deque<TreeNode> nodes;
   private Set<TreeNode> files;
   private Set<Path> paths;
@@ -30,7 +30,7 @@ public class DocumentationCreator extends Observable {
    * @param filters
    *          The set of content filters
    */
-  public DocumentationCreator(Set<ContentFilter> filters, Set<Path> paths) {
+  public ContentCreator(Set<ContentFilter> filters, Set<Path> paths) {
     this.filters = filters;
     this.paths = paths;
     nodes = new ArrayDeque<>();
@@ -45,7 +45,7 @@ public class DocumentationCreator extends Observable {
         visitFile(path, null);
       } else {
         try {
-          DocumentationCreator refToThis = this;
+          ContentCreator refToThis = this;
           Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
