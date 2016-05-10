@@ -3,15 +3,14 @@
 <simpledc xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:noNamespaceSchemaLocation="../schemas/dc.xsd">
 
-    <creatorOption>{{level order=4 type='list' list='[fonds,subfonds,series,subseries,file,item]'}}</creatorOption>
-    <title>{{title order=3}}</title>
-    <identifier>{{id order=2}}</identifier>
+    <title>{{title order=3 auto-generate='title'}}</title>
+    <identifier>{{id order=2 auto-generate='id'}}</identifier>
     <creator>{{creator}}</creator>
     <date>{{dateInitial type='date'}}</date>
     <date>{{dateFinal type='date'}}</date>
     <description>{{description type='text-area'}}</description>
     <publisher>{{producer}}</publisher>
     <rights>{{rights}}</rights>
-    <language>{{language}}</language>
+    <language>{{language auto-generate='language'}}</language>
 
 </simpledc>
