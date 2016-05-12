@@ -85,7 +85,9 @@ public class MetadataValue implements Comparable {
         if (mvOrder != null) {
           int selfInt = selfOrder instanceof String ? Integer.parseInt((String) selfOrder) : (Integer) selfOrder;
           int mvInt = mvOrder instanceof String ? Integer.parseInt((String) mvOrder) : (Integer) mvOrder;
-          return Integer.compare(selfInt, mvInt);
+          int result = Integer.compare(selfInt, mvInt);
+          if (result != 0)
+            return result;
         }
         return -1;
       } else if (mvOrder != null) {

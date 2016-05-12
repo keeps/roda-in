@@ -2,10 +2,10 @@
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
      xsi:schemaLocation="http://ead3.archivists.org/schema/ ../schemas/ead3.xsd">
     <control>
-        <recordid>{{id order=2 auto-generate='id'}}</recordid>
+        <recordid>{{id order=1 auto-generate='id'}}</recordid>
         <filedesc>
             <titlestmt>
-                <titleproper>{{title order=3 auto-generate='title'}}</titleproper>
+                <titleproper>{{title order=2 auto-generate='title'}}</titleproper>
             </titlestmt>
         </filedesc>
         <maintenancestatus value="new"/>
@@ -16,7 +16,7 @@
         <maintenancehistory>
             <maintenanceevent>
                 <eventtype value="created"/>
-                <eventdatetime standarddatetime="{{now order=1 type='date' auto-generate='now'}}">{{now}}
+                <eventdatetime standarddatetime="{{descDate order=3 type='date' auto-generate='now'}}">{{descDate}}
                 </eventdatetime>
                 <agenttype value="machine"/>
                 <agent>RODA-in version 2</agent>
@@ -26,15 +26,15 @@
     </control>
 
     <archdesc
-            level="{{level order=4 type='list' list='[fonds,subfonds,series,subseries,file,item]' auto-generate='level'}}">
+            level="{{level order=6 type='list' list='[fonds,subfonds,series,subseries,file,item]' auto-generate='level'}}">
         <did>
             <unitid>{{id}}</unitid>
             <unittitle>{{title}}</unittitle>
 
             <unitdatestructured calendar="gregorian">
                 <daterange>
-                    <fromdate standarddate="{{dateInitial type='date'}}">{{dateInitial}}</fromdate>
-                    <todate standarddate="{{dateFinal type='date'}}">{{dateFinal}}</todate>
+                    <fromdate standarddate="{{dateInitial order=4 type='date'}}">{{dateInitial}}</fromdate>
+                    <todate standarddate="{{dateFinal order=5 type='date'}}">{{dateFinal}}</todate>
                 </daterange>
             </unitdatestructured>
 
