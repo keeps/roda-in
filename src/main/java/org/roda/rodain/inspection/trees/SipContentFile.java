@@ -1,4 +1,4 @@
-package org.roda.rodain.inspection;
+package org.roda.rodain.inspection.trees;
 
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;

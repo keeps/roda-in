@@ -30,7 +30,7 @@ import org.roda.rodain.core.Footer;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.Rule;
-import org.roda.rodain.rules.sip.SipPreview;
+import org.roda.rodain.sip.SipPreview;
 import org.roda.rodain.rules.ui.RuleModalController;
 import org.roda.rodain.schema.ClassificationSchema;
 import org.roda.rodain.schema.DescriptionObject;

@@ -7,8 +7,8 @@ import gov.loc.repository.bagit.writer.impl.ZipWriter;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.creation.ui.CreationModalProcessing;
 import org.roda.rodain.rules.TreeNode;
-import org.roda.rodain.rules.sip.SipPreview;
-import org.roda.rodain.rules.sip.SipRepresentation;
+import org.roda.rodain.sip.SipPreview;
+import org.roda.rodain.sip.SipRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

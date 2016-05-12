@@ -6,8 +6,8 @@ import org.roda.rodain.core.I18n;
 import org.roda.rodain.creation.ui.CreationModalProcessing;
 import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.TreeNode;
-import org.roda.rodain.rules.sip.SipPreview;
-import org.roda.rodain.rules.sip.SipRepresentation;
+import org.roda.rodain.sip.SipPreview;
+import org.roda.rodain.sip.SipRepresentation;
 import org.roda.rodain.schema.DescObjMetadata;
 import org.roda_project.commons_ip.model.*;
 import org.roda_project.commons_ip.model.impl.eark.EARKSIP;
@@ -106,7 +106,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
           String content = sip.getMetadataWithReplaces(descObjMetadata);
 
           metadataPath = tempDir.resolve(descObjMetadata.getId());
-          FileUtils.writeStringToFile(metadataPath.toFile(), content);
+          FileUtils.writeStringToFile(metadataPath.toFile(), content, "UTF-8");
         }
 
         IPFile metadataFile = new IPFile(metadataPath);

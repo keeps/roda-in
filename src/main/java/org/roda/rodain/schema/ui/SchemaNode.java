@@ -7,7 +7,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import org.roda.rodain.rules.Rule;
-import org.roda.rodain.rules.sip.SipPreview;
+import org.roda.rodain.sip.SipPreview;
 import org.roda.rodain.rules.ui.RuleModalController;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.utils.FontAwesomeImageCreator;

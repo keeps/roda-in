@@ -1,4 +1,4 @@
-package org.roda.rodain.inspection;
+package org.roda.rodain.inspection.trees;
 
 import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;

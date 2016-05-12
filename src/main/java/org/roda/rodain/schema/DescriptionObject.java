@@ -5,7 +5,7 @@ import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.rules.MetadataOptions;
-import org.roda.rodain.rules.sip.MetadataValue;
+import org.roda.rodain.sip.MetadataValue;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -165,23 +165,29 @@ public class DescriptionObject extends Observable {
     if (content != null) {
       Set<MetadataValue> values = dom.getValues();
       values.forEach(metadataValue -> {
-        String toSearch = metadataValue.getId().toLowerCase();
-        switch (toSearch) {
-          case "title":
-            metadataValue.set("value", title);
-            break;
-          case "now":
-            metadataValue.set("value", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
-            break;
-          case "id":
-            metadataValue.set("value", id);
-            break;
-          case "level":
-            metadataValue.set("value", descriptionlevel);
-            break;
-          case "parentid":
-            metadataValue.set("value", parentId);
-            break;
+        String autoGenerate = (String) metadataValue.get("auto-generate");
+        if (autoGenerate != null) {
+          autoGenerate = autoGenerate.toLowerCase();
+          switch (autoGenerate) {
+            case "title":
+              metadataValue.set("value", title);
+              break;
+            case "now":
+              metadataValue.set("value", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+              break;
+            case "id":
+              metadataValue.set("value", id);
+              break;
+            case "level":
+              metadataValue.set("value", descriptionlevel);
+              break;
+            case "parentid":
+              metadataValue.set("value", parentId);
+              break;
+            case "language":
+              metadataValue.set("value", Locale.getDefault().getDisplayLanguage());
+              break;
+          }
         }
       });
       return values;

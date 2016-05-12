@@ -1,4 +1,4 @@
-package org.roda.rodain.inspection.documentation;
+package org.roda.rodain.inspection.trees;
 
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeCell;
@@ -9,7 +9,6 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.util.Callback;
 import org.roda.rodain.core.RodaIn;
-import org.roda.rodain.inspection.*;
 
 import java.io.File;
 import java.nio.file.Path;

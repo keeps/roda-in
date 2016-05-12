@@ -23,7 +23,7 @@ import org.roda.rodain.creation.ui.CreationModalStage;
 import org.roda.rodain.inspection.InspectionPane;
 import org.roda.rodain.rules.VisitorStack;
 import org.roda.rodain.rules.filters.IgnoredFilter;
-import org.roda.rodain.rules.sip.SipPreview;
+import org.roda.rodain.sip.SipPreview;
 import org.roda.rodain.schema.ClassificationSchema;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.schema.ui.SchemaNode;

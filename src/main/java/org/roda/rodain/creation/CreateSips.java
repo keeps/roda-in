@@ -1,7 +1,7 @@
 package org.roda.rodain.creation;
 
 import org.roda.rodain.core.RodaIn;
-import org.roda.rodain.rules.sip.SipPreview;
+import org.roda.rodain.sip.SipPreview;
 
 import java.nio.file.Path;
 import java.util.Map;

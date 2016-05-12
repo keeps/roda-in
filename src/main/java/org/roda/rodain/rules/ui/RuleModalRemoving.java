@@ -9,7 +9,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.rules.Rule;
-import org.roda.rodain.rules.sip.SipPreview;
+import org.roda.rodain.sip.SipPreview;
 
 import java.util.*;
 

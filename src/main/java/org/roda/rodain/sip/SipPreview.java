@@ -1,4 +1,4 @@
-package org.roda.rodain.rules.sip;
+package org.roda.rodain.sip;
 
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.TreeNode;

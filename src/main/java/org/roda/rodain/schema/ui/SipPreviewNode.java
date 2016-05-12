@@ -5,7 +5,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
-import org.roda.rodain.rules.sip.SipPreview;
+import org.roda.rodain.sip.SipPreview;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
 
 import java.util.Observable;
