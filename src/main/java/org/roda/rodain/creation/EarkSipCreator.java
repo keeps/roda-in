@@ -106,7 +106,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
           String content = sip.getMetadataWithReplaces(descObjMetadata);
 
           metadataPath = tempDir.resolve(descObjMetadata.getId());
-          FileUtils.writeStringToFile(metadataPath.toFile(), content);
+          FileUtils.writeStringToFile(metadataPath.toFile(), content, "UTF-8");
         }
 
         IPFile metadataFile = new IPFile(metadataPath);
