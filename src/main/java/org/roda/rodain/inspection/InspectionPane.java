@@ -1201,13 +1201,9 @@ public class InspectionPane extends BorderPane {
         }
       }
     });
+    contentType.setTooltip(new Tooltip(I18n.t("InspectionPane.sipTypeTooltip")));
 
-    HBox ipTypeWrapper = new HBox();
-    ipTypeWrapper.setAlignment(Pos.CENTER_LEFT);
-    Label ipType = new Label(I18n.t("InspectionPane.IPType"));
-    ipType.getStyleClass().add("top-subtitle");
-    ipTypeWrapper.getChildren().add(ipType);
-    top.getChildren().addAll(space, ipTypeWrapper, contentType);
+    top.getChildren().addAll(space, contentType);
 
     topSubtitle.getChildren().addAll(space, top);
 

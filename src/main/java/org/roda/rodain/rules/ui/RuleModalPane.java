@@ -297,6 +297,10 @@ public class RuleModalPane extends BorderPane {
     Label typeLabel = new Label(I18n.t("type") + ":");
     comboTypesSingleFile = new ComboBox<>(FXCollections.observableList(metaTypeList));
     comboTypesSingleFile.getSelectionModel().selectFirst();
+    comboTypesSingleFile.valueProperty().addListener(observable -> {
+      metaList.getSelectionModel().clearSelection();
+      metaList.getSelectionModel().select(cellSingleFile);
+    });
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
@@ -310,10 +314,18 @@ public class RuleModalPane extends BorderPane {
 
     Label lab = new Label(I18n.t("RuleModalPane.metadataPattern"));
     sameFolderTxtField = new TextField("metadata.xml");
+    sameFolderTxtField.textProperty().addListener(observable -> {
+      metaList.getSelectionModel().clearSelection();
+      metaList.getSelectionModel().select(cellSameFolder);
+    });
 
     Label typeLabel = new Label(I18n.t("type") + ":");
     comboTypesSameDir = new ComboBox<>(FXCollections.observableList(metaTypeList));
     comboTypesSameDir.getSelectionModel().selectFirst();
+    comboTypesSameDir.valueProperty().addListener(observable -> {
+      metaList.getSelectionModel().clearSelection();
+      metaList.getSelectionModel().select(cellSameFolder);
+    });
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
@@ -342,6 +354,10 @@ public class RuleModalPane extends BorderPane {
     Label typeLabel = new Label(I18n.t("type") + ":");
     comboTypesDiffFolder = new ComboBox<>(FXCollections.observableList(metaTypeList));
     comboTypesDiffFolder.getSelectionModel().selectFirst();
+    comboTypesDiffFolder.valueProperty().addListener(observable -> {
+      metaList.getSelectionModel().clearSelection();
+      metaList.getSelectionModel().select(cellDiffFolder);
+    });
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
