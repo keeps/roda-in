@@ -104,7 +104,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
         Set<TreeItem> toRemove = new HashSet<>();
         for (TreeItem sti : newChildren) {
           SourceTreeItem item = (SourceTreeItem) sti;
-          if (item.getState() == SourceTreeItemState.MAPPED) {
+          if (item.getState() == SourceTreeItemState.MAPPED || item instanceof SourceTreeLoadMore) {
             mapped.add(item);
             toRemove.add(sti);
           }
@@ -186,7 +186,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
         Set<TreeItem> toRemove = new HashSet<>();
         for (TreeItem sti : children) {
           SourceTreeItem item = (SourceTreeItem) sti;
-          if (item.getState() == SourceTreeItemState.IGNORED) {
+          if (item.getState() == SourceTreeItemState.IGNORED || sti instanceof SourceTreeLoadMore) {
             ignored.add(item);
             toRemove.add(sti);
           }
@@ -593,7 +593,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
         toRemove = new HashSet<>();
         for (TreeItem ti : getChildren()) {
           SourceTreeItem sti = (SourceTreeItem) ti;
-          if (sti.getState() == SourceTreeItemState.MAPPED) {
+          if (sti.getState() == SourceTreeItemState.MAPPED || sti instanceof SourceTreeLoadMore) {
             toRemove.add(sti);
             mapped.add(sti);
           }
@@ -604,7 +604,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
         toRemove = new HashSet<>();
         for (TreeItem ti : getChildren()) {
           SourceTreeItem sti = (SourceTreeItem) ti;
-          if (sti.getState() == SourceTreeItemState.IGNORED) {
+          if (sti.getState() == SourceTreeItemState.IGNORED || sti instanceof SourceTreeLoadMore) {
             toRemove.add(sti);
             ignored.add(sti);
           }
