@@ -91,7 +91,7 @@ public class MainTest extends ApplicationTest {
     clickOn("#descObjTitle");
     eraseText(50);
     write("Node2");
-    sleep(500);
+    sleep(1000);
 
     doubleClickOn(".tree-view");
 
@@ -177,7 +177,7 @@ public class MainTest extends ApplicationTest {
     } catch (Exception e) {
     }
 
-    sleep(1000); // wait for the SIP removal
+    sleep(2000); // wait for the SIP removal
     assert parent.getChildren().size() == 13;
 
     clickOn("UCP");
