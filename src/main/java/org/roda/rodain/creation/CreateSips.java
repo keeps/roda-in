@@ -21,8 +21,10 @@ public class CreateSips {
   /**
    * Creates a new object of the SIP exporter
    *
-   * @param outputPath The path of the output folder of the SIP exportation
-   * @param type       The format of the SIP output
+   * @param outputPath
+   *          The path of the output folder of the SIP exportation
+   * @param type
+   *          The format of the SIP output
    */
   public CreateSips(Path outputPath, SipTypes type) {
     this.type = type;
@@ -68,7 +70,7 @@ public class CreateSips {
 
   /**
    * @return A double resulting of the division of the number of SIPs already
-   * created by the total number of SIPs.
+   *         created by the total number of SIPs.
    */
   public double getProgress() {
     return (creator.getCreatedSipsCount() / (sipsCount * 1.0)) + creator.currentSipProgress;
@@ -104,5 +106,9 @@ public class CreateSips {
 
   public long getStartedTime() {
     return startedTime;
+  }
+
+  public Path getOutputPath() {
+    return outputPath;
   }
 }

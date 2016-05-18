@@ -3,18 +3,14 @@ package org.roda.rodain.inspection.trees;
 import javafx.event.EventHandler;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import org.roda.rodain.utils.OpenPathInExplorer;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 21-09-2015.
  */
 public class ContentClickedEventHandler implements EventHandler<MouseEvent> {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ContentClickedEventHandler.class.getName());
-  private static String OS = System.getProperty("os.name").toLowerCase();
   private TreeView<Object> treeView;
 
   /**
@@ -41,42 +37,8 @@ public class ContentClickedEventHandler implements EventHandler<MouseEvent> {
       Object source = treeView.getSelectionModel().getSelectedItem();
       if (source instanceof SipContentFile) {
         SipContentFile sipFile = (SipContentFile) source;
-        String fileName = sipFile.getPath().toString();
-        // Different commands for different operating systems
-        if (isWindows()) {
-          executeCommand("explorer", fileName);
-        } else if (isMac()) {
-          executeCommand("open", fileName);
-        } else if (isUnix()) {
-          boolean result = executeCommand("xdg-open", fileName);
-          if (!result) {
-            executeCommand("gnome-open", fileName);
-          }
-        }
+        OpenPathInExplorer.open(sipFile.getPath());
       }
     }
-  }
-
-  private boolean executeCommand(String command, String file) {
-    try {
-      ProcessBuilder pb = new ProcessBuilder(command, file);
-      pb.start();
-    } catch (IOException e) {
-      LOGGER.info("Error opening file from SIP content", e);
-      return false;
-    }
-    return true;
-  }
-
-  private static boolean isWindows() {
-    return OS.contains("win");
-  }
-
-  private static boolean isMac() {
-    return OS.contains("mac");
-  }
-
-  private static boolean isUnix() {
-    return OS.contains("nix") || OS.contains("nux") || OS.contains("aix");
   }
 }

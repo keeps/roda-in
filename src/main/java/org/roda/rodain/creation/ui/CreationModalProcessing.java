@@ -12,6 +12,9 @@ import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.creation.CreateSips;
 import org.roda.rodain.sip.SipPreview;
+import org.roda.rodain.utils.OpenPathInExplorer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -23,6 +26,7 @@ import java.util.TimerTask;
  * @since 19/11/2015.
  */
 public class CreationModalProcessing extends BorderPane {
+  private static final Logger LOGGER = LoggerFactory.getLogger(CreationModalProcessing.class.getName());
   private CreateSips creator;
   private static CreationModalStage stage;
 
@@ -153,19 +157,16 @@ public class CreationModalProcessing extends BorderPane {
     bottom.getChildren().add(cancel);
     setBottom(bottom);
 
-    finishedBox = new HBox();
+    finishedBox = new HBox(10);
     finishedBox.setPadding(new Insets(0, 10, 10, 10));
     finishedBox.setAlignment(Pos.CENTER_RIGHT);
     Button close = new Button(I18n.t("close"));
+    Button open = new Button(I18n.t("CreationModalProcessing.openfolder"));
 
-    close.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent actionEvent) {
-        stage.close();
-      }
-    });
+    close.setOnAction(event -> stage.close());
+    open.setOnAction((event) -> OpenPathInExplorer.open(creator.getOutputPath()));
 
-    finishedBox.getChildren().add(close);
+    finishedBox.getChildren().addAll(open, close);
   }
 
   private void createUpdateTask() {

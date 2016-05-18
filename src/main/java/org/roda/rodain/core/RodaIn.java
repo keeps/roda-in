@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.CacheHint;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
@@ -11,6 +12,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -23,11 +26,11 @@ import org.roda.rodain.creation.ui.CreationModalStage;
 import org.roda.rodain.inspection.InspectionPane;
 import org.roda.rodain.rules.VisitorStack;
 import org.roda.rodain.rules.filters.IgnoredFilter;
-import org.roda.rodain.sip.SipPreview;
 import org.roda.rodain.schema.ClassificationSchema;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SchemaPane;
+import org.roda.rodain.sip.SipPreview;
 import org.roda.rodain.source.ui.FileExplorerPane;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.slf4j.Logger;
@@ -35,6 +38,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +63,8 @@ public class RodaIn extends Application {
   private static FileExplorerPane fileExplorer;
   private static InspectionPane inspectionPane;
   private static SchemaPane schemePane;
+
+  private static long lastMessage = System.currentTimeMillis();
 
   /**
    * The entry point of the application.
@@ -100,6 +107,7 @@ public class RodaIn extends Application {
    */
   @Override
   public void start(Stage primaryStage) {
+    Thread.setDefaultUncaughtExceptionHandler(RodaIn::showError);
     if (splashPane != null) {
       splashStage = new Stage();
       Scene splashScene = new Scene(splashPane);
@@ -178,6 +186,72 @@ public class RodaIn extends Application {
     });
 
     new Thread(initTask).start();
+  }
+
+  private static void showError(Thread t, Throwable e) {
+    if (Platform.isFxApplicationThread()) {
+      LOGGER.error("Unexpected error", e);
+      showErrorDialog(e);
+    } else {
+      System.err.println("An unexpected error occurred in " + t);
+    }
+  }
+
+  private static void showErrorDialog(Throwable e) {
+    if (System.currentTimeMillis() - lastMessage > 500) {
+      lastMessage = System.currentTimeMillis();
+      Stage dialog = new Stage();
+      dialog.initModality(Modality.APPLICATION_MODAL);
+      Parent root = new HBox();
+      dialog.setScene(new Scene(root, 400, 550));
+      dialog.show();
+      dialog.centerOnScreen();
+      dialog.close();
+
+      Alert alert = new Alert(Alert.AlertType.ERROR);
+      alert.initStyle(StageStyle.DECORATED);
+      alert.initOwner(dialog);
+      alert.setTitle(I18n.t("genericError.title"));
+      alert.setHeaderText(I18n.t("genericError.title"));
+      StringBuilder content = new StringBuilder(I18n.t("genericError.content"));
+      content.append("\n\n");
+      content.append(e.toString());
+      alert.setContentText(content.toString());
+      alert.getDialogPane().setStyle(AppProperties.getStyle("export.alert"));
+
+      // Create expandable Exception.
+      StringWriter sw = new StringWriter();
+      PrintWriter pw = new PrintWriter(sw);
+      pw.println(e.getMessage());
+      for (StackTraceElement ste : e.getStackTrace()) {
+        pw.println("\t" + ste);
+      }
+      String exceptionText = sw.toString();
+
+      Label label = new Label(I18n.t("CreationModalProcessing.alert.stacktrace"));
+
+      TextArea textArea = new TextArea(exceptionText);
+      textArea.setEditable(false);
+      textArea.minWidthProperty().bind(alert.getDialogPane().widthProperty().subtract(20));
+      textArea.maxWidthProperty().bind(alert.getDialogPane().widthProperty().subtract(20));
+
+      GridPane expContent = new GridPane();
+      expContent.setMaxWidth(Double.MAX_VALUE);
+      expContent.add(label, 0, 0);
+      expContent.add(textArea, 0, 1);
+
+      textArea.minHeightProperty().bind(expContent.heightProperty().subtract(50));
+      // Set expandable Exception into the dialog pane.
+      alert.getDialogPane().setExpandableContent(expContent);
+      alert.getDialogPane().minHeightProperty().bindBidirectional(dialog.minHeightProperty());
+      alert.getDialogPane().setMinWidth(500);
+      alert.getDialogPane().setMinHeight(275);
+
+      // Without this setStyle the pane won't resize correctly. Black magic...
+      alert.getDialogPane().setStyle(AppProperties.getStyle("creationmodalprocessing.blackmagic"));
+
+      alert.show();
+    }
   }
 
   private void createFrameStructure() {

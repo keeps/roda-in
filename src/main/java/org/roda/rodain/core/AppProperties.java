@@ -364,15 +364,28 @@ public class AppProperties {
       Path configPath = rodainPath.resolve("config.properties");
       PropertiesConfiguration temp = new PropertiesConfiguration();
       temp.load(new FileReader(configPath.toFile()));
-      ext_config.getKeys().forEachRemaining(s -> {
-        // check if there's any property in the current file that is different
-        // from the ones we loaded in the beginning of the execution of the
-        // application.
-        if (!temp.getProperty(s).equals(start_ext_config.getProperty(s))) {
-          // Set the property to keep the changes made outside the application
-          ext_config.setProperty(s, temp.getProperty(s));
-        }
-      });
+      if (ext_config != null) {
+        HashSet<String> keys = new HashSet<>();
+        ext_config.getKeys().forEachRemaining(keys::add);
+        temp.getKeys().forEachRemaining(keys::add);
+        keys.forEach(s -> {
+          // Add new properties to the ext_config
+          if (temp.containsKey(s) && !ext_config.containsKey(s)) {
+            ext_config.addProperty(s, temp.getProperty(s));
+          } else {
+            // check if there's any property in the current file that is
+            // different
+            // from the ones we loaded in the beginning of the execution of the
+            // application.
+            if (temp.containsKey(s) && start_ext_config.containsKey(s)
+              && !temp.getProperty(s).equals(start_ext_config.getProperty(s))) {
+              // Set the property to keep the changes made outside the
+              // application
+              ext_config.setProperty(s, temp.getProperty(s));
+            }
+          }
+        });
+      }
       ext_config.save(configPath.toFile());
     } catch (ConfigurationException | FileNotFoundException e) {
       LOGGER.error("Error loading the config file", e);
