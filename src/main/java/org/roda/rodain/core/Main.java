@@ -22,7 +22,7 @@ public class Main {
    * @param args
    */
   public static void main(String[] args) {
-    System.setProperty("roda-in-LOGGER-path", AppProperties.getRodainPath().resolve("LOGGER").toString());
+    System.setProperty("roda-in-log-path", AppProperties.getRodainPath().resolve("log").toString());
     configureLogback();
 
     // get the java version
