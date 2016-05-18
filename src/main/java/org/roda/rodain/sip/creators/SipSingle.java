@@ -107,21 +107,19 @@ public class SipSingle extends SipPreviewCreator {
     }
     // create a new Sip
     Path path = Paths.get(getStartPath());
-    Path metaPath = getMetadataPath(path);
-
-    DescObjMetadata metadata = null;
-    if (metadataOption == MetadataOptions.TEMPLATE)
-      metadata = new DescObjMetadata(metadataOption, templateType, templateVersion);
-    else {
-      if (metaPath != null)
-        metadata = new DescObjMetadata(metadataOption, metaPath, metadataType);
-    }
+    Set<Path> metaPath = getMetadataPath(path);
 
     SipRepresentation rep = new SipRepresentation("rep1");
     rep.setFiles(files);
     Set<SipRepresentation> repSet = new HashSet<>();
     repSet.add(rep);
-    SipPreview sipPreview = new SipPreview(path.getFileName().toString(), repSet, metadata);
+    SipPreview sipPreview = new SipPreview(path.getFileName().toString(), repSet, null);
+
+    if (metadataOption == MetadataOptions.TEMPLATE)
+      sipPreview.getMetadata().add(new DescObjMetadata(metadataOption, templateType, templateVersion));
+    else {
+      metaPath.forEach(mPath -> sipPreview.getMetadata().add(new DescObjMetadata(metadataOption, mPath, metadataType)));
+    }
 
     for (TreeNode tn : files) {
       tn.addObserver(sipPreview);

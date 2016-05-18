@@ -48,19 +48,14 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
    * Creates a new SipPreviewCreator where there's a new SIP created with all
    * the visited paths.
    *
-   * @param id
-   *          The id of the SipPreviewCreator.
-   * @param filters
-   *          The set of content filters
-   * @param metadataOption
-   *          The type of metadata to be applied to each SIP
-   * @param metadataPath
-   *          The path of the metadata
-   * @param templateType
-   *          The type of the metadata template
+   * @param id             The id of the SipPreviewCreator.
+   * @param filters        The set of content filters
+   * @param metadataOption The type of metadata to be applied to each SIP
+   * @param metadataPath   The path of the metadata
+   * @param templateType   The type of the metadata template
    */
   public SipPreviewCreator(String id, Set<ContentFilter> filters, MetadataOptions metadataOption, String metadataType,
-    Path metadataPath, String templateType, String templateVersion) {
+                           Path metadataPath, String templateType, String templateVersion) {
     this.filters = filters;
     sipsMap = new HashMap<>();
     sips = new ArrayList<>();
@@ -122,7 +117,7 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
 
   /**
    * @return True if the number of SIPs returned is smaller than the count of
-   *         added SIPs.
+   * added SIPs.
    */
   public boolean hasNext() {
     return returned < added;
@@ -140,8 +135,7 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
   /**
    * Sets the starting path of this TreeVisitor.
    *
-   * @param st
-   *          The starting path of the TreeVisitor.
+   * @param st The starting path of the TreeVisitor.
    */
   @Override
   public void setStartPath(String st) {
@@ -156,10 +150,8 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
    * Creates a new TreeNode and adds it to the nodes Deque if the path isn't
    * mapped or ignored.
    *
-   * @param path
-   *          The path of the directory.
-   * @param attrs
-   *          The attributes of the directory.
+   * @param path  The path of the directory.
+   * @param attrs The attributes of the directory.
    */
   @Override
   public void preVisitDirectory(Path path, BasicFileAttributes attrs) {
@@ -169,8 +161,7 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
    * Adds the current directory to its parent's node. If the parent doesn't
    * exist, adds a new node to the Deque.
    *
-   * @param path
-   *          The path of the directory.
+   * @param path The path of the directory.
    */
   @Override
   public void postVisitDirectory(Path path) {
@@ -180,10 +171,8 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
    * Adds the visited file to its parent. If the parent doesn't exist, adds a
    * new TreeNode to the Deque.
    *
-   * @param path
-   *          The path of the visited file
-   * @param attrs
-   *          The attributes of the visited file
+   * @param path  The path of the visited file
+   * @param attrs The attributes of the visited file
    */
   @Override
   public void visitFile(Path path, BasicFileAttributes attrs) {
@@ -193,8 +182,7 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
    * This method is empty in this class, but it's defined because of the
    * TreeVisitor interface.
    *
-   * @param path
-   *          The path of the file.
+   * @param path The path of the file.
    */
   @Override
   public void visitFileFailed(Path path) {
@@ -211,7 +199,7 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
   }
 
   protected SipPreview createSip(Path path, TreeNode node) {
-    Path metaPath = getMetadataPath(path);
+    Set<Path> metaPath = getMetadataPath(path);
 
     Set<TreeNode> filesSet = new HashSet<>();
     // start as false otherwise when there's only files they would be jumped
@@ -234,20 +222,18 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
       filesSet.add(node);
     }
     // create a new Sip
-    DescObjMetadata descObjMetadata = null;
-    if (metadataOption == MetadataOptions.TEMPLATE)
-      descObjMetadata = new DescObjMetadata(metadataOption, templateType, templateVersion);
-    else {
-      if (metaPath != null)
-        descObjMetadata = new DescObjMetadata(metadataOption, metaPath, metadataType);
-    }
-
     SipRepresentation rep = new SipRepresentation("rep1");
     rep.setFiles(filesSet);
     Set<SipRepresentation> repSet = new HashSet<>();
     repSet.add(rep);
-    SipPreview sipPreview = new SipPreview(path.getFileName().toString(), repSet, descObjMetadata);
+    SipPreview sipPreview = new SipPreview(path.getFileName().toString(), repSet, null);
     node.addObserver(sipPreview);
+
+    if (metadataOption == MetadataOptions.TEMPLATE)
+      sipPreview.getMetadata().add(new DescObjMetadata(metadataOption, templateType, templateVersion));
+    else {
+      metaPath.forEach(mPath -> sipPreview.getMetadata().add(new DescObjMetadata(metadataOption, mPath, metadataType)));
+    }
 
     sips.add(sipPreview);
     sipsMap.put(sipPreview.getId(), sipPreview);
@@ -255,17 +241,17 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
     return sipPreview;
   }
 
-  protected Path getMetadataPath(Path sipPath) {
-    Path result;
+  protected Set<Path> getMetadataPath(Path sipPath) {
+    Set<Path> result = new HashSet<>();
     switch (metadataOption) {
       case SINGLE_FILE:
-        result = metadataPath;
+        result.add(metadataPath);
         break;
       case DIFF_DIRECTORY:
         result = getFileFromDir(sipPath);
         break;
       case SAME_DIRECTORY:
-        result = searchMetadata(sipPath);
+        result.addAll(searchMetadata(sipPath));
         break;
       default:
         return null;
@@ -273,7 +259,7 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
     return result;
   }
 
-  private Path searchMetadata(Path sipPath) {
+  private Set<Path> searchMetadata(Path sipPath) {
     File dir = sipPath.toFile();
     if (!dir.isDirectory())
       dir = sipPath.getParent().toFile();
@@ -281,22 +267,25 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
     PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + templateType);
     File[] foundFiles = dir.listFiles((dir1, name) -> matcher.matches(Paths.get(name)));
 
+    Set<Path> result = new HashSet<>();
     if (foundFiles != null && foundFiles.length > 0) {
-      return foundFiles[0].toPath();
+      for (File foundFile : foundFiles) {
+        result.add(foundFile.toPath());
+      }
     }
-    return null;
+    return result;
   }
 
-  private Path getFileFromDir(Path path) {
+  private Set<Path> getFileFromDir(Path path) {
     String fileNameWithExtension = path.getFileName().toString();
     String fileName = FilenameUtils.removeExtension(fileNameWithExtension);
 
     Set<Path> paths = metadata.get(fileName);
-    Path result = null;
+    Set<Path> result = new HashSet<>();
     if (paths != null) {
       for (Path p : paths) {
         if (!p.getFileName().toString().equals(fileNameWithExtension))
-          result = p;
+          result.add(p);
 
       }
     }

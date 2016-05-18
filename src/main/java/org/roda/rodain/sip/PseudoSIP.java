@@ -3,6 +3,7 @@ package org.roda.rodain.sip;
 import org.roda.rodain.rules.TreeNode;
 
 import java.nio.file.Path;
+import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -10,9 +11,9 @@ import java.nio.file.Path;
  */
 public class PseudoSIP implements PseudoItem {
   private TreeNode node;
-  private Path metadata;
+  private Set<Path> metadata;
 
-  public PseudoSIP(TreeNode node, Path metadata) {
+  public PseudoSIP(TreeNode node, Set<Path> metadata) {
     this.node = node;
     this.metadata = metadata;
   }
@@ -21,7 +22,7 @@ public class PseudoSIP implements PseudoItem {
     return node;
   }
 
-  public Path getMetadata() {
+  public Set<Path> getMetadata() {
     return metadata;
   }
 }
