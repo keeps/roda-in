@@ -17,6 +17,7 @@ public class CreateSips {
 
   private int sipsCount;
   private long startedTime;
+  private boolean exportAll;
 
   /**
    * Creates a new object of the SIP exporter
@@ -26,16 +27,22 @@ public class CreateSips {
    * @param type
    *          The format of the SIP output
    */
-  public CreateSips(Path outputPath, SipTypes type) {
+  public CreateSips(Path outputPath, SipTypes type, boolean exportAll) {
     this.type = type;
     this.outputPath = outputPath;
+    this.exportAll = exportAll;
   }
 
   /**
    * Starts the exportation process.
    */
   public void start() {
-    Map<SipPreview, String> sips = RodaIn.getSelectedSipPreviews();
+    Map<SipPreview, String> sips;
+    if (exportAll)
+      sips = RodaIn.getAllSipPreviews();
+    else
+      sips = RodaIn.getSelectedSipPreviews();
+
     startedTime = System.currentTimeMillis();
     sipsCount = sips.size();
     if (type == SipTypes.BAGIT) {

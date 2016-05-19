@@ -493,6 +493,13 @@ public class RodaIn extends Application {
   }
 
   /**
+   * @return The Map with all the SIPs of all the SchemaNodes in the scheme pane
+   */
+  public static Map<SipPreview, String> getAllSipPreviews() {
+    return schemePane.getAllSipPreviews();
+  }
+
+  /**
    * Shows a pane to start the export process of the created SIPs.
    */
   public static void exportSIPs() {

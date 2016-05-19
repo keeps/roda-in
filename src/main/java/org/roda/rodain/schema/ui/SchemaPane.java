@@ -852,6 +852,19 @@ public class SchemaPane extends BorderPane {
     return hasClassificationScheme;
   }
 
+  public Map<SipPreview, String> getAllSipPreviews() {
+    schemaNodes.add(rootNode);
+    Map<SipPreview, String> result = new HashMap<>();
+
+    for (SchemaNode sn : schemaNodes) {
+      result.putAll(sn.getSipPreviews());
+    }
+
+    // filter out the SIPs marked as "removed"
+    return result.entrySet().stream().parallel().filter(p -> !p.getKey().isRemoved())
+      .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
+  }
+
   /**
    * @return The Map with the SIPs of all the SchemaNodes in the TreeView
    */

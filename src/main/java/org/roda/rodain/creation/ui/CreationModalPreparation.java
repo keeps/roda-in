@@ -1,5 +1,9 @@
 package org.roda.rodain.creation.ui;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -12,12 +16,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
-import org.roda.rodain.core.I18n;
-import org.roda.rodain.creation.SipTypes;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import org.controlsfx.control.ToggleSwitch;
+import org.roda.rodain.core.I18n;
+import org.roda.rodain.core.RodaIn;
+import org.roda.rodain.creation.SipTypes;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -29,6 +32,8 @@ public class CreationModalPreparation extends BorderPane {
   private static Path outputFolder;
   private ComboBox<String> sipTypes;
   private static Button start;
+  private int selected, allCount;
+  private ToggleSwitch toggleSwitch;
 
   /**
    * Creates a modal to prepare for the SIP exportation.
@@ -38,8 +43,7 @@ public class CreationModalPreparation extends BorderPane {
    * for the SIP exportation should be and the format of the SIPs.
    * </p>
    *
-   * @param stage
-   *          The stage of the pane
+   * @param stage The stage of the pane
    */
   public CreationModalPreparation(CreationModalStage stage) {
     this.stage = stage;
@@ -67,13 +71,31 @@ public class CreationModalPreparation extends BorderPane {
   private void createCenter() {
     VBox center = new VBox(5);
     center.setAlignment(Pos.CENTER_LEFT);
-    center.setPadding(new Insets(0, 10, 10, 10));
+    center.setPadding(new Insets(10, 10, 10, 10));
 
+    VBox countBox = createCountBox();
     HBox outputFolderBox = createOutputFolder();
     HBox sipTypesBox = createSipTypes();
 
-    center.getChildren().addAll(outputFolderBox, sipTypesBox);
+    center.getChildren().addAll(countBox, outputFolderBox, sipTypesBox);
     setCenter(center);
+  }
+
+  private VBox createCountBox() {
+    VBox countBox = new VBox(10);
+    countBox.setAlignment(Pos.CENTER);
+    selected = RodaIn.getSelectedSipPreviews().size();
+    allCount = RodaIn.getAllSipPreviews().size();
+
+    Label countLabel = new Label(String.format("%s %d/%d", I18n.t("selected"), selected, allCount));
+    countLabel.getStyleClass().add("prepareCreationSubtitle");
+    toggleSwitch = new ToggleSwitch(I18n.t("CreationModalPreparation.exportAll"));
+
+    if (selected == 0 || selected == allCount)
+      toggleSwitch.setSelected(true);
+
+    countBox.getChildren().addAll(countLabel, toggleSwitch);
+    return countBox;
   }
 
   private HBox createOutputFolder() {
@@ -105,8 +127,7 @@ public class CreationModalPreparation extends BorderPane {
   /**
    * Sets the output folder of the SIPs. Used for testing.
    *
-   * @param out
-   *          The path of the output folder
+   * @param out The path of the output folder
    */
   public static void setOutputFolder(String out) {
     if (out != null && !"".equals(out)) {
@@ -161,7 +182,7 @@ public class CreationModalPreparation extends BorderPane {
         else
           type = SipTypes.EARK;
 
-        stage.startCreation(outputFolder, type);
+        stage.startCreation(outputFolder, type, toggleSwitch.isSelected());
       }
     });
 

@@ -53,6 +53,11 @@
     -fx-border-width: 2px;
 }
 
+.prepareCreationSubtitle {
+    -fx-font-size: large;
+    -fx-text-fill: grey;
+}
+
 /* List-view */
 .list-view {
     -fx-background-color: white;

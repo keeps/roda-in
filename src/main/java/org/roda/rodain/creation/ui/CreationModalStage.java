@@ -1,7 +1,5 @@
 package org.roda.rodain.creation.ui;
 
-import java.nio.file.Path;
-
 import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -11,9 +9,10 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
 import org.roda.rodain.creation.CreateSips;
 import org.roda.rodain.creation.SipTypes;
+
+import java.nio.file.Path;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -40,7 +39,7 @@ public class CreationModalStage extends Stage {
 
     setResizable(true);
 
-    Scene scene = new Scene(new HBox(), 400, 190);
+    Scene scene = new Scene(new HBox(), 400, 210);
     scene.getStylesheets().add(ClassLoader.getSystemResource("css/modal.css").toExternalForm());
     scene.getStylesheets().add(ClassLoader.getSystemResource("css/shared.css").toExternalForm());
     setScene(scene);
@@ -55,8 +54,8 @@ public class CreationModalStage extends Stage {
    * @param type
    *          The format of the SIPs
    */
-  public void startCreation(Path outputFolder, SipTypes type) {
-    CreateSips creator = new CreateSips(outputFolder, type);
+  public void startCreation(Path outputFolder, SipTypes type, boolean exportAll) {
+    CreateSips creator = new CreateSips(outputFolder, type, exportAll);
     CreationModalProcessing pane = new CreationModalProcessing(creator, this);
     setRoot(pane);
     creator.start();
