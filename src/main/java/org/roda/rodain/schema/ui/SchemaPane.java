@@ -231,19 +231,27 @@ public class SchemaPane extends BorderPane {
           ((SchemaNode) oldValue).setBlackIconSelected(true);
           forceUpdate(oldValue);
         }
+
         if (newValue != null) {
-          if (newValue instanceof SipPreviewNode) {
-            ((SipPreviewNode) newValue).setBlackIconSelected(false);
-            forceUpdate(newValue);
-            RodaIn.getInspectionPane().update((SipPreviewNode) newValue);
+          List<TreeItem<String>> selectedItems = treeView.getSelectionModel().getSelectedItems();
+          if (selectedItems.size() == 1) {
+            // only one item is selected
+            if (newValue instanceof SipPreviewNode) {
+              ((SipPreviewNode) newValue).setBlackIconSelected(false);
+              forceUpdate(newValue);
+              RodaIn.getInspectionPane().update((SipPreviewNode) newValue);
+            }
+            if (newValue instanceof SchemaNode) {
+              ((SchemaNode) newValue).setBlackIconSelected(false);
+              forceUpdate(newValue);
+              RodaIn.getInspectionPane().update((SchemaNode) newValue);
+            }
+            SchemeItemToString sits = new SchemeItemToString(treeView.getSelectionModel().getSelectedItems());
+            sits.createAndUpdateFooter();
+          } else {
+            // more than one item is selected
+            RodaIn.getInspectionPane().update(selectedItems);
           }
-          if (newValue instanceof SchemaNode) {
-            ((SchemaNode) newValue).setBlackIconSelected(false);
-            forceUpdate(newValue);
-            RodaIn.getInspectionPane().update((SchemaNode) newValue);
-          }
-          SchemeItemToString sits = new SchemeItemToString(treeView.getSelectionModel().getSelectedItems());
-          sits.createAndUpdateFooter();
         } else
           Footer.setClassPlanStatus("");
       }
@@ -363,8 +371,8 @@ public class SchemaPane extends BorderPane {
         } else {
           // Get a list with the items where the id equals the node's parent's
           // id
-          List<DescriptionObject> parents = dos.stream().filter(p -> p.getId().equals(descObj.getParentId()))
-            .collect(Collectors.toList());
+          List<DescriptionObject> parents = dos.stream()
+            .filter(p -> p.getId() != null && p.getId().equals(descObj.getParentId())).collect(Collectors.toList());
           // If the input file is well formed, there should be one item in the
           // list, no more and no less
           if (parents.size() != 1) {

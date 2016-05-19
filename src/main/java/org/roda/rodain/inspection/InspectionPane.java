@@ -79,6 +79,7 @@ public class InspectionPane extends BorderPane {
   private SipPreviewNode currentSIPNode;
   private SchemaNode currentSchema;
   private DescriptionObject currentDescOb;
+  private List<TreeItem<String>> selectedItems;
   private Label paneTitle;
 
   private VBox centerHelp;
@@ -94,6 +95,7 @@ public class InspectionPane extends BorderPane {
   private Set<Control> topButtons;
   private Separator metadataTopSeparator;
   private boolean textBoxCancelledChange = false;
+  private VBox multSelectedBottom;
   // SIP Content
   private BorderPane content;
   private VBox dataBox, documentationHelp;
@@ -128,6 +130,7 @@ public class InspectionPane extends BorderPane {
     createContent();
     createRulesList();
     createLoadingPanes();
+    createMultipleSelectedBottom();
 
     center = new VBox(10);
     center.setPadding(new Insets(10, 0, 10, 0));
@@ -943,6 +946,58 @@ public class InspectionPane extends BorderPane {
     docsBottom.getChildren().addAll(remove);
   }
 
+  private void createMultipleSelectedBottom() {
+    BorderPane help = new BorderPane();
+    help.getStyleClass().add("inspectionPart");
+
+    HBox top = new HBox();
+    top.getStyleClass().add("hbox");
+    top.setPadding(new Insets(5, 15, 10, 15));
+
+    Label title = new Label(I18n.t("InspectionPane.multipleSelected.helpTitle").toUpperCase());
+    title.setPadding(new Insets(5, 0, 0, 0));
+    title.getStyleClass().add("title");
+    top.getChildren().add(title);
+    help.setTop(top);
+
+    Label multSelectedHelp = new Label(I18n.t("InspectionPane.multipleSelected.help"));
+    multSelectedHelp.setPadding(new Insets(10, 10, 10, 10));
+    multSelectedHelp.setStyle("-fx-text-fill: black");
+    multSelectedHelp.setWrapText(true);
+
+    help.setCenter(multSelectedHelp);
+
+    BorderPane confirm = new BorderPane();
+    confirm.getStyleClass().add("inspectionPart");
+
+    HBox confirmTop = new HBox();
+    confirmTop.getStyleClass().add("hbox");
+    confirmTop.setPadding(new Insets(5, 15, 10, 15));
+
+    Label confirmTitle = new Label(I18n.t("apply").toUpperCase());
+    confirmTitle.setPadding(new Insets(5, 0, 0, 0));
+    confirmTitle.getStyleClass().add("title");
+    confirmTop.getChildren().add(confirmTitle);
+    confirm.setTop(confirmTop);
+
+    HBox multSelectedSaveBox = new HBox(5);
+    multSelectedSaveBox.setPadding(new Insets(10, 10, 10, 10));
+    multSelectedSaveBox.getStyleClass();
+    multSelectedSaveBox.setStyle("-fx-text-fill: black");
+    Label confirmationLabel = new Label(I18n.t("InspectionPane.multipleSelected.confirm"));
+    confirmationLabel.setStyle("-fx-text-fill: black;");
+    Button save = new Button(I18n.t("apply"));
+
+    HBox space = new HBox();
+    HBox.setHgrow(space, Priority.ALWAYS);
+
+    multSelectedSaveBox.getChildren().addAll(confirmationLabel, space, save);
+    confirm.setCenter(multSelectedSaveBox);
+
+    multSelectedBottom = new VBox(10);
+    multSelectedBottom.getChildren().addAll(help, confirm);
+  }
+
   private void createContent(SipPreviewNode node, boolean active) {
     SipContentDirectory newRoot = new SipContentDirectory(new TreeNode(Paths.get("")), null);
     if (active) {
@@ -1155,6 +1210,7 @@ public class InspectionPane extends BorderPane {
     currentSIPNode = sip;
     currentDescOb = sip.getSip();
     currentSchema = null;
+    selectedItems = null;
     if (contentTask != null && contentTask.isRunning()) {
       contentTask.cancel(true);
     }
@@ -1238,6 +1294,7 @@ public class InspectionPane extends BorderPane {
     setTop(topBox);
     currentDescOb = node.getDob();
     currentSIPNode = null;
+    selectedItems = null;
     currentSchema = node;
     if (contentTask != null && contentTask.isRunning()) {
       contentTask.cancel(true);
@@ -1267,13 +1324,48 @@ public class InspectionPane extends BorderPane {
     setCenter(center);
   }
 
+  public void update(List<TreeItem<String>> selectedItems) {
+    setTop(topBox);
+    currentSchema = null;
+    currentSIPNode = null;
+    this.selectedItems = selectedItems;
+    // create a temporary description object to hold the metadata
+    currentDescOb = new DescriptionObject();
+    currentDescOb.getMetadata().clear();
+    currentDescOb.setTitle(null);
+    currentDescOb.setId(null);
+
+    if (contentTask != null && contentTask.isRunning()) {
+      contentTask.cancel(true);
+    }
+    if (metadataTask != null && metadataTask.isRunning()) {
+      metadataTask.cancel(true);
+    }
+
+    /* Top */
+    topBox.setPadding(new Insets(15, 15, 15, 15));
+    createTopSubtitle(null, String.format("%d %s", selectedItems.size(), I18n.t("items")));
+
+    /* center */
+    center.getChildren().clear();
+    metadata.getChildren().clear();
+    metadata.getChildren().addAll(metadataTopBox);
+    updateMetadataCombo();
+
+    center.getChildren().addAll(metadata, multSelectedBottom);
+    setCenter(center);
+  }
+
   private void createTopSubtitle(ImageView icon, String text) {
     paneTitle = new Label(text);
     paneTitle.setWrapText(true);
     paneTitle.getStyleClass().add("top-subtitle");
     topSubtitle.setAlignment(Pos.CENTER_LEFT);
     topSubtitle.getChildren().clear();
-    topSubtitle.getChildren().addAll(icon, paneTitle);
+    if (icon != null)
+      topSubtitle.getChildren().addAll(icon, paneTitle);
+    else
+      topSubtitle.getChildren().add(paneTitle);
   }
 
   private void updateMetadataCombo() {
