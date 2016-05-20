@@ -1010,14 +1010,15 @@ public class InspectionPane extends BorderPane {
           itemDO = ((SipPreviewNode) item).getSip();
         if (itemDO != null) {
           for (DescObjMetadata metadataObj : metadataList) {
-            applyMetadataFileToDescriptionObject(metadataObj, itemDO);
+            applyMetadataFileToDescriptionObject(metadataObj, itemDO, item);
           }
         }
       });
     }
   }
 
-  private void applyMetadataFileToDescriptionObject(DescObjMetadata metadataObj, DescriptionObject descObj) {
+  private void applyMetadataFileToDescriptionObject(DescObjMetadata metadataObj, DescriptionObject descObj,
+    TreeItem<String> treeItem) {
     if (metadataObj.getCreatorOption() != MetadataOptions.TEMPLATE) {
       // remove the metadata files with the same ID as the new one
       List<DescObjMetadata> toRemove = new ArrayList<>();
@@ -1041,6 +1042,11 @@ public class InspectionPane extends BorderPane {
                   || !metadataObjValue.get("value").equals("{{auto-generate}}")) {
                   descObjMetadataValue.set("value", metadataObjValue.get("value"));
                   descObjMetadataValue.set("auto-generate", null);
+
+                  // we need to set the value of the tree item here, otherwise
+                  // the "title" option will be overriden by the UI
+                  if (metadataObjValue.getId().equals("title"))
+                    treeItem.setValue((String) metadataObjValue.get("value"));
                 }
               }
             }
