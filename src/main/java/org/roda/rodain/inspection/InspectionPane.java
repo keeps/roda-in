@@ -26,6 +26,7 @@ import javafx.stage.StageStyle;
 import javafx.util.StringConverter;
 import javafx.util.converter.LocalDateStringConverter;
 import org.apache.commons.lang.StringUtils;
+import org.controlsfx.control.PopOver;
 import org.fxmisc.richtext.CodeArea;
 import org.json.JSONArray;
 import org.roda.rodain.core.AppProperties;
@@ -158,6 +159,7 @@ public class InspectionPane extends BorderPane {
   private void createMetadata() {
     metadata = new VBox();
     metadata.getStyleClass().add("inspectionPart");
+    VBox.setVgrow(metadata, Priority.ALWAYS);
 
     metadataGrid = new GridPane();
     metadataGrid.setVgap(5);
@@ -975,10 +977,27 @@ public class InspectionPane extends BorderPane {
     confirmTop.setPadding(new Insets(5, 15, 10, 15));
 
     Label confirmTitle = new Label(I18n.t("apply").toUpperCase());
+    confirmTitle.setAlignment(Pos.CENTER_LEFT);
     confirmTitle.setPadding(new Insets(5, 0, 0, 0));
     confirmTitle.getStyleClass().add("title");
     confirmTop.getChildren().add(confirmTitle);
     confirm.setTop(confirmTop);
+
+    PopOver applyPopOver = new PopOver();
+    applyPopOver.setDetachable(false);
+    applyPopOver.setArrowLocation(PopOver.ArrowLocation.BOTTOM_RIGHT);
+
+    HBox popOverContent = new HBox(10);
+    popOverContent.setPadding(new Insets(5, 15, 5, 15));
+    popOverContent.setAlignment(Pos.CENTER);
+    HBox.setHgrow(popOverContent, Priority.ALWAYS);
+    Label popOverTitle = new Label(I18n.t("InspectionPane.multipleSelected.appliedMessage"));
+    popOverTitle.setStyle("-fx-font-size: 16px");
+    Platform.runLater(() -> {
+      ImageView iv = new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CHECK, Color.GREEN, 32));
+      popOverContent.getChildren().addAll(popOverTitle, iv);
+    });
+    applyPopOver.setContentNode(popOverContent);
 
     HBox multSelectedSaveBox = new HBox(5);
     multSelectedSaveBox.setPadding(new Insets(10, 10, 10, 10));
@@ -987,7 +1006,10 @@ public class InspectionPane extends BorderPane {
     Label confirmationLabel = new Label(I18n.t("InspectionPane.multipleSelected.confirm"));
     confirmationLabel.setStyle("-fx-text-fill: black;");
     Button save = new Button(I18n.t("apply"));
-    save.setOnAction(event -> applyMetadatasToMultipleItems());
+    save.setOnAction(event -> {
+      applyMetadatasToMultipleItems();
+      applyPopOver.show(save);
+    });
 
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
