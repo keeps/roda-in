@@ -987,6 +987,7 @@ public class InspectionPane extends BorderPane {
     Label confirmationLabel = new Label(I18n.t("InspectionPane.multipleSelected.confirm"));
     confirmationLabel.setStyle("-fx-text-fill: black;");
     Button save = new Button(I18n.t("apply"));
+    save.setOnAction(event -> applyMetadatasToMultipleItems());
 
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
@@ -996,6 +997,57 @@ public class InspectionPane extends BorderPane {
 
     multSelectedBottom = new VBox(10);
     multSelectedBottom.getChildren().addAll(help, confirm);
+  }
+
+  private void applyMetadatasToMultipleItems() {
+    List<DescObjMetadata> metadataList = currentDescOb.getMetadata();
+    if (!metadataList.isEmpty()) {
+      selectedItems.forEach(item -> {
+        DescriptionObject itemDO = null;
+        if (item instanceof SchemaNode)
+          itemDO = ((SchemaNode) item).getDob();
+        if (item instanceof SipPreviewNode)
+          itemDO = ((SipPreviewNode) item).getSip();
+        if (itemDO != null) {
+          for (DescObjMetadata metadataObj : metadataList) {
+            applyMetadataFileToDescriptionObject(metadataObj, itemDO);
+          }
+        }
+      });
+    }
+  }
+
+  private void applyMetadataFileToDescriptionObject(DescObjMetadata metadataObj, DescriptionObject descObj) {
+    if (metadataObj.getCreatorOption() != MetadataOptions.TEMPLATE) {
+      // remove the metadata files with the same ID as the new one
+      List<DescObjMetadata> toRemove = new ArrayList<>();
+      descObj.getMetadata().forEach(descObjMetadata -> {
+        if (descObjMetadata.getId().equals(metadataObj.getId()))
+          toRemove.add(descObjMetadata);
+      });
+      descObj.getMetadata().removeAll(toRemove);
+      // add a clone of the new metadata
+      descObj.getMetadata().add(metadataObj.clone());
+    } else {
+      descObj.getMetadata().forEach(descObjMetadata -> {
+        if (descObjMetadata.getId().equals(metadataObj.getId())) {
+          Set<MetadataValue> metadataObjValues = metadataObj.getValues();
+          Set<MetadataValue> descObjMetadataValues = descObjMetadata.getValues();
+          for (MetadataValue metadataObjValue : metadataObjValues) {
+            for (MetadataValue descObjMetadataValue : descObjMetadataValues) {
+              if (metadataObjValue.getId().equals(descObjMetadataValue.getId())) {
+                // ignore the new value when it's {{auto-generate}}
+                if (metadataObjValue.get("value") == null
+                  || !metadataObjValue.get("value").equals("{{auto-generate}}")) {
+                  descObjMetadataValue.set("value", metadataObjValue.get("value"));
+                  descObjMetadataValue.set("auto-generate", null);
+                }
+              }
+            }
+          }
+        }
+      });
+    }
   }
 
   private void createContent(SipPreviewNode node, boolean active) {

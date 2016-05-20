@@ -393,8 +393,7 @@ public class SchemaPane extends BorderPane {
           }
           SchemaNode node;
           // If the node hasn't been added yet, create it and add it to the
-          // nodes
-          // map
+          // nodes map
           if (nodes.containsKey(descObj.getId())) {
             node = nodes.get(descObj.getId());
           } else {

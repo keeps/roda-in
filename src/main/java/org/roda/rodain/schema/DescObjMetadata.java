@@ -65,6 +65,22 @@ public class DescObjMetadata {
     return path;
   }
 
+  public void setPath(Path p) {
+    path = p;
+  }
+
+  public void setMetadataType(String metadataType) {
+    this.metadataType = metadataType;
+  }
+
+  public void setVersion(String version) {
+    this.version = version;
+  }
+
+  public void setTemplateType(String templateType) {
+    this.templateType = templateType;
+  }
+
   @JsonIgnore
   public boolean isLoaded() {
     return loaded;
@@ -245,6 +261,20 @@ public class DescObjMetadata {
    */
   public void setAdditionalProperty(String name, Object value) {
     this.additionalProperties.put(name, value);
+  }
+
+  public DescObjMetadata clone() {
+    DescObjMetadata result = new DescObjMetadata();
+    result.setCreatorOption(creatorOption);
+    result.setId(id);
+    result.setContent(content);
+    result.setContentEncoding(contentEncoding);
+    result.setValues((TreeSet<MetadataValue>) values.clone());
+    result.setPath(path);
+    result.setVersion(version);
+    result.setMetadataType(metadataType);
+    result.setTemplateType(templateType);
+    return result;
   }
 
 }
