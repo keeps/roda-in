@@ -1693,8 +1693,6 @@ public class InspectionPane extends BorderPane {
   public void updateMetadataList(DescriptionObject descriptionObject) {
     if (descriptionObject == currentDescOb) {
       updateMetadataCombo();
-      metadataCombo.getSelectionModel().clearSelection();
-      metadataCombo.getSelectionModel().selectLast();
       RodaIn.getSchemePane().setModifiedPlan(true);
     }
   }
