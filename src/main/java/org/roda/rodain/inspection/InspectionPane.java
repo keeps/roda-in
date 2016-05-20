@@ -116,8 +116,7 @@ public class InspectionPane extends BorderPane {
   /**
    * Creates a new inspection pane.
    *
-   * @param stage
-   *          The primary stage of the application
+   * @param stage The primary stage of the application
    */
   public InspectionPane(Stage stage) {
     this.stage = stage;
@@ -286,7 +285,7 @@ public class InspectionPane extends BorderPane {
       ImageView toggleImage = new ImageView();
       toggleForm.setGraphic(toggleImage);
       toggleImage.imageProperty()
-        .bind(Bindings.when(toggleForm.selectedProperty()).then(selected).otherwise(unselected));
+          .bind(Bindings.when(toggleForm.selectedProperty()).then(selected).otherwise(unselected));
     });
     toggleForm.selectedProperty().addListener((observable, oldValue, newValue) -> {
       textBoxCancelledChange = true;
@@ -312,20 +311,20 @@ public class InspectionPane extends BorderPane {
     validationButton = new Button();
     validationButton.setTooltip(new Tooltip(I18n.t("InspectionPane.validate")));
     Platform.runLater(() -> validationButton
-      .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CHECK, Color.WHITE))));
+        .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CHECK, Color.WHITE))));
 
     validationButton.setOnAction(event -> validationAction());
 
     addMetadata = new Button();
     addMetadata.setTooltip(new Tooltip(I18n.t("InspectionPane.addMetadata")));
     Platform.runLater(() -> addMetadata
-      .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.PLUS, Color.WHITE))));
+        .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.PLUS, Color.WHITE))));
     addMetadata.setOnAction(event -> addMetadataAction());
 
     removeMetadata = new Button();
     removeMetadata.setTooltip(new Tooltip(I18n.t("InspectionPane.removeMetadata")));
     Platform.runLater(() -> removeMetadata
-      .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.MINUS, Color.WHITE))));
+        .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.MINUS, Color.WHITE))));
     removeMetadata.setOnAction(event -> removeMetadataAction());
 
     metadataTopSeparator = new Separator(Orientation.VERTICAL);
@@ -616,7 +615,7 @@ public class InspectionPane extends BorderPane {
       }
     });
     datePicker.valueProperty()
-      .addListener((observable, oldValue, newValue) -> metadataValue.set("value", ldsc.toString(newValue)));
+        .addListener((observable, oldValue, newValue) -> metadataValue.set("value", ldsc.toString(newValue)));
     addListenersToUpdateUI(metadataValue, datePicker.valueProperty());
     return datePicker;
   }
@@ -827,10 +826,10 @@ public class InspectionPane extends BorderPane {
       ImageView toggleImage = new ImageView();
       toggleDocumentation.setGraphic(toggleImage);
       toggleImage.imageProperty()
-        .bind(Bindings.when(toggleDocumentation.selectedProperty()).then(selected).otherwise(unselected));
+          .bind(Bindings.when(toggleDocumentation.selectedProperty()).then(selected).otherwise(unselected));
     });
     title.textProperty().bind(Bindings.when(toggleDocumentation.selectedProperty())
-      .then(I18n.t("documentation").toUpperCase()).otherwise(I18n.t("data").toUpperCase()));
+        .then(I18n.t("documentation").toUpperCase()).otherwise(I18n.t("data").toUpperCase()));
 
     toggleDocumentation.selectedProperty().addListener((observable, oldValue, newValue) -> {
       dataBox.getChildren().clear();
@@ -1040,7 +1039,7 @@ public class InspectionPane extends BorderPane {
   }
 
   private void applyMetadataFileToDescriptionObject(DescObjMetadata metadataObj, DescriptionObject descObj,
-    TreeItem<String> treeItem) {
+                                                    TreeItem<String> treeItem) {
     if (metadataObj.getCreatorOption() != MetadataOptions.TEMPLATE) {
       // remove the metadata files with the same ID as the new one
       List<DescObjMetadata> toRemove = new ArrayList<>();
@@ -1052,8 +1051,10 @@ public class InspectionPane extends BorderPane {
       // add a clone of the new metadata
       descObj.getMetadata().add(metadataObj.clone());
     } else {
-      descObj.getMetadata().forEach(descObjMetadata -> {
+      boolean merged = false;
+      for (DescObjMetadata descObjMetadata : descObj.getMetadata()) {
         if (descObjMetadata.getId().equals(metadataObj.getId())) {
+          merged = true;
           Set<MetadataValue> metadataObjValues = metadataObj.getValues();
           Set<MetadataValue> descObjMetadataValues = descObjMetadata.getValues();
           for (MetadataValue metadataObjValue : metadataObjValues) {
@@ -1061,7 +1062,7 @@ public class InspectionPane extends BorderPane {
               if (metadataObjValue.getId().equals(descObjMetadataValue.getId())) {
                 // ignore the new value when it's {{auto-generate}}
                 if (metadataObjValue.get("value") == null
-                  || !metadataObjValue.get("value").equals("{{auto-generate}}")) {
+                    || !metadataObjValue.get("value").equals("{{auto-generate}}")) {
                   descObjMetadataValue.set("value", metadataObjValue.get("value"));
                   descObjMetadataValue.set("auto-generate", null);
 
@@ -1074,7 +1075,10 @@ public class InspectionPane extends BorderPane {
             }
           }
         }
-      });
+      }
+      if (!merged) {
+        descObj.getMetadata().add(metadataObj.clone());
+      }
     }
   }
 
@@ -1278,8 +1282,7 @@ public class InspectionPane extends BorderPane {
    * TreeView.
    * </p>
    *
-   * @param sip
-   *          The SipPreviewNode used to update the UI.
+   * @param sip The SipPreviewNode used to update the UI.
    * @see SipPreviewNode
    * @see SipContentDirectory
    * @see SipContentFile
@@ -1302,7 +1305,7 @@ public class InspectionPane extends BorderPane {
     ImageView iconView = new ImageView(sip.getIconWhite());
     createTopSubtitle(iconView, sip.getValue());
     sip.graphicProperty()
-      .addListener((observable, oldValue, newValue) -> iconView.setImage(((ImageView) newValue).getImage()));
+        .addListener((observable, oldValue, newValue) -> iconView.setImage(((ImageView) newValue).getImage()));
 
     HBox top = new HBox(5);
     HBox space = new HBox();
@@ -1321,9 +1324,9 @@ public class InspectionPane extends BorderPane {
     Collections.sort(contTypeList, (o1, o2) -> o1.toString().compareTo(o2.toString()));
     contentType.setItems(FXCollections.observableList(contTypeList));
     contentType.getSelectionModel()
-      .select(new UIPair(sip.getSip().getContentType(), sip.getSip().getContentType().getType()));
+        .select(new UIPair(sip.getSip().getContentType(), sip.getSip().getContentType().getType()));
     contentType.valueProperty()
-      .addListener((obs, old, newValue) -> sip.getSip().setContentType((IPContentType) newValue.getKey()));
+        .addListener((obs, old, newValue) -> sip.getSip().setContentType((IPContentType) newValue.getKey()));
     contentType.setMinWidth(85);
     contentType.setCellFactory(param -> new ComboBoxListCell<UIPair>() {
       @Override
@@ -1365,8 +1368,7 @@ public class InspectionPane extends BorderPane {
    * create a ListView of RuleCell.
    * </p>
    *
-   * @param node
-   *          The SchemaNode used to update the UI.
+   * @param node The SchemaNode used to update the UI.
    * @see RuleCell
    * @see SchemaNode
    */
@@ -1387,7 +1389,7 @@ public class InspectionPane extends BorderPane {
     topBox.setPadding(new Insets(15, 15, 15, 15));
     ImageView iconView = new ImageView(node.getIconWhite());
     node.graphicProperty()
-      .addListener((observable, oldValue, newValue) -> iconView.setImage(((ImageView) newValue).getImage()));
+        .addListener((observable, oldValue, newValue) -> iconView.setImage(((ImageView) newValue).getImage()));
     createTopSubtitle(iconView, node.getValue());
 
     /* center */
@@ -1584,11 +1586,10 @@ public class InspectionPane extends BorderPane {
   /**
    * Adds documentation to the current SIP.
    *
-   * @param target
-   *          The item to where the documentation should go. This is NOT the SIP
-   *          where we will be adding the documentation. This must be either an
-   *          already added folder to the documentation or null (in which case
-   *          we'll add to the root of the tree).
+   * @param target The item to where the documentation should go. This is NOT the SIP
+   *               where we will be adding the documentation. This must be either an
+   *               already added folder to the documentation or null (in which case
+   *               we'll add to the root of the tree).
    */
   public void addDocumentationToSIP(TreeItem target) {
     Set<Path> paths = new HashSet<>();
@@ -1603,13 +1604,11 @@ public class InspectionPane extends BorderPane {
   /**
    * Adds documentation to the current SIP.
    *
-   * @param target
-   *          The item to where the documentation should go. This is NOT the SIP
-   *          where we will be adding the documentation. This must be either an
-   *          already added folder to the documentation or null (in which case
-   *          we'll add to the root of the tree).
-   * @param paths
-   *          The paths to be used to create the documentation.
+   * @param target The item to where the documentation should go. This is NOT the SIP
+   *               where we will be adding the documentation. This must be either an
+   *               already added folder to the documentation or null (in which case
+   *               we'll add to the root of the tree).
+   * @param paths  The paths to be used to create the documentation.
    */
   public void addDocumentationToSIP(TreeItem target, Set<Path> paths) {
     Set<ContentFilter> filters = new HashSet<>();

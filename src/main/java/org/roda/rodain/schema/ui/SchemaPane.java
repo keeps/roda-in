@@ -371,8 +371,8 @@ public class SchemaPane extends BorderPane {
         } else {
           // Get a list with the items where the id equals the node's parent's
           // id
-          List<DescriptionObject> parents = dos.stream()
-            .filter(p -> p.getId() != null && p.getId().equals(descObj.getParentId())).collect(Collectors.toList());
+          List<DescriptionObject> parents = dos.stream().filter(p -> p.getId().equals(descObj.getParentId()))
+            .collect(Collectors.toList());
           // If the input file is well formed, there should be one item in the
           // list, no more and no less
           if (parents.size() != 1) {
