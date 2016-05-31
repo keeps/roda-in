@@ -39,6 +39,7 @@ import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
+import org.roda.rodain.utils.AutoscrollTreeView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -201,7 +202,7 @@ public class SchemaPane extends BorderPane {
     createRootNode();
 
     // create the tree view
-    treeView = new TreeView<>(rootNode);
+    treeView = new AutoscrollTreeView<>(rootNode);
     treeView.getStyleClass().add("main-tree");
     treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     VBox.setVgrow(treeView, Priority.ALWAYS);
