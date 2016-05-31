@@ -200,7 +200,10 @@ public class DescriptionObject extends Observable {
       String toSearch = metadataValue.getId().toLowerCase();
       switch (toSearch) {
         case "title":
-          title = (String) metadataValue.get("value");
+          if (metadataValue.get("value") == null)
+            title = "";
+          else
+            title = (String) metadataValue.get("value");
           break;
         case "id":
           id = (String) metadataValue.get("value");

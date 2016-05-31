@@ -1410,8 +1410,9 @@ public class InspectionPane extends BorderPane {
     // create a temporary description object to hold the metadata
     currentDescOb = new DescriptionObject();
     currentDescOb.getMetadata().clear();
-    currentDescOb.setTitle(null);
-    currentDescOb.setId(null);
+    currentDescOb.setTitle("{{auto-generate}}");
+    currentDescOb.setId("{{auto-generate}}");
+    currentDescOb.setDescriptionlevel("{{auto-generate}}");
 
     if (contentTask != null && contentTask.isRunning()) {
       contentTask.cancel(true);
