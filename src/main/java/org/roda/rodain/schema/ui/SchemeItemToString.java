@@ -1,17 +1,7 @@
 package org.roda.rodain.schema.ui;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import javafx.concurrent.Task;
 import javafx.scene.control.TreeItem;
-
 import org.roda.rodain.core.Footer;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.rules.TreeNode;
@@ -20,6 +10,15 @@ import org.roda.rodain.sip.SipRepresentation;
 import org.roda.rodain.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -62,6 +61,10 @@ public class SchemeItemToString {
     computeThread.setOnSucceeded(event -> {
       if (input.size() == 1) {
         TreeItem item = input.get(0);
+        if (item == null) {
+          Footer.setClassPlanStatus("");
+          return;
+        }
         sb.append(item.getValue()).append(": ");
         if (item instanceof SipPreviewNode) {
           sb.append(representations).append(" ").append("reps");

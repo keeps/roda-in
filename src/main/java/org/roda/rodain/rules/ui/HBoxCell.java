@@ -7,6 +7,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 /**
@@ -39,6 +40,7 @@ public class HBoxCell extends HBox {
     VBox rightBox = new VBox(5);
     Label lTitle = new Label(title);
     lTitle.getStyleClass().add("title");
+    HBox.setHgrow(rightBox, Priority.ALWAYS);
 
     Label lDescription = new Label(description);
     lDescription.getStyleClass().add("description");

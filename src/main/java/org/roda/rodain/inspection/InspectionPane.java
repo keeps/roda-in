@@ -26,6 +26,7 @@ import javafx.stage.StageStyle;
 import javafx.util.StringConverter;
 import javafx.util.converter.LocalDateStringConverter;
 import org.apache.commons.lang.StringUtils;
+import org.controlsfx.control.PopOver;
 import org.fxmisc.richtext.CodeArea;
 import org.json.JSONArray;
 import org.roda.rodain.core.AppProperties;
@@ -79,6 +80,7 @@ public class InspectionPane extends BorderPane {
   private SipPreviewNode currentSIPNode;
   private SchemaNode currentSchema;
   private DescriptionObject currentDescOb;
+  private List<TreeItem<String>> selectedItems;
   private Label paneTitle;
 
   private VBox centerHelp;
@@ -94,6 +96,7 @@ public class InspectionPane extends BorderPane {
   private Set<Control> topButtons;
   private Separator metadataTopSeparator;
   private boolean textBoxCancelledChange = false;
+  private VBox multSelectedBottom;
   // SIP Content
   private BorderPane content;
   private VBox dataBox, documentationHelp;
@@ -128,6 +131,7 @@ public class InspectionPane extends BorderPane {
     createContent();
     createRulesList();
     createLoadingPanes();
+    createMultipleSelectedBottom();
 
     center = new VBox(10);
     center.setPadding(new Insets(10, 0, 10, 0));
@@ -155,6 +159,7 @@ public class InspectionPane extends BorderPane {
   private void createMetadata() {
     metadata = new VBox();
     metadata.getStyleClass().add("inspectionPart");
+    VBox.setVgrow(metadata, Priority.ALWAYS);
 
     metadataGrid = new GridPane();
     metadataGrid.setVgap(5);
@@ -214,7 +219,8 @@ public class InspectionPane extends BorderPane {
       metaText.setStyleSpans(0, XMLEditor.computeHighlighting(newValue));
       UIPair selectedPair = metadataCombo.getSelectionModel().getSelectedItem();
       DescObjMetadata selected = (DescObjMetadata) selectedPair.getKey();
-      if (oldValue != null && !"".equals(oldValue) && topButtons.contains(toggleForm) && !textBoxCancelledChange) {
+      if (oldValue != null && !"".equals(oldValue) && topButtons != null && topButtons.contains(toggleForm)
+        && !textBoxCancelledChange) {
         String changeContent = I18n.t("InspectionPane.changeTemplate.content");
         Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
         dlg.initStyle(StageStyle.UNDECORATED);
@@ -943,6 +949,141 @@ public class InspectionPane extends BorderPane {
     docsBottom.getChildren().addAll(remove);
   }
 
+  private void createMultipleSelectedBottom() {
+    BorderPane help = new BorderPane();
+    help.getStyleClass().add("inspectionPart");
+
+    HBox top = new HBox();
+    top.getStyleClass().add("hbox");
+    top.setPadding(new Insets(5, 15, 10, 15));
+
+    Label title = new Label(I18n.t("InspectionPane.multipleSelected.helpTitle").toUpperCase());
+    title.setPadding(new Insets(5, 0, 0, 0));
+    title.getStyleClass().add("title");
+    top.getChildren().add(title);
+    help.setTop(top);
+
+    Label multSelectedHelp = new Label(I18n.t("InspectionPane.multipleSelected.help"));
+    multSelectedHelp.setPadding(new Insets(10, 10, 10, 10));
+    multSelectedHelp.setStyle("-fx-text-fill: black");
+    multSelectedHelp.setWrapText(true);
+
+    help.setCenter(multSelectedHelp);
+
+    BorderPane confirm = new BorderPane();
+    confirm.getStyleClass().add("inspectionPart");
+
+    HBox confirmTop = new HBox();
+    confirmTop.getStyleClass().add("hbox");
+    confirmTop.setPadding(new Insets(5, 15, 10, 15));
+
+    Label confirmTitle = new Label(I18n.t("apply").toUpperCase());
+    confirmTitle.setAlignment(Pos.CENTER_LEFT);
+    confirmTitle.setPadding(new Insets(5, 0, 0, 0));
+    confirmTitle.getStyleClass().add("title");
+    confirmTop.getChildren().add(confirmTitle);
+    confirm.setTop(confirmTop);
+
+    PopOver applyPopOver = new PopOver();
+    applyPopOver.setDetachable(false);
+    applyPopOver.setArrowLocation(PopOver.ArrowLocation.BOTTOM_RIGHT);
+
+    HBox popOverContent = new HBox(10);
+    popOverContent.setPadding(new Insets(5, 15, 5, 15));
+    popOverContent.setAlignment(Pos.CENTER);
+    HBox.setHgrow(popOverContent, Priority.ALWAYS);
+    Label popOverTitle = new Label(I18n.t("InspectionPane.multipleSelected.appliedMessage"));
+    popOverTitle.setStyle("-fx-font-size: 16px");
+    Platform.runLater(() -> {
+      ImageView iv = new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CHECK, Color.GREEN, 32));
+      popOverContent.getChildren().addAll(popOverTitle, iv);
+    });
+    applyPopOver.setContentNode(popOverContent);
+
+    HBox multSelectedSaveBox = new HBox(5);
+    multSelectedSaveBox.setPadding(new Insets(10, 10, 10, 10));
+    multSelectedSaveBox.getStyleClass();
+    multSelectedSaveBox.setStyle("-fx-text-fill: black");
+    Label confirmationLabel = new Label(I18n.t("InspectionPane.multipleSelected.confirm"));
+    confirmationLabel.setStyle("-fx-text-fill: black;");
+    Button save = new Button(I18n.t("apply"));
+    save.setOnAction(event -> {
+      applyMetadatasToMultipleItems();
+      applyPopOver.show(save);
+    });
+
+    HBox space = new HBox();
+    HBox.setHgrow(space, Priority.ALWAYS);
+
+    multSelectedSaveBox.getChildren().addAll(confirmationLabel, space, save);
+    confirm.setCenter(multSelectedSaveBox);
+
+    multSelectedBottom = new VBox(10);
+    multSelectedBottom.getChildren().addAll(help, confirm);
+  }
+
+  private void applyMetadatasToMultipleItems() {
+    List<DescObjMetadata> metadataList = currentDescOb.getMetadata();
+    if (!metadataList.isEmpty()) {
+      selectedItems.forEach(item -> {
+        DescriptionObject itemDO = null;
+        if (item instanceof SchemaNode)
+          itemDO = ((SchemaNode) item).getDob();
+        if (item instanceof SipPreviewNode)
+          itemDO = ((SipPreviewNode) item).getSip();
+        if (itemDO != null) {
+          for (DescObjMetadata metadataObj : metadataList) {
+            applyMetadataFileToDescriptionObject(metadataObj, itemDO, item);
+          }
+        }
+      });
+    }
+  }
+
+  private void applyMetadataFileToDescriptionObject(DescObjMetadata metadataObj, DescriptionObject descObj,
+    TreeItem<String> treeItem) {
+    if (metadataObj.getCreatorOption() != MetadataOptions.TEMPLATE) {
+      // remove the metadata files with the same ID as the new one
+      List<DescObjMetadata> toRemove = new ArrayList<>();
+      descObj.getMetadata().forEach(descObjMetadata -> {
+        if (descObjMetadata.getId().equals(metadataObj.getId()))
+          toRemove.add(descObjMetadata);
+      });
+      descObj.getMetadata().removeAll(toRemove);
+      // add a clone of the new metadata
+      descObj.getMetadata().add(metadataObj.clone());
+    } else {
+      boolean merged = false;
+      for (DescObjMetadata descObjMetadata : descObj.getMetadata()) {
+        if (descObjMetadata.getId().equals(metadataObj.getId())) {
+          merged = true;
+          Set<MetadataValue> metadataObjValues = metadataObj.getValues();
+          Set<MetadataValue> descObjMetadataValues = descObjMetadata.getValues();
+          for (MetadataValue metadataObjValue : metadataObjValues) {
+            for (MetadataValue descObjMetadataValue : descObjMetadataValues) {
+              if (metadataObjValue.getId().equals(descObjMetadataValue.getId())) {
+                // ignore the new value when it's {{auto-generate}} or {{mixed}}
+                if (metadataObjValue.get("value") == null || (!metadataObjValue.get("value").equals("{{auto-generate}}")
+                  && !metadataObjValue.get("value").equals("{{mixed}}"))) {
+                  descObjMetadataValue.set("value", metadataObjValue.get("value"));
+                  descObjMetadataValue.set("auto-generate", null);
+
+                  // we need to set the value of the tree item here, otherwise
+                  // the "title" option will be overriden by the UI
+                  if (metadataObjValue.getId().equals("title"))
+                    treeItem.setValue((String) metadataObjValue.get("value"));
+                }
+              }
+            }
+          }
+        }
+      }
+      if (!merged) {
+        descObj.getMetadata().add(metadataObj.clone());
+      }
+    }
+  }
+
   private void createContent(SipPreviewNode node, boolean active) {
     SipContentDirectory newRoot = new SipContentDirectory(new TreeNode(Paths.get("")), null);
     if (active) {
@@ -1155,6 +1296,7 @@ public class InspectionPane extends BorderPane {
     currentSIPNode = sip;
     currentDescOb = sip.getSip();
     currentSchema = null;
+    selectedItems = null;
     if (contentTask != null && contentTask.isRunning()) {
       contentTask.cancel(true);
     }
@@ -1174,36 +1316,29 @@ public class InspectionPane extends BorderPane {
     // we need to account for the size of the combo-box, otherwise the top box
     // is too tall
     topBox.setPadding(new Insets(11, 15, 11, 15));
-    // Content Type combo box
-    ComboBox<UIPair> contentType = new ComboBox<>();
-    List<UIPair> contTypeList = new ArrayList<>();
-    for (IPContentType.IPContentTypeEnum ct : IPContentType.IPContentTypeEnum.values()) {
-      IPContentType ipCT = new IPContentType(ct);
-      contTypeList.add(new UIPair(ipCT, ipCT.getType()));
-    }
-    // sort the list as strings
-    Collections.sort(contTypeList, (o1, o2) -> o1.toString().compareTo(o2.toString()));
-    contentType.setItems(FXCollections.observableList(contTypeList));
-    contentType.getSelectionModel()
-      .select(new UIPair(sip.getSip().getContentType(), sip.getSip().getContentType().getType()));
-    contentType.valueProperty()
-      .addListener((obs, old, newValue) -> sip.getSip().setContentType((IPContentType) newValue.getKey()));
-    contentType.setMinWidth(85);
-    contentType.setCellFactory(param -> new ComboBoxListCell<UIPair>() {
-      @Override
-      public void updateItem(UIPair item, boolean empty) {
-        super.updateItem(item, empty);
-        if (item != null && item.getKey() != null) {
-          String translation = I18n.t("IPContentType." + item.getValue().toString());
-          if (translation == null || "".equals(translation))
-            translation = item.getValue().toString();
-          setTooltip(new Tooltip(translation));
-        }
-      }
-    });
-    contentType.setTooltip(new Tooltip(I18n.t("InspectionPane.sipTypeTooltip")));
 
-    top.getChildren().addAll(space, contentType);
+    PopOver editPopOver = new PopOver();
+    editPopOver.setDetachable(false);
+    editPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_RIGHT);
+
+    HBox popOverContent = new HBox(10);
+    popOverContent.getStyleClass().add("inspectionPart");
+    popOverContent.setPadding(new Insets(5, 15, 5, 15));
+    popOverContent.setAlignment(Pos.CENTER);
+    HBox.setHgrow(popOverContent, Priority.ALWAYS);
+    Label sipTypeLabel = new Label(I18n.t("InspectionPane.sipTypeTooltip"));
+    sipTypeLabel.setStyle("-fx-text-fill: black");
+    popOverContent.getChildren().addAll(sipTypeLabel, createSIPTypeComboBox());
+    editPopOver.setContentNode(popOverContent);
+
+    Button editButton = new Button();
+    Platform.runLater(() -> {
+      ImageView iv = new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.PENCIL, Color.WHITE, 16));
+      editButton.setGraphic(iv);
+    });
+    editButton.setOnAction(event -> editPopOver.show(editButton));
+
+    top.getChildren().addAll(space, editButton);
 
     topSubtitle.getChildren().addAll(space, top);
 
@@ -1238,6 +1373,7 @@ public class InspectionPane extends BorderPane {
     setTop(topBox);
     currentDescOb = node.getDob();
     currentSIPNode = null;
+    selectedItems = null;
     currentSchema = node;
     if (contentTask != null && contentTask.isRunning()) {
       contentTask.cancel(true);
@@ -1267,13 +1403,155 @@ public class InspectionPane extends BorderPane {
     setCenter(center);
   }
 
+  public void update(List<TreeItem<String>> selectedItems) {
+    setTop(topBox);
+    currentSchema = null;
+    currentSIPNode = null;
+    this.selectedItems = selectedItems;
+    // create a temporary description object to hold the metadata
+    currentDescOb = new DescriptionObject();
+    currentDescOb.getMetadata().clear();
+
+    Map<String, MetadataValue> commonMV = new HashMap<>();
+    String commonTemplate = null, commonVersion = null;
+    boolean common = true;
+    for (TreeItem ti : selectedItems) {
+      if (!common)
+        continue;
+
+      DescriptionObject dob;
+      if (ti instanceof SipPreviewNode)
+        dob = ((SipPreviewNode) ti).getSip();
+      else if (ti instanceof SchemaNode)
+        dob = ((SchemaNode) ti).getDob();
+      else
+        continue;
+
+      for (DescObjMetadata dobm : dob.getMetadata()) {
+        // Check if the creator option, template and version are the same as the
+        // previously analysed items
+        if (dobm.getCreatorOption() != MetadataOptions.TEMPLATE) {
+          common = false;
+          continue;
+        }
+        if (commonTemplate == null)
+          commonTemplate = dobm.getTemplateType();
+        if (commonVersion == null)
+          commonVersion = dobm.getVersion();
+
+        if (!commonTemplate.equals(dobm.getTemplateType()) || !commonVersion.equals(dobm.getVersion())) {
+          common = false;
+        }
+        // Add the metadata values to the common set
+        for (MetadataValue mv : dob.getMetadataValueMap(dobm)) {
+          if (commonMV.containsKey(mv.getId())) {
+            if (mv.get("value") == null && commonMV.get(mv.getId()).get("value") == null)
+              continue;
+            String mvValue = (String) mv.get("value");
+            String commonMVvalue = (String) commonMV.get(mv.getId()).get("value");
+            if (mvValue == null || !mvValue.equals(commonMVvalue)) {
+              commonMV.get(mv.getId()).set("value", "{{mixed}}");
+            }
+          } else {
+            commonMV.put(mv.getId(), mv);
+          }
+        }
+      }
+    }
+
+    if (common) {
+      DescObjMetadata dobm = new DescObjMetadata(MetadataOptions.TEMPLATE, commonTemplate, commonVersion);
+      dobm.setValues(new TreeSet<>(commonMV.values()));
+      currentDescOb.getMetadata().add(dobm);
+      currentDescOb.updatedMetadata(dobm);
+    } else {
+      currentDescOb.setTitle("{{auto-generate}}");
+      currentDescOb.setId("{{auto-generate}}");
+      currentDescOb.setDescriptionlevel("{{auto-generate}}");
+    }
+
+    if (contentTask != null && contentTask.isRunning()) {
+      contentTask.cancel(true);
+    }
+    if (metadataTask != null && metadataTask.isRunning()) {
+      metadataTask.cancel(true);
+    }
+
+    /* Top */
+    topBox.setPadding(new Insets(15, 15, 15, 15));
+    createTopSubtitle(null, String.format("%d %s", selectedItems.size(), I18n.t("items")));
+
+    /* center */
+    center.getChildren().clear();
+    metadata.getChildren().clear();
+    metadata.getChildren().addAll(metadataTopBox);
+    updateMetadataCombo();
+
+    center.getChildren().addAll(metadata, multSelectedBottom);
+    setCenter(center);
+  }
+
+  private HBox createSIPTypeComboBox() {
+    SipPreview sip = currentSIPNode.getSip();
+    HBox result = new HBox(10);
+    result.setAlignment(Pos.CENTER_LEFT);
+
+    // Text field for the OTHER content type
+    TextField otherTextField = new TextField();
+    otherTextField.textProperty().addListener((obs, old, newValue) -> sip.getContentType().setOtherType(newValue));
+    // Content Type combo box
+    ComboBox<UIPair> contentType = new ComboBox<>();
+    List<UIPair> contTypeList = new ArrayList<>();
+
+    result.getChildren().addAll(contentType);
+
+    for (IPContentType.IPContentTypeEnum ct : IPContentType.IPContentTypeEnum.values()) {
+      IPContentType ipCT = new IPContentType(ct);
+      contTypeList.add(new UIPair(ipCT, ipCT.getType()));
+    }
+    // sort the list as strings
+    Collections.sort(contTypeList, (o1, o2) -> o1.toString().compareTo(o2.toString()));
+    contentType.setItems(FXCollections.observableList(contTypeList));
+    contentType.valueProperty().addListener((obs, old, newValue) -> {
+      sip.setContentType((IPContentType) newValue.getKey());
+      if (((IPContentType) newValue.getKey()).getType() == IPContentType.IPContentTypeEnum.OTHER) {
+        if (!result.getChildren().contains(otherTextField)) {
+          result.getChildren().add(otherTextField);
+          otherTextField.setText(sip.getContentType().getOtherType());
+        }
+      } else {
+        if (result.getChildren().contains(otherTextField))
+          result.getChildren().remove(otherTextField);
+      }
+    });
+    contentType.getSelectionModel().select(new UIPair(sip.getContentType(), sip.getContentType().getType()));
+    contentType.setMinWidth(85);
+    contentType.setCellFactory(param -> new ComboBoxListCell<UIPair>() {
+      @Override
+      public void updateItem(UIPair item, boolean empty) {
+        super.updateItem(item, empty);
+        if (item != null && item.getKey() != null) {
+          String translation = I18n.t("IPContentType." + item.getValue().toString());
+          if (translation == null || "".equals(translation))
+            translation = item.getValue().toString();
+          setTooltip(new Tooltip(translation));
+        }
+      }
+    });
+    contentType.setTooltip(new Tooltip(I18n.t("InspectionPane.sipTypeTooltip")));
+    return result;
+  }
+
   private void createTopSubtitle(ImageView icon, String text) {
     paneTitle = new Label(text);
     paneTitle.setWrapText(true);
     paneTitle.getStyleClass().add("top-subtitle");
     topSubtitle.setAlignment(Pos.CENTER_LEFT);
     topSubtitle.getChildren().clear();
-    topSubtitle.getChildren().addAll(icon, paneTitle);
+    if (icon != null)
+      topSubtitle.getChildren().addAll(icon, paneTitle);
+    else
+      topSubtitle.getChildren().add(paneTitle);
   }
 
   private void updateMetadataCombo() {
@@ -1472,8 +1750,6 @@ public class InspectionPane extends BorderPane {
   public void updateMetadataList(DescriptionObject descriptionObject) {
     if (descriptionObject == currentDescOb) {
       updateMetadataCombo();
-      metadataCombo.getSelectionModel().clearSelection();
-      metadataCombo.getSelectionModel().selectLast();
       RodaIn.getSchemePane().setModifiedPlan(true);
     }
   }

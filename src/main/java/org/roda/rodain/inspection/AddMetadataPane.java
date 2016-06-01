@@ -26,6 +26,8 @@ import org.roda.rodain.utils.UIPair;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -43,10 +45,12 @@ public class AddMetadataPane extends BorderPane {
   private Button chooseFile, btCancel, btContinue;
   private TextField emptyFileNameTxtField;
 
-  private HBoxCell cellSingleFile;
+  private HBoxCell cellSingleFile, cellEmptyFile;
   private Stage stage;
   private DescriptionObject descriptionObject;
   private Path selectedPath;
+
+  private ComboBox<UIPair> comboTypesSingleFile, comboTypesNewFile;
 
   public AddMetadataPane(Stage stage, DescriptionObject descriptionObject) {
     this.stage = stage;
@@ -104,6 +108,19 @@ public class AddMetadataPane extends BorderPane {
       }
     });
 
+    List<UIPair> typesList = new ArrayList<>();
+    String metaTypesRaw = AppProperties.getConfig("metadata.types");
+    if (metaTypesRaw != null) {
+      String[] metaTypes = metaTypesRaw.split(",");
+      for (String type : metaTypes) {
+        String title = AppProperties.getConfig("metadata.type." + type + ".title");
+        String value = AppProperties.getConfig("metadata.type." + type + ".value");
+        if (title == null || value == null)
+          continue;
+        typesList.add(new UIPair(value, title));
+      }
+    }
+
     String icon = AppProperties.getStyle("metadata.template.icon");
     String title = I18n.t("metadata.template.title");
     String description = I18n.t("metadata.template.description");
@@ -113,13 +130,13 @@ public class AddMetadataPane extends BorderPane {
     icon = AppProperties.getStyle("metadata.singleFile.icon");
     title = I18n.t("metadata.singleFile.title");
     description = I18n.t("metadata.singleFile.description");
-    cellSingleFile = new HBoxCell("meta1", icon, title, description, optionsSingleFile());
+    cellSingleFile = new HBoxCell("meta1", icon, title, description, optionsSingleFile(typesList));
     cellSingleFile.setUserData(OPTIONS.SINGLE_FILE);
 
     icon = AppProperties.getStyle("metadata.emptyFile.icon");
     title = I18n.t("metadata.emptyFile.title");
     description = I18n.t("metadata.emptyFile.description");
-    HBoxCell cellEmptyFile = new HBoxCell("meta2", icon, title, description, optionsEmptyFile());
+    cellEmptyFile = new HBoxCell("meta2", icon, title, description, optionsEmptyFile(typesList));
     cellEmptyFile.setUserData(OPTIONS.EMPTY_FILE);
 
     ObservableList<HBoxCell> hboxList = FXCollections.observableArrayList();
@@ -136,8 +153,8 @@ public class AddMetadataPane extends BorderPane {
     boxMetadata.getChildren().addAll(subtitle, metaList);
   }
 
-  private HBox optionsSingleFile() {
-    HBox box = new HBox();
+  private HBox optionsSingleFile(List<UIPair> metaTypeList) {
+    HBox box = new HBox(5);
     box.setAlignment(Pos.CENTER_LEFT);
 
     chooseFile = new Button(I18n.t("RuleModalPane.chooseFile"));
@@ -154,18 +171,39 @@ public class AddMetadataPane extends BorderPane {
       chooseFile.setUserData(selectedPath.toString());
     });
 
-    box.getChildren().add(chooseFile);
+    Label typeLabel = new Label(I18n.t("type") + ":");
+    comboTypesSingleFile = new ComboBox<>(FXCollections.observableList(metaTypeList));
+    comboTypesSingleFile.getSelectionModel().selectFirst();
+    comboTypesSingleFile.valueProperty().addListener(observable -> {
+      metaList.getSelectionModel().clearSelection();
+      metaList.getSelectionModel().select(cellSingleFile);
+    });
+    HBox space = new HBox();
+    HBox.setHgrow(space, Priority.ALWAYS);
+
+    box.getChildren().addAll(chooseFile, space, typeLabel, comboTypesSingleFile);
     return box;
   }
 
-  private HBox optionsEmptyFile() {
+  private HBox optionsEmptyFile(List<UIPair> metaTypeList) {
     HBox box = new HBox(5);
     box.setAlignment(Pos.CENTER_LEFT);
 
     Label lab = new Label(I18n.t("name"));
     emptyFileNameTxtField = new TextField("metadata.xml");
 
-    box.getChildren().addAll(lab, emptyFileNameTxtField);
+    Label typeLabel = new Label(I18n.t("type") + ":");
+    comboTypesNewFile = new ComboBox<>(FXCollections.observableList(metaTypeList));
+    comboTypesNewFile.getSelectionModel().selectFirst();
+    comboTypesNewFile.valueProperty().addListener(observable -> {
+      metaList.getSelectionModel().clearSelection();
+      metaList.getSelectionModel().select(cellEmptyFile);
+    });
+
+    HBox space = new HBox();
+    HBox.setHgrow(space, Priority.ALWAYS);
+
+    box.getChildren().addAll(lab, emptyFileNameTxtField, space, typeLabel, comboTypesNewFile);
     return box;
   }
 
@@ -249,6 +287,10 @@ public class AddMetadataPane extends BorderPane {
             if (selectedPath == null)
               return;
             metadataToAdd = new DescObjMetadata(MetadataOptions.SINGLE_FILE, selectedPath, "");
+            UIPair metaType = comboTypesSingleFile.getSelectionModel().getSelectedItem();
+            if (metaType != null) {
+              metadataToAdd.setMetadataType((String) metaType.getKey());
+            }
             break;
           case EMPTY_FILE:
             String name = emptyFileNameTxtField.getText();
@@ -256,6 +298,11 @@ public class AddMetadataPane extends BorderPane {
               return;
             metadataToAdd = new DescObjMetadata();
             metadataToAdd.setId(name);
+            metadataToAdd.setContentDecoded("");
+            UIPair metaTypeEmpty = comboTypesNewFile.getSelectionModel().getSelectedItem();
+            if (metaTypeEmpty != null) {
+              metadataToAdd.setMetadataType((String) metaTypeEmpty.getKey());
+            }
             break;
         }
 

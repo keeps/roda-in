@@ -10,6 +10,7 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.util.Callback;
 import org.roda.rodain.core.RodaIn;
+import org.roda.rodain.utils.AutoscrollTreeView;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -21,7 +22,7 @@ import java.util.Set;
  * @author Andre Pereira apereira@keep.pt
  * @since 07-03-2016.
  */
-public class SipDataTreeView extends TreeView {
+public class SipDataTreeView extends AutoscrollTreeView {
 
   public SipDataTreeView() {
     setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {

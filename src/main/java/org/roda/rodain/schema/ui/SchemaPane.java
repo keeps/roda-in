@@ -39,6 +39,7 @@ import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
+import org.roda.rodain.utils.AutoscrollTreeView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -201,7 +202,7 @@ public class SchemaPane extends BorderPane {
     createRootNode();
 
     // create the tree view
-    treeView = new TreeView<>(rootNode);
+    treeView = new AutoscrollTreeView<>(rootNode);
     treeView.getStyleClass().add("main-tree");
     treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     VBox.setVgrow(treeView, Priority.ALWAYS);
@@ -231,19 +232,27 @@ public class SchemaPane extends BorderPane {
           ((SchemaNode) oldValue).setBlackIconSelected(true);
           forceUpdate(oldValue);
         }
+
         if (newValue != null) {
-          if (newValue instanceof SipPreviewNode) {
-            ((SipPreviewNode) newValue).setBlackIconSelected(false);
-            forceUpdate(newValue);
-            RodaIn.getInspectionPane().update((SipPreviewNode) newValue);
+          List<TreeItem<String>> selectedItems = treeView.getSelectionModel().getSelectedItems();
+          if (selectedItems.size() == 1) {
+            // only one item is selected
+            if (newValue instanceof SipPreviewNode) {
+              ((SipPreviewNode) newValue).setBlackIconSelected(false);
+              forceUpdate(newValue);
+              RodaIn.getInspectionPane().update((SipPreviewNode) newValue);
+            }
+            if (newValue instanceof SchemaNode) {
+              ((SchemaNode) newValue).setBlackIconSelected(false);
+              forceUpdate(newValue);
+              RodaIn.getInspectionPane().update((SchemaNode) newValue);
+            }
+            SchemeItemToString sits = new SchemeItemToString(treeView.getSelectionModel().getSelectedItems());
+            sits.createAndUpdateFooter();
+          } else {
+            // more than one item is selected
+            RodaIn.getInspectionPane().update(selectedItems);
           }
-          if (newValue instanceof SchemaNode) {
-            ((SchemaNode) newValue).setBlackIconSelected(false);
-            forceUpdate(newValue);
-            RodaIn.getInspectionPane().update((SchemaNode) newValue);
-          }
-          SchemeItemToString sits = new SchemeItemToString(treeView.getSelectionModel().getSelectedItems());
-          sits.createAndUpdateFooter();
         } else
           Footer.setClassPlanStatus("");
       }
@@ -363,7 +372,7 @@ public class SchemaPane extends BorderPane {
         } else {
           // Get a list with the items where the id equals the node's parent's
           // id
-          List<DescriptionObject> parents = dos.stream().filter(p -> p.getId().equals(descObj.getParentId()))
+          List<DescriptionObject> parents = dos.stream().filter(p -> descObj.getParentId().equals(p.getId()))
             .collect(Collectors.toList());
           // If the input file is well formed, there should be one item in the
           // list, no more and no less
@@ -385,8 +394,7 @@ public class SchemaPane extends BorderPane {
           }
           SchemaNode node;
           // If the node hasn't been added yet, create it and add it to the
-          // nodes
-          // map
+          // nodes map
           if (nodes.containsKey(descObj.getId())) {
             node = nodes.get(descObj.getId());
           } else {
