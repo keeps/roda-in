@@ -40,7 +40,7 @@ public class MainTest extends ApplicationTest {
     main = new RodaIn();
     main.start(stage);
 
-    sleep(3000);
+    sleep(6000);
 
     schemaPane = RodaIn.getSchemePane();
     fileExplorer = RodaIn.getFileExplorer();
