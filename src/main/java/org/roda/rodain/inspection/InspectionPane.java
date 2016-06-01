@@ -219,7 +219,8 @@ public class InspectionPane extends BorderPane {
       metaText.setStyleSpans(0, XMLEditor.computeHighlighting(newValue));
       UIPair selectedPair = metadataCombo.getSelectionModel().getSelectedItem();
       DescObjMetadata selected = (DescObjMetadata) selectedPair.getKey();
-      if (oldValue != null && !"".equals(oldValue) && topButtons.contains(toggleForm) && !textBoxCancelledChange) {
+      if (oldValue != null && !"".equals(oldValue) && topButtons != null && topButtons.contains(toggleForm)
+        && !textBoxCancelledChange) {
         String changeContent = I18n.t("InspectionPane.changeTemplate.content");
         Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
         dlg.initStyle(StageStyle.UNDECORATED);
@@ -1061,9 +1062,9 @@ public class InspectionPane extends BorderPane {
           for (MetadataValue metadataObjValue : metadataObjValues) {
             for (MetadataValue descObjMetadataValue : descObjMetadataValues) {
               if (metadataObjValue.getId().equals(descObjMetadataValue.getId())) {
-                // ignore the new value when it's {{auto-generate}}
-                if (metadataObjValue.get("value") == null
-                  || !metadataObjValue.get("value").equals("{{auto-generate}}")) {
+                // ignore the new value when it's {{auto-generate}} or {{mixed}}
+                if (metadataObjValue.get("value") == null || (!metadataObjValue.get("value").equals("{{auto-generate}}")
+                  && !metadataObjValue.get("value").equals("{{mixed}}"))) {
                   descObjMetadataValue.set("value", metadataObjValue.get("value"));
                   descObjMetadataValue.set("auto-generate", null);
 
@@ -1410,9 +1411,64 @@ public class InspectionPane extends BorderPane {
     // create a temporary description object to hold the metadata
     currentDescOb = new DescriptionObject();
     currentDescOb.getMetadata().clear();
-    currentDescOb.setTitle("{{auto-generate}}");
-    currentDescOb.setId("{{auto-generate}}");
-    currentDescOb.setDescriptionlevel("{{auto-generate}}");
+
+    Map<String, MetadataValue> commonMV = new HashMap<>();
+    String commonTemplate = null, commonVersion = null;
+    boolean common = true;
+    for (TreeItem ti : selectedItems) {
+      if (!common)
+        continue;
+
+      DescriptionObject dob;
+      if (ti instanceof SipPreviewNode)
+        dob = ((SipPreviewNode) ti).getSip();
+      else if (ti instanceof SchemaNode)
+        dob = ((SchemaNode) ti).getDob();
+      else
+        continue;
+
+      for (DescObjMetadata dobm : dob.getMetadata()) {
+        // Check if the creator option, template and version are the same as the
+        // previously analysed items
+        if (dobm.getCreatorOption() != MetadataOptions.TEMPLATE) {
+          common = false;
+          continue;
+        }
+        if (commonTemplate == null)
+          commonTemplate = dobm.getTemplateType();
+        if (commonVersion == null)
+          commonVersion = dobm.getVersion();
+
+        if (!commonTemplate.equals(dobm.getTemplateType()) || !commonVersion.equals(dobm.getVersion())) {
+          common = false;
+        }
+        // Add the metadata values to the common set
+        for (MetadataValue mv : dob.getMetadataValueMap(dobm)) {
+          if (commonMV.containsKey(mv.getId())) {
+            if (mv.get("value") == null && commonMV.get(mv.getId()).get("value") == null)
+              continue;
+            String mvValue = (String) mv.get("value");
+            String commonMVvalue = (String) commonMV.get(mv.getId()).get("value");
+            if (mvValue == null || !mvValue.equals(commonMVvalue)) {
+              commonMV.get(mv.getId()).set("value", "{{mixed}}");
+            }
+          } else {
+            commonMV.put(mv.getId(), mv);
+          }
+        }
+      }
+    }
+
+    if (common) {
+      DescObjMetadata dobm = new DescObjMetadata(MetadataOptions.TEMPLATE, commonTemplate, commonVersion);
+      dobm.setValues(new TreeSet<>(commonMV.values()));
+      currentDescOb.getMetadata().add(dobm);
+      currentDescOb.updatedMetadata(dobm);
+    } else {
+      currentDescOb.setTitle("{{auto-generate}}");
+      currentDescOb.setId("{{auto-generate}}");
+      currentDescOb.setDescriptionlevel("{{auto-generate}}");
+    }
 
     if (contentTask != null && contentTask.isRunning()) {
       contentTask.cancel(true);
