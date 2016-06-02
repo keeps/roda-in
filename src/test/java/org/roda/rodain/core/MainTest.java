@@ -170,6 +170,7 @@ public class MainTest extends ApplicationTest {
     assert parent.getChildren().size() == 14;
 
     clickOn("#removeLevel");
+    sleep(1000);
     try {
       // push(KeyCode.RIGHT);
       push(KeyCode.ENTER);
