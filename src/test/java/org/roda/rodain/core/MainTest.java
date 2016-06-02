@@ -169,23 +169,6 @@ public class MainTest extends ApplicationTest {
 
     assert parent.getChildren().size() == 14;
 
-    clickOn("#removeLevel");
-    sleep(1000);
-    try {
-      clickOn("OK");
-    } catch (Exception e) {
-      try {
-        push(KeyCode.LEFT);
-        push(KeyCode.ENTER);
-      } catch (Exception e2) {
-      }
-    }
-
-    sleep(3000); // wait for the SIP removal
-    assert parent.getChildren() != null;
-    System.out.println(parent.getChildren().size());
-    assert parent.getChildren().size() == 13;
-
     clickOn("UCP");
     clickOn("#removeRule1");
     sleep(1000); // wait for the rule to be removed
