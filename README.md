@@ -102,9 +102,9 @@ The available options that alter the fields created for each tag are:
 * order - the order of the field
 * type - the type of the field. The possible values are:
   * text - text field
-	* text-area - Text area. Larger than a field text.
-	* date - text field with a date picker
-	* list - list with the possible values (combo box)
+  * text-area - Text area. Larger than a field text.
+  * date - text field with a date picker
+  * list - list with the possible values (combo box)
 * list - List with the possible values that a field can have. Usable when \verb|type="list"|. The format is a JSON array. Example: \verb|[option A, option B, "option C"]|
 * label - The label that appears to the left of the field.
 * mandatory - If set to true the label is styled in bold to draw attention.
@@ -113,9 +113,9 @@ The available options that alter the fields created for each tag are:
   * now - the current date in the format year/month/day
   * id - generates an identifier
   * title - generates a title
-	* level - adds the current description level
-	* parentid - adds the parent's id, if it exists
-	* language - adds the system language, based on the locale. Example: "português" or "English"
+  * level - adds the current description level
+  * parentid - adds the parent's id, if it exists
+  * language - adds the system language, based on the locale. Example: "português" or "English"
 
 The following is an example of how the tags can be used:
 
