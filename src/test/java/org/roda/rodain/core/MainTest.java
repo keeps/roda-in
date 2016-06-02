@@ -179,6 +179,7 @@ public class MainTest extends ApplicationTest {
 
     sleep(3000); // wait for the SIP removal
     assert parent.getChildren() != null;
+    System.out.println(parent.getChildren().size());
     assert parent.getChildren().size() == 13;
 
     clickOn("UCP");
