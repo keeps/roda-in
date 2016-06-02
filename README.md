@@ -92,6 +92,36 @@ alt="Tutorial" width="240" height="180" border="1" /></a>
 " target="_blank"><img src="http://img.youtube.com/vi/nJEeTFdEyWM/0.jpg" 
 alt="Tutorial" width="240" height="180" border="1" /></a>
 
+#### The templating system
+
+Since it's tedious to edit the template files by hand, we added a way to create forms based on the fields of the templates. Using the powerful Handlebars engine, anyone can create template files with the necessary information to create the form. In addition to a simple tag, (e.g. {{person}}), we can now add options which will modify the way each field is created. These options are key-value elements, e.g. `title="SIP creation using RODA-in"`, where the key is the name of the option and the value is the value that will be given to that option. Only the first tag should have options, i.e., if there's two tags with the same name, the options of the second are ignored. The options are not required, the form is still created with a simple tag, which creates a simple text field.
+
+The available options that alter the fields created for each tag are:
+
+* value - the predefined value of the field
+* order - the order of the field
+* type - the type of the field. The possible values are:
+  * text - text field
+	* text-area - Text area. Larger than a field text.
+	* date - text field with a date picker
+	* list - list with the possible values (combo box)
+* list - List with the possible values that a field can have. Usable when \verb|type="list"|. The format is a JSON array. Example: \verb|[option A, option B, "option C"]|
+* label - The label that appears to the left of the field.
+* mandatory - If set to true the label is styled in bold to draw attention.
+* hidden - If set to true the field is hidden
+* auto-generated - Fills the value with one of the available generators. Overrides the value option:
+  * now - the current date in the format year/month/day
+  * id - generates an identifier
+  * title - generates a title
+	* level - adds the current description level
+	* parentid - adds the parent's id, if it exists
+	* language - adds the system language, based on the locale. Example: "português" or "English"
+
+The following is an example of how the tags can be used:
+
+```
+{{title order=1 type="text" label="Template title" mandatory=true auto-generated="title"}}
+```
 
 ## How to build from source
 
