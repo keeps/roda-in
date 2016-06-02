@@ -1,11 +1,17 @@
 package org.roda.rodain.core;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import javafx.application.Platform;
 import javafx.scene.control.TreeItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
+
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,11 +23,6 @@ import org.roda.rodain.schema.ui.SipPreviewNode;
 import org.roda.rodain.source.ui.FileExplorerPane;
 import org.roda.rodain.testing.Utils;
 import org.testfx.framework.junit.ApplicationTest;
-
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -102,7 +103,6 @@ public class MainTest extends ApplicationTest {
     SchemaNode newNode = (SchemaNode) newItem;
     DescriptionObject dobj = newNode.getDob();
     assert dobj != null;
-    assert dobj.getDescriptionlevel() != null;
 
     sleep(2000);
     drag("Node2").dropTo(".tree-view");
@@ -177,7 +177,8 @@ public class MainTest extends ApplicationTest {
     } catch (Exception e) {
     }
 
-    sleep(2000); // wait for the SIP removal
+    sleep(3000); // wait for the SIP removal
+    assert parent.getChildren() != null;
     assert parent.getChildren().size() == 13;
 
     clickOn("UCP");
