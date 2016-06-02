@@ -172,9 +172,13 @@ public class MainTest extends ApplicationTest {
     clickOn("#removeLevel");
     sleep(1000);
     try {
-      // push(KeyCode.RIGHT);
-      push(KeyCode.ENTER);
+      clickOn("OK");
     } catch (Exception e) {
+      try {
+        push(KeyCode.LEFT);
+        push(KeyCode.ENTER);
+      } catch (Exception e2) {
+      }
     }
 
     sleep(3000); // wait for the SIP removal
