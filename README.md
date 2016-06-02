@@ -109,7 +109,7 @@ The available options that alter the fields created for each tag are:
 * label - The label that appears to the left of the field.
 * mandatory - If set to true the label is styled in bold to draw attention.
 * hidden - If set to true the field is hidden
-* auto-generated - Fills the value with one of the available generators. Overrides the value option:
+* auto-generate - Fills the value with one of the available generators. Overrides the value option:
   * now - the current date in the format year/month/day
   * id - generates an identifier
   * title - generates a title
