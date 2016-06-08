@@ -467,7 +467,6 @@ public class SchemaPane extends BorderPane {
     removeLevel.setOnAction(event -> {
       List<TreeItem<String>> selectedItems = new ArrayList<>(treeView.getSelectionModel().getSelectedItems());
       Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
-      dlg.getDialogPane().setMinWidth(150);
       dlg.initStyle(StageStyle.UNDECORATED);
       dlg.setHeaderText(I18n.t("SchemaPane.confirmRemove.header"));
       dlg.setTitle(I18n.t("SchemaPane.confirmRemove.title"));
