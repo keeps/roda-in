@@ -44,6 +44,7 @@ import org.roda.rodain.sip.SipPreview;
 import org.roda.rodain.source.ui.FileExplorerPane;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
+import org.roda.rodain.utils.OpenPathInExplorer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -341,6 +342,10 @@ public class RodaIn extends Application {
       }
     });
 
+    final MenuItem openConfigurationFolder = new MenuItem(I18n.t("Main.openConfigurationFolder"));
+    openConfigurationFolder.setAccelerator(KeyCombination.keyCombination("Ctrl+G"));
+    openConfigurationFolder.setOnAction(event -> OpenPathInExplorer.open(AppProperties.getRodainPath()));
+
     final MenuItem openFolder = new MenuItem(I18n.t("Main.addFolder"));
     openFolder.setAccelerator(KeyCombination.keyCombination("Ctrl+O"));
     openFolder.setOnAction(event -> fileExplorer.chooseNewRoot());
@@ -374,7 +379,7 @@ public class RodaIn extends Application {
       }
     });
 
-    menuFile.getItems().addAll(reset, openFolder, createSIPs, quit);
+    menuFile.getItems().addAll(reset, openFolder, createSIPs, openConfigurationFolder, quit);
 
     // Classification scheme
     final MenuItem createCS = new MenuItem(I18n.t("Main.createCS"));
