@@ -1,10 +1,10 @@
 package org.roda.rodain.sip;
 
-import org.roda.rodain.core.I18n;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.MissingResourceException;
+
+import org.roda.rodain.core.I18n;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -61,13 +61,15 @@ public class MetadataValue implements Comparable {
   }
 
   private static String getTitle(String var) {
-    String result = var;
+    String result = null;
     try {
       result = I18n.t("metadata." + var);
     } catch (MissingResourceException e) {
       // we will use the name of the variable if there's no available title
       // no need to log the exception or rethrow it
     }
+    if (result == null)
+      result = var;
     return result;
   }
 
