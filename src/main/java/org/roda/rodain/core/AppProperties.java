@@ -1,13 +1,5 @@
 package org.roda.rodain.core;
 
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
-import org.roda.rodain.utils.FolderBasedUTF8Control;
-import org.roda.rodain.utils.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.swing.filechooser.FileSystemView;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -16,6 +8,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+
+import javax.swing.filechooser.FileSystemView;
+
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
+import org.roda.rodain.utils.FolderBasedUTF8Control;
+import org.roda.rodain.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -320,6 +321,21 @@ public class AppProperties {
     }
     // if it isn't a string then it must be a list Ex: a,b,c,d
     return String.join(",", descLevels.getStringArray(key));
+  }
+
+  public static String getLocalizedString(String key, String languageTag) {
+    ResourceBundle localResourceBundle = ResourceBundle.getBundle("properties/lang", Locale.forLanguageTag(languageTag),
+      new FolderBasedUTF8Control());
+    String result = null;
+
+    try {
+      result = localResourceBundle.getString(key);
+    } catch (MissingResourceException e) {
+      LOGGER.warn(String.format("Missing translation for %s in language: %s", key,
+        localResourceBundle.getLocale().getDisplayName()));
+      result = getLocalizedString(key);
+    }
+    return result;
   }
 
   /**

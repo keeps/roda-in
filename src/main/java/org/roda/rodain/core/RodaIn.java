@@ -1,5 +1,14 @@
 package org.roda.rodain.core;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -21,6 +30,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
 import org.roda.rodain.creation.ui.CreationModalPreparation;
 import org.roda.rodain.creation.ui.CreationModalStage;
 import org.roda.rodain.inspection.InspectionPane;
@@ -33,17 +43,9 @@ import org.roda.rodain.schema.ui.SchemaPane;
 import org.roda.rodain.sip.SipPreview;
 import org.roda.rodain.source.ui.FileExplorerPane;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
+import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -290,8 +292,12 @@ public class RodaIn extends Application {
     Menu menuClassScheme = new Menu(I18n.t("Main.classScheme"));
     Menu menuView = new Menu(I18n.t("Main.view"));
 
-    // File
     Menu language = new Menu(I18n.t("Main.language"));
+
+    Platform.runLater(
+      () -> language.setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.GLOBE))));
+
+    // File
     final ToggleGroup languageGroup = new ToggleGroup();
     RadioMenuItem langPT = new RadioMenuItem("Português");
     langPT.setUserData("pt");
@@ -326,9 +332,9 @@ public class RodaIn extends Application {
         AppProperties.saveConfig();
         Alert dlg = new Alert(Alert.AlertType.INFORMATION);
         dlg.initStyle(StageStyle.UNDECORATED);
-        dlg.setHeaderText(I18n.t("Main.updateLang.header"));
-        dlg.setTitle(I18n.t("Main.updateLang.title"));
-        dlg.setContentText(I18n.t("Main.updateLang.content"));
+        dlg.setHeaderText(I18n.t("Main.updateLang.header", lang));
+        dlg.setTitle(I18n.t("Main.updateLang.title", lang));
+        dlg.setContentText(I18n.t("Main.updateLang.content", lang));
         dlg.initModality(Modality.APPLICATION_MODAL);
         dlg.initOwner(stage);
         dlg.show();
@@ -368,7 +374,7 @@ public class RodaIn extends Application {
       }
     });
 
-    menuFile.getItems().addAll(reset, openFolder, createSIPs, language, quit);
+    menuFile.getItems().addAll(reset, openFolder, createSIPs, quit);
 
     // Classification scheme
     final MenuItem createCS = new MenuItem(I18n.t("Main.createCS"));
@@ -430,7 +436,7 @@ public class RodaIn extends Application {
 
     menuView.getItems().addAll(showFiles, showIgnored, showMapped);
 
-    menu.getMenus().addAll(menuFile, menuEdit, menuClassScheme, menuView);
+    menu.getMenus().addAll(menuFile, menuEdit, menuClassScheme, menuView, language);
     mainPane.setTop(menu);
   }
 
