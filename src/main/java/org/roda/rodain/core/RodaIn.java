@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +67,9 @@ public class RodaIn extends Application {
   private static FileExplorerPane fileExplorer;
   private static InspectionPane inspectionPane;
   private static SchemaPane schemePane;
+
+  // Languages
+  private RadioMenuItem langEN, langPT, langHU, langES_CL;
 
   private static long lastMessage = System.currentTimeMillis();
 
@@ -300,51 +304,39 @@ public class RodaIn extends Application {
 
     // File
     final ToggleGroup languageGroup = new ToggleGroup();
-    RadioMenuItem langPT = new RadioMenuItem("Português");
+    langPT = new RadioMenuItem("Português");
     langPT.setUserData("pt");
     langPT.setToggleGroup(languageGroup);
-    RadioMenuItem langEN = new RadioMenuItem("English");
+    langEN = new RadioMenuItem("English");
     langEN.setUserData("en");
     langEN.setToggleGroup(languageGroup);
-    RadioMenuItem langHU = new RadioMenuItem("Magyar");
+    langHU = new RadioMenuItem("Magyar");
     langHU.setUserData("hu");
     langHU.setToggleGroup(languageGroup);
-    RadioMenuItem langES_CL = new RadioMenuItem("Español (Chile)");
+    langES_CL = new RadioMenuItem("Español (Chile)");
     langES_CL.setUserData("es-CL");
     langES_CL.setToggleGroup(languageGroup);
     language.getItems().addAll(langEN, langPT, langHU, langES_CL);
 
-    switch (AppProperties.getLocale().getLanguage()) {
-      case "en":
-        langEN.setSelected(true);
-        break;
-      case "pt":
-        langPT.setSelected(true);
-        break;
-      case "hu":
-        langHU.setSelected(true);
-        break;
-      case "es-CL":
-        langES_CL.setSelected(true);
-        break;
-      default:
-        langEN.setSelected(true);
-        break;
-    }
+    updateSelectedLanguageMenu();
 
     languageGroup.selectedToggleProperty().addListener(observable -> {
       if (languageGroup.getSelectedToggle() != null) {
         String lang = (String) languageGroup.getSelectedToggle().getUserData();
-        AppProperties.setConfig("app.language", lang);
-        AppProperties.saveConfig();
-        Alert dlg = new Alert(Alert.AlertType.INFORMATION);
-        dlg.initStyle(StageStyle.UNDECORATED);
-        dlg.setHeaderText(I18n.t("Main.updateLang.header", lang));
-        dlg.setTitle(I18n.t("Main.updateLang.title", lang));
-        dlg.setContentText(I18n.t("Main.updateLang.content", lang));
-        dlg.initModality(Modality.APPLICATION_MODAL);
-        dlg.initOwner(stage);
-        dlg.show();
+        if (!lang.equals(AppProperties.getLocale().getLanguage())) {
+          Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
+          dlg.getButtonTypes().clear();
+          dlg.getButtonTypes().addAll(new ButtonType(I18n.t("cancel", lang), ButtonBar.ButtonData.CANCEL_CLOSE),
+            new ButtonType(I18n.t("restart", lang), ButtonBar.ButtonData.OK_DONE));
+          dlg.initStyle(StageStyle.UNDECORATED);
+          dlg.setHeaderText(I18n.t("Main.updateLang.header", lang));
+          dlg.setTitle(I18n.t("Main.updateLang.title", lang));
+          dlg.setContentText(I18n.t("Main.updateLang.content", lang));
+          dlg.initModality(Modality.APPLICATION_MODAL);
+          dlg.initOwner(stage);
+          dlg.show();
+          dlg.resultProperty().addListener(o -> confirmLanguageChange(lang, dlg.getResult()));
+        }
       }
     });
 
@@ -449,6 +441,64 @@ public class RodaIn extends Application {
 
     menu.getMenus().addAll(menuFile, menuEdit, menuClassScheme, menuView, language);
     mainPane.setTop(menu);
+  }
+
+  private void updateSelectedLanguageMenu() {
+    switch (AppProperties.getLocale().getLanguage()) {
+      case "en":
+        langEN.setSelected(true);
+        break;
+      case "pt":
+        langPT.setSelected(true);
+        break;
+      case "hu":
+        langHU.setSelected(true);
+        break;
+      case "es-CL":
+        langES_CL.setSelected(true);
+        break;
+      default:
+        langEN.setSelected(true);
+        break;
+    }
+  }
+
+  private void confirmLanguageChange(String lang, ButtonType result) {
+    if (result.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+      AppProperties.setConfig("app.language", lang);
+      AppProperties.saveConfig();
+      restartApplication();
+    } else {
+
+      updateSelectedLanguageMenu();
+    }
+  }
+
+  private void restartApplication() {
+    try {
+      final File currentExecutable = new File(RodaIn.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+
+      /* is it a jar or exe file? */
+      if (currentExecutable.getName().endsWith(".jar")) {
+        /* Build command: java -jar application.jar */
+        final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
+        final ArrayList<String> command = new ArrayList<>();
+        command.add(javaBin);
+        command.add("-jar");
+        command.add(currentExecutable.getPath());
+
+        final ProcessBuilder builder = new ProcessBuilder(command);
+        builder.start();
+        System.exit(0);
+      } else if (currentExecutable.getName().endsWith(".exe")) {
+        OpenPathInExplorer.open(currentExecutable.toPath());
+        System.exit(0);
+      }
+    } catch (URISyntaxException e) {
+      LOGGER.error("Error creating URI when restarting the application", e);
+    } catch (IOException e) {
+      LOGGER.error("Error creating the process to restart the application", e);
+    }
   }
 
   private static void closeApp() {
