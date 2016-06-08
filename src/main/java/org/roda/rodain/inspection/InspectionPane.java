@@ -1,5 +1,14 @@
 package org.roda.rodain.inspection;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
@@ -25,6 +34,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.StringConverter;
 import javafx.util.converter.LocalDateStringConverter;
+
 import org.apache.commons.lang.StringUtils;
 import org.controlsfx.control.PopOver;
 import org.fxmisc.richtext.CodeArea;
@@ -56,15 +66,6 @@ import org.roda_project.commons_ip.model.IPContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -718,6 +719,7 @@ public class InspectionPane extends BorderPane {
     Label title = new Label(I18n.t("InspectionPane.help.title"));
     title.getStyleClass().add("helpTitle");
     title.setTextAlignment(TextAlignment.CENTER);
+    title.setWrapText(true);
     titleBox.getChildren().add(title);
 
     box.getChildren().addAll(titleBox);

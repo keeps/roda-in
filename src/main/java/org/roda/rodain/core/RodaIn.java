@@ -309,7 +309,10 @@ public class RodaIn extends Application {
     RadioMenuItem langHU = new RadioMenuItem("Magyar");
     langHU.setUserData("hu");
     langHU.setToggleGroup(languageGroup);
-    language.getItems().addAll(langEN, langPT, langHU);
+    RadioMenuItem langES_CL = new RadioMenuItem("Español (Chile)");
+    langES_CL.setUserData("es-CL");
+    langES_CL.setToggleGroup(languageGroup);
+    language.getItems().addAll(langEN, langPT, langHU, langES_CL);
 
     switch (AppProperties.getLocale().getLanguage()) {
       case "en":
@@ -320,6 +323,9 @@ public class RodaIn extends Application {
         break;
       case "hu":
         langHU.setSelected(true);
+        break;
+      case "es-CL":
+        langES_CL.setSelected(true);
         break;
       default:
         langEN.setSelected(true);

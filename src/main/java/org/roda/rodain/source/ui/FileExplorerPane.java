@@ -1,5 +1,10 @@
 package org.roda.rodain.source.ui;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -14,6 +19,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
 import org.roda.rodain.core.Footer;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.PathCollection;
@@ -24,11 +30,6 @@ import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.Utils;
 import org.roda.rodain.utils.WalkFileTree;
-
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -178,6 +179,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     HBox titleBox = new HBox();
     titleBox.setAlignment(Pos.CENTER);
     Label title = new Label("1. " + I18n.t("FileExplorerPane.help.title"));
+    title.setWrapText(true);
     title.getStyleClass().add("helpTitle");
     title.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(title);
