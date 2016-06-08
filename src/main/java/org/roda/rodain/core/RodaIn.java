@@ -444,7 +444,7 @@ public class RodaIn extends Application {
   }
 
   private void updateSelectedLanguageMenu() {
-    switch (AppProperties.getLocale().getLanguage()) {
+    switch (AppProperties.getLocale().toLanguageTag()) {
       case "en":
         langEN.setSelected(true);
         break;
