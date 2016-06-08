@@ -1,7 +1,13 @@
 package org.roda.rodain.schema;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.net.util.Base64;
 import org.roda.rodain.core.AppProperties;
@@ -12,13 +18,8 @@ import org.roda.rodain.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -178,7 +179,7 @@ public class DescObjMetadata {
         }
       } else {
         if (path != null) {
-          String tempContent = Utils.readFile(path.toString(), Charset.defaultCharset());
+          String tempContent = Utils.readFile(path.toString(), Charset.forName("UTF-8"));
           setContentDecoded(tempContent);
           loaded = true;
         }
