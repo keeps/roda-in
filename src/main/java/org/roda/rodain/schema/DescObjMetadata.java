@@ -42,20 +42,21 @@ public class DescObjMetadata {
     creatorOption = MetadataOptions.NEW_FILE;
   }
 
-  public DescObjMetadata(MetadataOptions creatorOption, String templateType, String version) {
+  public DescObjMetadata(MetadataOptions creatorOption, String templateType, String metadataType, String version) {
     this.creatorOption = creatorOption;
     this.templateType = templateType;
     this.version = version;
     this.contentEncoding = "Base64";
     this.id = templateType + ".xml";
-    this.metadataType = templateType;
+    this.metadataType = metadataType;
   }
 
-  public DescObjMetadata(MetadataOptions creatorOption, Path path, String metadataType) {
+  public DescObjMetadata(MetadataOptions creatorOption, Path path, String metadataType, String version) {
     this.creatorOption = creatorOption;
     this.path = path;
     this.metadataType = metadataType;
     this.contentEncoding = "Base64";
+    this.version = version;
     if (path != null) {
       this.id = path.getFileName().toString();
     }

@@ -1415,7 +1415,7 @@ public class InspectionPane extends BorderPane {
     currentDescOb.getMetadata().clear();
 
     Map<String, MetadataValue> commonMV = new HashMap<>();
-    String commonTemplate = null, commonVersion = null;
+    String commonTemplate = null, commonVersion = null, commonMetadataType = null;
     boolean common = true;
     for (TreeItem ti : selectedItems) {
       if (!common)
@@ -1440,8 +1440,12 @@ public class InspectionPane extends BorderPane {
           commonTemplate = dobm.getTemplateType();
         if (commonVersion == null)
           commonVersion = dobm.getVersion();
+        if (commonMetadataType == null) {
+          commonMetadataType = dobm.getMetadataType();
+        }
 
-        if (!commonTemplate.equals(dobm.getTemplateType()) || !commonVersion.equals(dobm.getVersion())) {
+        if (!commonTemplate.equals(dobm.getTemplateType()) || !commonVersion.equals(dobm.getVersion())
+          || !commonMetadataType.equals(dobm.getMetadataType())) {
           common = false;
         }
         // Add the metadata values to the common set
@@ -1462,7 +1466,8 @@ public class InspectionPane extends BorderPane {
     }
 
     if (common) {
-      DescObjMetadata dobm = new DescObjMetadata(MetadataOptions.TEMPLATE, commonTemplate, commonVersion);
+      DescObjMetadata dobm = new DescObjMetadata(MetadataOptions.TEMPLATE, commonTemplate, commonMetadataType,
+        commonVersion);
       dobm.setValues(new TreeSet<>(commonMV.values()));
       currentDescOb.getMetadata().add(dobm);
       currentDescOb.updatedMetadata(dobm);

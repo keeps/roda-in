@@ -1,26 +1,28 @@
 package org.roda.rodain.rules.ui;
 
+import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.Set;
+
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.stage.Stage;
+
+import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.RuleTypes;
 import org.roda.rodain.rules.VisitorStack;
+import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.sip.SipPreview;
 import org.roda.rodain.sip.creators.SipPreviewCreator;
-import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.utils.ModalStage;
 import org.roda.rodain.utils.TreeVisitor;
 import org.roda.rodain.utils.WalkFileTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -97,33 +99,39 @@ public class RuleModalController {
       MetadataOptions metadataOption = pane.getMetadataOption();
       Path metadataPath = null;
       String templateType = null;
-      String templateVersion = null;
+      String metadataVersion = null;
       String metadataType = null;
+      String rawMetadataType = null;
       switch (metadataOption) {
         case DIFF_DIRECTORY:
           metadataPath = pane.getDiffDir();
-          metadataType = pane.getMetadataTypeDiffFolder();
+          rawMetadataType = pane.getMetadataTypeDiffFolder();
           break;
         case SINGLE_FILE:
           metadataPath = pane.getFromFile();
-          metadataType = pane.getMetadataTypeSingleFile();
+          rawMetadataType = pane.getMetadataTypeSingleFile();
           break;
         case SAME_DIRECTORY:
           templateType = pane.getSameFolderPattern();
-          metadataType = pane.getMetadataTypeSameFolder();
+          rawMetadataType = pane.getMetadataTypeSameFolder();
           break;
         case TEMPLATE:
           String template = pane.getTemplate();
           String[] splitted = template.split("!###!");
           templateType = splitted[0];
-          templateVersion = splitted[1];
+          rawMetadataType = splitted[1];
           break;
         default:
           break;
       }
 
+      if (rawMetadataType != null) {
+        metadataType = AppProperties.getConfig("metadata.type." + rawMetadataType + ".value");
+        metadataVersion = AppProperties.getConfig("metadata.type." + rawMetadataType + ".version");
+      }
+
       Rule rule = new Rule(sourceSet, assocType, metadataPath, templateType, metadataOption, metadataType,
-        templateVersion, schema.getDob().getId());
+        metadataVersion, schema.getDob().getId());
       rule.addObserver(schema);
 
       TreeVisitor visitor = rule.apply();

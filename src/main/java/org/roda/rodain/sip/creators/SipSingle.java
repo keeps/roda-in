@@ -1,17 +1,17 @@
 package org.roda.rodain.sip.creators;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.filters.ContentFilter;
 import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.sip.SipPreview;
 import org.roda.rodain.sip.SipRepresentation;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -34,8 +34,8 @@ public class SipSingle extends SipPreviewCreator {
    *          The type of the metadata template
    */
   public SipSingle(String id, Set<ContentFilter> filters, MetadataOptions metadataOption, String metadataType,
-    Path metadataPath, String templateType, String templateVersion) {
-    super(id, filters, metadataOption, metadataType, metadataPath, templateType, templateVersion);
+    Path metadataPath, String templateType, String metadataVersion) {
+    super(id, filters, metadataOption, metadataType, metadataPath, templateType, metadataVersion);
   }
 
   /**
@@ -116,9 +116,10 @@ public class SipSingle extends SipPreviewCreator {
     SipPreview sipPreview = new SipPreview(path.getFileName().toString(), repSet, null);
 
     if (metadataOption == MetadataOptions.TEMPLATE)
-      sipPreview.getMetadata().add(new DescObjMetadata(metadataOption, templateType, templateVersion));
+      sipPreview.getMetadata().add(new DescObjMetadata(metadataOption, templateType, metadataType, metadataVersion));
     else {
-      metaPath.forEach(mPath -> sipPreview.getMetadata().add(new DescObjMetadata(metadataOption, mPath, metadataType)));
+      metaPath.forEach(mPath -> sipPreview.getMetadata()
+        .add(new DescObjMetadata(metadataOption, mPath, metadataType, metadataVersion)));
     }
 
     for (TreeNode tn : files) {

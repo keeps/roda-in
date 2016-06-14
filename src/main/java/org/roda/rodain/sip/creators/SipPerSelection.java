@@ -1,14 +1,14 @@
 package org.roda.rodain.sip.creators;
 
-import org.roda.rodain.rules.MetadataOptions;
-import org.roda.rodain.rules.TreeNode;
-import org.roda.rodain.rules.filters.ContentFilter;
-
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Set;
+
+import org.roda.rodain.rules.MetadataOptions;
+import org.roda.rodain.rules.TreeNode;
+import org.roda.rodain.rules.filters.ContentFilter;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -38,8 +38,8 @@ public class SipPerSelection extends SipPreviewCreator {
    */
   public SipPerSelection(String id, Set<String> selectedPaths, Set<ContentFilter> filters,
     MetadataOptions metadataOption, String metadataType, Path metadataPath, String templateType,
-    String templateVersion) {
-    super(id, filters, metadataOption, metadataType, metadataPath, templateType, templateVersion);
+    String metadataVersion) {
+    super(id, filters, metadataOption, metadataType, metadataPath, templateType, metadataVersion);
     this.selectedPaths = selectedPaths;
   }
 

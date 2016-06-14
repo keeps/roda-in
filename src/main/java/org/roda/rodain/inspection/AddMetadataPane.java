@@ -1,5 +1,10 @@
 package org.roda.rodain.inspection;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -14,6 +19,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.RodaIn;
@@ -23,11 +29,6 @@ import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.UIPair;
-
-import java.io.File;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -114,10 +115,9 @@ public class AddMetadataPane extends BorderPane {
       String[] metaTypes = metaTypesRaw.split(",");
       for (String type : metaTypes) {
         String title = AppProperties.getConfig("metadata.type." + type + ".title");
-        String value = AppProperties.getConfig("metadata.type." + type + ".value");
-        if (title == null || value == null)
+        if (title == null || type == null)
           continue;
-        typesList.add(new UIPair(value, title));
+        typesList.add(new UIPair(type, title));
       }
     }
 
@@ -217,14 +217,13 @@ public class AddMetadataPane extends BorderPane {
     for (String templ : templates) {
       String trimmed = templ.trim();
       String title = AppProperties.getConfig("metadata.template." + trimmed + ".title");
-      String version = AppProperties.getConfig("metadata.template." + trimmed + ".version");
+      String type = AppProperties.getConfig("metadata.template." + trimmed + ".type");
       if (title == null)
         continue;
       String key = trimmed;
       String value = title;
-      if (version != null) {
-        value += " (" + version + ")";
-        key += "!###!" + version;
+      if (type != null) {
+        key += "!###!" + type;
       }
       UIPair newPair = new UIPair(key, value);
       templateTypes.getItems().add(newPair);
@@ -281,16 +280,20 @@ public class AddMetadataPane extends BorderPane {
           case TEMPLATE:
             String rawTemplateType = (String) templateTypes.getSelectionModel().getSelectedItem().getKey();
             String[] splitted = rawTemplateType.split("!###!");
-            metadataToAdd = new DescObjMetadata(MetadataOptions.TEMPLATE, splitted[0], splitted[1]);
+            String templateType = splitted[0], rawMetadataType = splitted[1], metadataType = null,
+              metadataVersion = null;
+            if (rawMetadataType != null) {
+              metadataType = AppProperties.getConfig("metadata.type." + rawMetadataType + ".value");
+              metadataVersion = AppProperties.getConfig("metadata.type." + rawMetadataType + ".version");
+            }
+            metadataToAdd = new DescObjMetadata(MetadataOptions.TEMPLATE, templateType, metadataType, metadataVersion);
             break;
           case SINGLE_FILE:
             if (selectedPath == null)
               return;
-            metadataToAdd = new DescObjMetadata(MetadataOptions.SINGLE_FILE, selectedPath, "");
+            metadataToAdd = new DescObjMetadata(MetadataOptions.SINGLE_FILE, selectedPath, "", "");
             UIPair metaType = comboTypesSingleFile.getSelectionModel().getSelectedItem();
-            if (metaType != null) {
-              metadataToAdd.setMetadataType((String) metaType.getKey());
-            }
+            addTypeAndVersionToMetadata(metaType, metadataToAdd);
             break;
           case EMPTY_FILE:
             String name = emptyFileNameTxtField.getText();
@@ -300,9 +303,7 @@ public class AddMetadataPane extends BorderPane {
             metadataToAdd.setId(name);
             metadataToAdd.setContentDecoded("");
             UIPair metaTypeEmpty = comboTypesNewFile.getSelectionModel().getSelectedItem();
-            if (metaTypeEmpty != null) {
-              metadataToAdd.setMetadataType((String) metaTypeEmpty.getKey());
-            }
+            addTypeAndVersionToMetadata(metaTypeEmpty, metadataToAdd);
             break;
         }
 
@@ -322,6 +323,16 @@ public class AddMetadataPane extends BorderPane {
         stage.close();
       }
     });
+  }
+
+  private void addTypeAndVersionToMetadata(UIPair metaType, DescObjMetadata metadataToAdd) {
+    if (metaType != null) {
+      String metaTypeKey = (String) metaType.getKey();
+      String metadataType = AppProperties.getConfig("metadata.type." + metaTypeKey + ".value");
+      String metadataVersion = AppProperties.getConfig("metadata.type." + metaTypeKey + ".version");
+      metadataToAdd.setMetadataType(metadataType);
+      metadataToAdd.setVersion(metadataVersion);
+    }
   }
 
   private void createCancelButton() {

@@ -1,5 +1,12 @@
 package org.roda.rodain.rules.ui;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -15,6 +22,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.rules.MetadataOptions;
@@ -26,13 +34,6 @@ import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.UIPair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -231,10 +232,9 @@ public class RuleModalPane extends BorderPane {
       String[] metaTypes = metaTypesRaw.split(",");
       for (String type : metaTypes) {
         String title = AppProperties.getConfig("metadata.type." + type + ".title");
-        String value = AppProperties.getConfig("metadata.type." + type + ".value");
-        if (title == null || value == null)
+        if (title == null || type == null)
           continue;
-        typesList.add(new UIPair(value, title));
+        typesList.add(new UIPair(type, title));
       }
     }
 
@@ -375,14 +375,13 @@ public class RuleModalPane extends BorderPane {
     for (String templ : templates) {
       String trimmed = templ.trim();
       String title = AppProperties.getConfig("metadata.template." + trimmed + ".title");
-      String version = AppProperties.getConfig("metadata.template." + trimmed + ".version");
+      String type = AppProperties.getConfig("metadata.template." + trimmed + ".type");
       if (title == null)
         continue;
       String key = trimmed;
       String value = title;
-      if (version != null) {
-        value += " (" + version + ")";
-        key += "!###!" + version;
+      if (type != null) {
+        key += "!###!" + type;
       }
       UIPair newPair = new UIPair(key, value);
       templateTypes.getItems().add(newPair);

@@ -1,5 +1,10 @@
 package org.roda.rodain.sip.creators;
 
+import java.io.IOException;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.*;
+
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.TreeNode;
@@ -12,11 +17,6 @@ import org.roda.rodain.sip.SipPreview;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -46,8 +46,8 @@ public class SipsWithStructure extends SipPreviewCreator {
    *          The type of the metadata template
    */
   public SipsWithStructure(String id, Set<ContentFilter> filters, MetadataOptions metadataOption, String metadataType,
-    Path metadataPath, String templateType, String templateVersion) {
-    super(id, filters, metadataOption, metadataType, metadataPath, templateType, templateVersion);
+    Path metadataPath, String templateType, String metadataVersion) {
+    super(id, filters, metadataOption, metadataType, metadataPath, templateType, metadataVersion);
     folders = new ArrayDeque<>();
     tree = new HashSet<>();
     record = new HashMap<>();

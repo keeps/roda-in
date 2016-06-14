@@ -1,5 +1,11 @@
 package org.roda.rodain.sip.creators;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.*;
+
 import org.apache.commons.io.FilenameUtils;
 import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.TreeNode;
@@ -10,12 +16,6 @@ import org.roda.rodain.sip.SipRepresentation;
 import org.roda.rodain.utils.TreeVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -39,7 +39,7 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
   protected String metadataType;
   protected MetadataOptions metadataOption;
   protected Path metadataPath;
-  protected String templateType, templateVersion;
+  protected String templateType, metadataVersion;
   private Map<String, Set<Path>> metadata;
 
   protected boolean cancelled = false;
@@ -48,14 +48,19 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
    * Creates a new SipPreviewCreator where there's a new SIP created with all
    * the visited paths.
    *
-   * @param id             The id of the SipPreviewCreator.
-   * @param filters        The set of content filters
-   * @param metadataOption The type of metadata to be applied to each SIP
-   * @param metadataPath   The path of the metadata
-   * @param templateType   The type of the metadata template
+   * @param id
+   *          The id of the SipPreviewCreator.
+   * @param filters
+   *          The set of content filters
+   * @param metadataOption
+   *          The type of metadata to be applied to each SIP
+   * @param metadataPath
+   *          The path of the metadata
+   * @param templateType
+   *          The type of the metadata template
    */
   public SipPreviewCreator(String id, Set<ContentFilter> filters, MetadataOptions metadataOption, String metadataType,
-                           Path metadataPath, String templateType, String templateVersion) {
+    Path metadataPath, String templateType, String metadataVersion) {
     this.filters = filters;
     sipsMap = new HashMap<>();
     sips = new ArrayList<>();
@@ -65,7 +70,7 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
     this.metadataType = metadataType;
     this.metadataPath = metadataPath;
     this.templateType = templateType;
-    this.templateVersion = templateVersion;
+    this.metadataVersion = metadataVersion;
     files = new HashSet<>();
     metadata = new HashMap<>();
 
@@ -117,7 +122,7 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
 
   /**
    * @return True if the number of SIPs returned is smaller than the count of
-   * added SIPs.
+   *         added SIPs.
    */
   public boolean hasNext() {
     return returned < added;
@@ -135,7 +140,8 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
   /**
    * Sets the starting path of this TreeVisitor.
    *
-   * @param st The starting path of the TreeVisitor.
+   * @param st
+   *          The starting path of the TreeVisitor.
    */
   @Override
   public void setStartPath(String st) {
@@ -150,8 +156,10 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
    * Creates a new TreeNode and adds it to the nodes Deque if the path isn't
    * mapped or ignored.
    *
-   * @param path  The path of the directory.
-   * @param attrs The attributes of the directory.
+   * @param path
+   *          The path of the directory.
+   * @param attrs
+   *          The attributes of the directory.
    */
   @Override
   public void preVisitDirectory(Path path, BasicFileAttributes attrs) {
@@ -161,7 +169,8 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
    * Adds the current directory to its parent's node. If the parent doesn't
    * exist, adds a new node to the Deque.
    *
-   * @param path The path of the directory.
+   * @param path
+   *          The path of the directory.
    */
   @Override
   public void postVisitDirectory(Path path) {
@@ -171,8 +180,10 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
    * Adds the visited file to its parent. If the parent doesn't exist, adds a
    * new TreeNode to the Deque.
    *
-   * @param path  The path of the visited file
-   * @param attrs The attributes of the visited file
+   * @param path
+   *          The path of the visited file
+   * @param attrs
+   *          The attributes of the visited file
    */
   @Override
   public void visitFile(Path path, BasicFileAttributes attrs) {
@@ -182,7 +193,8 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
    * This method is empty in this class, but it's defined because of the
    * TreeVisitor interface.
    *
-   * @param path The path of the file.
+   * @param path
+   *          The path of the file.
    */
   @Override
   public void visitFileFailed(Path path) {
@@ -230,9 +242,10 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
     node.addObserver(sipPreview);
 
     if (metadataOption == MetadataOptions.TEMPLATE)
-      sipPreview.getMetadata().add(new DescObjMetadata(metadataOption, templateType, templateVersion));
+      sipPreview.getMetadata().add(new DescObjMetadata(metadataOption, templateType, metadataType, metadataVersion));
     else {
-      metaPath.forEach(mPath -> sipPreview.getMetadata().add(new DescObjMetadata(metadataOption, mPath, metadataType)));
+      metaPath.forEach(mPath -> sipPreview.getMetadata()
+        .add(new DescObjMetadata(metadataOption, mPath, metadataType, metadataVersion)));
     }
 
     sips.add(sipPreview);

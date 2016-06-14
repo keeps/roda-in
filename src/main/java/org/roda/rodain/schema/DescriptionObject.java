@@ -1,14 +1,15 @@
 package org.roda.rodain.schema;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.github.jknack.handlebars.Handlebars;
-import com.github.jknack.handlebars.Template;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.sip.MetadataValue;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.github.jknack.handlebars.Handlebars;
+import com.github.jknack.handlebars.Template;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -22,7 +23,7 @@ public class DescriptionObject extends Observable {
   public DescriptionObject() {
     title = I18n.t("root");
     id = UUID.randomUUID().toString();
-    metadata.add(new DescObjMetadata(MetadataOptions.TEMPLATE, "ead", "2002"));
+    metadata.add(new DescObjMetadata(MetadataOptions.TEMPLATE, "ead", "ead", "2002"));
   }
 
   /**
