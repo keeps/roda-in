@@ -1,18 +1,5 @@
 package org.roda.rodain.utils;
 
-import org.apache.commons.io.IOUtils;
-import org.roda.rodain.core.AppProperties;
-import org.roda.rodain.utils.validation.ResourceResolver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
-
-import javax.xml.XMLConstants;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -21,12 +8,27 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Scanner;
 
+import javax.xml.XMLConstants;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+
+import org.apache.commons.io.IOUtils;
+import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.utils.validation.ResourceResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
+
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 24-09-2015.
  */
 public class Utils {
   private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class.getName());
+  private static String UTF8_BOM = "\uFEFF";
 
   private Utils() {
   }
@@ -57,7 +59,17 @@ public class Utils {
    */
   public static String readFile(String path, Charset encoding) throws IOException {
     byte[] encoded = Files.readAllBytes(Paths.get(path));
-    return new String(encoded, encoding);
+    String temp = new String(encoded, encoding);
+    // Consume BOM if it exists
+    temp = removeUTF8BOM(temp);
+    return temp;
+  }
+
+  private static String removeUTF8BOM(String s) {
+    if (s.startsWith(UTF8_BOM)) {
+      s = s.substring(1);
+    }
+    return s;
   }
 
   /**

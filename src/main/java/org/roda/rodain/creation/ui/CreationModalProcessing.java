@@ -1,5 +1,10 @@
 package org.roda.rodain.creation.ui;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -8,6 +13,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.StageStyle;
+
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.creation.CreateSips;
@@ -15,11 +21,6 @@ import org.roda.rodain.sip.SipPreview;
 import org.roda.rodain.utils.OpenPathInExplorer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -269,7 +270,9 @@ public class CreationModalProcessing extends BorderPane {
       StringBuilder content = new StringBuilder(ex.getLocalizedMessage());
       content.append("\n");
       content.append(I18n.t("CreationModalProcessing.cause"));
-      content.append(": ").append(ex.getCause().getLocalizedMessage());
+      if (ex.getCause() != null) {
+        content.append(": ").append(ex.getCause().getLocalizedMessage());
+      }
       alert.setContentText(content.toString());
       alert.getDialogPane().setStyle(AppProperties.getStyle("export.alert"));
 
