@@ -280,11 +280,9 @@ public class AddMetadataPane extends BorderPane {
           case TEMPLATE:
             String rawTemplateType = (String) templateTypes.getSelectionModel().getSelectedItem().getKey();
             String[] splitted = rawTemplateType.split("!###!");
-            String templateType = splitted[0], rawMetadataType = splitted[1], metadataType = null,
-              metadataVersion = null;
-            if (rawMetadataType != null) {
-              metadataType = AppProperties.getConfig("metadata.type." + rawMetadataType + ".value");
-              metadataVersion = AppProperties.getConfig("metadata.type." + rawMetadataType + ".version");
+            String templateType = splitted[0], metadataType = splitted[1], metadataVersion = null;
+            if (metadataType != null) {
+              metadataVersion = AppProperties.getConfig("metadata.type." + metadataType + ".version");
             }
             metadataToAdd = new DescObjMetadata(MetadataOptions.TEMPLATE, templateType, metadataType, metadataVersion);
             break;
@@ -327,9 +325,8 @@ public class AddMetadataPane extends BorderPane {
 
   private void addTypeAndVersionToMetadata(UIPair metaType, DescObjMetadata metadataToAdd) {
     if (metaType != null) {
-      String metaTypeKey = (String) metaType.getKey();
-      String metadataType = AppProperties.getConfig("metadata.type." + metaTypeKey + ".value");
-      String metadataVersion = AppProperties.getConfig("metadata.type." + metaTypeKey + ".version");
+      String metadataType = (String) metaType.getKey();
+      String metadataVersion = AppProperties.getConfig("metadata.type." + metadataType + ".version");
       metadataToAdd.setMetadataType(metadataType);
       metadataToAdd.setVersion(metadataVersion);
     }

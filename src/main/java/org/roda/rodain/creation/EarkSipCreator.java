@@ -74,11 +74,12 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
       currentAction = actionCopyingMetadata;
 
       for (DescObjMetadata descObjMetadata : sip.getMetadata()) {
-        String metadataTypeString = descObjMetadata.getMetadataType();
+        String keyMetadataTypeValue = "metadata.type." + descObjMetadata.getMetadataType() + ".value";
+        String metadataTypeString = AppProperties.getConfig(keyMetadataTypeValue);
         MetadataType metadataType = new MetadataType(MetadataType.MetadataTypeEnum.OTHER);
 
         if (descObjMetadata.getCreatorOption() == MetadataOptions.TEMPLATE) {
-          Path schemaPath = AppProperties.getSchemaPath(descObjMetadata.getTemplateType());
+          Path schemaPath = AppProperties.getSchemaPath(descObjMetadata.getMetadataType());
           if (schemaPath != null)
             earkSip.addSchema(new IPFile(schemaPath));
         }

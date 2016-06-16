@@ -101,33 +101,31 @@ public class RuleModalController {
       String templateType = null;
       String metadataVersion = null;
       String metadataType = null;
-      String rawMetadataType = null;
       switch (metadataOption) {
         case DIFF_DIRECTORY:
           metadataPath = pane.getDiffDir();
-          rawMetadataType = pane.getMetadataTypeDiffFolder();
+          metadataType = pane.getMetadataTypeDiffFolder();
           break;
         case SINGLE_FILE:
           metadataPath = pane.getFromFile();
-          rawMetadataType = pane.getMetadataTypeSingleFile();
+          metadataType = pane.getMetadataTypeSingleFile();
           break;
         case SAME_DIRECTORY:
           templateType = pane.getSameFolderPattern();
-          rawMetadataType = pane.getMetadataTypeSameFolder();
+          metadataType = pane.getMetadataTypeSameFolder();
           break;
         case TEMPLATE:
           String template = pane.getTemplate();
           String[] splitted = template.split("!###!");
           templateType = splitted[0];
-          rawMetadataType = splitted[1];
+          metadataType = splitted[1];
           break;
         default:
           break;
       }
 
-      if (rawMetadataType != null) {
-        metadataType = AppProperties.getConfig("metadata.type." + rawMetadataType + ".value");
-        metadataVersion = AppProperties.getConfig("metadata.type." + rawMetadataType + ".version");
+      if (metadataType != null) {
+        metadataVersion = AppProperties.getConfig("metadata.type." + metadataType + ".version");
       }
 
       Rule rule = new Rule(sourceSet, assocType, metadataPath, templateType, metadataOption, metadataType,

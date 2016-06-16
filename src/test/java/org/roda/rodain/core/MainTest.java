@@ -215,4 +215,42 @@ public class MainTest extends ApplicationTest {
     clickOn("#removeRule2");
     sleep(1000); // wait for the rule to be removed
   }
+
+  @Test
+  public void associateFilesAndFoldersToAnItemAndSelectMultiple() {
+    Platform.runLater(() -> {
+      fileExplorer.setFileExplorerRoot(testDir);
+      stage.setMaximized(false);
+      stage.setMaximized(true);
+    });
+
+    sleep(5000); // wait for the tree to be created
+    doubleClickOn("dir4");
+    sleep(2000); // wait for the node to expand
+    drag("dirB").dropTo("UCP");
+    sleep(2000); // wait for the modal to open
+    clickOn("#assoc3");
+    clickOn("#btConfirm");
+    sleep(2000); // wait for the modal to update
+    clickOn("#btConfirm");
+    sleep(3000); // wait for the SIPs creation
+
+    clickOn("UCP");
+
+    clickOn(I18n.t("SchemaPane.add"));
+    sleep(500);
+    clickOn(I18n.t("SchemaPane.newNode"));
+    press(KeyCode.SHIFT);
+    clickOn("file12.txt");
+    release(KeyCode.SHIFT);
+
+    sleep(1000);
+
+    clickOn("#descObjTitle");
+    eraseText(50);
+    write("Testing");
+    sleep(1000);
+
+    clickOn(I18n.t("apply"));
+  }
 }

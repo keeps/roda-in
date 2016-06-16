@@ -88,11 +88,18 @@ public class AppProperties {
           Files.copy(ClassLoader.getSystemResourceAsStream("templates/" + fileName),
             rodainPath.resolve("templates").resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
         }
+      }
 
-        String schemaName = "metadata.template." + templ.trim() + ".schema";
+      String typesRaw = getConfig("metadata.types");
+      String[] types = typesRaw.split(",");
+      for(String type :types) {
+        String schemaName = "metadata.type." + type.trim() + ".schema";
         String schemaFileName = config.getString(schemaName);
+        if(schemaFileName == null || schemaFileName.length() == 0){
+          continue;
+        }
         Files.copy(ClassLoader.getSystemResourceAsStream("templates/" + schemaFileName),
-          rodainPath.resolve("schemas").resolve(schemaFileName), StandardCopyOption.REPLACE_EXISTING);
+                rodainPath.resolve("schemas").resolve(schemaFileName), StandardCopyOption.REPLACE_EXISTING);
       }
       // ensure that the xlink.xsd and xml.xsd files are in the application home
       // folder
@@ -216,34 +223,32 @@ public class AppProperties {
   }
 
   /**
-   * @param templateName
+   * @param templateType
    *          The name of the template
    * @return The content of the schema file associated to the template
    */
-  public static String getSchemaFile(String templateName) {
-    String completeKey = "metadata.template." + templateName + ".schema";
-    String result = getFile(completeKey);
-    if (result == null || "".equals(result)) {
-      for (Path sch : allSchemas) {
-        if (sch.getFileName().toString().contains(templateName)) {
-          try {
-            result = Utils.readFile(sch.toString(), Charset.defaultCharset());
-          } catch (IOException e) {
-            LOGGER.error("Unable to read schema file", e);
-          }
+  public static String getSchemaFile(String templateType) {
+    String completeKey = "metadata.type." + templateType + ".schema";
+    if (ext_config.containsKey(completeKey)) {
+      Path filePath = rodainPath.resolve("schemas").resolve(ext_config.getString(completeKey));
+      if (Files.exists(filePath)) {
+        try {
+          return Utils.readFile(filePath.toString(), Charset.defaultCharset());
+        } catch (IOException e) {
+          LOGGER.error("Unable to get schema file: " + filePath, e);
         }
       }
     }
-    return result;
+    return null;
   }
 
   /**
-   * @param templateName
+   * @param templateType
    *          The name of the template
    * @return The path of the schema file associated to the template
    */
-  public static Path getSchemaPath(String templateName) {
-    String completeKey = "metadata.template." + templateName + ".schema";
+  public static Path getSchemaPath(String templateType) {
+    String completeKey = "metadata.type." + templateType + ".schema";
     if (ext_config.containsKey(completeKey)) {
       Path filePath = rodainPath.resolve("schemas").resolve(ext_config.getString(completeKey));
       if (Files.exists(filePath)) {
