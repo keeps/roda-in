@@ -89,6 +89,9 @@ public class PathCollection {
       SourceTreeItem item = items.get(path);
       item.setState(states.get(path));
       verifyStateAncestors(path);
+      if(item instanceof SourceTreeDirectory){
+        ((SourceTreeDirectory) item).moveChildrenWrongState();
+      }
     }
 
     // move the modified children in the parent

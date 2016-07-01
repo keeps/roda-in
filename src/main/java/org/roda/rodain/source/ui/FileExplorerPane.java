@@ -44,11 +44,12 @@ public class FileExplorerPane extends BorderPane implements Observer {
   private TreeView<String> treeView;
   private HBox bottom;
   private VBox centerHelp;
-  private Button ignore;
+  private Button ignore, removeTopFolder;
+  private HBox ignoreAndRemoveBox;
 
   private SourceTreeDirectory dummyRoot;
   private Map<String, SourceTreeDirectory> realRoots;
-  private boolean rootSelected, selectedIsIgnored;
+  private boolean selectedIsIgnored;
 
   private ComputeDirectorySize computeSize;
 
@@ -123,19 +124,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     ignore.setId("bt_ignore");
     ignore.setMinWidth(100);
     ignore.setOnAction(event -> {
-      if (rootSelected) {
-        SourceTreeDirectory selectedItem = (SourceTreeDirectory) treeView.getSelectionModel().getSelectedItem();
-        if (selectedItem == null)
-          return;
-
-        dummyRoot.getChildren().remove(selectedItem);
-        realRoots.remove(selectedItem.getPath());
-        if (realRoots.isEmpty()) {
-          this.setTop(new HBox());
-          this.setCenter(centerHelp);
-          this.setBottom(new HBox());
-        }
-      } else if (selectedIsIgnored) {
+      if (selectedIsIgnored) {
         List<TreeItem<String>> selectedItems = treeView.getSelectionModel().getSelectedItems();
         if (selectedItems == null)
           return;
@@ -155,6 +144,27 @@ public class FileExplorerPane extends BorderPane implements Observer {
       }
     });
 
+    removeTopFolder = new Button(I18n.t("FileExplorerPane.removeFolder"));
+    removeTopFolder.setId("bt_removeTopFolder");
+    removeTopFolder.setMinWidth(100);
+    removeTopFolder.setOnAction( event -> {
+      SourceTreeDirectory selectedItem = (SourceTreeDirectory) treeView.getSelectionModel().getSelectedItem();
+      if (selectedItem == null)
+        return;
+
+      dummyRoot.getChildren().remove(selectedItem);
+      realRoots.remove(selectedItem.getPath());
+      if (realRoots.isEmpty()) {
+        this.setTop(new HBox());
+        this.setCenter(centerHelp);
+        this.setBottom(new HBox());
+        ignoreAndRemoveBox.getChildren().remove(removeTopFolder);
+      }
+    });
+
+    ignoreAndRemoveBox = new HBox(10);
+    ignoreAndRemoveBox.getChildren().addAll(ignore);
+
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
@@ -163,7 +173,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     associate.setMinWidth(100);
     associate.setOnAction(event -> RodaIn.getSchemePane().startAssociation());
 
-    bottom.getChildren().addAll(ignore, space, associate);
+    bottom.getChildren().addAll(ignoreAndRemoveBox, space, associate);
   }
 
   private void createCenterHelp() {
@@ -500,12 +510,13 @@ public class FileExplorerPane extends BorderPane implements Observer {
     treeView.getRoot().setExpanded(true);
   }
 
-  public void rootSelected(boolean b) {
-    rootSelected = b;
-    if (b) {
-      ignore.setText(I18n.t("FileExplorerPane.removeFolder"));
+  public void rootSelected(boolean rootSelected) {
+    if (rootSelected) {
+      if(!ignoreAndRemoveBox.getChildren().contains(removeTopFolder))
+        ignoreAndRemoveBox.getChildren().add(removeTopFolder);
     } else {
-      ignore.setText(I18n.t("ignore"));
+      if(ignoreAndRemoveBox.getChildren().contains(removeTopFolder))
+        ignoreAndRemoveBox.getChildren().remove(removeTopFolder);
     }
   }
 

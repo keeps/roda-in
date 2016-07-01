@@ -579,6 +579,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
     Platform.runLater(() -> {
       Set<SourceTreeItem> toRemove = new HashSet<>();
       boolean modified = false;
+      // Move NORMAL items from the mapped set
       for (SourceTreeItem sti : mapped) {
         if (sti.getState() == SourceTreeItemState.NORMAL) {
           toRemove.add(sti);
@@ -586,6 +587,15 @@ public class SourceTreeDirectory extends SourceTreeItem {
         }
       }
       mapped.removeAll(toRemove);
+      // Move NORMAL items from the ignored set
+      for (SourceTreeItem sti : ignored) {
+        if (sti.getState() == SourceTreeItemState.NORMAL) {
+          toRemove.add(sti);
+          getChildren().add(sti);
+        }
+      }
+      ignored.removeAll(toRemove);
+
       if (!toRemove.isEmpty())
         modified = true;
 
