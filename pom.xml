@@ -186,7 +186,7 @@
         <dependency>
             <groupId>org.fxmisc.richtext</groupId>
             <artifactId>richtextfx</artifactId>
-            <version>0.7-M1</version>
+            <version>0.6.10</version>
         </dependency>
         <dependency>
             <groupId>commons-configuration</groupId>

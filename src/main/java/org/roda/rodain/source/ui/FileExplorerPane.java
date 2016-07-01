@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -20,6 +21,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import org.apache.commons.lang.StringUtils;
 import org.roda.rodain.core.Footer;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.PathCollection;
@@ -295,7 +297,8 @@ public class FileExplorerPane extends BorderPane implements Observer {
   public void updateAttributes() {
     ObservableList<TreeItem<String>> items = treeView.getSelectionModel().getSelectedItems();
     Set<String> paths = new HashSet<>();
-    items.forEach(sourceTreeItem -> paths.add(((SourceTreeItem) sourceTreeItem).getPath()));
+    if(items != null)
+      items.forEach(sourceTreeItem -> paths.add(((SourceTreeItem) sourceTreeItem).getPath()));
     updateAttributes(paths);
   }
 
@@ -391,8 +394,20 @@ public class FileExplorerPane extends BorderPane implements Observer {
       return Collections.emptySet();
     Set<SourceTreeItem> result = new HashSet<>();
     for (TreeItem item : treeView.getSelectionModel().getSelectedItems()) {
-      result.add((SourceTreeItem) item);
+        result.add((SourceTreeItem) item);
     }
+
+    Set<SourceTreeItem> toRemove = new HashSet<>();
+    result.forEach(currentItem -> {
+      Set<SourceTreeItem> ancestors = result.stream().filter(p ->
+              !currentItem.getPath().equals(p.getPath()) &&
+              currentItem.getPath().startsWith(p.getPath())).collect(Collectors.toSet()
+      );
+      if(ancestors != null && !ancestors.isEmpty())
+        toRemove.add(currentItem);
+    });
+    result.removeAll(toRemove);
+
     return result;
   }
 
