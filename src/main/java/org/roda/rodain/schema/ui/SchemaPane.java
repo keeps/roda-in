@@ -571,7 +571,7 @@ public class SchemaPane extends BorderPane {
     }
 
     DescriptionObject dobj = new DescriptionObject();
-    dobj.setId(UUID.randomUUID().toString());
+    dobj.setId("ID" + UUID.randomUUID().toString());
     dobj.setTitle(I18n.t("SchemaPane.newNode"));
     dobj.setDescriptionlevel("series");
     SchemaNode newNode = new SchemaNode(dobj);
@@ -770,7 +770,7 @@ public class SchemaPane extends BorderPane {
               if (target != rootNode)
                 newParentID = target.getDob().getId();
               sourceSIP.getSip().setParentId(newParentID);
-              target.addChild(UUID.randomUUID().toString(), sourceSIP);
+              target.addChild("ID" + UUID.randomUUID().toString(), sourceSIP);
               target.getChildren().add(sourceSIP);
               target.sortChildren();
             }

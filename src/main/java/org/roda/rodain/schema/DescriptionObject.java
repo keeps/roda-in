@@ -22,7 +22,7 @@ public class DescriptionObject extends Observable {
 
   public DescriptionObject() {
     title = I18n.t("root");
-    id = UUID.randomUUID().toString();
+    id = "ID" + UUID.randomUUID().toString();
     metadata.add(new DescObjMetadata(MetadataOptions.TEMPLATE, "ead", "ead2002", "2002"));
   }
 

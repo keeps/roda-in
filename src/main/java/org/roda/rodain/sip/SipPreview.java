@@ -40,7 +40,7 @@ public class SipPreview extends DescriptionObject implements Observer {
       tempList.add(metadata);
     setMetadata(tempList);
     setDescriptionlevel("item");
-    setId(UUID.randomUUID().toString());
+    setId("ID" + UUID.randomUUID().toString());
     contentType = new IPContentType(IPContentType.IPContentTypeEnum.MIXED);
 
     // set paths as mapped

@@ -176,7 +176,7 @@
         <dependency>
             <groupId>org.roda-project</groupId>
             <artifactId>commons-ip</artifactId>
-            <version>1.0.0-alpha12</version>
+            <version>1.0.0-alpha14</version>
         </dependency>
         <dependency>
             <groupId>com.github.jknack</groupId>
@@ -186,7 +186,7 @@
         <dependency>
             <groupId>org.fxmisc.richtext</groupId>
             <artifactId>richtextfx</artifactId>
-            <version>0.6.10</version>
+            <version>0.7-M1</version>
         </dependency>
         <dependency>
             <groupId>commons-configuration</groupId>

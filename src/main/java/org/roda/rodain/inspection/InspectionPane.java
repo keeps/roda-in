@@ -1589,6 +1589,7 @@ public class InspectionPane extends BorderPane {
     Platform.runLater(() -> {
       metaText.replaceText(content);
       metaText.setStyleSpans(0, XMLEditor.computeHighlighting(content));
+      metaText.moveTo(0);
     });
   }
 
