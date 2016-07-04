@@ -1,7 +1,9 @@
 package org.roda.rodain.core;
 
 import javafx.application.Platform;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.control.TreeItem;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -10,6 +12,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.roda.rodain.creation.ui.CreationModalPreparation;
+import org.roda.rodain.inspection.InspectionPane;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SchemaPane;
@@ -18,10 +21,14 @@ import org.roda.rodain.source.ui.FileExplorerPane;
 import org.roda.rodain.testing.Utils;
 import org.testfx.framework.junit.ApplicationTest;
 
+import javax.imageio.ImageIO;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -31,6 +38,7 @@ public class MainTest extends ApplicationTest {
   private static Path testDir, output;
   private SchemaPane schemaPane;
   private FileExplorerPane fileExplorer;
+  private InspectionPane inspectionPane;
   private static RodaIn main;
   private Stage stage;
 
@@ -44,6 +52,7 @@ public class MainTest extends ApplicationTest {
 
     schemaPane = RodaIn.getSchemePane();
     fileExplorer = RodaIn.getFileExplorer();
+    inspectionPane = RodaIn.getInspectionPane();
 
     Path path = Paths.get("src/test/resources/plan_with_errors.json");
     InputStream stream = new FileInputStream(path.toFile());
@@ -221,6 +230,7 @@ public class MainTest extends ApplicationTest {
     Platform.runLater(() -> {
       fileExplorer.setFileExplorerRoot(testDir);
       stage.setMaximized(false);
+      sleep(500);
       stage.setMaximized(true);
     });
 
@@ -240,9 +250,9 @@ public class MainTest extends ApplicationTest {
     clickOn(I18n.t("SchemaPane.add"));
     sleep(500);
     clickOn(I18n.t("SchemaPane.newNode"));
-    press(KeyCode.SHIFT);
-    clickOn("file12.txt");
-    release(KeyCode.SHIFT);
+
+    schemaPane.getTreeView().getSelectionModel().selectRange(10,15);
+    Platform.runLater(() -> inspectionPane.update(schemaPane.getTreeView().getSelectionModel().getSelectedItems()));
 
     sleep(1000);
 
@@ -251,6 +261,7 @@ public class MainTest extends ApplicationTest {
     write("Testing");
     sleep(1000);
 
+    sleep(1000);
     clickOn(I18n.t("apply"));
   }
 }

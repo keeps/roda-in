@@ -1,14 +1,17 @@
 package org.roda.rodain.testing;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import javafx.application.Platform;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.image.WritableImage;
+import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
+
+import javax.imageio.ImageIO;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -121,5 +124,16 @@ public class Utils {
   public static void removeTestDir() throws Exception {
     if (testDir != null && Files.exists(testDir))
       FileUtils.deleteDirectory(testDir.toFile());
+  }
+
+  public static void takeScreenshot(Stage stage, String fileName){
+    Platform.runLater(() -> {
+      try {
+        WritableImage snapshot = stage.getScene().snapshot(null);
+        ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "PNG", new File(fileName));
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    });
   }
 }
