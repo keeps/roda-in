@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -185,8 +186,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
       case TITLE_DATE:
         name.append(sip.getTitle());
         name.append(" - ");
-        Date date= new Date();
-        name.append(new Timestamp(date.getTime()));
+        name.append(new SimpleDateFormat("yyyy.MM.dd HH.mm.ss.SSS").format(new Date()));
         break;
       case ID:
       default:
