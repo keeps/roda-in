@@ -251,8 +251,10 @@ public class MainTest extends ApplicationTest {
     sleep(500);
     clickOn(I18n.t("SchemaPane.newNode"));
 
-    schemaPane.getTreeView().getSelectionModel().selectRange(10,15);
-    Platform.runLater(() -> inspectionPane.update(schemaPane.getTreeView().getSelectionModel().getSelectedItems()));
+    Platform.runLater(() -> {
+      schemaPane.getTreeView().getSelectionModel().selectRange(10,15);
+      inspectionPane.update(schemaPane.getTreeView().getSelectionModel().getSelectedItems());
+    });
 
     sleep(3000);
 
