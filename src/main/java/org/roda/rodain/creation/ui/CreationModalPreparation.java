@@ -19,6 +19,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 
 import org.controlsfx.control.ToggleSwitch;
+import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.creation.SipTypes;
@@ -82,7 +83,7 @@ public class CreationModalPreparation extends BorderPane {
     VBox countBox = createCountBox();
     HBox outputFolderBox = createOutputFolder();
     HBox sipTypesBox = createSipTypes();
-    HBox prefixBox = createPrefixBox();
+    HBox prefixBox = createNameBox();
 
     center.getChildren().addAll(countBox, outputFolderBox, sipTypesBox, prefixBox);
     setCenter(center);
@@ -132,7 +133,7 @@ public class CreationModalPreparation extends BorderPane {
     return outputFolderBox;
   }
 
-  private HBox createPrefixBox() {
+  private HBox createNameBox() {
     HBox prefixBox = new HBox(5);
     prefixBox.setAlignment(Pos.CENTER_LEFT);
     HBox space = new HBox();
@@ -142,6 +143,7 @@ public class CreationModalPreparation extends BorderPane {
     prefixField = new TextField();
     prefixField.setMinWidth(DEFAULT_WIDTH);
     prefixField.setMaxWidth(DEFAULT_WIDTH);
+    prefixField.setText(AppProperties.getConfig("export.last_prefix"));
 
     nameTypes = new ComboBox<>();
     nameTypes.setMinWidth(DEFAULT_WIDTH);
@@ -213,6 +215,8 @@ public class CreationModalPreparation extends BorderPane {
         else
           type = SipTypes.EARK;
 
+        AppProperties.setConfig("export.last_prefix", prefixField.getText());
+        AppProperties.saveConfig();
         stage.startCreation(outputFolder, type, toggleSwitch.isSelected(), prefixField.getText(), (NAME_TYPES) nameTypes.getSelectionModel().getSelectedItem().getKey());
       }
     });
