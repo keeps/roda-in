@@ -254,7 +254,7 @@ public class MainTest extends ApplicationTest {
     schemaPane.getTreeView().getSelectionModel().selectRange(10,15);
     Platform.runLater(() -> inspectionPane.update(schemaPane.getTreeView().getSelectionModel().getSelectedItems()));
 
-    sleep(1000);
+    sleep(3000);
 
     clickOn("#descObjTitle");
     eraseText(50);
