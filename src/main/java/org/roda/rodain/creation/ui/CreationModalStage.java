@@ -39,7 +39,7 @@ public class CreationModalStage extends Stage {
 
     setResizable(true);
 
-    Scene scene = new Scene(new HBox(), 400, 210);
+    Scene scene = new Scene(new HBox(), 400, 240);
     scene.getStylesheets().add(ClassLoader.getSystemResource("css/modal.css").toExternalForm());
     scene.getStylesheets().add(ClassLoader.getSystemResource("css/shared.css").toExternalForm());
     setScene(scene);
@@ -54,8 +54,8 @@ public class CreationModalStage extends Stage {
    * @param type
    *          The format of the SIPs
    */
-  public void startCreation(Path outputFolder, SipTypes type, boolean exportAll) {
-    CreateSips creator = new CreateSips(outputFolder, type, exportAll);
+  public void startCreation(Path outputFolder, SipTypes type, boolean exportAll, String prefix, CreationModalPreparation.NAME_TYPES name_type) {
+    CreateSips creator = new CreateSips(outputFolder, type, exportAll, prefix, name_type);
     CreationModalProcessing pane = new CreationModalProcessing(creator, this);
     setRoot(pane);
     creator.start();

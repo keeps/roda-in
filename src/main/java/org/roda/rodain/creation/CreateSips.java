@@ -1,6 +1,7 @@
 package org.roda.rodain.creation;
 
 import org.roda.rodain.core.RodaIn;
+import org.roda.rodain.creation.ui.CreationModalPreparation;
 import org.roda.rodain.sip.SipPreview;
 
 import java.nio.file.Path;
@@ -14,6 +15,8 @@ public class CreateSips {
   private SipTypes type;
   private Path outputPath;
   private SimpleSipCreator creator;
+  private String prefix;
+  private CreationModalPreparation.NAME_TYPES name_type;
 
   private int sipsCount;
   private long startedTime;
@@ -27,10 +30,12 @@ public class CreateSips {
    * @param type
    *          The format of the SIP output
    */
-  public CreateSips(Path outputPath, SipTypes type, boolean exportAll) {
+  public CreateSips(Path outputPath, SipTypes type, boolean exportAll, String prefix, CreationModalPreparation.NAME_TYPES name_type) {
     this.type = type;
     this.outputPath = outputPath;
     this.exportAll = exportAll;
+    this.prefix = prefix;
+    this.name_type = name_type;
   }
 
   /**
@@ -49,7 +54,7 @@ public class CreateSips {
       creator = new BagitSipCreator(outputPath, sips);
       creator.start();
     } else {
-      creator = new EarkSipCreator(outputPath, sips);
+      creator = new EarkSipCreator(outputPath, sips, prefix, name_type);
       creator.start();
     }
   }

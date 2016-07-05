@@ -3,6 +3,7 @@ package org.roda.rodain.creation;
 import org.apache.commons.io.FileUtils;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
+import org.roda.rodain.creation.ui.CreationModalPreparation;
 import org.roda.rodain.creation.ui.CreationModalProcessing;
 import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.TreeNode;
@@ -11,6 +12,7 @@ import org.roda.rodain.sip.SipRepresentation;
 import org.roda.rodain.schema.DescObjMetadata;
 import org.roda_project.commons_ip.model.*;
 import org.roda_project.commons_ip.model.impl.eark.EARKSIP;
+import org.roda_project.commons_ip.utils.IPEnums;
 import org.roda_project.commons_ip.utils.SIPException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,10 +21,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.sql.Timestamp;
+import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -35,6 +35,9 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
   private int currentSIPsize = 0;
   private int repProcessingSize;
 
+  private String prefix;
+  private CreationModalPreparation.NAME_TYPES name_type;
+
   /**
    * Creates a new EARK SIP exporter.
    *
@@ -43,8 +46,10 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
    * @param previews
    *          The map with the SIPs that will be exported
    */
-  public EarkSipCreator(Path outputPath, Map<SipPreview, String> previews) {
+  public EarkSipCreator(Path outputPath, Map<SipPreview, String> previews, String prefix, CreationModalPreparation.NAME_TYPES name_type) {
     super(outputPath, previews);
+    this.prefix = prefix;
+    this.name_type = name_type;
   }
 
   /**
@@ -66,8 +71,9 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
     try {
       SIP earkSip = new EARKSIP(sip.getId(), sip.getContentType(), "RODA-in");
       earkSip.addObserver(this);
+      earkSip.setStatus(IPEnums.IPStatus.NEW);
       if (sip.getParentId() != null)
-        earkSip.setParent(sip.getParentId());
+        earkSip.setAncestors(Arrays.asList(sip.getParentId()));
 
       currentSipProgress = 0;
       currentSipName = sip.getTitle();
@@ -144,7 +150,8 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
 
       currentAction = I18n.t("SimpleSipCreator.initZIP");
 
-      earkSip.build(outputPath);
+
+      earkSip.build(outputPath, createSipName(sip));
 
       createdSipsCount++;
     } catch (SIPException e) {
@@ -162,6 +169,32 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
       unsuccessful.add(sip);
       CreationModalProcessing.showError(sip, e);
     }
+  }
+
+  private String createSipName(SipPreview sip){
+    StringBuilder name = new StringBuilder();
+    if(prefix != null && !"".equals(prefix)){
+      name.append(prefix).append(" - ");
+    }
+    switch (name_type){
+      case TITLE_ID:
+        name.append(sip.getTitle());
+        name.append(" - ");
+        name.append(sip.getId());
+        break;
+      case TITLE_DATE:
+        name.append(sip.getTitle());
+        name.append(" - ");
+        Date date= new Date();
+        name.append(new Timestamp(date.getTime()));
+        break;
+      case ID:
+      default:
+        name.append(sip.getId());
+        break;
+    }
+
+    return name.toString();
   }
 
   private void addFileToRepresentation(TreeNode tn, List<String> relativePath, IPRepresentation rep) {

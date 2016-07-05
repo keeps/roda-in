@@ -258,6 +258,8 @@ public class MainTest extends ApplicationTest {
 
     sleep(3000);
 
+    Utils.takeScreenshot(stage, "screenshot.png");
+
     clickOn("#descObjTitle");
     eraseText(50);
     write("Testing");

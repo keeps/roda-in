@@ -11,6 +11,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -21,19 +22,24 @@ import org.controlsfx.control.ToggleSwitch;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.creation.SipTypes;
+import org.roda.rodain.utils.UIPair;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 19/11/2015.
  */
 public class CreationModalPreparation extends BorderPane {
+  private final int DEFAULT_WIDTH = 120;
+  public enum NAME_TYPES {ID, TITLE_ID, TITLE_DATE}
   private CreationModalStage stage;
 
   private static Path outputFolder;
   private ComboBox<String> sipTypes;
+  private ComboBox<UIPair> nameTypes;
   private static Button start;
   private int selected, allCount;
   private ToggleSwitch toggleSwitch;
+  private TextField prefixField;
 
   /**
    * Creates a modal to prepare for the SIP exportation.
@@ -76,8 +82,9 @@ public class CreationModalPreparation extends BorderPane {
     VBox countBox = createCountBox();
     HBox outputFolderBox = createOutputFolder();
     HBox sipTypesBox = createSipTypes();
+    HBox prefixBox = createPrefixBox();
 
-    center.getChildren().addAll(countBox, outputFolderBox, sipTypesBox);
+    center.getChildren().addAll(countBox, outputFolderBox, sipTypesBox, prefixBox);
     setCenter(center);
   }
 
@@ -106,6 +113,7 @@ public class CreationModalPreparation extends BorderPane {
 
     Label outputFolderLabel = new Label(I18n.t("CreationModalPreparation.outputDirectory"));
     Button chooseFile = new Button(I18n.t("CreationModalPreparation.choose"));
+    chooseFile.setMinWidth(DEFAULT_WIDTH);
     chooseFile.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
@@ -122,6 +130,28 @@ public class CreationModalPreparation extends BorderPane {
 
     outputFolderBox.getChildren().addAll(outputFolderLabel, space, chooseFile);
     return outputFolderBox;
+  }
+
+  private HBox createPrefixBox() {
+    HBox prefixBox = new HBox(5);
+    prefixBox.setAlignment(Pos.CENTER_LEFT);
+    HBox space = new HBox();
+    HBox.setHgrow(space, Priority.ALWAYS);
+
+    Label prefixLabel = new Label(I18n.t("CreationModalPreparation.prefix"));
+    prefixField = new TextField();
+    prefixField.setMinWidth(DEFAULT_WIDTH);
+    prefixField.setMaxWidth(DEFAULT_WIDTH);
+
+    nameTypes = new ComboBox<>();
+    nameTypes.setMinWidth(DEFAULT_WIDTH);
+    for (NAME_TYPES name_type : NAME_TYPES.values()) {
+      nameTypes.getItems().add(new UIPair(name_type, I18n.t("name_types." + name_type)));
+    }
+    nameTypes.getSelectionModel().selectFirst();
+
+    prefixBox.getChildren().addAll(prefixLabel, space, prefixField, nameTypes);
+    return prefixBox;
   }
 
   /**
@@ -145,6 +175,7 @@ public class CreationModalPreparation extends BorderPane {
     Label sipTypesLabel = new Label(I18n.t("CreationModalPreparation.sipFormat"));
 
     sipTypes = new ComboBox<>();
+    sipTypes.setMinWidth(DEFAULT_WIDTH);
     sipTypes.setId("sipTypes");
     sipTypes.getItems().addAll("BagIt", "E-ARK");
     sipTypes.getSelectionModel().select("E-ARK");
@@ -182,7 +213,7 @@ public class CreationModalPreparation extends BorderPane {
         else
           type = SipTypes.EARK;
 
-        stage.startCreation(outputFolder, type, toggleSwitch.isSelected());
+        stage.startCreation(outputFolder, type, toggleSwitch.isSelected(), prefixField.getText(), (NAME_TYPES) nameTypes.getSelectionModel().getSelectedItem().getKey());
       }
     });
 
