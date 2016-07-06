@@ -5,7 +5,9 @@ import org.roda.rodain.creation.ui.CreationModalPreparation;
 import org.roda.rodain.sip.SipPreview;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -42,7 +44,7 @@ public class CreateSips {
    * Starts the exportation process.
    */
   public void start() {
-    Map<SipPreview, String> sips;
+    Map<SipPreview, List<String>> sips;
     if (exportAll)
       sips = RodaIn.getAllSipPreviews();
     else

@@ -555,14 +555,14 @@ public class RodaIn extends Application {
    * @return The Map with the selected SIPs of all the SchemaNodes in the scheme
    *         pane
    */
-  public static Map<SipPreview, String> getSelectedSipPreviews() {
+  public static Map<SipPreview, List<String>> getSelectedSipPreviews() {
     return schemePane.getSelectedSipPreviews();
   }
 
   /**
    * @return The Map with all the SIPs of all the SchemaNodes in the scheme pane
    */
-  public static Map<SipPreview, String> getAllSipPreviews() {
+  public static Map<SipPreview, List<String>> getAllSipPreviews() {
     return schemePane.getAllSipPreviews();
   }
 

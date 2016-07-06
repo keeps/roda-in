@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -47,7 +46,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
    * @param previews
    *          The map with the SIPs that will be exported
    */
-  public EarkSipCreator(Path outputPath, Map<SipPreview, String> previews, String prefix, CreationModalPreparation.NAME_TYPES name_type) {
+  public EarkSipCreator(Path outputPath, Map<SipPreview, List<String>> previews, String prefix, CreationModalPreparation.NAME_TYPES name_type) {
     super(outputPath, previews);
     this.prefix = prefix;
     this.name_type = name_type;
@@ -73,8 +72,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
       SIP earkSip = new EARKSIP(sip.getId(), sip.getContentType(), "RODA-in");
       earkSip.addObserver(this);
       earkSip.setStatus(IPEnums.IPStatus.NEW);
-      if (sip.getParentId() != null)
-        earkSip.setAncestors(Arrays.asList(sip.getParentId()));
+      earkSip.setAncestors(previews.get(sip));
 
       currentSipProgress = 0;
       currentSipName = sip.getTitle();

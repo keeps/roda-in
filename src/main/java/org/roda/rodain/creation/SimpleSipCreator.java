@@ -3,10 +3,7 @@ package org.roda.rodain.creation;
 import java.io.*;
 import java.nio.file.Path;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -44,7 +41,7 @@ public class SimpleSipCreator extends Thread {
     .getLocalizedString("SimpleSipCreator.finalizingSip");
 
   protected final Path outputPath;
-  protected final Map<SipPreview, String> previews;
+  protected final Map<SipPreview, List<String>> previews;
   protected final int sipPreviewCount;
 
   protected int createdSipsCount = 0;
@@ -79,7 +76,7 @@ public class SimpleSipCreator extends Thread {
    * @param previews
    *          The map with the SIPs that will be exported
    */
-  public SimpleSipCreator(Path outputPath, Map<SipPreview, String> previews) {
+  public SimpleSipCreator(Path outputPath, Map<SipPreview, List<String>> previews) {
     this.outputPath = outputPath;
     this.previews = previews;
     sipPreviewCount = previews.size();

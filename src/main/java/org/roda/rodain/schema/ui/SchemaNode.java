@@ -247,7 +247,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
   }
 
   public void remove() {
-    Map<SipPreview, String> allSips = getSipPreviews();
+    Map<SipPreview, List<String>> allSips = getSipPreviews();
     // first start the modal to give feedback to the user
     for (SipPreview sipPreview : allSips.keySet()) {
       RuleModalController.removeSipPreview(sipPreview);
@@ -318,15 +318,18 @@ public class SchemaNode extends TreeItem<String> implements Observer {
    * @return A map of all the SIPs in the SchemaNode and in the SchemaNode's
    *         children
    */
-  public Map<SipPreview, String> getSipPreviews() {
-    Map<SipPreview, String> result = new HashMap<>();
+  public Map<SipPreview, List<String>> getSipPreviews() {
+    Map<SipPreview, List<String>> result = new HashMap<>();
+    List<String> ancestors = computeAncestorsOfSips();
+
     // this node's sips
     for (Rule r : ruleObjects.values())
-      for (SipPreview sp : r.getSips())
-        result.put(sp, dob.getId());
+      for (SipPreview sp : r.getSips()) {
+        result.put(sp, ancestors);
+      }
 
     sips.forEach((id, sipPreviewNodes) -> sipPreviewNodes
-      .forEach(sipPreviewNode -> result.put(sipPreviewNode.getSip(), dob.getId())));
+      .forEach(sipPreviewNode -> result.put(sipPreviewNode.getSip(), ancestors)));
 
     ruleNodes.forEach((s, schNodes) -> schNodes.forEach(schemaNode -> result.putAll(schemaNode.getSipPreviews())));
 
@@ -334,5 +337,27 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     for (SchemaNode sn : schemaNodes)
       result.putAll(sn.getSipPreviews());
     return result;
+  }
+
+  public List<String> computeAncestorsOfSips(){
+    List<String> ancestors = new ArrayList<>();
+
+    if(getDob().getId() == null){
+      return ancestors;
+    }
+
+    SchemaNode currentNode = this;
+    while(currentNode != null && currentNode.getParent() != null){
+        // Stop when the top of the tree is reached
+        if(currentNode.getDob().getId() != null) {
+          ancestors.add(currentNode.getDob().getId());
+          TreeItem parentItem = currentNode.getParent();
+          if(parentItem instanceof SchemaNode)
+            currentNode = (SchemaNode) parentItem;
+          else currentNode = null;
+        }
+        else currentNode = null;
+    }
+    return ancestors;
   }
 }

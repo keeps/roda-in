@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -40,7 +41,7 @@ public class BagitSipCreator extends SimpleSipCreator {
    * @param previews
    *          The map with the SIPs that will be exported
    */
-  public BagitSipCreator(Path outputPath, Map<SipPreview, String> previews) {
+  public BagitSipCreator(Path outputPath, Map<SipPreview, List<String>> previews) {
     super(outputPath, previews);
 
     for (SipPreview sip : previews.keySet()) {
@@ -66,12 +67,12 @@ public class BagitSipCreator extends SimpleSipCreator {
       if (canceled) {
         break;
       }
-      createBagit(previews.get(preview), preview);
+      createBagit(preview);
     }
     currentAction = I18n.t("done");
   }
 
-  private void createBagit(String schemaId, SipPreview sip) {
+  private void createBagit(SipPreview sip) {
     // we add a timestamp to the beginning of the SIP name to avoid same name
     // conflicts
     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd kk'h'mm'm'ss's'SSS");
@@ -98,7 +99,7 @@ public class BagitSipCreator extends SimpleSipCreator {
 
       // additional metadata
       b.getBagInfoTxt().put("id", sip.getId());
-      b.getBagInfoTxt().put("parent", schemaId);
+      b.getBagInfoTxt().put("parent", sip.getParentId());
       b.getBagInfoTxt().put("title", sip.getTitle());
       b.getBagInfoTxt().put("level", "item");
 

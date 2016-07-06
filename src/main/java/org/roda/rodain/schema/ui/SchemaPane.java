@@ -264,6 +264,7 @@ public class SchemaPane extends BorderPane {
   private void createRootNode() {
     DescriptionObject dobj = new DescriptionObject();
     dobj.setParentId(null);
+    dobj.setId(null);
     rootNode = new SchemaNode(dobj);
     rootNode.setExpanded(true);
     rootNode.getChildren().addListener((ListChangeListener<? super TreeItem<String>>) c -> {
@@ -862,25 +863,25 @@ public class SchemaPane extends BorderPane {
     return hasClassificationScheme;
   }
 
-  public Map<SipPreview, String> getAllSipPreviews() {
+  public Map<SipPreview, List<String>> getAllSipPreviews() {
     schemaNodes.add(rootNode);
-    Map<SipPreview, String> result = new HashMap<>();
+    Map<SipPreview, List<String>> result = new HashMap<>();
 
     for (SchemaNode sn : schemaNodes) {
       result.putAll(sn.getSipPreviews());
     }
 
     // filter out the SIPs marked as "removed"
-    return result.entrySet().stream().parallel().filter(p -> !p.getKey().isRemoved())
-      .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
+    return result.entrySet().stream().parallel().filter(p -> !p.getKey().isRemoved()).collect(Collectors.toMap(
+            p -> p.getKey(), p -> p.getValue()));
   }
 
   /**
    * @return The Map with the SIPs of all the SchemaNodes in the TreeView
    */
-  public Map<SipPreview, String> getSelectedSipPreviews() {
+  public Map<SipPreview, List<String>> getSelectedSipPreviews() {
     schemaNodes.add(rootNode);
-    Map<SipPreview, String> result = new HashMap<>();
+    Map<SipPreview, List<String>> result = new HashMap<>();
 
     ObservableList<TreeItem<String>> selected = treeView.getSelectionModel().getSelectedItems();
     if (selected != null) {
@@ -888,7 +889,7 @@ public class SchemaPane extends BorderPane {
         if (item instanceof SipPreviewNode) {
           SipPreviewNode sip = (SipPreviewNode) item;
           SchemaNode parent = (SchemaNode) sip.getParent();
-          result.put(sip.getSip(), parent.getDob().getId());
+          result.put(sip.getSip(), parent.computeAncestorsOfSips());
         }
         if (item instanceof SchemaNode) {
           result.putAll(((SchemaNode) item).getSipPreviews());
@@ -902,7 +903,7 @@ public class SchemaPane extends BorderPane {
     }
 
     // filter out the SIPs marked as "removed"
-    return result.entrySet().stream().parallel().filter(p -> !p.getKey().isRemoved())
-      .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
+    return result.entrySet().stream().parallel().filter(p -> !p.getKey().isRemoved()).collect(Collectors.toMap(
+            p -> p.getKey(), p -> p.getValue()));
   }
 }

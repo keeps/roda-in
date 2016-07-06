@@ -1444,10 +1444,9 @@ public class InspectionPane extends BorderPane {
           commonMetadataType = dobm.getMetadataType();
         }
 
-        if (!commonTemplate.equals(dobm.getTemplateType()) || !commonVersion.equals(dobm.getVersion())
-          || !commonMetadataType.equals(dobm.getMetadataType())) {
-          common = false;
-        }
+        common =    commonTemplate != null       && commonTemplate.equals(dobm.getTemplateType())
+                &&  commonVersion != null        && commonVersion.equals(dobm.getVersion())
+                &&  commonMetadataType != null   && commonMetadataType.equals(dobm.getMetadataType());
         // Add the metadata values to the common set
         for (MetadataValue mv : dob.getMetadataValueMap(dobm)) {
           if (commonMV.containsKey(mv.getId())) {
