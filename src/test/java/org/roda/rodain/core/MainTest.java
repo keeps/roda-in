@@ -252,6 +252,9 @@ public class MainTest extends ApplicationTest {
     Utils.takeScreenshot(stage, "screenshot1.png");
     clickOn(I18n.t("SchemaPane.newNode"));
     Utils.takeScreenshot(stage, "screenshot1.1.png");
+    clickOn("file10.txt");
+    sleep(1000);
+    Utils.takeScreenshot(stage, "screenshot1.2.png");
 
     Platform.runLater(() -> {
       schemaPane.getTreeView().getSelectionModel().selectRange(10,15);
