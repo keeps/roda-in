@@ -1418,8 +1418,6 @@ public class InspectionPane extends BorderPane {
     String commonTemplate = null, commonVersion = null, commonMetadataType = null;
     boolean common = true;
     for (TreeItem ti : selectedItems) {
-      System.out.println("----------------------------\nSelected item: " + ti.getValue());
-      System.out.println("Common: " + common);
 
       if (!common)
         continue;
@@ -1437,7 +1435,6 @@ public class InspectionPane extends BorderPane {
         // previously analysed items
         if (dobm.getCreatorOption() != MetadataOptions.TEMPLATE) {
           common = false;
-          System.out.println("Not template: " + dobm.getCreatorOption());
           continue;
         }
         if (commonTemplate == null)
@@ -1447,10 +1444,6 @@ public class InspectionPane extends BorderPane {
         if (commonMetadataType == null) {
           commonMetadataType = dobm.getMetadataType();
         }
-
-        System.out.println("CommonTemplate: " + commonTemplate);
-        System.out.println("CommonVersion: " + commonVersion);
-        System.out.println("CommonMetadataType: " + commonMetadataType);
 
         common =    commonTemplate != null       && commonTemplate.equals(dobm.getTemplateType())
                 &&  commonVersion != null        && commonVersion.equals(dobm.getVersion())
