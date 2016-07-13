@@ -11,8 +11,10 @@ import java.util.*;
 
 import javax.swing.filechooser.FileSystemView;
 
+import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.io.FileUtils;
 import org.roda.rodain.utils.FolderBasedUTF8Control;
 import org.roda.rodain.utils.Utils;
 import org.slf4j.Logger;
@@ -180,7 +182,13 @@ public class AppProperties {
     if (envString != null) {
       Path envPath = Paths.get(envString);
       if (Files.exists(envPath) && Files.isDirectory(envPath)) {
-        return envPath.resolve(CONFIGFOLDER);
+        Path confPath = envPath.resolve(CONFIGFOLDER);
+        try {
+          FileUtils.deleteDirectory(confPath.toFile());
+        } catch (IOException e) {
+          LOGGER.debug("Unable to remove configuration directory: " + confPath, e);
+        }
+        return confPath;
       }
     }
     String documentsString = FileSystemView.getFileSystemView().getDefaultDirectory().getPath();
