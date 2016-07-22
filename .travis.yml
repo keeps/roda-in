@@ -1,15 +1,18 @@
 language: java
 sudo: true
 before_script:
-  - sudo apt-get update
-  - sudo apt-get install libc6:i386 libstdc++6:i386
+- sudo apt-get update
+- sudo apt-get install libc6:i386 libstdc++6:i386
 install:
-  - true
+- true
 script:
-  - mvn clean install -DskipTests
+- mvn clean install -DskipTests
 jdk:
-  - oraclejdk8
+- oraclejdk8
 addons:
   apt:
     packages:
-      - oracle-java8-installer
+    - oracle-java8-installer
+notifications:
+  slack:
+    secure: fWGIPsLEeVRpEylITv59/krMoRLK0oLfRHwinXefGViOWrvnXlcNiorxfsG9tX4RQmrJAqXCZ4e+cfJeUc91/zyr4cb6pFbeccBiFW7VDBP3vm5EaTIp48HyYqhIc+vrsF2B5Lfm3kLirjP/g5As0kozu6Ld3ru1ER0sBS/1UsLbZvEjALlkwS08Ei03wfd3YvcBoFQluIERkgHc2gQrkPB/AQoKm7VO02TMJxC+FJI6/CvhwHgklQBBxyxPltCLSOmQm32id4lmK9WNI6xTkIL0eqj8z7Wrbf4D356Y5c7JJB279fRaN3aX7LnPHRErOjqGW3BhOY04HpdvcLaRGpNlGrXySMnWwY+HgjyLKkOGjhl9ji6BPHCZrZadKQnZd2jINRg0YsTZkp5Vgk8XTpE/iTrjAHOz/ATOtPP/jLwEYsE3lrNocLzS6h8yNStCbt5eHYd/MPREgP3GgK78sNvTniQszpD9bRUY3+rWaZgQl+qry3J2U4xj3BFJFoVO3Q9+t5Y3Wr4P5c4uNQRF7wJ/7bAYmxxL75ocZDYpxDTmc9Jt5TwdZAdZ9tGUgwJCeh+WNCfeSHbk+XCvGbbrEK/NA9tYrUg//K3qyukuks4kARLidic5MpQqlRAKJwr8n0QNM0kfEJ3KwFyRsbwEJ2x7fZI+e7cWwLPQKZSHxTU=
