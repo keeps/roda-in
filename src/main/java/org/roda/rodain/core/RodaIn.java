@@ -1,10 +1,7 @@
 package org.roda.rodain.core;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.net.URISyntaxException;
+import java.io.*;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +29,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.roda.rodain.creation.ui.CreationModalPreparation;
 import org.roda.rodain.creation.ui.CreationModalStage;
 import org.roda.rodain.inspection.InspectionPane;
@@ -46,6 +47,7 @@ import org.roda.rodain.source.ui.FileExplorerPane;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.OpenPathInExplorer;
+import org.roda.rodain.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +57,9 @@ import org.slf4j.LoggerFactory;
  */
 public class RodaIn extends Application {
   private static final Logger LOGGER = LoggerFactory.getLogger(RodaIn.class.getName());
+  private static final String LATEST_VERSION_API = "https://api.github.com/repos/keeps/roda-in/releases/latest";
+  private static final String LATEST_VERSION_LINK = "https://github.com/keeps/roda-in/releases";
+  private static final String BUILD_PROPERTIES_FILE = "build.properties";
   private static Stage stage;
 
   private BorderPane mainPane;
@@ -178,6 +183,8 @@ public class RodaIn extends Application {
 
       // Add the bindings after stage.show(), otherwise they'll start as 0
       Footer.addBindings(fileExplorer);
+
+      checkForUpdates();
     });
 
     initTask.exceptionProperty().addListener((observable, oldValue, newValue) -> {
@@ -508,6 +515,52 @@ public class RodaIn extends Application {
     VisitorStack.end();
     Footer.getInstance().cancelMemoryAutoUpdater();
     Platform.exit();
+  }
+
+  private static void checkForUpdates(){
+    try {
+      String currentVersion = getCurrentVersion();
+      String latestVersion = getLatestVersion();
+
+      if(currentVersion != null && latestVersion != null){
+        if(!currentVersion.equals(latestVersion)){
+          String content = String.format(I18n.t("Main.newVersion.content"), currentVersion, latestVersion);
+          Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
+          dlg.initStyle(StageStyle.UNDECORATED);
+          dlg.setHeaderText(I18n.t("Main.newVersion.header"));
+          dlg.setTitle("");
+          dlg.setContentText(content);
+          dlg.initModality(Modality.APPLICATION_MODAL);
+          dlg.initOwner(stage);
+
+          dlg.getDialogPane().setMinWidth(300);
+          dlg.showAndWait();
+
+          if (dlg.getResult().getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+            Utils.openWebpage(new URI(LATEST_VERSION_LINK));
+          }
+        }
+      }
+    } catch (ConfigurationException e) {
+      LOGGER.error("Could not retrieve application version from " + BUILD_PROPERTIES_FILE, e);
+    } catch (URISyntaxException e) {
+      LOGGER.warn("The URI is malformed", e);
+    } catch (IOException e) {
+      LOGGER.warn("Error accessing the GitHub API", e);
+    }
+  }
+
+  private static String getCurrentVersion() throws ConfigurationException {
+    PropertiesConfiguration pc = new PropertiesConfiguration(BUILD_PROPERTIES_FILE);
+    return pc.getString("current.version");
+  }
+
+  private static String getLatestVersion() throws URISyntaxException, IOException {
+    URI uri = new URI(LATEST_VERSION_API);
+    JSONTokener tokener = new JSONTokener(uri.toURL().openStream());
+    JSONObject versionJSON = new JSONObject(tokener);
+
+    return versionJSON.getString("tag_name");
   }
 
   private static void exportCS(String outputFile) {

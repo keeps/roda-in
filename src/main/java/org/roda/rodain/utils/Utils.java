@@ -1,8 +1,10 @@
 package org.roda.rodain.utils;
 
+import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -121,6 +123,22 @@ public class Utils {
     // check input
     validator.validate(source);
     return true;
+  }
+
+
+  /**
+   * Opens a webpage using the user's default browser.
+   * @param uri The URL to open
+   */
+  public static void openWebpage(URI uri) {
+    Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+    if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+      try {
+        desktop.browse(uri);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
   }
 
 }
