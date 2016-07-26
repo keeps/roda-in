@@ -249,12 +249,9 @@ public class MainTest extends ApplicationTest {
 
     clickOn(I18n.t("SchemaPane.add"));
     sleep(2000);
-    Utils.takeScreenshot(stage, "screenshot1.png");
     clickOn(I18n.t("SchemaPane.newNode"));
-    Utils.takeScreenshot(stage, "screenshot1.1.png");
     clickOn("file10.txt");
     sleep(1000);
-    Utils.takeScreenshot(stage, "screenshot1.2.png");
 
     Platform.runLater(() -> {
       schemaPane.getTreeView().getSelectionModel().selectRange(10,15);
@@ -262,8 +259,6 @@ public class MainTest extends ApplicationTest {
     });
 
     sleep(3000);
-
-    Utils.takeScreenshot(stage, "screenshot2.png");
 
     clickOn("#descObjTitle");
     eraseText(50);
