@@ -349,7 +349,9 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     result.put(getDob(), computeAncestors());
 
     for (SchemaNode sn : schemaNodes)
-      result.putAll(sn.getDescriptionObjects());
+      result.putAll(sn.getSipPreviews());
+
+    ruleNodes.forEach((s, schNodes) -> schNodes.forEach(schemaNode ->result.putAll(schemaNode.getDescriptionObjects())));
     return result;
   }
 

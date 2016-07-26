@@ -871,10 +871,10 @@ public class SchemaPane extends BorderPane {
 
     for (SchemaNode sn : schemaNodes) {
       sipsMap.putAll(sn.getSipPreviews());
-      // we don't want to return the root, since its a hidden node that is only useful for presentation
-      if(sn != rootNode)
-        descObjsMap.putAll(sn.getDescriptionObjects());
+      descObjsMap.putAll(sn.getDescriptionObjects());
     }
+    // we don't want to return the root, since its a hidden node that is only useful for presentation
+    descObjsMap.remove(rootNode.getDob());
     // filter out the SIPs marked as "removed"
     sipsMap = sipsMap.entrySet().stream().parallel().filter(p -> !p.getKey().isRemoved()).collect(Collectors.toMap(
             p -> p.getKey(), p -> p.getValue()));
@@ -906,16 +906,14 @@ public class SchemaPane extends BorderPane {
         }
       }
     }
-    if (sipsMap.isEmpty()) {// add all the SIPs to the result map
-      for (SchemaNode sn : schemaNodes) {
-        sipsMap.putAll(sn.getSipPreviews());
-      }
+    if (sipsMap.isEmpty() && descObjsMap.isEmpty()) {// add all the SIPs to the result map
+      descObjsMap = getAllSipPreviews();
+    }else{
+      // filter out the SIPs marked as "removed"
+      sipsMap = sipsMap.entrySet().stream().parallel().filter(p -> !p.getKey().isRemoved()).collect(Collectors.toMap(
+          p -> p.getKey(), p -> p.getValue()));
+      descObjsMap.putAll(sipsMap);
     }
-
-    // filter out the SIPs marked as "removed"
-    sipsMap = sipsMap.entrySet().stream().parallel().filter(p -> !p.getKey().isRemoved()).collect(Collectors.toMap(
-            p -> p.getKey(), p -> p.getValue()));
-    descObjsMap.putAll(sipsMap);
     return descObjsMap;
   }
 }
