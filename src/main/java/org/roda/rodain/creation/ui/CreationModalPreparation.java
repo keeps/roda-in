@@ -92,8 +92,8 @@ public class CreationModalPreparation extends BorderPane {
   private VBox createCountBox() {
     VBox countBox = new VBox(10);
     countBox.setAlignment(Pos.CENTER);
-    selected = RodaIn.getSelectedSipPreviews().size();
-    allCount = RodaIn.getAllSipPreviews().size();
+    selected = RodaIn.getSelectedDescriptionObjects().size();
+    allCount = RodaIn.getAllDescriptionObjects().size();
 
     Label countLabel = new Label(String.format("%s %d/%d", I18n.t("selected"), selected, allCount));
     countLabel.getStyleClass().add("prepareCreationSubtitle");

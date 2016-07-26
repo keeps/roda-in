@@ -17,6 +17,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.io.FileUtils;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
+import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.sip.SipPreview;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +42,7 @@ public class SimpleSipCreator extends Thread {
     .getLocalizedString("SimpleSipCreator.finalizingSip");
 
   protected final Path outputPath;
-  protected final Map<SipPreview, List<String>> previews;
+  protected final Map<DescriptionObject, List<String>> previews;
   protected final int sipPreviewCount;
 
   protected int createdSipsCount = 0;
@@ -61,7 +62,7 @@ public class SimpleSipCreator extends Thread {
   protected boolean canceled = false;
   protected float currentSipProgress;
 
-  protected Set<SipPreview> unsuccessful;
+  protected Set<DescriptionObject> unsuccessful;
 
   /**
    * Creates a simple SIP exporter.
@@ -76,7 +77,7 @@ public class SimpleSipCreator extends Thread {
    * @param previews
    *          The map with the SIPs that will be exported
    */
-  public SimpleSipCreator(Path outputPath, Map<SipPreview, List<String>> previews) {
+  public SimpleSipCreator(Path outputPath, Map<DescriptionObject, List<String>> previews) {
     this.outputPath = outputPath;
     this.previews = previews;
     sipPreviewCount = previews.size();

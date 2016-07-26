@@ -339,25 +339,48 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     return result;
   }
 
-  public List<String> computeAncestorsOfSips(){
+  /**
+   * Get Descriptions Objects, non-SIPs. Includes self.
+   * @return
+     */
+  public Map<DescriptionObject, List<String>> getDescriptionObjects(){
+    Map<DescriptionObject, List<String>> result = new HashMap<>();
+
+    result.put(getDob(), computeAncestors());
+
+    for (SchemaNode sn : schemaNodes)
+      result.putAll(sn.getDescriptionObjects());
+    return result;
+  }
+
+  public List<String> computeAncestors(){
     List<String> ancestors = new ArrayList<>();
 
     if(getDob().getId() == null){
       return ancestors;
     }
 
-    SchemaNode currentNode = this;
+    SchemaNode currentNode = (SchemaNode) getParent();
     while(currentNode != null && currentNode.getParent() != null){
-        // Stop when the top of the tree is reached
-        if(currentNode.getDob().getId() != null) {
-          ancestors.add(currentNode.getDob().getId());
-          TreeItem parentItem = currentNode.getParent();
-          if(parentItem instanceof SchemaNode)
-            currentNode = (SchemaNode) parentItem;
-          else currentNode = null;
-        }
+      // Stop when the top of the tree is reached
+      if(currentNode.getDob().getId() != null) {
+        ancestors.add(currentNode.getDob().getId());
+        TreeItem parentItem = currentNode.getParent();
+        if(parentItem instanceof SchemaNode)
+          currentNode = (SchemaNode) parentItem;
         else currentNode = null;
+      }
+      else currentNode = null;
     }
+    return ancestors;
+  }
+
+  public List<String> computeAncestorsOfSips(){
+    List<String> ancestors = new ArrayList<>();
+    // Add current node
+    ancestors.add(getDob().getId());
+    // Add ancestors of current node
+    ancestors.addAll(computeAncestors());
     return ancestors;
   }
 }

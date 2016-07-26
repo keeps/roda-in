@@ -2,12 +2,13 @@ package org.roda.rodain.creation;
 
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.creation.ui.CreationModalPreparation;
+import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.sip.SipPreview;
+import sun.security.krb5.internal.crypto.Des;
 
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -44,11 +45,11 @@ public class CreateSips {
    * Starts the exportation process.
    */
   public void start() {
-    Map<SipPreview, List<String>> sips;
+    Map<DescriptionObject, List<String>> sips;
     if (exportAll)
-      sips = RodaIn.getAllSipPreviews();
+      sips = RodaIn.getAllDescriptionObjects();
     else
-      sips = RodaIn.getSelectedSipPreviews();
+      sips = RodaIn.getSelectedDescriptionObjects();
 
     startedTime = System.currentTimeMillis();
     sipsCount = sips.size();

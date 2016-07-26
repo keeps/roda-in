@@ -7,6 +7,7 @@ import org.roda.rodain.creation.ui.CreationModalPreparation;
 import org.roda.rodain.creation.ui.CreationModalProcessing;
 import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.TreeNode;
+import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.sip.SipPreview;
 import org.roda.rodain.sip.SipRepresentation;
 import org.roda.rodain.schema.DescObjMetadata;
@@ -46,7 +47,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
    * @param previews
    *          The map with the SIPs that will be exported
    */
-  public EarkSipCreator(Path outputPath, Map<SipPreview, List<String>> previews, String prefix, CreationModalPreparation.NAME_TYPES name_type) {
+  public EarkSipCreator(Path outputPath, Map<DescriptionObject, List<String>> previews, String prefix, CreationModalPreparation.NAME_TYPES name_type) {
     super(outputPath, previews);
     this.prefix = prefix;
     this.name_type = name_type;
@@ -57,7 +58,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
    */
   @Override
   public void run() {
-    for (SipPreview preview : previews.keySet()) {
+    for (DescriptionObject preview : previews.keySet()) {
       if (canceled) {
         break;
       }
@@ -66,19 +67,20 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
     currentAction = I18n.t("done");
   }
 
-  private void createEarkSip(SipPreview sip) {
+  private void createEarkSip(DescriptionObject descriptionObject) {
     Path tempDir = Paths.get(System.getProperty("java.io.tmpdir"));
     try {
-      SIP earkSip = new EARKSIP(sip.getId(), sip.getContentType(), "RODA-in");
+      IPContentType contentType = descriptionObject instanceof SipPreview ? ((SipPreview) descriptionObject).getContentType() : IPContentType.getMIXED();
+      SIP earkSip = new EARKSIP(descriptionObject.getId(), contentType, "RODA-in");
       earkSip.addObserver(this);
       earkSip.setStatus(IPEnums.IPStatus.NEW);
-      earkSip.setAncestors(previews.get(sip));
+      earkSip.setAncestors(previews.get(descriptionObject));
 
       currentSipProgress = 0;
-      currentSipName = sip.getTitle();
+      currentSipName = descriptionObject.getTitle();
       currentAction = actionCopyingMetadata;
 
-      for (DescObjMetadata descObjMetadata : sip.getMetadata()) {
+      for (DescObjMetadata descObjMetadata : descriptionObject.getMetadata()) {
         String keyMetadataTypeValue = "metadata.type." + descObjMetadata.getMetadataType() + ".value";
         String metadataTypeString = AppProperties.getConfig(keyMetadataTypeValue);
         MetadataType metadataType = new MetadataType(MetadataType.MetadataTypeEnum.OTHER);
@@ -109,7 +111,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
         }
 
         if (metadataPath == null) {
-          String content = sip.getMetadataWithReplaces(descObjMetadata);
+          String content = descriptionObject.getMetadataWithReplaces(descObjMetadata);
 
           metadataPath = tempDir.resolve(descObjMetadata.getId());
           FileUtils.writeStringToFile(metadataPath.toFile(), content, "UTF-8");
@@ -122,55 +124,57 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
       }
 
       currentAction = actionCopyingData;
-      for (SipRepresentation sr : sip.getRepresentations()) {
-        IPRepresentation rep = new IPRepresentation(sr.getName());
-        rep
-          .setContentType(new RepresentationContentType(RepresentationContentType.RepresentationContentTypeEnum.MIXED));
-        Set<TreeNode> files = sr.getFiles();
-        currentSIPadded = 0;
-        currentSIPsize = 0;
-        // count files
-        for (TreeNode tn : files) {
-          currentSIPsize += tn.getFullTreePaths().size();
-        }
-        // add files to representation
-        for (TreeNode tn : files) {
-          addFileToRepresentation(tn, new ArrayList<>(), rep);
+      if(descriptionObject instanceof SipPreview) {
+        SipPreview sip = (SipPreview) descriptionObject;
+        for (SipRepresentation sr : sip.getRepresentations()) {
+          IPRepresentation rep = new IPRepresentation(sr.getName());
+          rep
+              .setContentType(new RepresentationContentType(RepresentationContentType.RepresentationContentTypeEnum.MIXED));
+          Set<TreeNode> files = sr.getFiles();
+          currentSIPadded = 0;
+          currentSIPsize = 0;
+          // count files
+          for (TreeNode tn : files) {
+            currentSIPsize += tn.getFullTreePaths().size();
+          }
+          // add files to representation
+          for (TreeNode tn : files) {
+            addFileToRepresentation(tn, new ArrayList<>(), rep);
+          }
+
+          earkSip.addRepresentation(rep);
         }
 
-        earkSip.addRepresentation(rep);
-      }
-
-      currentAction = I18n.t("SimpleSipCreator.documentation");
-      Set<TreeNode> docs = sip.getDocumentation();
-      for (TreeNode tn : docs) {
-        addDocToZip(tn, new ArrayList<>(), earkSip);
+        currentAction = I18n.t("SimpleSipCreator.documentation");
+        Set<TreeNode> docs = sip.getDocumentation();
+        for (TreeNode tn : docs) {
+          addDocToZip(tn, new ArrayList<>(), earkSip);
+        }
       }
 
       currentAction = I18n.t("SimpleSipCreator.initZIP");
 
-
-      earkSip.build(outputPath, createSipName(sip));
+      earkSip.build(outputPath, createSipName(descriptionObject));
 
       createdSipsCount++;
     } catch (SIPException e) {
       LOGGER.error("Commons IP exception", e);
-      unsuccessful.add(sip);
-      CreationModalProcessing.showError(sip, e);
+      unsuccessful.add(descriptionObject);
+      CreationModalProcessing.showError(descriptionObject, e);
     } catch (InterruptedException e) {
       canceled = true;
     } catch (IOException e) {
       LOGGER.error("Error accessing the files", e);
-      unsuccessful.add(sip);
-      CreationModalProcessing.showError(sip, e);
+      unsuccessful.add(descriptionObject);
+      CreationModalProcessing.showError(descriptionObject, e);
     } catch (Exception e) {
       LOGGER.error("Error exporting E-ARK SIP", e);
-      unsuccessful.add(sip);
-      CreationModalProcessing.showError(sip, e);
+      unsuccessful.add(descriptionObject);
+      CreationModalProcessing.showError(descriptionObject, e);
     }
   }
 
-  private String createSipName(SipPreview sip){
+  private String createSipName(DescriptionObject sip){
     StringBuilder name = new StringBuilder();
     if(prefix != null && !"".equals(prefix)){
       name.append(prefix).append(" - ");

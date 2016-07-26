@@ -7,10 +7,12 @@ import gov.loc.repository.bagit.writer.impl.ZipWriter;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.creation.ui.CreationModalProcessing;
 import org.roda.rodain.rules.TreeNode;
+import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.sip.SipPreview;
 import org.roda.rodain.sip.SipRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.security.krb5.internal.crypto.Des;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -41,16 +43,19 @@ public class BagitSipCreator extends SimpleSipCreator {
    * @param previews
    *          The map with the SIPs that will be exported
    */
-  public BagitSipCreator(Path outputPath, Map<SipPreview, List<String>> previews) {
+  public BagitSipCreator(Path outputPath, Map<DescriptionObject, List<String>> previews) {
     super(outputPath, previews);
 
-    for (SipPreview sip : previews.keySet()) {
-      for (SipRepresentation sr : sip.getRepresentations()) {
-        for (TreeNode tn : sr.getFiles()) {
-          try {
-            allSipsSize += nodeSize(tn);
-          } catch (IOException e) {
-            LOGGER.error("Can't access file: " + tn.getPath(), e);
+    for (DescriptionObject obj : previews.keySet()) {
+      if(obj instanceof SipPreview) {
+        SipPreview sip = (SipPreview) obj;
+        for (SipRepresentation sr : sip.getRepresentations()) {
+          for (TreeNode tn : sr.getFiles()) {
+            try {
+              allSipsSize += nodeSize(tn);
+            } catch (IOException e) {
+              LOGGER.error("Can't access file: " + tn.getPath(), e);
+            }
           }
         }
       }
@@ -63,7 +68,7 @@ public class BagitSipCreator extends SimpleSipCreator {
   @Override
   public void run() {
     startTime = Instant.now();
-    for (SipPreview preview : previews.keySet()) {
+    for (DescriptionObject preview : previews.keySet()) {
       if (canceled) {
         break;
       }
@@ -72,13 +77,13 @@ public class BagitSipCreator extends SimpleSipCreator {
     currentAction = I18n.t("done");
   }
 
-  private void createBagit(SipPreview sip) {
+  private void createBagit(DescriptionObject descriptionObject) {
     // we add a timestamp to the beginning of the SIP name to avoid same name
     // conflicts
     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd kk'h'mm'm'ss's'SSS");
     String dateToString = format.format(new Date());
-    String timestampedName = String.format("%s %s.zip", dateToString, sip.getTitle());
-    currentSipName = sip.getTitle();
+    String timestampedName = String.format("%s %s.zip", dateToString, descriptionObject.getTitle());
+    currentSipName = descriptionObject.getTitle();
     currentAction = actionCreatingFolders;
     // make the directories
     Path name = outputPath.resolve(timestampedName);
@@ -86,11 +91,14 @@ public class BagitSipCreator extends SimpleSipCreator {
     new File(data.toString()).mkdirs();
 
     try {
-      for (SipRepresentation sr : sip.getRepresentations()) {
-        Set<TreeNode> files = sr.getFiles();
-        currentAction = actionCopyingData;
-        for (TreeNode tn : files)
-          createFiles(tn, data);
+      if(descriptionObject instanceof SipPreview) {
+        SipPreview sip = (SipPreview) descriptionObject;
+        for (SipRepresentation sr : sip.getRepresentations()) {
+          Set<TreeNode> files = sr.getFiles();
+          currentAction = actionCopyingData;
+          for (TreeNode tn : files)
+            createFiles(tn, data);
+        }
       }
 
       BagFactory bf = new BagFactory();
@@ -98,13 +106,13 @@ public class BagitSipCreator extends SimpleSipCreator {
       Bag b = pb.makeBagInPlace(BagFactory.Version.V0_97, false);
 
       // additional metadata
-      b.getBagInfoTxt().put("id", sip.getId());
-      b.getBagInfoTxt().put("parent", sip.getParentId());
-      b.getBagInfoTxt().put("title", sip.getTitle());
+      b.getBagInfoTxt().put("id", descriptionObject.getId());
+      b.getBagInfoTxt().put("parent", descriptionObject.getParentId());
+      b.getBagInfoTxt().put("title", descriptionObject.getTitle());
       b.getBagInfoTxt().put("level", "item");
 
       currentAction = actionCopyingMetadata;
-      Map<String, String> metadataList = sip.getMetadataWithReplaces();
+      Map<String, String> metadataList = descriptionObject.getMetadataWithReplaces();
       if (!metadataList.isEmpty()) {
         metadataList.forEach((id, content) -> b.getBagInfoTxt().put("metadata." + id, content));
       }
@@ -119,8 +127,8 @@ public class BagitSipCreator extends SimpleSipCreator {
       b.close();
     } catch (Exception e) {
       LOGGER.error("Error creating SIP", e);
-      unsuccessful.add(sip);
-      CreationModalProcessing.showError(sip, e);
+      unsuccessful.add(descriptionObject);
+      CreationModalProcessing.showError(descriptionObject, e);
       deleteDirectory(name);
     }
   }

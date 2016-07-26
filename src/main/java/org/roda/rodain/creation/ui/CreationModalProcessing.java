@@ -17,6 +17,7 @@ import javafx.stage.StageStyle;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.creation.CreateSips;
+import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.sip.SipPreview;
 import org.roda.rodain.utils.OpenPathInExplorer;
 import org.slf4j.Logger;
@@ -254,18 +255,18 @@ public class CreationModalProcessing extends BorderPane {
    * Shows an alert with the error message regarding an exception found when
    * exporting a SIP.
    * 
-   * @param sip
+   * @param descriptionObject
    *          The SIP being exported when the exception was thrown
    * @param ex
    *          The thrown exception
    */
-  public static void showError(SipPreview sip, Exception ex) {
+  public static void showError(DescriptionObject descriptionObject, Exception ex) {
     Platform.runLater(() -> {
       Alert alert = new Alert(Alert.AlertType.ERROR);
       alert.initStyle(StageStyle.UNDECORATED);
       alert.initOwner(stage);
       alert.setTitle(I18n.t("CreationModalProcessing.alert.title"));
-      String header = String.format(I18n.t("CreationModalProcessing.alert.header"), sip.getTitle());
+      String header = String.format(I18n.t("CreationModalProcessing.alert.header"), descriptionObject.getTitle());
       alert.setHeaderText(header);
       StringBuilder content = new StringBuilder(ex.getLocalizedMessage());
       content.append("\n");

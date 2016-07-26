@@ -51,6 +51,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import sun.security.krb5.internal.crypto.Des;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -863,25 +864,32 @@ public class SchemaPane extends BorderPane {
     return hasClassificationScheme;
   }
 
-  public Map<SipPreview, List<String>> getAllSipPreviews() {
+  public Map<DescriptionObject, List<String>> getAllSipPreviews() {
     schemaNodes.add(rootNode);
-    Map<SipPreview, List<String>> result = new HashMap<>();
+    Map<SipPreview, List<String>> sipsMap = new HashMap<>();
+    Map<DescriptionObject, List<String>> descObjsMap = new HashMap<>();
 
     for (SchemaNode sn : schemaNodes) {
-      result.putAll(sn.getSipPreviews());
+      sipsMap.putAll(sn.getSipPreviews());
+      // we don't want to return the root, since its a hidden node that is only useful for presentation
+      if(sn != rootNode)
+        descObjsMap.putAll(sn.getDescriptionObjects());
     }
-
     // filter out the SIPs marked as "removed"
-    return result.entrySet().stream().parallel().filter(p -> !p.getKey().isRemoved()).collect(Collectors.toMap(
+    sipsMap = sipsMap.entrySet().stream().parallel().filter(p -> !p.getKey().isRemoved()).collect(Collectors.toMap(
             p -> p.getKey(), p -> p.getValue()));
+
+    descObjsMap.putAll(sipsMap);
+    return descObjsMap;
   }
 
   /**
    * @return The Map with the SIPs of all the SchemaNodes in the TreeView
    */
-  public Map<SipPreview, List<String>> getSelectedSipPreviews() {
+  public Map<DescriptionObject, List<String>> getSelectedSipPreviews() {
     schemaNodes.add(rootNode);
-    Map<SipPreview, List<String>> result = new HashMap<>();
+    Map<SipPreview, List<String>> sipsMap = new HashMap<>();
+    Map<DescriptionObject, List<String>> descObjsMap = new HashMap<>();
 
     ObservableList<TreeItem<String>> selected = treeView.getSelectionModel().getSelectedItems();
     if (selected != null) {
@@ -889,21 +897,25 @@ public class SchemaPane extends BorderPane {
         if (item instanceof SipPreviewNode) {
           SipPreviewNode sip = (SipPreviewNode) item;
           SchemaNode parent = (SchemaNode) sip.getParent();
-          result.put(sip.getSip(), parent.computeAncestorsOfSips());
+          sipsMap.put(sip.getSip(), parent.computeAncestorsOfSips());
         }
         if (item instanceof SchemaNode) {
-          result.putAll(((SchemaNode) item).getSipPreviews());
+          SchemaNode itemNode = (SchemaNode) item;
+          sipsMap.putAll(itemNode.getSipPreviews());
+          descObjsMap.put(itemNode.getDob(), itemNode.computeAncestors());
         }
       }
     }
-    if (result.isEmpty()) {// add all the SIPs to the result map
+    if (sipsMap.isEmpty()) {// add all the SIPs to the result map
       for (SchemaNode sn : schemaNodes) {
-        result.putAll(sn.getSipPreviews());
+        sipsMap.putAll(sn.getSipPreviews());
       }
     }
 
     // filter out the SIPs marked as "removed"
-    return result.entrySet().stream().parallel().filter(p -> !p.getKey().isRemoved()).collect(Collectors.toMap(
+    sipsMap = sipsMap.entrySet().stream().parallel().filter(p -> !p.getKey().isRemoved()).collect(Collectors.toMap(
             p -> p.getKey(), p -> p.getValue()));
+    descObjsMap.putAll(sipsMap);
+    return descObjsMap;
   }
 }
