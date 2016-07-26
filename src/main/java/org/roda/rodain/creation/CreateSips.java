@@ -9,6 +9,7 @@ import sun.security.krb5.internal.crypto.Des;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -23,7 +24,7 @@ public class CreateSips {
 
   private int sipsCount;
   private long startedTime;
-  private boolean exportAll;
+  private boolean exportAll, exportItems;
 
   /**
    * Creates a new object of the SIP exporter
@@ -33,12 +34,13 @@ public class CreateSips {
    * @param type
    *          The format of the SIP output
    */
-  public CreateSips(Path outputPath, SipTypes type, boolean exportAll, String prefix, CreationModalPreparation.NAME_TYPES name_type) {
+  public CreateSips(Path outputPath, SipTypes type, boolean exportAll, boolean exportItems, String prefix, CreationModalPreparation.NAME_TYPES name_type) {
     this.type = type;
     this.outputPath = outputPath;
     this.exportAll = exportAll;
     this.prefix = prefix;
     this.name_type = name_type;
+    this.exportItems = exportItems;
   }
 
   /**
@@ -50,6 +52,9 @@ public class CreateSips {
       sips = RodaIn.getAllDescriptionObjects();
     else
       sips = RodaIn.getSelectedDescriptionObjects();
+
+    if(!exportItems)
+    sips = sips.entrySet().stream().filter(entry -> entry.getKey() instanceof SipPreview).collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
 
     startedTime = System.currentTimeMillis();
     sipsCount = sips.size();

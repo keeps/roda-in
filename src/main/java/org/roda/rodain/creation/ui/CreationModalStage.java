@@ -19,6 +19,8 @@ import java.nio.file.Path;
  * @since 19/11/2015.
  */
 public class CreationModalStage extends Stage {
+  private static final int PREPARATION_HEIGHT = 270;
+  private static final int PROCESSING_HEIGHT = PREPARATION_HEIGHT - 60;
   private ColorAdjust colorAdjust;
   private Stage primaryStage;
 
@@ -39,7 +41,7 @@ public class CreationModalStage extends Stage {
 
     setResizable(true);
 
-    Scene scene = new Scene(new HBox(), 400, 240);
+    Scene scene = new Scene(new HBox(), 400, PREPARATION_HEIGHT);
     scene.getStylesheets().add(ClassLoader.getSystemResource("css/modal.css").toExternalForm());
     scene.getStylesheets().add(ClassLoader.getSystemResource("css/shared.css").toExternalForm());
     setScene(scene);
@@ -54,8 +56,9 @@ public class CreationModalStage extends Stage {
    * @param type
    *          The format of the SIPs
    */
-  public void startCreation(Path outputFolder, SipTypes type, boolean exportAll, String prefix, CreationModalPreparation.NAME_TYPES name_type) {
-    CreateSips creator = new CreateSips(outputFolder, type, exportAll, prefix, name_type);
+  public void startCreation(Path outputFolder, SipTypes type, boolean exportAll, boolean exportItems, String prefix, CreationModalPreparation.NAME_TYPES name_type) {
+    setHeight(PROCESSING_HEIGHT);
+    CreateSips creator = new CreateSips(outputFolder, type, exportAll, exportItems, prefix, name_type);
     CreationModalProcessing pane = new CreationModalProcessing(creator, this);
     setRoot(pane);
     creator.start();

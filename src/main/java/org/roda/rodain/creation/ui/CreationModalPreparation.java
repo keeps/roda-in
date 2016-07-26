@@ -3,7 +3,9 @@ package org.roda.rodain.creation.ui;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Set;
 
+import com.sun.javafx.binding.StringFormatter;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -23,6 +25,8 @@ import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.creation.SipTypes;
+import org.roda.rodain.schema.DescriptionObject;
+import org.roda.rodain.sip.SipPreview;
 import org.roda.rodain.utils.UIPair;
 
 /**
@@ -38,8 +42,8 @@ public class CreationModalPreparation extends BorderPane {
   private ComboBox<String> sipTypes;
   private ComboBox<UIPair> nameTypes;
   private static Button start;
-  private int selected, allCount;
-  private ToggleSwitch toggleSwitch;
+  private long selectedSIP, selectedItems, allSIP, allItems;
+  private ToggleSwitch toggleSwitch, itemExportSwitch;
   private TextField prefixField;
 
   /**
@@ -92,17 +96,27 @@ public class CreationModalPreparation extends BorderPane {
   private VBox createCountBox() {
     VBox countBox = new VBox(10);
     countBox.setAlignment(Pos.CENTER);
-    selected = RodaIn.getSelectedDescriptionObjects().size();
-    allCount = RodaIn.getAllDescriptionObjects().size();
+    Set<DescriptionObject> selectedSet = RodaIn.getSelectedDescriptionObjects().keySet();
+    Set<DescriptionObject> allSet = RodaIn.getAllDescriptionObjects().keySet();
+    selectedSIP = selectedSet.stream().filter(p -> p instanceof SipPreview).count();
+    selectedItems = selectedSet.size() - selectedSIP;
+    allSIP = allSet.stream().filter(p -> p instanceof SipPreview).count();
+    allItems = allSet.size() - allSIP;
 
-    Label countLabel = new Label(String.format("%s %d/%d", I18n.t("selected"), selected, allCount));
+    String countLabelString = String.format("%s %d/%d SIP", I18n.t("selected"), this.selectedSIP, this.allSIP);
+    if(allItems != 0){
+      countLabelString = String.format("%s %s %d/%d %s", countLabelString, I18n.t("and"), this.selectedItems, this.allItems, I18n.t("items"));
+    }
+    Label countLabel = new Label(countLabelString);
     countLabel.getStyleClass().add("prepareCreationSubtitle");
     toggleSwitch = new ToggleSwitch(I18n.t("CreationModalPreparation.exportAll"));
 
-    if (selected == 0 || selected == allCount)
+    if (this.selectedSIP == 0 || this.selectedSIP == this.allSIP)
       toggleSwitch.setSelected(true);
 
-    countBox.getChildren().addAll(countLabel, toggleSwitch);
+    itemExportSwitch = new ToggleSwitch(I18n.t("CreationModalPreparation.exportItems"));
+
+    countBox.getChildren().addAll(countLabel, toggleSwitch, itemExportSwitch);
     return countBox;
   }
 
@@ -217,7 +231,7 @@ public class CreationModalPreparation extends BorderPane {
 
         AppProperties.setConfig("export.last_prefix", prefixField.getText());
         AppProperties.saveConfig();
-        stage.startCreation(outputFolder, type, toggleSwitch.isSelected(), prefixField.getText(), (NAME_TYPES) nameTypes.getSelectionModel().getSelectedItem().getKey());
+        stage.startCreation(outputFolder, type, toggleSwitch.isSelected(), itemExportSwitch.isSelected(), prefixField.getText(), (NAME_TYPES) nameTypes.getSelectionModel().getSelectedItem().getKey());
       }
     });
 
