@@ -38,7 +38,7 @@ Java 8 can be downloaded [here](https://www.java.com/en/download/).
 
 ## Download pre-compiled version
 
-The latest version of RODA-in is available [here](https://github.com/keeps/roda-in/releases).
+The latest version of RODA-in is available [here](https://github.com/keeps/roda-in/releases/latest).
 
 To use RODA-in no installation is required. You just need to download the latest release of the application and run it by double clicking the downloaded file (*.jar extension). If that doesn't work, open a console window (or terminal) and creatorOption
 
