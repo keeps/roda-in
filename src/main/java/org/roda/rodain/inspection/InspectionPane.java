@@ -1,14 +1,5 @@
 package org.roda.rodain.inspection;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
@@ -34,7 +25,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.StringConverter;
 import javafx.util.converter.LocalDateStringConverter;
-
 import org.apache.commons.lang.StringUtils;
 import org.controlsfx.control.PopOver;
 import org.fxmisc.richtext.CodeArea;
@@ -58,14 +48,20 @@ import org.roda.rodain.sip.SipRepresentation;
 import org.roda.rodain.source.ui.SourceTreeCell;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
-import org.roda.rodain.utils.FontAwesomeImageCreator;
-import org.roda.rodain.utils.ModalStage;
-import org.roda.rodain.utils.UIPair;
-import org.roda.rodain.utils.Utils;
+import org.roda.rodain.utils.*;
 import org.roda_project.commons_ip.model.IPContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -361,7 +357,7 @@ public class InspectionPane extends BorderPane {
       }
     });
 
-    metadataTopBox.getChildren().addAll(titleLabel, space);
+    metadataTopBox.getChildren().addAll(titleLabel, new HelpToken(I18n.help("inspectionPanel.metadata"), PopOver.ArrowLocation.RIGHT_CENTER), space);
     updateMetadataTop();
   }
 
@@ -857,7 +853,7 @@ public class InspectionPane extends BorderPane {
     });
     createDocsBottom();
 
-    top.getChildren().addAll(space, toggleDocumentation);
+    top.getChildren().addAll(new HelpToken(I18n.help("inspectionPanel.data"), PopOver.ArrowLocation.RIGHT_CENTER), space, toggleDocumentation);
   }
 
   private void createLoadingPanes() {
@@ -1190,7 +1186,7 @@ public class InspectionPane extends BorderPane {
 
     Label title = new Label(I18n.t("InspectionPane.rules").toUpperCase());
     title.getStyleClass().add("title");
-    top.getChildren().add(title);
+    top.getChildren().addAll(title, new HelpToken(I18n.help("inspectionPanel.associations"), PopOver.ArrowLocation.BOTTOM_CENTER));
     rules.setTop(top);
     ruleList = new ListView<>();
 

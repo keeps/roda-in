@@ -1,12 +1,6 @@
 package org.roda.rodain.schema.ui;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-import java.util.stream.Collectors;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -31,7 +25,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
+import org.controlsfx.control.PopOver;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.Footer;
 import org.roda.rodain.core.I18n;
@@ -47,11 +41,16 @@ import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.AutoscrollTreeView;
+import org.roda.rodain.utils.HelpToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import sun.security.krb5.internal.crypto.Des;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -138,7 +137,7 @@ public class SchemaPane extends BorderPane {
     Label title = new Label("2 . " + I18n.t("SchemaPane.help.title"));
     title.getStyleClass().add("helpTitle");
     title.setTextAlignment(TextAlignment.CENTER);
-    titleBox.getChildren().add(title);
+    titleBox.getChildren().addAll(title, new HelpToken(I18n.help("secondStep"), PopOver.ArrowLocation.LEFT_CENTER));
 
     HBox loadBox = new HBox();
     loadBox.setAlignment(Pos.CENTER);
@@ -491,7 +490,7 @@ public class SchemaPane extends BorderPane {
     export.setMinWidth(100);
     export.setOnAction(event -> RodaIn.exportSIPs());
 
-    bottom.getChildren().addAll(addLevel, removeLevel, space, export);
+    bottom.getChildren().addAll(addLevel, removeLevel, space, new HelpToken(I18n.help("export"), PopOver.ArrowLocation.BOTTOM_CENTER), export);
   }
 
   private void confirmRemove(List<TreeItem<String>> selectedItems, ButtonType type) {

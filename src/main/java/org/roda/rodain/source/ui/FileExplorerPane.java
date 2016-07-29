@@ -14,6 +14,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.controlsfx.control.PopOver;
 import org.roda.rodain.core.Footer;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.PathCollection;
@@ -22,6 +23,7 @@ import org.roda.rodain.source.representation.SourceDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
+import org.roda.rodain.utils.HelpToken;
 import org.roda.rodain.utils.Utils;
 import org.roda.rodain.utils.WalkFileTree;
 
@@ -111,7 +113,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     top.getStyleClass().add("title-box");
     top.setAlignment(Pos.CENTER_LEFT);
     top.setPadding(new Insets(15, 15, 15, 15));
-    top.getChildren().add(title);
+    top.getChildren().addAll(title, new HelpToken(I18n.help("fileExplorer"), PopOver.ArrowLocation.LEFT_CENTER));
   }
 
   private void createBottom() {
@@ -171,7 +173,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     associate.setMinWidth(100);
     associate.setOnAction(event -> RodaIn.getSchemePane().startAssociation());
 
-    bottom.getChildren().addAll(ignoreAndRemoveBox, space, associate);
+    bottom.getChildren().addAll(ignoreAndRemoveBox, space, new HelpToken(I18n.help("associate"), PopOver.ArrowLocation.BOTTOM_CENTER) ,associate);
   }
 
   private void createCenterHelp() {
@@ -192,7 +194,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     title.setWrapText(true);
     title.getStyleClass().add("helpTitle");
     title.setTextAlignment(TextAlignment.CENTER);
-    titleBox.getChildren().add(title);
+    titleBox.getChildren().addAll(title, new HelpToken(I18n.help("firstStep"), PopOver.ArrowLocation.LEFT_CENTER));
 
     HBox loadBox = new HBox();
     loadBox.setAlignment(Pos.CENTER);

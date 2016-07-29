@@ -1,12 +1,5 @@
 package org.roda.rodain.rules.ui;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -22,7 +15,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
+import org.controlsfx.control.PopOver;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.rules.MetadataOptions;
@@ -31,9 +24,17 @@ import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
+import org.roda.rodain.utils.HelpToken;
 import org.roda.rodain.utils.UIPair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -131,9 +132,13 @@ public class RuleModalPane extends BorderPane {
     boxAssociation.setPadding(new Insets(0, 15, 0, 15));
     boxAssociation.setAlignment(Pos.TOP_LEFT);
 
+    HBox subtitleBox = new HBox(5);
+
     Label subtitle = new Label(I18n.t("RuleModalPane.associationMethod").toUpperCase());
     subtitle.setPadding(new Insets(0, 0, 10, 0));
     subtitle.setId("sub-title");
+
+    subtitleBox.getChildren().addAll(subtitle, new HelpToken(I18n.help("associationMethod"), PopOver.ArrowLocation.LEFT_CENTER));
 
     assocList = new ListView<>();
     assocList.setMinHeight(LIST_HEIGHT);
@@ -197,7 +202,7 @@ public class RuleModalPane extends BorderPane {
       cellStructure.setDisable(true);
     }
 
-    boxAssociation.getChildren().addAll(subtitle, assocList);
+    boxAssociation.getChildren().addAll(subtitleBox, assocList);
   }
 
   private void createCenterMetadata() {
@@ -205,9 +210,13 @@ public class RuleModalPane extends BorderPane {
     boxMetadata.setAlignment(Pos.TOP_LEFT);
     boxMetadata.setPadding(new Insets(0, 15, 0, 15));
 
+    HBox subtitleBox = new HBox(5);
+
     Label subtitle = new Label(I18n.t("RuleModalPane.metadataMethod").toUpperCase());
     subtitle.setId("sub-title");
     subtitle.setPadding(new Insets(0, 0, 10, 0));
+
+    subtitleBox.getChildren().addAll(subtitle, new HelpToken(I18n.help("metadataMethod"), PopOver.ArrowLocation.LEFT_CENTER));
 
     metaList = new ListView<>();
     metaList.setMinHeight(LIST_HEIGHT);
@@ -273,7 +282,7 @@ public class RuleModalPane extends BorderPane {
       metaList.getSelectionModel().select(1);
     }
 
-    boxMetadata.getChildren().addAll(subtitle, metaList);
+    boxMetadata.getChildren().addAll(subtitleBox, metaList);
   }
 
   private HBox optionsSingleFile(List<UIPair> metaTypeList) {

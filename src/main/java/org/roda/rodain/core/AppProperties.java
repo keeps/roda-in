@@ -1,5 +1,14 @@
 package org.roda.rodain.core;
 
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.io.FileUtils;
+import org.roda.rodain.utils.FolderBasedUTF8Control;
+import org.roda.rodain.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.swing.filechooser.FileSystemView;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -8,17 +17,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
-
-import javax.swing.filechooser.FileSystemView;
-
-import org.apache.commons.compress.utils.IOUtils;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.commons.io.FileUtils;
-import org.roda.rodain.utils.FolderBasedUTF8Control;
-import org.roda.rodain.utils.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -33,7 +31,7 @@ public class AppProperties {
   private static PropertiesConfiguration style = load("styles"), config = load("config"), ext_config,
     descLevels = load("roda-description-levels-hierarchy");
   private static PropertiesConfiguration start_ext_config;
-  private static ResourceBundle resourceBundle, defaultResourceBundler;
+  private static ResourceBundle resourceBundle, defaultResourceBundle, helpBundle, defaultHelpBundle;
   private static Locale locale;
 
   private static Set<Path> allSchemas;
@@ -138,14 +136,18 @@ public class AppProperties {
       }
 
       resourceBundle = ResourceBundle.getBundle("properties/lang", locale, new FolderBasedUTF8Control());
-      defaultResourceBundler = ResourceBundle.getBundle("properties/lang", Locale.ENGLISH,
+      helpBundle = ResourceBundle.getBundle("properties/help", locale, new FolderBasedUTF8Control());
+      defaultResourceBundle = ResourceBundle.getBundle("properties/lang", Locale.ENGLISH,
         new FolderBasedUTF8Control());
+      defaultHelpBundle = ResourceBundle.getBundle("properties/help", Locale.ENGLISH,
+          new FolderBasedUTF8Control());
     } catch (IOException e) {
       LOGGER.error("Error copying config file", e);
     } catch (MissingResourceException e) {
       LOGGER.info("Can't find the language resource for the current locale", e);
       locale = Locale.forLanguageTag("en");
       resourceBundle = ResourceBundle.getBundle("properties/lang", locale, new FolderBasedUTF8Control());
+      helpBundle = ResourceBundle.getBundle("properties/help", locale, new FolderBasedUTF8Control());
     } catch (ConfigurationException e) {
       LOGGER.error("Error loading the config file", e);
     } finally {
@@ -365,9 +367,24 @@ public class AppProperties {
     } catch (MissingResourceException e) {
       LOGGER.warn(String.format("Missing translation for %s in language: %s", key, locale.getDisplayName()));
       try {
-        result = defaultResourceBundler.getString(key);
+        result = defaultResourceBundle.getString(key);
       } catch (Exception e1) {
         LOGGER.warn(String.format("Missing translation for %s in language: %s", key, Locale.ENGLISH));
+      }
+    }
+    return result;
+  }
+
+  public static String getLocalizedHelp(String key) {
+    String result = null;
+    try {
+      result = helpBundle.getString(key);
+    } catch (MissingResourceException e) {
+      LOGGER.warn(String.format("Missing translation for help %s in language: %s", key, locale.getDisplayName()));
+      try {
+        result = defaultHelpBundle.getString(key);
+      } catch (Exception e1) {
+        LOGGER.warn(String.format("Missing translation for help %s in language: %s", key, Locale.ENGLISH));
       }
     }
     return result;

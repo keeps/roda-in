@@ -15,4 +15,6 @@ public class I18n {
   public static String t(String key, String languageTag) {
     return AppProperties.getLocalizedString(key, languageTag);
   }
+
+  public static String help(String key){return AppProperties.getLocalizedHelp(key);};
 }
