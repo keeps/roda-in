@@ -1,16 +1,23 @@
+{{~field name="id" 			order='1' auto-generate='id' xpath="//*:identifier/string()"}}
+{{~field name="title"		order='2' auto-generate='title' xpath="//*:title/string()"}}
+{{~field name="dateInitial" order='3' type='date' xpath="//*:date[1]/string()"}}
+{{~field name="dateFinal" 	order='4' type='date' xpath="//*:date[2]/string()"}}
+{{~field name="description" type='text-area' xpath="//*:description/string()"}}
+{{~field name="producer" 	xpath="//*:publisher/string()"}}
+{{~field name="rights" 		xpath="//*:rights/string()"}}
+{{~field name="creator" 	xpath="//*:creator/string()"}}
+{{~field name="language" 	auto-generate='language' xpath="//*:language/string()"~}}
 <?xml version="1.0"?>
 
 <simpledc xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:noNamespaceSchemaLocation="../schemas/dc.xsd">
-
-    <title>{{title order=2 auto-generate='title'}}</title>
-    <identifier>{{id order=1 auto-generate='id'}}</identifier>
-    <creator>{{creator}}</creator>
-    <date>{{dateInitial order=3 type='date'}}</date>
-    <date>{{dateFinal order=4 type='date'}}</date>
-    <description>{{description type='text-area'}}</description>
-    <publisher>{{producer}}</publisher>
-    <rights>{{rights}}</rights>
-    <language>{{language auto-generate='language'}}</language>
-
+	  xsi:noNamespaceSchemaLocation="../schemas/dc.xsd">
+	<title>{{title}}</title>
+	<identifier>{{id}}</identifier>
+	<creator>{{creator}}</creator>
+	<date>{{dateInitial}}</date>
+	<date>{{dateFinal}}</date>
+	<description>{{description}}</description>
+	<publisher>{{producer}}</publisher>
+	<rights>{{rights}}</rights>
+	<language>{{language}}</language>
 </simpledc>
