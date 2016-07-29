@@ -1,28 +1,26 @@
 package org.roda.rodain.utils;
 
-import java.awt.*;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.net.URI;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Scanner;
-
-import javax.xml.XMLConstants;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
-
 import org.apache.commons.io.IOUtils;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.utils.validation.ResourceResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+
+import javax.xml.XMLConstants;
+import javax.xml.transform.*;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+import java.awt.*;
+import java.io.*;
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Scanner;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -123,6 +121,28 @@ public class Utils {
     // check input
     validator.validate(source);
     return true;
+  }
+
+  public static void indentXML(Reader input, Writer output) throws TransformerException {
+    Transformer transformer = TransformerFactory.newInstance().newTransformer();
+    transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+    transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+
+    StreamSource source = new StreamSource(input);
+    StreamResult result = new StreamResult(output);
+    transformer.transform(source, result);
+  }
+
+  public static String indentXML(String xml) {
+    Reader input = new StringReader(xml);
+    Writer output = new StringWriter();
+    try {
+      indentXML(input, output);
+    } catch (TransformerException e) {
+      LOGGER.warn("Could not indent XML", e);
+      return xml;
+    }
+    return output.toString();
   }
 
 

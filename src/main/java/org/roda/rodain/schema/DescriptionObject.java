@@ -1,15 +1,16 @@
 package org.roda.rodain.schema;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import org.roda.rodain.core.I18n;
-import org.roda.rodain.rules.MetadataOptions;
-import org.roda.rodain.sip.MetadataValue;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
+import org.roda.rodain.core.I18n;
+import org.roda.rodain.rules.MetadataOptions;
+import org.roda.rodain.sip.MetadataValue;
+import org.roda.rodain.utils.Utils;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -125,15 +126,11 @@ public class DescriptionObject extends Observable {
   public String getMetadataWithReplaces(DescObjMetadata dom) {
     String content = dom.getContentDecoded();
     if (content != null) {
+
       try {
         Handlebars handlebars = new Handlebars();
         Map<String, String> data = new HashMap<>();
-        handlebars.registerHelperMissing((o, options) -> {
-          if (data.containsKey(options.helperName)) {
-            return data.get(options.helperName);
-          }
-          return "";
-        });
+        handlebars.registerHelper("field", (o, options) -> options.fn());
         Template tmpl = handlebars.compileInline(content);
 
         Set<MetadataValue> values = getMetadataValueMap(dom);
@@ -143,14 +140,15 @@ public class DescriptionObject extends Observable {
             if (val != null) {
               val = val.replaceAll("\\s", "");
               if (!"".equals(val)) {
-                data.put(metadataValue.getId(), (String) metadataValue.get("value"));
+                data.put((String)metadataValue.get("name"), (String)metadataValue.get("value"));
               }
             }
           });
         }
         content = tmpl.apply(data);
-      } catch (Exception e) {
-        e.printStackTrace();
+        content = Utils.indentXML(content);
+      } catch (IOException e) {
+        // log
       }
       // we need to clean the '\r' character in windows,
       // otherwise the strings are different even if no modification has been

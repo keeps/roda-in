@@ -1,13 +1,7 @@
 package org.roda.rodain.schema;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.net.util.Base64;
 import org.roda.rodain.core.AppProperties;
@@ -18,8 +12,13 @@ import org.roda.rodain.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -105,7 +104,7 @@ public class DescObjMetadata {
    */
   public Set<MetadataValue> getValues() {
     if (values == null) {
-      values = TemplateToForm.createSet(getContentDecoded());
+      values = TemplateToForm.transform(getContentDecoded());
     }
     return values;
   }

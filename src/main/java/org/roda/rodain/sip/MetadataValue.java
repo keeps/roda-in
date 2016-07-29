@@ -1,10 +1,10 @@
 package org.roda.rodain.sip;
 
+import org.roda.rodain.core.I18n;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.MissingResourceException;
-
-import org.roda.rodain.core.I18n;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -34,7 +34,10 @@ public class MetadataValue implements Comparable {
       this.options = options;
 
     if (!this.options.containsKey("label")) {
-      this.options.put("label", getTitle(id));
+      // We don't need a label if the field is hidden
+      if(options.containsKey("hidden") && options.get("hidden").equals("true")){
+        this.options.put("label", "");
+      }else this.options.put("label", getTitle(id));
     }
   }
 
