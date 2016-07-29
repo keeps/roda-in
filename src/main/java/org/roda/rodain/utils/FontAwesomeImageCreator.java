@@ -1,7 +1,5 @@
 package org.roda.rodain.utils;
 
-import java.io.InputStream;
-
 import javafx.geometry.VPos;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
@@ -11,6 +9,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
+
+import java.io.InputStream;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -31,6 +31,7 @@ public class FontAwesomeImageCreator {
   public static final String MINUS = "\uf068";
   public static final String PENCIL = "\uf040";
   public static final String GLOBE = "\uf0ac";
+  public static final String QUESTION = "\uf059";
 
   public static final Font FONT = loadFont();
 

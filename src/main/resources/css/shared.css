@@ -102,6 +102,11 @@
     -fx-text-fill: white;
 }
 
+.helpToken .label{
+    -fx-max-width: 400px;
+    -fx-text-fill: black;
+}
+
 /* Combo-Box */
 .combo-box-base .list-view .list-cell {
     -fx-background-color: -fx-dark;
