@@ -3,8 +3,10 @@ package org.roda.rodain.schema;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
+import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.rules.MetadataOptions;
+import org.roda.rodain.rules.TemplateToForm;
 import org.roda.rodain.sip.MetadataValue;
 import org.roda.rodain.utils.Utils;
 
@@ -126,7 +128,6 @@ public class DescriptionObject extends Observable {
   public String getMetadataWithReplaces(DescObjMetadata dom) {
     String content = dom.getContentDecoded();
     if (content != null) {
-
       try {
         Handlebars handlebars = new Handlebars();
         Map<String, String> data = new HashMap<>();
@@ -154,13 +155,17 @@ public class DescriptionObject extends Observable {
       // otherwise the strings are different even if no modification has been
       // made
       content = content.replace("\r", "");
+
+      if(dom.getCreatorOption() != MetadataOptions.TEMPLATE){
+        dom.setSimilar(TemplateToForm.isSimilar(content, dom.getContentDecoded()));
+      }
     }
     return content;
   }
 
   @JsonIgnore
   public Set<MetadataValue> getMetadataValueMap(DescObjMetadata dom) {
-    String content = dom.getContentDecoded();
+    String content = AppProperties.getMetadataFile(dom.getTemplateType());
     if (content != null) {
       Set<MetadataValue> values = dom.getValues();
       values.forEach(metadataValue -> {

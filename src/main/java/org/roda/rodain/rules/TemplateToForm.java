@@ -2,15 +2,16 @@ package org.roda.rodain.rules;
 
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
+import org.custommonkey.xmlunit.Diff;
+import org.custommonkey.xmlunit.XMLUnit;
 import org.roda.rodain.sip.MetadataValue;
+import org.roda.rodain.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -59,6 +60,58 @@ public class TemplateToForm {
       LOGGER.error("Error getting the MetadataValue list from the template");
     }
     return values;
+  }
+
+  public static TreeSet<MetadataValue> transformWithEdition(String template, String content){
+    TreeSet<MetadataValue> templateMV = transform(template);
+    if (templateMV != null) {
+      for (MetadataValue mv : templateMV) {
+        // clear the auto-generated values
+        // mv.set("value", null);
+        String xpathRaw = (String) mv.get("xpath");
+        if (xpathRaw != null && xpathRaw.length() > 0) {
+          String[] xpaths = xpathRaw.split("##%##");
+          String value;
+          List<String> allValues = new ArrayList<>();
+          for (String xpath : xpaths) {
+            allValues.addAll(Utils.applyXpath(content, xpath));
+          }
+          // if any of the values is different, concatenate all values in a
+          // string, otherwise return the value
+          boolean allEqual = allValues.stream().allMatch(s -> s.trim().equals(allValues.get(0).trim()));
+          if (allEqual && !allValues.isEmpty()) {
+            value = allValues.get(0);
+          } else {
+            value = String.join(" / ", allValues);
+          }
+          mv.set("value", value.trim());
+        }
+      }
+    }
+    return templateMV;
+  }
+
+  /**
+   * Identity check. Test if the original XML is equal to the result of applying the extracted values to the template
+   * @param editedTemplate The new XML with the values extracted using XPath and applied to the template
+   * @param original The original XML metadata file.
+   * @return
+   */
+  public static boolean isSimilar(String editedTemplate, String original){
+    //
+    try {
+      XMLUnit.setIgnoreComments(true);
+      XMLUnit.setIgnoreWhitespace(true);
+      XMLUnit.setIgnoreAttributeOrder(true);
+      XMLUnit.setCompareUnmatched(false);
+
+      Diff xmlDiff = new Diff(original, editedTemplate);
+      xmlDiff.overrideDifferenceListener(new XMLSimilarityIgnoreElements("schemaLocation"));
+      return xmlDiff.identical() || xmlDiff.similar();
+    } catch (SAXException | IOException e) {
+      // Do not do anything, just return false
+    }
+    return false;
   }
 
 }

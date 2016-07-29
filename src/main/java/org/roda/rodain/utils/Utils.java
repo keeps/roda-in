@@ -1,5 +1,6 @@
 package org.roda.rodain.utils;
 
+import net.sf.saxon.s9api.*;
 import org.apache.commons.io.IOUtils;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.utils.validation.ResourceResolver;
@@ -20,6 +21,8 @@ import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -143,6 +146,34 @@ public class Utils {
       return xml;
     }
     return output.toString();
+  }
+
+  public static List<String> applyXpath(String xml, String xpathString) {
+    List<String> result = new ArrayList<>();
+    try {
+      Processor proc = new Processor(false);
+      XPathCompiler xpath = proc.newXPathCompiler();
+      DocumentBuilder builder = proc.newDocumentBuilder();
+
+      // Load the XML document.
+      StringReader reader = new StringReader(xml);
+      XdmNode doc = builder.build(new StreamSource(reader));
+
+      // Compile the xpath
+      XPathSelector selector = xpath.compile(xpathString).load();
+      selector.setContextItem(doc);
+
+      // Evaluate the expression.
+      XdmValue nodes = selector.evaluate();
+
+      for (XdmItem item : nodes) {
+        result.add(item.toString());
+      }
+
+    } catch (Exception e) {
+      LOGGER.error("Error applying XPath", e);
+    }
+    return result;
   }
 
 
