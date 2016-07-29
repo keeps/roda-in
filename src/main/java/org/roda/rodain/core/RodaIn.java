@@ -1,12 +1,5 @@
 package org.roda.rodain.core;
 
-import java.io.*;
-import java.net.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -28,7 +21,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.json.JSONObject;
@@ -42,7 +34,6 @@ import org.roda.rodain.schema.ClassificationSchema;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SchemaPane;
-import org.roda.rodain.sip.SipPreview;
 import org.roda.rodain.source.ui.FileExplorerPane;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
@@ -50,6 +41,17 @@ import org.roda.rodain.utils.OpenPathInExplorer;
 import org.roda.rodain.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -303,6 +305,7 @@ public class RodaIn extends Application {
     Menu menuEdit = new Menu(I18n.t("Main.edit"));
     Menu menuClassScheme = new Menu(I18n.t("Main.classScheme"));
     Menu menuView = new Menu(I18n.t("Main.view"));
+    Menu menuHelp = new Menu(I18n.t("Main.help"));
 
     Menu language = new Menu(I18n.t("Main.language"));
 
@@ -446,7 +449,30 @@ public class RodaIn extends Application {
 
     menuView.getItems().addAll(showFiles, showIgnored, showMapped);
 
-    menu.getMenus().addAll(menuFile, menuEdit, menuClassScheme, menuView, language);
+    // Help
+    final MenuItem checkVersion = new MenuItem(I18n.t("Main.checkVersion"));
+    checkVersion.setAccelerator(KeyCombination.keyCombination("Ctrl+H"));
+    checkVersion.setOnAction(event -> {
+      if(!checkForUpdates()){
+        try {
+          Alert dlg = new Alert(Alert.AlertType.INFORMATION);
+          dlg.initStyle(StageStyle.UNDECORATED);
+          dlg.setHeaderText(String.format(I18n.t("Main.noUpdates.header"), getCurrentVersion()));
+          dlg.setContentText(I18n.t("Main.noUpdates.content"));
+          dlg.initModality(Modality.APPLICATION_MODAL);
+          dlg.initOwner(stage);
+
+          dlg.getDialogPane().setMinWidth(300);
+          dlg.show();
+        } catch (ConfigurationException e) {
+          LOGGER.debug("Unable to get version.", e);
+        }
+      }
+    });
+
+    menuHelp.getItems().addAll(checkVersion);
+
+    menu.getMenus().addAll(menuFile, menuEdit, menuClassScheme, menuView, language, menuHelp);
     mainPane.setTop(menu);
   }
 
@@ -517,7 +543,7 @@ public class RodaIn extends Application {
     Platform.exit();
   }
 
-  private static void checkForUpdates(){
+  private static boolean checkForUpdates(){
     try {
       String currentVersion = getCurrentVersion();
       String latestVersion = getLatestVersion();
@@ -539,6 +565,7 @@ public class RodaIn extends Application {
           if (dlg.getResult().getButtonData() == ButtonBar.ButtonData.OK_DONE) {
             Utils.openWebpage(new URI(LATEST_VERSION_LINK));
           }
+          return true;
         }
       }
     } catch (ConfigurationException e) {
@@ -548,6 +575,7 @@ public class RodaIn extends Application {
     } catch (IOException e) {
       LOGGER.warn("Error accessing the GitHub API", e);
     }
+    return false;
   }
 
   private static String getCurrentVersion() throws ConfigurationException {
