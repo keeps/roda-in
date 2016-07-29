@@ -1,7 +1,7 @@
 {{~field name="descDate"    order="1" type="date" auto-generate="now" ~}}
 {{~field name="id"          order="2" auto-generate="id" xpath="/*:ead/*:archdesc/*:did/*:unitid/string()"~}}
 {{~field name="title"       order='3' auto-generate='title' xpath="/*:ead/*:archdesc/*:did/*:unittitle/string()"~}}
-{{~field name="otherlevel"  order='4' type="list" list="[\"Produtor\",\"Fundo\",\"Subfundo\",\"Subsubfundo\",\"Secção\",\"Subsecção\",\"Série\",\"Subsérie\",\"Subsubsérie\",\"Unidade de instalação\",\"Documento composto\",\"Documento\"]" auto-generate="level" xpath="/*:ead/*:archdesc/@otherlevel/string()"~}}
+{{~field name="otherlevel"  order='4' type="list" list="[\"Produtor\",\"Fundo\",\"Subfundo\",\"Subsubfundo\",\"Secção\",\"Subsecção\",\"Série\",\"Subsérie\",\"Subsubsérie\",\"Unidade de instalação\",\"Documento composto\",\"Documento\"]" xpath="/*:ead/*:archdesc/@otherlevel/string()"~}}
 {{~field name="dateInitial" order='5' type="date" xpath="tokenize(/*:ead/*:archdesc/*:did/*:unitdate/@normal/string(), \"/\")[1]"~}}
 {{~field name="dateFinal"   order='6' type="date" xpath="tokenize(/*:ead/*:archdesc/*:did/*:unitdate/@normal/string(), \"/\")[2]"~}}
 {{~field name="language"    order='7' auto-generate='language' xpath="/*:ead/*:archdesc/*:did/*:langmaterial/string()"~}}

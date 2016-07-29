@@ -210,6 +210,10 @@ public class DescriptionObject extends Observable {
         case "level":
           descriptionlevel = (String) metadataValue.get("value");
           break;
+        case "otherlevel":
+          if(metadataValue.get("value") != null && descriptionlevel != null && descriptionlevel.equals("otherlevel"))
+            descriptionlevel = (String) metadataValue.get("value");
+          break;
         case "parentid":
           parentId = (String) metadataValue.get("value");
           break;
