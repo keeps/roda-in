@@ -31,7 +31,7 @@ public class FontAwesomeImageCreator {
   public static final String MINUS = "\uf068";
   public static final String PENCIL = "\uf040";
   public static final String GLOBE = "\uf0ac";
-  public static final String QUESTION = "\uf059";
+  public static final String QUESTION = "\uf29c";
 
   public static final Font FONT = loadFont();
 
