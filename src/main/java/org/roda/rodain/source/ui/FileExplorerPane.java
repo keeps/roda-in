@@ -16,10 +16,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.controlsfx.control.PopOver;
-import org.roda.rodain.core.Footer;
-import org.roda.rodain.core.I18n;
-import org.roda.rodain.core.PathCollection;
-import org.roda.rodain.core.RodaIn;
+import org.roda.rodain.core.*;
 import org.roda.rodain.source.representation.SourceDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
@@ -114,7 +111,10 @@ public class FileExplorerPane extends BorderPane implements Observer {
     top.getStyleClass().add("title-box");
     top.setAlignment(Pos.CENTER_LEFT);
     top.setPadding(new Insets(15, 15, 15, 15));
-    top.getChildren().addAll(title, new HelpToken(I18n.help("fileExplorer"), Color.WHITE, PopOver.ArrowLocation.LEFT_CENTER));
+    top.getChildren().add(title);
+    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
+      top.getChildren().add(new HelpToken(I18n.help("fileExplorer"), Color.WHITE, PopOver.ArrowLocation.LEFT_CENTER));
+    }
   }
 
   private void createBottom() {
@@ -175,7 +175,11 @@ public class FileExplorerPane extends BorderPane implements Observer {
     associate.setMinWidth(100);
     associate.setOnAction(event -> RodaIn.getSchemePane().startAssociation());
 
-    bottom.getChildren().addAll(ignoreAndRemoveBox, space, new HelpToken(I18n.help("associate"), PopOver.ArrowLocation.BOTTOM_CENTER) ,associate);
+    bottom.getChildren().addAll(ignoreAndRemoveBox, space);
+    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
+      bottom.getChildren().add(new HelpToken(I18n.help("associate"), PopOver.ArrowLocation.BOTTOM_CENTER));
+    }
+    bottom.getChildren().add(associate);
   }
 
   private void createCenterHelp() {
@@ -196,7 +200,10 @@ public class FileExplorerPane extends BorderPane implements Observer {
     title.setWrapText(true);
     title.getStyleClass().add("helpTitle");
     title.setTextAlignment(TextAlignment.CENTER);
-    titleBox.getChildren().addAll(title, new HelpToken(I18n.help("firstStep"), PopOver.ArrowLocation.LEFT_CENTER));
+    titleBox.getChildren().add(title);
+    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
+      titleBox.getChildren().add(new HelpToken(I18n.help("firstStep"), PopOver.ArrowLocation.LEFT_CENTER));
+    }
 
     HBox loadBox = new HBox();
     loadBox.setAlignment(Pos.CENTER);

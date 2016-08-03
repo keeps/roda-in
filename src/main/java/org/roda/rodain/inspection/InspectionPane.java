@@ -356,8 +356,12 @@ public class InspectionPane extends BorderPane {
         showMetadataHelp();
       }
     });
+    metadataTopBox.getChildren().add(titleLabel);
 
-    metadataTopBox.getChildren().addAll(titleLabel, new HelpToken(I18n.help("inspectionPanel.metadata"), Color.WHITE, PopOver.ArrowLocation.RIGHT_CENTER), space);
+    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
+      metadataTopBox.getChildren().add(new HelpToken(I18n.help("inspectionPanel.metadata"), Color.WHITE, PopOver.ArrowLocation.RIGHT_CENTER));
+    }
+    metadataTopBox.getChildren().add(space);
     updateMetadataTop();
   }
 
@@ -853,7 +857,10 @@ public class InspectionPane extends BorderPane {
     });
     createDocsBottom();
 
-    top.getChildren().addAll(new HelpToken(I18n.help("inspectionPanel.data"), Color.WHITE, PopOver.ArrowLocation.RIGHT_CENTER), space, toggleDocumentation);
+    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
+      top.getChildren().add(new HelpToken(I18n.help("inspectionPanel.data"), Color.WHITE, PopOver.ArrowLocation.RIGHT_CENTER));
+    }
+    top.getChildren().addAll(space, toggleDocumentation);
   }
 
   private void createLoadingPanes() {
@@ -1186,7 +1193,10 @@ public class InspectionPane extends BorderPane {
 
     Label title = new Label(I18n.t("InspectionPane.rules").toUpperCase());
     title.getStyleClass().add("title");
-    top.getChildren().addAll(title, new HelpToken(I18n.help("inspectionPanel.associations"), Color.WHITE, PopOver.ArrowLocation.BOTTOM_CENTER));
+    top.getChildren().add(title);
+    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
+      top.getChildren().add(new HelpToken(I18n.help("inspectionPanel.associations"), Color.WHITE, PopOver.ArrowLocation.BOTTOM_CENTER));
+    }
     rules.setTop(top);
     ruleList = new ListView<>();
 
