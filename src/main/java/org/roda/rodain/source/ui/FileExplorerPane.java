@@ -110,7 +110,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     Label title = new Label(I18n.t("FileExplorerPane.title").toUpperCase());
     title.getStyleClass().add("title");
 
-    top = new HBox();
+    top = new HBox(10);
     top.getStyleClass().add("title-box");
     top.setAlignment(Pos.CENTER_LEFT);
     top.setPadding(new Insets(15, 15, 15, 15));
@@ -120,6 +120,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
   private void createBottom() {
     bottom = new HBox(10);
     bottom.setPadding(new Insets(10, 10, 10, 10));
+    bottom.setAlignment(Pos.CENTER);
 
     ignore = new Button(I18n.t("ignore"));
     ignore.setId("bt_ignore");

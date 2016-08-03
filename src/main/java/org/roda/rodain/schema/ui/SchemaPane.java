@@ -461,6 +461,7 @@ public class SchemaPane extends BorderPane {
   private void createBottom() {
     bottom = new HBox(10);
     bottom.setPadding(new Insets(10, 10, 10, 10));
+    bottom.setAlignment(Pos.CENTER);
 
     Button removeLevel = new Button(I18n.t("SchemaPane.remove"));
     removeLevel.setId("removeLevel");

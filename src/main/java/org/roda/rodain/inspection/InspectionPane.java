@@ -266,7 +266,7 @@ public class InspectionPane extends BorderPane {
   }
 
   private void createMetadataTop() {
-    metadataTopBox = new HBox();
+    metadataTopBox = new HBox(10);
     metadataTopBox.getStyleClass().add("hbox");
     metadataTopBox.setPadding(new Insets(5, 15, 5, 15));
     metadataTopBox.setAlignment(Pos.CENTER_LEFT);
@@ -357,7 +357,7 @@ public class InspectionPane extends BorderPane {
       }
     });
 
-    metadataTopBox.getChildren().addAll(titleLabel, new HelpToken(I18n.help("inspectionPanel.metadata"), PopOver.ArrowLocation.RIGHT_CENTER), space);
+    metadataTopBox.getChildren().addAll(titleLabel, new HelpToken(I18n.help("inspectionPanel.metadata"), Color.WHITE, PopOver.ArrowLocation.RIGHT_CENTER), space);
     updateMetadataTop();
   }
 
@@ -785,12 +785,12 @@ public class InspectionPane extends BorderPane {
     VBox.setVgrow(content, Priority.ALWAYS);
     content.setMinHeight(200);
 
-    HBox top = new HBox();
+    HBox top = new HBox(10);
     top.getStyleClass().add("hbox");
-    top.setPadding(new Insets(4, 15, 3, 15));
+    top.setPadding(new Insets(5, 15, 5, 15));
+    top.setAlignment(Pos.CENTER);
 
     Label title = new Label(I18n.t("data").toUpperCase());
-    title.setPadding(new Insets(5, 0, 0, 0));
     title.getStyleClass().add("title");
     top.getChildren().add(title);
     content.setTop(top);
@@ -853,7 +853,7 @@ public class InspectionPane extends BorderPane {
     });
     createDocsBottom();
 
-    top.getChildren().addAll(new HelpToken(I18n.help("inspectionPanel.data"), PopOver.ArrowLocation.RIGHT_CENTER), space, toggleDocumentation);
+    top.getChildren().addAll(new HelpToken(I18n.help("inspectionPanel.data"), Color.WHITE, PopOver.ArrowLocation.RIGHT_CENTER), space, toggleDocumentation);
   }
 
   private void createLoadingPanes() {
@@ -1180,13 +1180,13 @@ public class InspectionPane extends BorderPane {
     VBox.setVgrow(rules, Priority.ALWAYS);
     rules.setMinHeight(200);
 
-    HBox top = new HBox();
+    HBox top = new HBox(10);
     top.getStyleClass().add("hbox");
     top.setPadding(new Insets(10, 15, 10, 15));
 
     Label title = new Label(I18n.t("InspectionPane.rules").toUpperCase());
     title.getStyleClass().add("title");
-    top.getChildren().addAll(title, new HelpToken(I18n.help("inspectionPanel.associations"), PopOver.ArrowLocation.BOTTOM_CENTER));
+    top.getChildren().addAll(title, new HelpToken(I18n.help("inspectionPanel.associations"), Color.WHITE, PopOver.ArrowLocation.BOTTOM_CENTER));
     rules.setTop(top);
     ruleList = new ListView<>();
 
