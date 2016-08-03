@@ -451,7 +451,7 @@ public class RodaIn extends Application {
 
     // Help
     final MenuItem checkVersion = new MenuItem(I18n.t("Main.checkVersion"));
-    checkVersion.setAccelerator(KeyCombination.keyCombination("Ctrl+H"));
+    checkVersion.setAccelerator(KeyCombination.keyCombination("Ctrl+U"));
     checkVersion.setOnAction(event -> {
       if(!checkForUpdates()){
         try {
@@ -478,7 +478,7 @@ public class RodaIn extends Application {
       showHelpText = I18n.t("Main.showHelp");
     }
     final MenuItem showHelp = new MenuItem(showHelpText);
-    showHelp.setAccelerator(KeyCombination.keyCombination("Ctrl+F"));
+    showHelp.setAccelerator(KeyCombination.keyCombination("Ctrl+H"));
     showHelp.setOnAction(event -> {
       String currentValue = AppProperties.getAppConfig("app.helpEnabled");
       if(Boolean.parseBoolean(currentValue)){
@@ -505,7 +505,10 @@ public class RodaIn extends Application {
       dlg.resultProperty().addListener(o -> confirmRestart(dlg.getResult()));
     });
 
-    menuHelp.getItems().addAll(checkVersion, showHelp);
+    final MenuItem templatingHelp = new MenuItem(I18n.t("templatingSystemHelp.header"));
+    templatingHelp.setOnAction(event -> new TemplatingSystemHelpPanel(stage));
+
+    menuHelp.getItems().addAll(checkVersion, showHelp, templatingHelp);
 
     menu.getMenus().addAll(menuFile, menuEdit, menuClassScheme, menuView, language, menuHelp);
     mainPane.setTop(menu);
