@@ -149,7 +149,7 @@ public class RodaIn extends Application {
         stage.setOnCloseRequest(event -> closeApp());
 
         AppProperties.initialize();
-        String ignoredRaw = AppProperties.getConfig("app.ignoredFiles");
+        String ignoredRaw = AppProperties.getAppConfig("app.ignoredFiles");
         String[] ignored = ignoredRaw.split(",");
         for (String s : ignored) {
           IgnoredFilter.addIgnoreRule(s);
@@ -470,7 +470,42 @@ public class RodaIn extends Application {
       }
     });
 
-    menuHelp.getItems().addAll(checkVersion);
+    String startingValue = AppProperties.getAppConfig("app.helpEnabled");
+    String showHelpText;
+    if(Boolean.parseBoolean(startingValue)){
+      showHelpText = I18n.t("Main.hideHelp");
+    }else {
+      showHelpText = I18n.t("Main.showHelp");
+    }
+    final MenuItem showHelp = new MenuItem(showHelpText);
+    showHelp.setAccelerator(KeyCombination.keyCombination("Ctrl+F"));
+    showHelp.setOnAction(event -> {
+      String currentValue = AppProperties.getAppConfig("app.helpEnabled");
+      if(Boolean.parseBoolean(currentValue)){
+        showHelp.setText(I18n.t("Main.showHelp"));
+        AppProperties.setAppConfig("app.helpEnabled", "false");
+        currentValue = I18n.t("Main.hideHelp");
+        AppProperties.saveAppConfig();
+      }else {
+        showHelp.setText(I18n.t("Main.hideHelp"));
+        AppProperties.setAppConfig("app.helpEnabled", "true");
+        currentValue = I18n.t("Main.showHelp");
+        AppProperties.saveAppConfig();
+      }
+      Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
+      dlg.getButtonTypes().clear();
+      dlg.getButtonTypes().addAll(new ButtonType(I18n.t("cancel"), ButtonBar.ButtonData.CANCEL_CLOSE),
+          new ButtonType(I18n.t("restart"), ButtonBar.ButtonData.OK_DONE));
+      dlg.initStyle(StageStyle.UNDECORATED);
+      dlg.setHeaderText(currentValue);
+      dlg.setContentText(I18n.t("Main.updateLang.content"));
+      dlg.initModality(Modality.APPLICATION_MODAL);
+      dlg.initOwner(stage);
+      dlg.show();
+      dlg.resultProperty().addListener(o -> confirmRestart(dlg.getResult()));
+    });
+
+    menuHelp.getItems().addAll(checkVersion, showHelp);
 
     menu.getMenus().addAll(menuFile, menuEdit, menuClassScheme, menuView, language, menuHelp);
     mainPane.setTop(menu);
@@ -496,10 +531,16 @@ public class RodaIn extends Application {
     }
   }
 
+  private void confirmRestart(ButtonType result){
+    if(result.getButtonData() == ButtonBar.ButtonData.OK_DONE){
+      restartApplication();
+    }
+  }
+
   private void confirmLanguageChange(String lang, ButtonType result) {
     if (result.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-      AppProperties.setConfig("app.language", lang);
-      AppProperties.saveConfig();
+      AppProperties.setAppConfig("app.language", lang);
+      AppProperties.saveAppConfig();
       restartApplication();
     } else {
 
@@ -600,8 +641,8 @@ public class RodaIn extends Application {
     ClassificationSchema cs = new ClassificationSchema();
     cs.setDos(dobjs);
     cs.export(outputFile);
-    AppProperties.setConfig("lastClassificationScheme", outputFile);
-    AppProperties.saveConfig();
+    AppProperties.setAppConfig("lastClassificationScheme", outputFile);
+    AppProperties.saveAppConfig();
   }
 
   /**

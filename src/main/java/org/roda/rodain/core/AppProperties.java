@@ -29,8 +29,8 @@ public class AppProperties {
   private static final String ENV_VARIABLE = "RODAIN_HOME";
   private static final String CONFIGFOLDER = "roda-in";
   private static PropertiesConfiguration style = load("styles"), config = load("config"), ext_config,
-    descLevels = load("roda-description-levels-hierarchy");
-  private static PropertiesConfiguration start_ext_config;
+    descLevels = load("roda-description-levels-hierarchy"), appConfig = load(".app");
+  private static PropertiesConfiguration start_ext_config, start_app_config;
   private static ResourceBundle resourceBundle, defaultResourceBundle, helpBundle, defaultHelpBundle;
   private static Locale locale;
 
@@ -74,6 +74,11 @@ public class AppProperties {
           external.save(out);
         }
       }
+
+      if(!Files.exists(rodainPath.resolve(".app.properties"))){
+        Files.copy(ClassLoader.getSystemResourceAsStream("properties/.app.properties"), rodainPath.resolve(".app.properties"));
+      }
+
       // copy metadata templates
       String templatesRaw = getConfig("metadata.templates");
       String[] templates = templatesRaw.split(",");
@@ -127,8 +132,10 @@ public class AppProperties {
       // keep the starting configuration to use when saving
       start_ext_config = new PropertiesConfiguration();
       start_ext_config.load(new FileInputStream(configPath.toFile()));
+      start_app_config = new PropertiesConfiguration();
+      start_app_config.load(new FileInputStream(rodainPath.resolve(".app.properties").toFile()));
 
-      String appLanguage = getConfig("app.language");
+      String appLanguage = getAppConfig("app.language");
       if (appLanguage != null && !"".equals(appLanguage)) {
         locale = Locale.forLanguageTag(appLanguage);
       } else {
@@ -402,6 +409,14 @@ public class AppProperties {
     ext_config.setProperty(key, value);
   }
 
+  public static void setAppConfig(String key, String value){
+    appConfig.setProperty(key, value);
+  }
+
+  public static String getAppConfig(String key){
+    return appConfig.getString(key);
+  }
+
   /**
    * Saves the configuration to a file in the application home folder.
    */
@@ -435,6 +450,37 @@ public class AppProperties {
       ext_config.save(configPath.toFile());
     } catch (ConfigurationException | FileNotFoundException e) {
       LOGGER.error("Error loading the config file", e);
+    }
+  }
+
+  public static void saveAppConfig() {
+    try {
+      Path configPath = rodainPath.resolve(".app.properties");
+      PropertiesConfiguration temp = new PropertiesConfiguration();
+      temp.load(new FileReader(configPath.toFile()));
+      if (appConfig != null) {
+        HashSet<String> keys = new HashSet<>();
+        appConfig.getKeys().forEachRemaining(keys::add);
+        temp.getKeys().forEachRemaining(keys::add);
+        keys.forEach(s -> {
+          // Add new properties to the ext_config
+          if (temp.containsKey(s) && !appConfig.containsKey(s)) {
+            appConfig.addProperty(s, temp.getProperty(s));
+          } else {
+            // check if there's any property in the current file that is different
+            // from the ones we loaded in the beginning of the execution of the application.
+            if (temp.containsKey(s) && start_app_config.containsKey(s)
+                && !temp.getProperty(s).equals(start_app_config.getProperty(s))) {
+              // Set the property to keep the changes made outside the
+              // application
+              appConfig.setProperty(s, temp.getProperty(s));
+            }
+          }
+        });
+      }
+      appConfig.save(configPath.toFile());
+    } catch (ConfigurationException | FileNotFoundException e) {
+      LOGGER.error("Error saving the app config file", e);
     }
   }
 }

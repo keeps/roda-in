@@ -93,7 +93,7 @@ public class SchemaPane extends BorderPane {
 
     hasClassificationScheme = new SimpleBooleanProperty(false);
 
-    String lastClassScheme = AppProperties.getConfig("lastClassificationScheme");
+    String lastClassScheme = AppProperties.getAppConfig("lastClassificationScheme");
     if (lastClassScheme != null && !"".equals(lastClassScheme)) {
       try {
         ClassificationSchema schema = loadClassificationSchemaFile(lastClassScheme);
@@ -334,8 +334,8 @@ public class SchemaPane extends BorderPane {
   }
 
   private ClassificationSchema loadClassificationSchemaFile(String fileName) throws IOException {
-    AppProperties.setConfig("lastClassificationScheme", fileName);
-    AppProperties.saveConfig();
+    AppProperties.setAppConfig("lastClassificationScheme", fileName);
+    AppProperties.saveAppConfig();
     InputStream input = new FileInputStream(fileName);
 
     // create ObjectMapper instance
@@ -560,8 +560,8 @@ public class SchemaPane extends BorderPane {
     setBottom(bottom);
     rootNode.getChildren().clear();
     hasClassificationScheme.setValue(true);
-    AppProperties.setConfig("lastClassificationScheme", "");
-    AppProperties.saveConfig();
+    AppProperties.setAppConfig("lastClassificationScheme", "");
+    AppProperties.saveAppConfig();
     modifiedPlan = true;
   }
 
