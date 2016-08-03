@@ -8,6 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.paint.Color;
 import org.controlsfx.control.PopOver;
 
 
@@ -17,11 +18,11 @@ import org.controlsfx.control.PopOver;
  */
 public class HelpToken extends Button {
 
-  public HelpToken(String content, PopOver.ArrowLocation arrowLocation){
+  public HelpToken(String content, Color color, PopOver.ArrowLocation arrowLocation){
     super("");
     getStyleClass().add("helpToken");
     // Set the question mark icon
-    Platform.runLater(() -> setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.QUESTION))));
+    Platform.runLater(() -> setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.QUESTION, color))));
 
     // Create the label which will have the help text
     Label contentHelp = new Label(content);
@@ -41,5 +42,9 @@ public class HelpToken extends Button {
     editPopOver.setContentNode(popOverContent);
 
     setOnAction(event -> editPopOver.show(this));
+  }
+
+  public HelpToken(String content, PopOver.ArrowLocation arrowLocation){
+    this(content, Color.BLACK, arrowLocation);
   }
 }

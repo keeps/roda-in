@@ -9,6 +9,7 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
@@ -113,7 +114,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     top.getStyleClass().add("title-box");
     top.setAlignment(Pos.CENTER_LEFT);
     top.setPadding(new Insets(15, 15, 15, 15));
-    top.getChildren().addAll(title, new HelpToken(I18n.help("fileExplorer"), PopOver.ArrowLocation.LEFT_CENTER));
+    top.getChildren().addAll(title, new HelpToken(I18n.help("fileExplorer"), Color.WHITE, PopOver.ArrowLocation.LEFT_CENTER));
   }
 
   private void createBottom() {
