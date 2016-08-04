@@ -34,7 +34,7 @@ public class HelpToken extends Button {
     editPopOver.setArrowLocation(arrowLocation);
 
     HBox popOverContent = new HBox(10);
-    popOverContent.getStyleClass().add("inspectionPart");
+    popOverContent.getStyleClass().add("helpTokenPopOver");
     popOverContent.setPadding(new Insets(5, 15, 5, 15));
     popOverContent.setAlignment(Pos.CENTER);
     HBox.setHgrow(popOverContent, Priority.ALWAYS);

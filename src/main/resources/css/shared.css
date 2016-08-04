@@ -113,9 +113,10 @@
     -fx-background-color: rgba(211, 211, 211, 0.35);
 }
 
-.helpToken .label{
+.helpTokenPopOver .label{
     -fx-max-width: 400px;
     -fx-text-fill: black;
+    -fx-font-weight: lighter;
 }
 
 /* Combo-Box */
