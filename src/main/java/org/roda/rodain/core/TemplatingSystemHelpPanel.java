@@ -28,7 +28,5 @@ public class TemplatingSystemHelpPanel extends Alert{
     initModality(Modality.APPLICATION_MODAL);
     initOwner(primaryStage);
     show();
-
-    System.out.println(content);
   }
 }
