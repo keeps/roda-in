@@ -468,6 +468,9 @@ public class InspectionPane extends BorderPane {
       label.getStyleClass().add("formLabel");
       if (getBooleanOption(metadataValue.get(("mandatory"))))
         label.setStyle(AppProperties.getStyle("boldFont"));
+      if(metadataValue.get("description") != null){
+        label.setTooltip(new Tooltip((String) metadataValue.get("description")));
+      }
 
       String controlType = (String) metadataValue.get("type");
       Control control;
