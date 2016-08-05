@@ -113,7 +113,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     top.setPadding(new Insets(15, 15, 15, 15));
     top.getChildren().add(title);
     if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
-      top.getChildren().add(new HelpToken(I18n.help("fileExplorer"), Color.WHITE, PopOver.ArrowLocation.LEFT_CENTER));
+      top.getChildren().add(new HelpToken(I18n.help("fileExplorer"), Color.WHITE, PopOver.ArrowLocation.LEFT_TOP, 240));
     }
   }
 
@@ -177,7 +177,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
     bottom.getChildren().addAll(ignoreAndRemoveBox, space);
     if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
-      bottom.getChildren().add(new HelpToken(I18n.help("associate"), PopOver.ArrowLocation.BOTTOM_CENTER));
+      bottom.getChildren().add(new HelpToken(I18n.help("associate"), PopOver.ArrowLocation.BOTTOM_CENTER, 125));
     }
     bottom.getChildren().add(associate);
   }
@@ -202,7 +202,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     title.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(title);
     if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
-      titleBox.getChildren().add(new HelpToken(I18n.help("firstStep"), PopOver.ArrowLocation.LEFT_CENTER));
+      titleBox.getChildren().add(new HelpToken(I18n.help("firstStep"), PopOver.ArrowLocation.LEFT_CENTER, 105));
     }
 
     HBox loadBox = new HBox();

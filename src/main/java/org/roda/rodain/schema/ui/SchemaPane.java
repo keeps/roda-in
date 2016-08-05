@@ -139,7 +139,7 @@ public class SchemaPane extends BorderPane {
     title.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().addAll(title);
     if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
-      titleBox.getChildren().add(new HelpToken(I18n.help("secondStep"), PopOver.ArrowLocation.LEFT_CENTER));
+      titleBox.getChildren().add(new HelpToken(I18n.help("secondStep"), PopOver.ArrowLocation.LEFT_CENTER, 200));
     }
 
     HBox loadBox = new HBox();
@@ -496,7 +496,7 @@ public class SchemaPane extends BorderPane {
 
     bottom.getChildren().addAll(addLevel, removeLevel, space);
     if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
-      bottom.getChildren().add(new HelpToken(I18n.help("export"), PopOver.ArrowLocation.BOTTOM_CENTER));
+      bottom.getChildren().add(new HelpToken(I18n.help("export"), PopOver.ArrowLocation.BOTTOM_CENTER, 225));
     }
     bottom.getChildren().add(export);
   }

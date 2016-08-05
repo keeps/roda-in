@@ -113,8 +113,9 @@
     -fx-background-color: rgba(211, 211, 211, 0.35);
 }
 
-.helpTokenPopOver .label{
-    -fx-max-width: 400px;
+.helpTokenPopOver .web-view{
+    -fx-max-width: 600px;
+    -fx-max-height: 400px;
     -fx-text-fill: black;
     -fx-font-weight: lighter;
 }

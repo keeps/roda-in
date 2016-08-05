@@ -140,7 +140,7 @@ public class RuleModalPane extends BorderPane {
 
     subtitleBox.getChildren().add(subtitle);
     if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
-      subtitleBox.getChildren().add(new HelpToken(I18n.help("associationMethod"), PopOver.ArrowLocation.LEFT_CENTER));
+      subtitleBox.getChildren().add(new HelpToken(I18n.help("associationMethod"), PopOver.ArrowLocation.LEFT_CENTER, 200));
     }
 
     assocList = new ListView<>();
@@ -221,7 +221,7 @@ public class RuleModalPane extends BorderPane {
 
     subtitleBox.getChildren().addAll(subtitle);
     if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
-      subtitleBox.getChildren().add(new HelpToken(I18n.help("metadataMethod"), PopOver.ArrowLocation.LEFT_CENTER));
+      subtitleBox.getChildren().add(new HelpToken(I18n.help("metadataMethod"), PopOver.ArrowLocation.LEFT_CENTER, 200));
     }
 
     metaList = new ListView<>();

@@ -16,10 +16,10 @@ public class TemplatingSystemHelpPanel extends Alert{
   public TemplatingSystemHelpPanel(Stage primaryStage){
     super(AlertType.INFORMATION);
 
-    String head = "<html> <head> <meta charset=\"UTF-8\"> <link rel=\"stylesheet\" type=\"text/css\" href=\"templating.css\"> </head><body>";
+    String head = "<html> <head> <meta charset=\"UTF-8\"> <link rel=\"stylesheet\" type=\"text/css\" href=\"webview.css\"> </head><body>";
     String content = head + I18n.help("templatingSystem");
     webView = new WebView();
-    webView.getEngine().setUserStyleSheetLocation(ClassLoader.getSystemResource("css/templating.css").toString());
+    webView.getEngine().setUserStyleSheetLocation(ClassLoader.getSystemResource("css/webview.css").toString());
     webView.getEngine().loadContent(content);
 
     initStyle(StageStyle.UNDECORATED);
