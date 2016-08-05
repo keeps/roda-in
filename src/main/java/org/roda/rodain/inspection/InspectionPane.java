@@ -359,7 +359,7 @@ public class InspectionPane extends BorderPane {
     metadataTopBox.getChildren().add(titleLabel);
 
     if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
-      metadataTopBox.getChildren().add(new HelpToken(I18n.help("inspectionPanel.metadata"), Color.WHITE, PopOver.ArrowLocation.RIGHT_CENTER, 200));
+      metadataTopBox.getChildren().add(new HelpToken(I18n.help("inspectionPanel.metadata"), Color.WHITE, PopOver.ArrowLocation.RIGHT_TOP, 390));
     }
     metadataTopBox.getChildren().add(space);
     updateMetadataTop();
