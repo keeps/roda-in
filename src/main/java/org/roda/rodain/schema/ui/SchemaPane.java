@@ -139,7 +139,7 @@ public class SchemaPane extends BorderPane {
     title.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().addAll(title);
     if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
-      titleBox.getChildren().add(new HelpToken(I18n.help("secondStep"), PopOver.ArrowLocation.LEFT_CENTER, 200));
+      titleBox.getChildren().add(new HelpToken(I18n.help("secondStep"), PopOver.ArrowLocation.LEFT_CENTER, 205));
     }
 
     HBox loadBox = new HBox();
