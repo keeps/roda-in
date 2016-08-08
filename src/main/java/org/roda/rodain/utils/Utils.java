@@ -1,7 +1,29 @@
 package org.roda.rodain.utils;
 
 import net.sf.saxon.s9api.*;
+import java.awt.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Scanner;
+
+import javax.xml.XMLConstants;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.io.IOUtils;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.utils.validation.ResourceResolver;
 import org.slf4j.Logger;
@@ -30,6 +52,8 @@ import java.util.Scanner;
  * @since 24-09-2015.
  */
 public class Utils {
+  private static final String LATEST_VERSION_API = "https://api.github.com/repos/keeps/roda-in/releases/latest";
+  public static final String BUILD_PROPERTIES_FILE = "build.properties";
   private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class.getName());
   private static String UTF8_BOM = "\uFEFF";
 
@@ -177,19 +201,17 @@ public class Utils {
   }
 
 
-  /**
-   * Opens a webpage using the user's default browser.
-   * @param uri The URL to open
-   */
-  public static void openWebpage(URI uri) {
-    Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
-    if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
-      try {
-        desktop.browse(uri);
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    }
+  public static String getCurrentVersion() throws ConfigurationException {
+    PropertiesConfiguration pc = new PropertiesConfiguration(BUILD_PROPERTIES_FILE);
+    return pc.getString("current.version");
+  }
+
+  public static String getLatestVersion() throws URISyntaxException, IOException {
+    URI uri = new URI(LATEST_VERSION_API);
+    JSONTokener tokener = new JSONTokener(uri.toURL().openStream());
+    JSONObject versionJSON = new JSONObject(tokener);
+
+    return versionJSON.getString("tag_name");
   }
 
 }

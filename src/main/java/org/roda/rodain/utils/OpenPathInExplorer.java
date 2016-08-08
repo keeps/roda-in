@@ -17,15 +17,19 @@ public class OpenPathInExplorer {
 
   public static void open(Path path) {
     String fileName = path.toString();
+    open(fileName);
+  }
+
+  public static void open(String file){
     // Different commands for different operating systems
     if (isWindows()) {
-      executeCommand("explorer", fileName);
+      executeCommand("explorer", file);
     } else if (isMac()) {
-      executeCommand("open", fileName);
+      executeCommand("open", file);
     } else if (isUnix()) {
-      boolean result = executeCommand("xdg-open", fileName);
+      boolean result = executeCommand("xdg-open", file);
       if (!result) {
-        executeCommand("gnome-open", fileName);
+        executeCommand("gnome-open", file);
       }
     }
   }

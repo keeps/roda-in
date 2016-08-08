@@ -59,9 +59,7 @@ import java.util.Set;
  */
 public class RodaIn extends Application {
   private static final Logger LOGGER = LoggerFactory.getLogger(RodaIn.class.getName());
-  private static final String LATEST_VERSION_API = "https://api.github.com/repos/keeps/roda-in/releases/latest";
   private static final String LATEST_VERSION_LINK = "https://github.com/keeps/roda-in/releases";
-  private static final String BUILD_PROPERTIES_FILE = "build.properties";
   private static Stage stage;
 
   private BorderPane mainPane;
@@ -457,7 +455,7 @@ public class RodaIn extends Application {
         try {
           Alert dlg = new Alert(Alert.AlertType.INFORMATION);
           dlg.initStyle(StageStyle.UNDECORATED);
-          dlg.setHeaderText(String.format(I18n.t("Main.noUpdates.header"), getCurrentVersion()));
+          dlg.setHeaderText(String.format(I18n.t("Main.noUpdates.header"), Utils.getCurrentVersion()));
           dlg.setContentText(I18n.t("Main.noUpdates.content"));
           dlg.initModality(Modality.APPLICATION_MODAL);
           dlg.initOwner(stage);
@@ -589,8 +587,8 @@ public class RodaIn extends Application {
 
   private static boolean checkForUpdates(){
     try {
-      String currentVersion = getCurrentVersion();
-      String latestVersion = getLatestVersion();
+      String currentVersion = Utils.getCurrentVersion();
+      String latestVersion = Utils.getLatestVersion();
 
       if(currentVersion != null && latestVersion != null){
         if(!currentVersion.equals(latestVersion)){
@@ -607,32 +605,19 @@ public class RodaIn extends Application {
           dlg.showAndWait();
 
           if (dlg.getResult().getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-            Utils.openWebpage(new URI(LATEST_VERSION_LINK));
+            OpenPathInExplorer.open(LATEST_VERSION_LINK);
           }
           return true;
         }
       }
     } catch (ConfigurationException e) {
-      LOGGER.error("Could not retrieve application version from " + BUILD_PROPERTIES_FILE, e);
+      LOGGER.error("Could not retrieve application version from " + Utils.BUILD_PROPERTIES_FILE, e);
     } catch (URISyntaxException e) {
       LOGGER.warn("The URI is malformed", e);
     } catch (IOException e) {
       LOGGER.warn("Error accessing the GitHub API", e);
     }
     return false;
-  }
-
-  private static String getCurrentVersion() throws ConfigurationException {
-    PropertiesConfiguration pc = new PropertiesConfiguration(BUILD_PROPERTIES_FILE);
-    return pc.getString("current.version");
-  }
-
-  private static String getLatestVersion() throws URISyntaxException, IOException {
-    URI uri = new URI(LATEST_VERSION_API);
-    JSONTokener tokener = new JSONTokener(uri.toURL().openStream());
-    JSONObject versionJSON = new JSONObject(tokener);
-
-    return versionJSON.getString("tag_name");
   }
 
   private static void exportCS(String outputFile) {
