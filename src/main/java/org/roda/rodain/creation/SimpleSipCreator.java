@@ -14,11 +14,13 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.sip.SipPreview;
+import org.roda.rodain.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -40,6 +42,7 @@ public class SimpleSipCreator extends Thread {
     .getLocalizedString("SimpleSipCreator.copyingMetadata");
   protected final static String actionFinalizingSip = AppProperties
     .getLocalizedString("SimpleSipCreator.finalizingSip");
+  protected String agent_name = "RODA-in";
 
   protected final Path outputPath;
   protected final Map<DescriptionObject, List<String>> previews;
@@ -83,6 +86,12 @@ public class SimpleSipCreator extends Thread {
     sipPreviewCount = previews.size();
 
     unsuccessful = new HashSet<>();
+
+    try {
+      agent_name = String.format("RODA-in %s", Utils.getCurrentVersion());
+    } catch (ConfigurationException e) {
+      LOGGER.debug("Could not get current version", e);
+    }
   }
 
   /**

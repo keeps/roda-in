@@ -71,7 +71,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
     Path tempDir = Paths.get(System.getProperty("java.io.tmpdir"));
     try {
       IPContentType contentType = descriptionObject instanceof SipPreview ? ((SipPreview) descriptionObject).getContentType() : IPContentType.getMIXED();
-      SIP earkSip = new EARKSIP(descriptionObject.getId(), contentType, "RODA-in");
+      SIP earkSip = new EARKSIP(descriptionObject.getId(), contentType, agent_name);
       earkSip.addObserver(this);
       earkSip.setStatus(IPEnums.IPStatus.NEW);
       earkSip.setAncestors(previews.get(descriptionObject));
