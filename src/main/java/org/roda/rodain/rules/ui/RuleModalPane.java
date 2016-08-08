@@ -139,9 +139,18 @@ public class RuleModalPane extends BorderPane {
     subtitle.setId("sub-title");
 
     subtitleBox.getChildren().add(subtitle);
-    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
-      subtitleBox.getChildren().add(new HelpToken(I18n.help("associationMethod"), PopOver.ArrowLocation.LEFT_CENTER, 50));
-    }
+
+    HelpToken popOver = new HelpToken(I18n.help("associationMethod"), PopOver.ArrowLocation.LEFT_CENTER, 50);
+    subtitle.setOnMouseEntered(event -> {
+      if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled")) && !popOver.isShowing()) {
+        popOver.show(subtitle);
+      }
+    });
+    subtitle.setOnMouseExited(event -> {
+      if(popOver.isShowing()) {
+        popOver.hide();
+      }
+    });
 
     assocList = new ListView<>();
     assocList.setMinHeight(LIST_HEIGHT);
@@ -220,9 +229,18 @@ public class RuleModalPane extends BorderPane {
     subtitle.setPadding(new Insets(0, 0, 10, 0));
 
     subtitleBox.getChildren().addAll(subtitle);
-    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
-      subtitleBox.getChildren().add(new HelpToken(I18n.help("metadataMethod"), PopOver.ArrowLocation.LEFT_CENTER, 85));
-    }
+
+    HelpToken popOver = new HelpToken(I18n.help("metadataMethod"), PopOver.ArrowLocation.LEFT_CENTER, 85);
+    subtitle.setOnMouseEntered(event -> {
+      if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled")) && !popOver.isShowing()) {
+        popOver.show(subtitle);
+      }
+    });
+    subtitle.setOnMouseExited(event -> {
+      if(popOver.isShowing()) {
+        popOver.hide();
+      }
+    });
 
     metaList = new ListView<>();
     metaList.setMinHeight(LIST_HEIGHT);

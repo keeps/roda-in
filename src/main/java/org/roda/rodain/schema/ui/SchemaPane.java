@@ -138,9 +138,18 @@ public class SchemaPane extends BorderPane {
     title.getStyleClass().add("helpTitle");
     title.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().addAll(title);
-    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
-      titleBox.getChildren().add(new HelpToken(I18n.help("secondStep"), PopOver.ArrowLocation.LEFT_CENTER, 205));
-    }
+
+    HelpToken popOver = new HelpToken(I18n.help("secondStep"), PopOver.ArrowLocation.LEFT_CENTER, 205);
+    titleBox.setOnMouseEntered(event -> {
+      if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled")) && !popOver.isShowing()) {
+        popOver.show(titleBox);
+      }
+    });
+    titleBox.setOnMouseExited(event -> {
+      if(popOver.isShowing()) {
+        popOver.hide();
+      }
+    });
 
     HBox loadBox = new HBox();
     loadBox.setAlignment(Pos.CENTER);
@@ -494,11 +503,19 @@ public class SchemaPane extends BorderPane {
     export.setMinWidth(100);
     export.setOnAction(event -> RodaIn.exportSIPs());
 
-    bottom.getChildren().addAll(addLevel, removeLevel, space);
-    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
-      bottom.getChildren().add(new HelpToken(I18n.help("export"), PopOver.ArrowLocation.BOTTOM_CENTER, 225));
-    }
-    bottom.getChildren().add(export);
+    bottom.getChildren().addAll(addLevel, removeLevel, space, export);
+
+    HelpToken popOver = new HelpToken(I18n.help("export"), PopOver.ArrowLocation.BOTTOM_CENTER, 225);
+    export.setOnMouseEntered(event -> {
+      if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled")) && !popOver.isShowing()) {
+        popOver.show(export);
+      }
+    });
+    export.setOnMouseExited(event -> {
+      if(popOver.isShowing()) {
+        popOver.hide();
+      }
+    });
   }
 
   private void confirmRemove(List<TreeItem<String>> selectedItems, ButtonType type) {

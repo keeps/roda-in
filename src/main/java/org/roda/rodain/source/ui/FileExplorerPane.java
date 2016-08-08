@@ -5,12 +5,14 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
+import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -21,6 +23,7 @@ import org.roda.rodain.source.representation.SourceDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
+import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.HelpToken;
 import org.roda.rodain.utils.Utils;
 import org.roda.rodain.utils.WalkFileTree;
@@ -112,9 +115,18 @@ public class FileExplorerPane extends BorderPane implements Observer {
     top.setAlignment(Pos.CENTER_LEFT);
     top.setPadding(new Insets(15, 15, 15, 15));
     top.getChildren().add(title);
-    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
-      top.getChildren().add(new HelpToken(I18n.help("fileExplorer"), Color.WHITE, PopOver.ArrowLocation.LEFT_TOP, 240));
-    }
+
+    HelpToken titlePopOver = new HelpToken(I18n.help("fileExplorer"), PopOver.ArrowLocation.TOP_LEFT, 240);
+    top.setOnMouseEntered(event -> {
+      if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled")) && !titlePopOver.isShowing()) {
+        titlePopOver.show(top);
+      }
+    });
+    top.setOnMouseExited(event -> {
+      if(titlePopOver.isShowing()) {
+        titlePopOver.hide();
+      }
+    });
   }
 
   private void createBottom() {
@@ -170,16 +182,24 @@ public class FileExplorerPane extends BorderPane implements Observer {
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
+    HelpToken editPopOver = new HelpToken(I18n.help("associate"), PopOver.ArrowLocation.BOTTOM_CENTER, 125);
+
     Button associate = new Button(I18n.t("associate"));
     associate.disableProperty().bind(RodaIn.getSchemePane().hasClassificationScheme().not());
     associate.setMinWidth(100);
     associate.setOnAction(event -> RodaIn.getSchemePane().startAssociation());
+    associate.setOnMouseEntered(event -> {
+      if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled")) && !editPopOver.isShowing()) {
+        editPopOver.show(associate);
+      }
+    });
+    associate.setOnMouseExited(event -> {
+      if(editPopOver.isShowing()) {
+        editPopOver.hide();
+      }
+    });
 
-    bottom.getChildren().addAll(ignoreAndRemoveBox, space);
-    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
-      bottom.getChildren().add(new HelpToken(I18n.help("associate"), PopOver.ArrowLocation.BOTTOM_CENTER, 125));
-    }
-    bottom.getChildren().add(associate);
+    bottom.getChildren().addAll(ignoreAndRemoveBox, space, associate);
   }
 
   private void createCenterHelp() {
@@ -201,9 +221,6 @@ public class FileExplorerPane extends BorderPane implements Observer {
     title.getStyleClass().add("helpTitle");
     title.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(title);
-    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
-      titleBox.getChildren().add(new HelpToken(I18n.help("firstStep"), PopOver.ArrowLocation.LEFT_CENTER, 105));
-    }
 
     HBox loadBox = new HBox();
     loadBox.setAlignment(Pos.CENTER);
@@ -214,6 +231,18 @@ public class FileExplorerPane extends BorderPane implements Observer {
     load.setMaxWidth(220);
     load.getStyleClass().add("helpButton");
     loadBox.getChildren().add(load);
+
+    HelpToken loadPopOver = new HelpToken(I18n.help("firstStep"), PopOver.ArrowLocation.LEFT_CENTER, 105);
+    load.setOnMouseEntered(event -> {
+      if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled")) && !loadPopOver.isShowing()) {
+        loadPopOver.show(load);
+      }
+    });
+    load.setOnMouseExited(event -> {
+      if(loadPopOver.isShowing()) {
+        loadPopOver.hide();
+      }
+    });
 
     box.getChildren().addAll(titleBox, loadBox);
     centerHelp.getChildren().add(box);

@@ -358,9 +358,17 @@ public class InspectionPane extends BorderPane {
     });
     metadataTopBox.getChildren().add(titleLabel);
 
-    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
-      metadataTopBox.getChildren().add(new HelpToken(I18n.help("inspectionPanel.metadata"), Color.WHITE, PopOver.ArrowLocation.RIGHT_TOP, 390));
-    }
+    HelpToken popOver = new HelpToken(I18n.help("inspectionPanel.metadata"), PopOver.ArrowLocation.RIGHT_TOP, 390);
+    metadataTopBox.setOnMouseEntered(event -> {
+      if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled")) && !popOver.isShowing()) {
+        popOver.show(metadataTopBox);
+      }
+    });
+    metadataTopBox.setOnMouseExited(event -> {
+      if(popOver.isShowing()) {
+        popOver.hide();
+      }
+    });
     metadataTopBox.getChildren().add(space);
     updateMetadataTop();
   }
@@ -860,9 +868,17 @@ public class InspectionPane extends BorderPane {
     });
     createDocsBottom();
 
-    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
-      top.getChildren().add(new HelpToken(I18n.help("inspectionPanel.data"), Color.WHITE, PopOver.ArrowLocation.RIGHT_CENTER, 275));
-    }
+    HelpToken popOver = new HelpToken(I18n.help("inspectionPanel.data"), PopOver.ArrowLocation.RIGHT_CENTER, 275);
+    top.setOnMouseEntered(event -> {
+      if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled")) && !popOver.isShowing()) {
+        popOver.show(top);
+      }
+    });
+    top.setOnMouseExited(event -> {
+      if(popOver.isShowing()) {
+        popOver.hide();
+      }
+    });
     top.getChildren().addAll(space, toggleDocumentation);
   }
 
@@ -1197,9 +1213,18 @@ public class InspectionPane extends BorderPane {
     Label title = new Label(I18n.t("InspectionPane.rules").toUpperCase());
     title.getStyleClass().add("title");
     top.getChildren().add(title);
-    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
-      top.getChildren().add(new HelpToken(I18n.help("inspectionPanel.associations"), Color.WHITE, PopOver.ArrowLocation.BOTTOM_CENTER, 90));
-    }
+
+    HelpToken popOver = new HelpToken(I18n.help("inspectionPanel.associations"), PopOver.ArrowLocation.BOTTOM_CENTER, 90);
+    top.setOnMouseEntered(event -> {
+      if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled")) && !popOver.isShowing()) {
+        popOver.show(top);
+      }
+    });
+    top.setOnMouseExited(event -> {
+      if(popOver.isShowing()) {
+        popOver.hide();
+      }
+    });
     rules.setTop(top);
     ruleList = new ListView<>();
 
