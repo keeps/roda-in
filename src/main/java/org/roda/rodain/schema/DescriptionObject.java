@@ -155,10 +155,6 @@ public class DescriptionObject extends Observable {
       // otherwise the strings are different even if no modification has been
       // made
       content = content.replace("\r", "");
-
-      if(dom.getCreatorOption() != MetadataOptions.TEMPLATE){
-        dom.setSimilar(TemplateToForm.isSimilar(content, dom.getContentDecoded()));
-      }
     }
     return content;
   }
@@ -214,10 +210,6 @@ public class DescriptionObject extends Observable {
           break;
         case "level":
           descriptionlevel = (String) metadataValue.get("value");
-          break;
-        case "otherlevel":
-          if(metadataValue.get("value") != null && descriptionlevel != null && descriptionlevel.equals("otherlevel"))
-            descriptionlevel = (String) metadataValue.get("value");
           break;
         case "parentid":
           parentId = (String) metadataValue.get("value");

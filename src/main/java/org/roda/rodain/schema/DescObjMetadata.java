@@ -32,7 +32,6 @@ public class DescObjMetadata {
   private TreeSet<MetadataValue> values;
   private Path path;
   private boolean loaded = false;
-  private boolean similar = true;
 
   // template
   private MetadataOptions creatorOption;
@@ -83,14 +82,6 @@ public class DescObjMetadata {
     this.templateType = templateType;
   }
 
-  public boolean isSimilar() {
-    return similar;
-  }
-
-  public void setSimilar(boolean similar) {
-    this.similar = similar;
-  }
-
   @JsonIgnore
   public boolean isLoaded() {
     return loaded;
@@ -113,12 +104,7 @@ public class DescObjMetadata {
    */
   public Set<MetadataValue> getValues() {
     if (values == null) {
-      if(creatorOption == MetadataOptions.TEMPLATE) {
-        values = TemplateToForm.transform(getContentDecoded());
-      }else{
-        String template = AppProperties.getMetadataFile(templateType);
-        values = TemplateToForm.transformWithEdition(template, getContentDecoded());
-      }
+      values = TemplateToForm.transform(getContentDecoded());
     }
     return values;
   }

@@ -172,35 +172,6 @@ public class Utils {
     return output.toString();
   }
 
-  public static List<String> applyXpath(String xml, String xpathString) {
-    List<String> result = new ArrayList<>();
-    try {
-      Processor proc = new Processor(false);
-      XPathCompiler xpath = proc.newXPathCompiler();
-      DocumentBuilder builder = proc.newDocumentBuilder();
-
-      // Load the XML document.
-      StringReader reader = new StringReader(xml);
-      XdmNode doc = builder.build(new StreamSource(reader));
-
-      // Compile the xpath
-      XPathSelector selector = xpath.compile(xpathString).load();
-      selector.setContextItem(doc);
-
-      // Evaluate the expression.
-      XdmValue nodes = selector.evaluate();
-
-      for (XdmItem item : nodes) {
-        result.add(item.toString());
-      }
-
-    } catch (Exception e) {
-      LOGGER.error("Error applying XPath", e);
-    }
-    return result;
-  }
-
-
   public static String getCurrentVersion() throws ConfigurationException {
     PropertiesConfiguration pc = new PropertiesConfiguration(BUILD_PROPERTIES_FILE);
     return pc.getString("current.version");
