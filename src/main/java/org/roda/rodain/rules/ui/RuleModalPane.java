@@ -1,20 +1,12 @@
 package org.roda.rodain.rules.ui;
 
-import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import org.controlsfx.control.PopOver;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
@@ -24,17 +16,36 @@ import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
-import org.roda.rodain.utils.HelpToken;
+import org.roda.rodain.utils.HelpPopOver;
 import org.roda.rodain.utils.UIPair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.Separator;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -140,17 +151,7 @@ public class RuleModalPane extends BorderPane {
 
     subtitleBox.getChildren().add(subtitle);
 
-    HelpToken popOver = new HelpToken(I18n.help("associationMethod"), PopOver.ArrowLocation.LEFT_CENTER, 50);
-    subtitle.setOnMouseEntered(event -> {
-      if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled")) && !popOver.isShowing()) {
-        popOver.show(subtitle);
-      }
-    });
-    subtitle.setOnMouseExited(event -> {
-      if(popOver.isShowing()) {
-        popOver.hide();
-      }
-    });
+    HelpPopOver.create(subtitle, I18n.help("associationMethod"), PopOver.ArrowLocation.LEFT_CENTER, 50);
 
     assocList = new ListView<>();
     assocList.setMinHeight(LIST_HEIGHT);
@@ -230,17 +231,7 @@ public class RuleModalPane extends BorderPane {
 
     subtitleBox.getChildren().addAll(subtitle);
 
-    HelpToken popOver = new HelpToken(I18n.help("metadataMethod"), PopOver.ArrowLocation.LEFT_CENTER, 85);
-    subtitle.setOnMouseEntered(event -> {
-      if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled")) && !popOver.isShowing()) {
-        popOver.show(subtitle);
-      }
-    });
-    subtitle.setOnMouseExited(event -> {
-      if(popOver.isShowing()) {
-        popOver.hide();
-      }
-    });
+    HelpPopOver.create(subtitle, I18n.help("metadataMethod"), PopOver.ArrowLocation.LEFT_CENTER, 85);
 
     metaList = new ListView<>();
     metaList.setMinHeight(LIST_HEIGHT);

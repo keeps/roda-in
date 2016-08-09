@@ -30,7 +30,7 @@ import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.AutoscrollTreeView;
-import org.roda.rodain.utils.HelpToken;
+import org.roda.rodain.utils.HelpPopOver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,6 +84,8 @@ public class SchemaPane extends BorderPane {
   private static Stage primaryStage;
   private Set<SchemaNode> schemaNodes;
 
+  private boolean onBox, onPopup;
+
   private boolean modifiedPlan = false;
 
   // center help
@@ -135,18 +137,10 @@ public class SchemaPane extends BorderPane {
     topBox.setAlignment(Pos.CENTER_LEFT);
     topBox.getChildren().add(title);
 
-    HelpToken titlePopOver = new HelpToken(I18n.help("schemapane"), PopOver.ArrowLocation.LEFT_TOP, 525);
-    topBox.setOnMouseEntered(event -> {
-      if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled")) && !titlePopOver.isShowing()) {
-        titlePopOver.show(topBox);
-      }
-    });
-    topBox.setOnMouseExited(event -> {
-      if(titlePopOver.isShowing()) {
-        titlePopOver.hide();
-      }
-    });
+    HelpPopOver.create(topBox, I18n.help("schemapane"), PopOver.ArrowLocation.LEFT_TOP, 525);
   }
+
+
 
   private void createCenterHelp() {
     centerHelp = new VBox();
@@ -179,17 +173,7 @@ public class SchemaPane extends BorderPane {
     load.getStyleClass().add("helpButton");
     loadBox.getChildren().add(load);
 
-    HelpToken popOver = new HelpToken(I18n.help("secondStep"), PopOver.ArrowLocation.LEFT_CENTER, 205);
-    load.setOnMouseEntered(event -> {
-      if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled")) && !popOver.isShowing()) {
-        popOver.show(load);
-      }
-    });
-    load.setOnMouseExited(event -> {
-      if(popOver.isShowing()) {
-        popOver.hide();
-      }
-    });
+    HelpPopOver.create(load, I18n.help("secondStep"), PopOver.ArrowLocation.LEFT_CENTER, 205);
 
     Hyperlink link = new Hyperlink(I18n.t("SchemaPane.create"));
     link.setOnAction(event -> createClassificationScheme());
@@ -535,17 +519,7 @@ public class SchemaPane extends BorderPane {
 
     bottom.getChildren().addAll(addLevel, removeLevel, space, export);
 
-    HelpToken popOver = new HelpToken(I18n.help("export"), PopOver.ArrowLocation.LEFT_BOTTOM, 225);
-    export.setOnMouseEntered(event -> {
-      if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled")) && !popOver.isShowing()) {
-        popOver.show(export);
-      }
-    });
-    export.setOnMouseExited(event -> {
-      if(popOver.isShowing()) {
-        popOver.hide();
-      }
-    });
+    HelpPopOver.create(export, I18n.help("export"), PopOver.ArrowLocation.LEFT_BOTTOM, 225);
   }
 
   private void confirmRemove(List<TreeItem<String>> selectedItems, ButtonType type) {

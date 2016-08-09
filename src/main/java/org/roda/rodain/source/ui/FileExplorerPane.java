@@ -14,7 +14,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.controlsfx.control.PopOver;
-import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.Footer;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.PathCollection;
@@ -23,7 +22,7 @@ import org.roda.rodain.source.representation.SourceDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
-import org.roda.rodain.utils.HelpToken;
+import org.roda.rodain.utils.HelpPopOver;
 import org.roda.rodain.utils.Utils;
 import org.roda.rodain.utils.WalkFileTree;
 
@@ -134,17 +133,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     top.setPadding(new Insets(15, 15, 15, 15));
     top.getChildren().add(title);
 
-    HelpToken titlePopOver = new HelpToken(I18n.help("fileExplorer"), PopOver.ArrowLocation.LEFT_TOP, 240);
-    top.setOnMouseEntered(event -> {
-      if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled")) && !titlePopOver.isShowing()) {
-        titlePopOver.show(top);
-      }
-    });
-    top.setOnMouseExited(event -> {
-      if(titlePopOver.isShowing()) {
-        titlePopOver.hide();
-      }
-    });
+    HelpPopOver.create(top, I18n.help("fileExplorer"), PopOver.ArrowLocation.LEFT_TOP, 240);
   }
 
   private void createBottom() {
@@ -200,22 +189,11 @@ public class FileExplorerPane extends BorderPane implements Observer {
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
-    HelpToken editPopOver = new HelpToken(I18n.help("associate"), PopOver.ArrowLocation.LEFT_BOTTOM, 125);
-
     Button associate = new Button(I18n.t("associate"));
     associate.disableProperty().bind(RodaIn.getSchemePane().hasClassificationScheme().not());
     associate.setMinWidth(100);
     associate.setOnAction(event -> RodaIn.getSchemePane().startAssociation());
-    associate.setOnMouseEntered(event -> {
-      if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled")) && !editPopOver.isShowing()) {
-        editPopOver.show(associate);
-      }
-    });
-    associate.setOnMouseExited(event -> {
-      if(editPopOver.isShowing()) {
-        editPopOver.hide();
-      }
-    });
+    HelpPopOver.create(associate, I18n.help("associate"), PopOver.ArrowLocation.LEFT_BOTTOM, 125);
 
     bottom.getChildren().addAll(ignoreAndRemoveBox, space, associate);
   }
@@ -250,17 +228,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     load.getStyleClass().add("helpButton");
     loadBox.getChildren().add(load);
 
-    HelpToken loadPopOver = new HelpToken(I18n.help("firstStep"), PopOver.ArrowLocation.LEFT_CENTER, 105);
-    load.setOnMouseEntered(event -> {
-      if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled")) && !loadPopOver.isShowing()) {
-        loadPopOver.show(load);
-      }
-    });
-    load.setOnMouseExited(event -> {
-      if(loadPopOver.isShowing()) {
-        loadPopOver.hide();
-      }
-    });
+    HelpPopOver.create(load, I18n.help("firstStep"), PopOver.ArrowLocation.LEFT_CENTER, 105);
 
     box.getChildren().addAll(titleBox, loadBox);
     centerHelp.getChildren().add(box);

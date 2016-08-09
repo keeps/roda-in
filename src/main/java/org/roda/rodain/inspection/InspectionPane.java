@@ -46,7 +46,7 @@ import org.roda.rodain.source.ui.SourceTreeCell;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
-import org.roda.rodain.utils.HelpToken;
+import org.roda.rodain.utils.HelpPopOver;
 import org.roda.rodain.utils.ModalStage;
 import org.roda.rodain.utils.UIPair;
 import org.roda.rodain.utils.Utils;
@@ -189,17 +189,7 @@ public class InspectionPane extends BorderPane {
     topBox.setPadding(new Insets(15, 15, 15, 15));
     topBox.setAlignment(Pos.CENTER_LEFT);
 
-    HelpToken titlePopOver = new HelpToken(I18n.help("inspectionpane"), PopOver.ArrowLocation.TOP_CENTER, 85);
-    topBox.setOnMouseEntered(event -> {
-      if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled")) && !titlePopOver.isShowing()) {
-        titlePopOver.show(topBox);
-      }
-    });
-    topBox.setOnMouseExited(event -> {
-      if(titlePopOver.isShowing()) {
-        titlePopOver.hide();
-      }
-    });
+    HelpPopOver.create(topBox, I18n.help("inspectionpane"), PopOver.ArrowLocation.TOP_CENTER, 85);
   }
 
   private void createMetadata() {
@@ -407,17 +397,7 @@ public class InspectionPane extends BorderPane {
     });
     metadataTopBox.getChildren().add(titleLabel);
 
-    HelpToken popOver = new HelpToken(I18n.help("inspectionPanel.metadata"), PopOver.ArrowLocation.TOP_CENTER, 390);
-    metadataTopBox.setOnMouseEntered(event -> {
-      if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled")) && !popOver.isShowing()) {
-        popOver.show(metadataTopBox);
-      }
-    });
-    metadataTopBox.setOnMouseExited(event -> {
-      if(popOver.isShowing()) {
-        popOver.hide();
-      }
-    });
+    HelpPopOver.create(metadataTopBox, I18n.help("inspectionPanel.metadata"), PopOver.ArrowLocation.TOP_CENTER, 390);
     metadataTopBox.getChildren().add(space);
     updateMetadataTop();
   }
@@ -917,17 +897,7 @@ public class InspectionPane extends BorderPane {
     });
     createDocsBottom();
 
-    HelpToken popOver = new HelpToken(I18n.help("inspectionPanel.data"), PopOver.ArrowLocation.TOP_CENTER, 275);
-    top.setOnMouseEntered(event -> {
-      if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled")) && !popOver.isShowing()) {
-        popOver.show(top);
-      }
-    });
-    top.setOnMouseExited(event -> {
-      if(popOver.isShowing()) {
-        popOver.hide();
-      }
-    });
+    HelpPopOver.create(top, I18n.help("inspectionPanel.data"), PopOver.ArrowLocation.TOP_CENTER, 275);
     top.getChildren().addAll(space, toggleDocumentation);
   }
 
@@ -1263,17 +1233,8 @@ public class InspectionPane extends BorderPane {
     title.getStyleClass().add("title");
     top.getChildren().add(title);
 
-    HelpToken popOver = new HelpToken(I18n.help("inspectionPanel.associations"), PopOver.ArrowLocation.TOP_CENTER, 90);
-    top.setOnMouseEntered(event -> {
-      if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled")) && !popOver.isShowing()) {
-        popOver.show(top);
-      }
-    });
-    top.setOnMouseExited(event -> {
-      if(popOver.isShowing()) {
-        popOver.hide();
-      }
-    });
+    HelpPopOver.create(top, I18n.help("inspectionPanel.associations"), PopOver.ArrowLocation.TOP_CENTER, 90);
+
     rules.setTop(top);
     ruleList = new ListView<>();
 
