@@ -5,7 +5,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Set;
 
-import com.sun.javafx.binding.StringFormatter;
+import org.controlsfx.control.ToggleSwitch;
+import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.core.I18n;
+import org.roda.rodain.core.RodaIn;
+import org.roda.rodain.creation.SipTypes;
+import org.roda.rodain.schema.DescriptionObject;
+import org.roda.rodain.sip.SipPreview;
+import org.roda.rodain.utils.UIPair;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -19,15 +27,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
-
-import org.controlsfx.control.ToggleSwitch;
-import org.roda.rodain.core.AppProperties;
-import org.roda.rodain.core.I18n;
-import org.roda.rodain.core.RodaIn;
-import org.roda.rodain.creation.SipTypes;
-import org.roda.rodain.schema.DescriptionObject;
-import org.roda.rodain.sip.SipPreview;
-import org.roda.rodain.utils.UIPair;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -43,8 +42,10 @@ public class CreationModalPreparation extends BorderPane {
   private ComboBox<UIPair> nameTypes;
   private static Button start;
   private long selectedSIP, selectedItems, allSIP, allItems;
-  private ToggleSwitch toggleSwitch, itemExportSwitch;
+  private ToggleSwitch sipExportSwitch, itemExportSwitch;
   private TextField prefixField;
+
+  private String sSelectedSIP, sSelectedItems, sAllSIP, sAllItems;
 
   /**
    * Creates a modal to prepare for the SIP exportation.
@@ -103,21 +104,51 @@ public class CreationModalPreparation extends BorderPane {
     allSIP = allSet.stream().filter(p -> p instanceof SipPreview).count();
     allItems = allSet.size() - allSIP;
 
-    String countLabelString = String.format("%s %d/%d SIP", I18n.t("selected"), this.selectedSIP, this.allSIP);
+    sSelectedSIP = String.format("%s %d/%d SIP", I18n.t("selected"), this.selectedSIP, this.allSIP);
+    sSelectedItems = String.format("%d/%d %s", this.selectedItems, this.allItems, I18n.t("items"));
+    sAllSIP = String.format("%s %d/%d SIP", I18n.t("selected"), this.allSIP, this.allSIP);
+    sAllItems = String.format("%d/%d %s", this.allItems, this.allItems, I18n.t("items"));
+
+    String startingLabel = sSelectedSIP;
     if(allItems != 0){
-      countLabelString = String.format("%s %s %d/%d %s", countLabelString, I18n.t("and"), this.selectedItems, this.allItems, I18n.t("items"));
+      startingLabel = String.format("%s %s %s", sSelectedSIP, I18n.t("and"), sSelectedItems);
     }
-    Label countLabel = new Label(countLabelString);
+
+    Label countLabel = new Label(startingLabel);
     countLabel.getStyleClass().add("prepareCreationSubtitle");
-    toggleSwitch = new ToggleSwitch(I18n.t("CreationModalPreparation.exportAll"));
+    sipExportSwitch = new ToggleSwitch(I18n.t("CreationModalPreparation.exportAll"));
+    sipExportSwitch.selectedProperty().addListener((o, old, newValue) ->
+        setSelectedLabel(countLabel, newValue, itemExportSwitch.isSelected()));
 
     if (this.selectedSIP == 0 || this.selectedSIP == this.allSIP)
-      toggleSwitch.setSelected(true);
+      sipExportSwitch.setSelected(true);
 
     itemExportSwitch = new ToggleSwitch(I18n.t("CreationModalPreparation.exportItems"));
+    itemExportSwitch.selectedProperty().addListener((o, old, newValue) ->
+      setSelectedLabel(countLabel, sipExportSwitch.isSelected(), newValue));
 
-    countBox.getChildren().addAll(countLabel, toggleSwitch, itemExportSwitch);
+    countBox.getChildren().addAll(countLabel, sipExportSwitch, itemExportSwitch);
     return countBox;
+  }
+
+  private void setSelectedLabel(Label label, boolean sipAll, boolean itemsAll){
+    if(allItems != 0) {
+      String newLabel, format = "%s %s %s";
+      if (sipAll) {
+        if (itemsAll) {
+          newLabel = String.format(format, sAllSIP, I18n.t("and"), sAllItems);
+        } else {
+          newLabel = String.format(format, sAllSIP, I18n.t("and"), sSelectedItems);
+        }
+      } else {
+        if(itemsAll){
+          newLabel = String.format(format, sSelectedSIP, I18n.t("and"), sAllItems);
+        }else{
+          newLabel = String.format(format, sSelectedSIP, I18n.t("and"), sSelectedItems);
+        }
+      }
+      label.setText(newLabel);
+    }
   }
 
   private HBox createOutputFolder() {
@@ -231,7 +262,7 @@ public class CreationModalPreparation extends BorderPane {
 
         AppProperties.setConfig("export.last_prefix", prefixField.getText());
         AppProperties.saveConfig();
-        stage.startCreation(outputFolder, type, toggleSwitch.isSelected(), itemExportSwitch.isSelected(), prefixField.getText(), (NAME_TYPES) nameTypes.getSelectionModel().getSelectedItem().getKey());
+        stage.startCreation(outputFolder, type, sipExportSwitch.isSelected(), itemExportSwitch.isSelected(), prefixField.getText(), (NAME_TYPES) nameTypes.getSelectionModel().getSelectedItem().getKey());
       }
     });
 
