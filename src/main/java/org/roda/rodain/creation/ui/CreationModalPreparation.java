@@ -45,7 +45,7 @@ public class CreationModalPreparation extends BorderPane {
   private ToggleSwitch sipExportSwitch, itemExportSwitch;
   private TextField prefixField;
 
-  private String sSelectedSIP, sSelectedItems, sAllSIP, sAllItems;
+  private String sSelectedSIP, sSelectedItems, sZeroItems, sAllSIP, sAllItems;
 
   /**
    * Creates a modal to prepare for the SIP exportation.
@@ -104,51 +104,65 @@ public class CreationModalPreparation extends BorderPane {
     allSIP = allSet.stream().filter(p -> p instanceof SipPreview).count();
     allItems = allSet.size() - allSIP;
 
+
+
     sSelectedSIP = String.format("%s %d/%d SIP", I18n.t("selected"), this.selectedSIP, this.allSIP);
     sSelectedItems = String.format("%d/%d %s", this.selectedItems, this.allItems, I18n.t("items"));
+    sZeroItems = String.format("%d/%d %s", 0, this.allItems, I18n.t("items"));
     sAllSIP = String.format("%s %d/%d SIP", I18n.t("selected"), this.allSIP, this.allSIP);
     sAllItems = String.format("%d/%d %s", this.allItems, this.allItems, I18n.t("items"));
 
     String startingLabel = sSelectedSIP;
     if(allItems != 0){
-      startingLabel = String.format("%s %s %s", sSelectedSIP, I18n.t("and"), sSelectedItems);
+      startingLabel = String.format("%s %s %s", sSelectedSIP, I18n.t("and"), sZeroItems);
     }
 
     Label countLabel = new Label(startingLabel);
     countLabel.getStyleClass().add("prepareCreationSubtitle");
     sipExportSwitch = new ToggleSwitch(I18n.t("CreationModalPreparation.exportAll"));
     sipExportSwitch.selectedProperty().addListener((o, old, newValue) ->
-        setSelectedLabel(countLabel, newValue, itemExportSwitch.isSelected()));
+        setSelectedLabel(countLabel));
 
     if (this.selectedSIP == 0 || this.selectedSIP == this.allSIP)
       sipExportSwitch.setSelected(true);
 
     itemExportSwitch = new ToggleSwitch(I18n.t("CreationModalPreparation.exportItems"));
     itemExportSwitch.selectedProperty().addListener((o, old, newValue) ->
-      setSelectedLabel(countLabel, sipExportSwitch.isSelected(), newValue));
+      setSelectedLabel(countLabel));
 
     countBox.getChildren().addAll(countLabel, sipExportSwitch, itemExportSwitch);
     return countBox;
   }
 
-  private void setSelectedLabel(Label label, boolean sipAll, boolean itemsAll){
-    if(allItems != 0) {
-      String newLabel, format = "%s %s %s";
-      if (sipAll) {
-        if (itemsAll) {
+  private void setSelectedLabel(Label label){
+    boolean sipAll = false, exportItems = false;
+    String newLabel, format = "%s %s %s";
+    if(sipExportSwitch != null){
+      sipAll = sipExportSwitch.isSelected();
+    }
+    if(itemExportSwitch != null){
+      exportItems = itemExportSwitch.isSelected();
+    }
+    if (sipAll) {
+      newLabel = sAllSIP;
+      if(allItems != 0) {
+        if (exportItems) {
           newLabel = String.format(format, sAllSIP, I18n.t("and"), sAllItems);
-        } else {
-          newLabel = String.format(format, sAllSIP, I18n.t("and"), sSelectedItems);
-        }
-      } else {
-        if(itemsAll){
-          newLabel = String.format(format, sSelectedSIP, I18n.t("and"), sAllItems);
         }else{
-          newLabel = String.format(format, sSelectedSIP, I18n.t("and"), sSelectedItems);
+          newLabel = String.format(format, sAllSIP, I18n.t("and"), sZeroItems);
         }
       }
-      label.setText(newLabel);
+    } else {
+      newLabel = sSelectedSIP;
+      if(allItems != 0) {
+        if(exportItems) {
+          newLabel = String.format(format, sSelectedSIP, I18n.t("and"), sSelectedItems);
+        }else{
+          newLabel = String.format(format, sSelectedSIP, I18n.t("and"), sZeroItems);
+        }
+      }
     }
+    label.setText(newLabel);
   }
 
   private HBox createOutputFolder() {

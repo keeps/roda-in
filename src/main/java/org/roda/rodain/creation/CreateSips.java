@@ -1,15 +1,14 @@
 package org.roda.rodain.creation;
 
-import org.roda.rodain.core.RodaIn;
-import org.roda.rodain.creation.ui.CreationModalPreparation;
-import org.roda.rodain.schema.DescriptionObject;
-import org.roda.rodain.sip.SipPreview;
-import sun.security.krb5.internal.crypto.Des;
-
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.roda.rodain.core.RodaIn;
+import org.roda.rodain.creation.ui.CreationModalPreparation;
+import org.roda.rodain.schema.DescriptionObject;
+import org.roda.rodain.sip.SipPreview;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -48,10 +47,11 @@ public class CreateSips {
    */
   public void start() {
     Map<DescriptionObject, List<String>> sips;
-    if (exportAll)
+    if (exportAll) {
       sips = RodaIn.getAllDescriptionObjects();
-    else
+    }else {
       sips = RodaIn.getSelectedDescriptionObjects();
+    }
 
     if(!exportItems)
     sips = sips.entrySet().stream().filter(entry -> entry.getKey() instanceof SipPreview).collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
