@@ -84,8 +84,6 @@ public class SchemaPane extends BorderPane {
   private static Stage primaryStage;
   private Set<SchemaNode> schemaNodes;
 
-  private boolean onBox, onPopup;
-
   private boolean modifiedPlan = false;
 
   // center help
@@ -616,10 +614,11 @@ public class SchemaPane extends BorderPane {
       newNode.updateDescriptionLevel("fonds");
       rootNode.getChildren().add(newNode);
       rootNode.addChildrenNode(newNode);
+      schemaNodes.add(newNode);
       sortRootChildren();
     }
     setCenter(treeBox);
-    schemaNodes.add(newNode);
+
     // Edit the node's title as soon as it's created
     treeView.layout();
     treeView.edit(newNode);
@@ -893,11 +892,12 @@ public class SchemaPane extends BorderPane {
   }
 
   public Map<DescriptionObject, List<String>> getAllSipPreviews() {
-    schemaNodes.add(rootNode);
+    Set<SchemaNode> localSchemaNodes = new HashSet<>(schemaNodes);
+    localSchemaNodes.add(rootNode);
     Map<SipPreview, List<String>> sipsMap = new HashMap<>();
     Map<DescriptionObject, List<String>> descObjsMap = new HashMap<>();
 
-    for (SchemaNode sn : schemaNodes) {
+    for (SchemaNode sn : localSchemaNodes) {
       sipsMap.putAll(sn.getSipPreviews());
       descObjsMap.putAll(sn.getDescriptionObjects());
     }
@@ -915,7 +915,6 @@ public class SchemaPane extends BorderPane {
    * @return The Map with the SIPs of all the SchemaNodes in the TreeView
    */
   public Map<DescriptionObject, List<String>> getSelectedSipPreviews() {
-    schemaNodes.add(rootNode);
     Map<SipPreview, List<String>> sipsMap = new HashMap<>();
     Map<DescriptionObject, List<String>> descObjsMap = new HashMap<>();
 

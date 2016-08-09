@@ -1,18 +1,30 @@
 package org.roda.rodain.schema.ui;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.TreeSet;
+
+import org.roda.rodain.rules.Rule;
+import org.roda.rodain.rules.ui.RuleModalController;
+import org.roda.rodain.schema.DescriptionObject;
+import org.roda.rodain.sip.SipPreview;
+import org.roda.rodain.utils.FontAwesomeImageCreator;
+
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
-import org.roda.rodain.rules.Rule;
-import org.roda.rodain.sip.SipPreview;
-import org.roda.rodain.rules.ui.RuleModalController;
-import org.roda.rodain.schema.DescriptionObject;
-import org.roda.rodain.utils.FontAwesomeImageCreator;
-
-import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -348,8 +360,11 @@ public class SchemaNode extends TreeItem<String> implements Observer {
 
     result.put(getDob(), computeAncestors());
 
-    for (SchemaNode sn : schemaNodes)
+    for (SchemaNode sn : schemaNodes) {
       result.putAll(sn.getSipPreviews());
+      result.put(sn.getDob(), computeAncestorsOfSips());
+      result.putAll(sn.getDescriptionObjects());
+    }
 
     ruleNodes.forEach((s, schNodes) -> schNodes.forEach(schemaNode ->result.putAll(schemaNode.getDescriptionObjects())));
     return result;

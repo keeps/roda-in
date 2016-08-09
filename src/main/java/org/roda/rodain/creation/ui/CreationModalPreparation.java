@@ -104,8 +104,6 @@ public class CreationModalPreparation extends BorderPane {
     allSIP = allSet.stream().filter(p -> p instanceof SipPreview).count();
     allItems = allSet.size() - allSIP;
 
-
-
     sSelectedSIP = String.format("%s %d/%d SIP", I18n.t("selected"), this.selectedSIP, this.allSIP);
     sSelectedItems = String.format("%d/%d %s", this.selectedItems, this.allItems, I18n.t("items"));
     sZeroItems = String.format("%d/%d %s", 0, this.allItems, I18n.t("items"));
