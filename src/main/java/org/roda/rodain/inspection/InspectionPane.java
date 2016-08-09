@@ -1,30 +1,21 @@
 package org.roda.rodain.inspection;
 
-import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.Property;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
-import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
-import javafx.geometry.Pos;
-import javafx.scene.control.*;
-import javafx.scene.control.cell.ComboBoxListCell;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.TransferMode;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.text.TextAlignment;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import javafx.util.StringConverter;
-import javafx.util.converter.LocalDateStringConverter;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.apache.commons.lang.StringUtils;
 import org.controlsfx.control.PopOver;
 import org.fxmisc.richtext.CodeArea;
@@ -33,7 +24,13 @@ import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.core.RodaIn;
-import org.roda.rodain.inspection.trees.*;
+import org.roda.rodain.inspection.trees.ContentCreator;
+import org.roda.rodain.inspection.trees.InspectionTreeItem;
+import org.roda.rodain.inspection.trees.SipContentDirectory;
+import org.roda.rodain.inspection.trees.SipContentFile;
+import org.roda.rodain.inspection.trees.SipContentRepresentation;
+import org.roda.rodain.inspection.trees.SipDataTreeView;
+import org.roda.rodain.inspection.trees.SipDocumentationTreeView;
 import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.TreeNode;
@@ -48,20 +45,60 @@ import org.roda.rodain.sip.SipRepresentation;
 import org.roda.rodain.source.ui.SourceTreeCell;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
-import org.roda.rodain.utils.*;
+import org.roda.rodain.utils.FontAwesomeImageCreator;
+import org.roda.rodain.utils.HelpToken;
+import org.roda.rodain.utils.ModalStage;
+import org.roda.rodain.utils.UIPair;
+import org.roda.rodain.utils.Utils;
 import org.roda_project.commons_ip.model.IPContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.Property;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
+import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Control;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Separator;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.Tooltip;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.cell.ComboBoxListCell;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.TransferMode;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.util.StringConverter;
+import javafx.util.converter.LocalDateStringConverter;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -151,6 +188,18 @@ public class InspectionPane extends BorderPane {
     topBox.getChildren().addAll(title, topSubtitle);
     topBox.setPadding(new Insets(15, 15, 15, 15));
     topBox.setAlignment(Pos.CENTER_LEFT);
+
+    HelpToken titlePopOver = new HelpToken(I18n.help("inspectionpane"), PopOver.ArrowLocation.TOP_CENTER, 85);
+    topBox.setOnMouseEntered(event -> {
+      if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled")) && !titlePopOver.isShowing()) {
+        titlePopOver.show(topBox);
+      }
+    });
+    topBox.setOnMouseExited(event -> {
+      if(titlePopOver.isShowing()) {
+        titlePopOver.hide();
+      }
+    });
   }
 
   private void createMetadata() {
@@ -358,7 +407,7 @@ public class InspectionPane extends BorderPane {
     });
     metadataTopBox.getChildren().add(titleLabel);
 
-    HelpToken popOver = new HelpToken(I18n.help("inspectionPanel.metadata"), PopOver.ArrowLocation.RIGHT_TOP, 390);
+    HelpToken popOver = new HelpToken(I18n.help("inspectionPanel.metadata"), PopOver.ArrowLocation.TOP_CENTER, 390);
     metadataTopBox.setOnMouseEntered(event -> {
       if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled")) && !popOver.isShowing()) {
         popOver.show(metadataTopBox);
@@ -868,7 +917,7 @@ public class InspectionPane extends BorderPane {
     });
     createDocsBottom();
 
-    HelpToken popOver = new HelpToken(I18n.help("inspectionPanel.data"), PopOver.ArrowLocation.RIGHT_CENTER, 275);
+    HelpToken popOver = new HelpToken(I18n.help("inspectionPanel.data"), PopOver.ArrowLocation.TOP_CENTER, 275);
     top.setOnMouseEntered(event -> {
       if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled")) && !popOver.isShowing()) {
         popOver.show(top);
@@ -1214,7 +1263,7 @@ public class InspectionPane extends BorderPane {
     title.getStyleClass().add("title");
     top.getChildren().add(title);
 
-    HelpToken popOver = new HelpToken(I18n.help("inspectionPanel.associations"), PopOver.ArrowLocation.BOTTOM_CENTER, 90);
+    HelpToken popOver = new HelpToken(I18n.help("inspectionPanel.associations"), PopOver.ArrowLocation.TOP_CENTER, 90);
     top.setOnMouseEntered(event -> {
       if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled")) && !popOver.isShowing()) {
         popOver.show(top);

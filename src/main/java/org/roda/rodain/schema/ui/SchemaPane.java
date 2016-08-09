@@ -1,30 +1,19 @@
 package org.roda.rodain.schema.ui;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.*;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.TransferMode;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
-import javafx.scene.text.TextFlow;
-import javafx.stage.FileChooser;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.controlsfx.control.PopOver;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.Footer;
@@ -45,12 +34,41 @@ import org.roda.rodain.utils.HelpToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.Separator;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
+import javafx.scene.text.TextFlow;
+import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -116,6 +134,18 @@ public class SchemaPane extends BorderPane {
     topBox.setPadding(new Insets(15, 15, 15, 15));
     topBox.setAlignment(Pos.CENTER_LEFT);
     topBox.getChildren().add(title);
+
+    HelpToken titlePopOver = new HelpToken(I18n.help("schemapane"), PopOver.ArrowLocation.LEFT_TOP, 525);
+    topBox.setOnMouseEntered(event -> {
+      if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled")) && !titlePopOver.isShowing()) {
+        titlePopOver.show(topBox);
+      }
+    });
+    topBox.setOnMouseExited(event -> {
+      if(titlePopOver.isShowing()) {
+        titlePopOver.hide();
+      }
+    });
   }
 
   private void createCenterHelp() {
@@ -139,18 +169,6 @@ public class SchemaPane extends BorderPane {
     title.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().addAll(title);
 
-    HelpToken popOver = new HelpToken(I18n.help("secondStep"), PopOver.ArrowLocation.LEFT_CENTER, 205);
-    titleBox.setOnMouseEntered(event -> {
-      if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled")) && !popOver.isShowing()) {
-        popOver.show(titleBox);
-      }
-    });
-    titleBox.setOnMouseExited(event -> {
-      if(popOver.isShowing()) {
-        popOver.hide();
-      }
-    });
-
     HBox loadBox = new HBox();
     loadBox.setAlignment(Pos.CENTER);
     Button load = new Button(I18n.t("load"));
@@ -160,6 +178,18 @@ public class SchemaPane extends BorderPane {
     load.setOnAction(event -> loadClassificationSchema());
     load.getStyleClass().add("helpButton");
     loadBox.getChildren().add(load);
+
+    HelpToken popOver = new HelpToken(I18n.help("secondStep"), PopOver.ArrowLocation.LEFT_CENTER, 205);
+    load.setOnMouseEntered(event -> {
+      if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled")) && !popOver.isShowing()) {
+        popOver.show(load);
+      }
+    });
+    load.setOnMouseExited(event -> {
+      if(popOver.isShowing()) {
+        popOver.hide();
+      }
+    });
 
     Hyperlink link = new Hyperlink(I18n.t("SchemaPane.create"));
     link.setOnAction(event -> createClassificationScheme());
@@ -505,7 +535,7 @@ public class SchemaPane extends BorderPane {
 
     bottom.getChildren().addAll(addLevel, removeLevel, space, export);
 
-    HelpToken popOver = new HelpToken(I18n.help("export"), PopOver.ArrowLocation.BOTTOM_CENTER, 225);
+    HelpToken popOver = new HelpToken(I18n.help("export"), PopOver.ArrowLocation.LEFT_BOTTOM, 225);
     export.setOnMouseEntered(event -> {
       if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled")) && !popOver.isShowing()) {
         popOver.show(export);
