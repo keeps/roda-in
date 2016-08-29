@@ -1,9 +1,18 @@
 package org.roda.rodain.source.ui.items;
 
-import javafx.application.Platform;
-import javafx.concurrent.Task;
-import javafx.scene.control.TreeItem;
-import javafx.scene.image.Image;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.stream.Collectors;
+
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.filters.IgnoredFilter;
@@ -12,12 +21,10 @@ import org.roda.rodain.source.representation.SourceItem;
 import org.roda.rodain.source.ui.ExpandedEventHandler;
 import org.roda.rodain.source.ui.FileExplorerPane;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.stream.Collectors;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
+import javafx.scene.control.TreeItem;
+import javafx.scene.image.Image;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -48,7 +55,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
     this.directory = directory;
     this.fullPath = file.toString();
     this.parent = parent;
-    state = SourceTreeItemState.NORMAL;
+    state = PathCollection.getState(fullPath);
     ignored = new HashSet<>();
     mapped = new HashSet<>();
     files = new HashSet<>();
