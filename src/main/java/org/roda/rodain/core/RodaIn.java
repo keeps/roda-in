@@ -523,17 +523,20 @@ public class RodaIn extends Application {
   }
 
   private void updateSelectedLanguageMenu() {
-    switch (AppProperties.getLocale().toLanguageTag()) {
+    switch (AppProperties.getLocale().toLanguageTag().toLowerCase()) {
       case "en":
         langEN.setSelected(true);
         break;
+      case "pt-pt":
+      case "pt-br":
       case "pt":
         langPT.setSelected(true);
         break;
       case "hu":
         langHU.setSelected(true);
         break;
-      case "es-CL":
+      case "es":
+      case "es-cl":
         langES_CL.setSelected(true);
         break;
       default:
@@ -554,7 +557,6 @@ public class RodaIn extends Application {
       AppProperties.saveAppConfig();
       restartApplication();
     } else {
-
       updateSelectedLanguageMenu();
     }
   }
