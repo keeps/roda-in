@@ -1,9 +1,14 @@
 package org.roda.rodain.source.ui.items;
 
+import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
+
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.WatchKey;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,6 +25,8 @@ import org.roda.rodain.source.representation.SourceDirectory;
 import org.roda.rodain.source.representation.SourceItem;
 import org.roda.rodain.source.ui.ExpandedEventHandler;
 import org.roda.rodain.source.ui.FileExplorerPane;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -31,6 +38,7 @@ import javafx.scene.image.Image;
  * @since 17-09-2015.
  */
 public class SourceTreeDirectory extends SourceTreeItem {
+  private static final Logger LOGGER = LoggerFactory.getLogger(SourceTreeDirectory.class.getName());
   public static final Image folderCollapseImage = new Image(ClassLoader.getSystemResourceAsStream("icons/folder.png"));
   public static final Image folderExpandImage = new Image(
     ClassLoader.getSystemResourceAsStream("icons/folder-open.png"));
@@ -39,6 +47,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
   public boolean expanded = false;
   private SourceDirectory directory;
   private String fullPath;
+  private WatchKey watchKey;
 
   private HashSet<SourceTreeItem> ignored;
   private HashSet<SourceTreeItem> mapped;
@@ -475,6 +484,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
    */
   public void loadMore() {
     final ArrayList<TreeItem<String>> children = new ArrayList<>(getChildren());
+    addToWatcher();
 
     // Remove "loading" items
     List<Object> toRemove = children.stream()
@@ -545,6 +555,16 @@ public class SourceTreeDirectory extends SourceTreeItem {
     PathCollection.addItem(item);
   }
 
+  public void addChild(String sourceItem){
+    final ArrayList<TreeItem<String>> children = new ArrayList<>(getChildren());
+
+    directory.loadChild(Paths.get(sourceItem));
+
+    addChild(children, sourceItem);
+    Collections.sort(children, comparator);
+    getChildren().setAll(children);
+  }
+
   private void addChildIgnored(List children, SourceTreeItem item) {
     if (FileExplorerPane.isShowIgnored()) {
       if (item instanceof SourceTreeFile && !FileExplorerPane.isShowFiles()) {
@@ -563,6 +583,13 @@ public class SourceTreeDirectory extends SourceTreeItem {
         children.add(item);
     } else
       mapped.add(item);
+  }
+
+  public void removeChild(SourceTreeItem item){
+    getChildren().remove(item);
+    mapped.remove(item);
+    ignored.remove(item);
+    files.remove(item);
   }
 
   /**
@@ -631,5 +658,15 @@ public class SourceTreeDirectory extends SourceTreeItem {
       if (!toRemove.isEmpty() || modified)
         sortChildren();
     });
+  }
+
+  private void addToWatcher(){
+    try {
+      if(watchKey == null) {
+        watchKey = directory.getPath().register(FileExplorerPane.watcher, ENTRY_CREATE, ENTRY_DELETE);
+      }
+    } catch (IOException e) {
+      LOGGER.warn("Can't register path to watcher. Will be unable to update the directory: " + directory.getPath(), e);
+    }
   }
 }

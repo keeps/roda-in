@@ -1,8 +1,5 @@
 package org.roda.rodain.source.representation;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.DirectoryStream;
@@ -12,12 +9,16 @@ import java.util.Iterator;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 17-09-2015.
  */
 public class SourceDirectory implements SourceItem {
   private static final Logger LOGGER = LoggerFactory.getLogger(SourceDirectory.class.getName());
+  private static final int LOADING_SIZE = 100;
   private Path path;
   private int itemsToLoad = 0;
   private TreeMap<String, SourceItem> children;
@@ -145,7 +146,7 @@ public class SourceDirectory implements SourceItem {
     int loaded = 0, childrenSize = children.size();
     TreeMap<String, SourceItem> result = new TreeMap<>();
     if (iterator != null) {
-      itemsToLoad += 100;
+      itemsToLoad += LOADING_SIZE;
       while (iterator.hasNext() && (childrenSize + loaded < itemsToLoad)) {
         Path file = iterator.next();
         if (!showFiles && !Files.isDirectory(file))
@@ -162,7 +163,7 @@ public class SourceDirectory implements SourceItem {
     return result;
   }
 
-  private SourceItem loadChild(Path file) {
+  public SourceItem loadChild(Path file) {
     SourceItem item;
     if (Files.isDirectory(file)) {
       item = new SourceDirectory(file, showFiles);

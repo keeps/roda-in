@@ -185,6 +185,14 @@ public class PathCollection {
     return items.get(path);
   }
 
+  public static void removePathAndItem(String path){
+    states.remove(path);
+    items.remove(path);
+
+    Map<String, SourceTreeItemState> children = getAllChildren(path);
+    children.keySet().forEach(PathCollection::removePathAndItem);
+  }
+
   private static void verifyStateAncestors(String path) {
     int index = 0, end = path.length();
     String separator = File.separator;

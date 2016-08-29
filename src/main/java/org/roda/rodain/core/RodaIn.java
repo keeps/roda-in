@@ -592,6 +592,7 @@ public class RodaIn extends Application {
     if (schemePane.isModifiedPlan()) {
       exportCS(AppProperties.getRodainPath().resolve(".plan.temp").toString());
     }
+    fileExplorer.closeWatcher();
     VisitorStack.end();
     Footer.getInstance().cancelMemoryAutoUpdater();
     Platform.exit();

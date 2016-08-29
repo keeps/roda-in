@@ -1,8 +1,11 @@
 package org.roda.rodain.source.ui;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.WatchService;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,6 +28,8 @@ import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.HelpPopOver;
 import org.roda.rodain.utils.Utils;
 import org.roda.rodain.utils.WalkFileTree;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -56,6 +61,8 @@ import javafx.stage.StageStyle;
  * @since 24-09-2015.
  */
 public class FileExplorerPane extends BorderPane implements Observer {
+  private static final Logger LOGGER = LoggerFactory.getLogger(FileExplorerPane.class.getName());
+  public static WatchService watcher;
   private Stage stage;
   private HBox top;
   private StackPane fileExplorer;
@@ -69,7 +76,9 @@ public class FileExplorerPane extends BorderPane implements Observer {
   private Map<String, SourceTreeDirectory> realRoots;
   private boolean selectedIsIgnored;
 
+  // Threads
   private ComputeDirectorySize computeSize;
+  private DirectoryWatcher directoryWatcher;
 
   // Filter control
   private static boolean showFiles = true;
@@ -90,6 +99,8 @@ public class FileExplorerPane extends BorderPane implements Observer {
     super();
     this.stage = stage;
     setPadding(new Insets(10, 10, 0, 10));
+
+    createWatcher();
 
     createCenterHelp();
     createTop();
@@ -550,6 +561,24 @@ public class FileExplorerPane extends BorderPane implements Observer {
       ignore.setText(I18n.t("SourceTreeCell.remove"));
     } else {
       ignore.setText(I18n.t("ignore"));
+    }
+  }
+
+  private void createWatcher(){
+    try {
+      watcher = FileSystems.getDefault().newWatchService();
+      directoryWatcher = new DirectoryWatcher();
+      directoryWatcher.start();
+    } catch (IOException e) {
+      LOGGER.warn("Can't create a WatchService. The application will be unable to update the files of the file explorer", e);
+    }
+  }
+
+  public void closeWatcher(){
+    try {
+      watcher.close();
+    } catch (IOException e) {
+      LOGGER.debug("Error closing file explorer watcher", e);
     }
   }
 }
