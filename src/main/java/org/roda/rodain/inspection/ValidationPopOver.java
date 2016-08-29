@@ -1,5 +1,13 @@
 package org.roda.rodain.inspection;
 
+import java.io.IOException;
+
+import org.controlsfx.control.PopOver;
+import org.roda.rodain.core.I18n;
+import org.roda.rodain.utils.FontAwesomeImageCreator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -11,12 +19,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import org.controlsfx.control.PopOver;
-import org.roda.rodain.utils.FontAwesomeImageCreator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -49,7 +51,7 @@ public class ValidationPopOver extends PopOver {
     content.setPadding(new Insets(5, 15, 5, 15));
     content.setAlignment(Pos.CENTER);
     HBox.setHgrow(content, Priority.ALWAYS);
-    Label title = new Label("Valid metadata!");
+    Label title = new Label(I18n.t("validMetadata"));
     title.setStyle("-fx-font-size: 16px");
     ImageView iv = new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CHECK, Color.GREEN, 32));
     content.getChildren().addAll(title, iv);
@@ -68,7 +70,7 @@ public class ValidationPopOver extends PopOver {
     HBox titleBox = new HBox(10);
     titleBox.setAlignment(Pos.CENTER);
     HBox.setHgrow(titleBox, Priority.ALWAYS);
-    Label title = new Label("Invalid metadata!");
+    Label title = new Label(I18n.t("invalidMetadata"));
     title.setStyle("-fx-font-size: 16px");
     ImageView iv = new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.TIMES, Color.RED, 32));
     titleBox.getChildren().addAll(title, iv);
