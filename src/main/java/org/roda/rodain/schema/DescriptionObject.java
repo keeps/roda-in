@@ -1,18 +1,27 @@
 package org.roda.rodain.schema;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.github.jknack.handlebars.Handlebars;
-import com.github.jknack.handlebars.Template;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.UUID;
+
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.rules.MetadataOptions;
-import org.roda.rodain.rules.TemplateToForm;
 import org.roda.rodain.sip.MetadataValue;
 import org.roda.rodain.utils.Utils;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.github.jknack.handlebars.Handlebars;
+import com.github.jknack.handlebars.Template;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -127,7 +136,7 @@ public class DescriptionObject extends Observable {
   @JsonIgnore
   public String getMetadataWithReplaces(DescObjMetadata dom) {
     String content = dom.getContentDecoded();
-    if (content != null) {
+    if (content != null && dom.getCreatorOption() == MetadataOptions.TEMPLATE) {
       try {
         Handlebars handlebars = new Handlebars();
         Map<String, String> data = new HashMap<>();

@@ -1,5 +1,16 @@
 package org.roda.rodain.creation;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.io.FileUtils;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
@@ -7,23 +18,23 @@ import org.roda.rodain.creation.ui.CreationModalPreparation;
 import org.roda.rodain.creation.ui.CreationModalProcessing;
 import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.TreeNode;
+import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.sip.SipPreview;
 import org.roda.rodain.sip.SipRepresentation;
-import org.roda.rodain.schema.DescObjMetadata;
-import org.roda_project.commons_ip.model.*;
+import org.roda_project.commons_ip.model.IPContentType;
+import org.roda_project.commons_ip.model.IPDescriptiveMetadata;
+import org.roda_project.commons_ip.model.IPFile;
+import org.roda_project.commons_ip.model.IPRepresentation;
+import org.roda_project.commons_ip.model.MetadataType;
+import org.roda_project.commons_ip.model.RepresentationContentType;
+import org.roda_project.commons_ip.model.SIP;
+import org.roda_project.commons_ip.model.SIPObserver;
 import org.roda_project.commons_ip.model.impl.eark.EARKSIP;
 import org.roda_project.commons_ip.utils.IPEnums;
 import org.roda_project.commons_ip.utils.SIPException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -85,11 +96,9 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
         String metadataTypeString = AppProperties.getConfig(keyMetadataTypeValue);
         MetadataType metadataType = new MetadataType(MetadataType.MetadataTypeEnum.OTHER);
 
-        if (descObjMetadata.getCreatorOption() == MetadataOptions.TEMPLATE) {
-          Path schemaPath = AppProperties.getSchemaPath(descObjMetadata.getMetadataType());
-          if (schemaPath != null)
-            earkSip.addSchema(new IPFile(schemaPath));
-        }
+        Path schemaPath = AppProperties.getSchemaPath(descObjMetadata.getMetadataType());
+        if (schemaPath != null)
+          earkSip.addSchema(new IPFile(schemaPath));
         // Check if one of the values from the enum can be used
         if (metadataTypeString != null) {
           for (MetadataType.MetadataTypeEnum val : MetadataType.MetadataTypeEnum.values()) {
