@@ -1,13 +1,10 @@
 package org.roda.rodain.core;
 
-import javafx.application.Platform;
-import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.control.TreeItem;
-import javafx.scene.image.WritableImage;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
-import javafx.stage.Stage;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,14 +18,12 @@ import org.roda.rodain.source.ui.FileExplorerPane;
 import org.roda.rodain.testing.Utils;
 import org.testfx.framework.junit.ApplicationTest;
 
-import javax.imageio.ImageIO;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
+import javafx.application.Platform;
+import javafx.scene.control.TreeItem;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.stage.Stage;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -83,6 +78,7 @@ public class MainTest extends ApplicationTest {
     sleep(5000);
     clickOn(I18n.t("SchemaPane.add"));
     sleep(2000);
+    Utils.takeScreenshot(stage, "clickOnSchemaNode.png");
     clickOn(".schemaNode");
     sleep(1000);
     clickOn("#descObjTitle");
@@ -160,6 +156,7 @@ public class MainTest extends ApplicationTest {
     sleep(5000); // wait for the tree to be created
     doubleClickOn("dir4");
     sleep(2000); // wait for the node to expand
+    Utils.takeScreenshot(stage, "beforeDirB.png");
     drag("dirB").dropTo("UCP");
     sleep(2000); // wait for the modal to open
     clickOn("#assoc3");
