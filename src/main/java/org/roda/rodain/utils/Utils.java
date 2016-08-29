@@ -1,10 +1,11 @@
 package org.roda.rodain.utils;
 
-import net.sf.saxon.s9api.*;
-import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
@@ -13,7 +14,12 @@ import java.nio.file.Paths;
 import java.util.Scanner;
 
 import javax.xml.XMLConstants;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -29,23 +35,7 @@ import org.roda.rodain.utils.validation.ResourceResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
-
-import javax.xml.XMLConstants;
-import javax.xml.transform.*;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
-import java.awt.*;
-import java.io.*;
-import java.net.URI;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import org.xml.sax.SAXParseException;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -150,7 +140,7 @@ public class Utils {
     return true;
   }
 
-  public static void indentXML(Reader input, Writer output) throws TransformerException {
+  public static void indentXML(Reader input, Writer output) throws TransformerException, SAXParseException {
     Transformer transformer = TransformerFactory.newInstance().newTransformer();
     transformer.setOutputProperty(OutputKeys.INDENT, "yes");
     transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
@@ -165,7 +155,7 @@ public class Utils {
     Writer output = new StringWriter();
     try {
       indentXML(input, output);
-    } catch (TransformerException e) {
+    } catch (TransformerException | SAXParseException e) {
       LOGGER.warn("Could not indent XML", e);
       return xml;
     }
