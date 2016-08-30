@@ -516,9 +516,9 @@ public class RodaIn extends Application {
     final MenuItem templatingHelp = new MenuItem(I18n.t("templatingSystemHelp.header"));
     templatingHelp.setOnAction(event -> new TemplatingSystemHelpPanel(stage));
 
-    menuHelp.getItems().addAll(checkVersion, showHelp, templatingHelp);
+    menuHelp.getItems().addAll(language, checkVersion, showHelp, templatingHelp);
 
-    menu.getMenus().addAll(menuFile, menuEdit, menuClassScheme, menuView, language, menuHelp);
+    menu.getMenus().addAll(menuFile, menuEdit, menuClassScheme, menuView, menuHelp);
     mainPane.setTop(menu);
   }
 
