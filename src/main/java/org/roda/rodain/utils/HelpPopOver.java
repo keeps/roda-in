@@ -19,10 +19,12 @@ import javafx.scene.web.WebView;
  * @since 29-07-2016.
  */
 public class HelpPopOver extends PopOver {
+  private static int SHOWING_DELAY = 500;
+  private static int HIDING_DELAY = 200;
   private WebView webView = initializeWebView();
   private boolean onPopup = false, onTarget = false;
   private Node target;
-  private boolean hasHiddenScheduled = false;
+  private boolean hasHiddenScheduled = false, hasShowScheduled = false;
 
   private HelpPopOver(Node target, String content, PopOver.ArrowLocation arrowLocation, int maxHeight){
     super();
@@ -74,14 +76,22 @@ public class HelpPopOver extends PopOver {
   private void updatePopup(){
     if(onPopup || onTarget) {
       if(!isShowing()) {
-        show(target);
+        hasShowScheduled = true;
+        Timer timer = new Timer(SHOWING_DELAY, e -> {
+          if (onPopup || onTarget) {
+            Platform.runLater(() -> show(target));
+          }
+          hasShowScheduled = false;
+        });
+        timer.setRepeats(false); // Only execute once
+        timer.start();
       }
     }else{
       if(!hasHiddenScheduled) {
         hasHiddenScheduled = true;
-        Timer timer = new Timer(1000, e -> {
+        Timer timer = new Timer(HIDING_DELAY, e -> {
           if (!onPopup && !onTarget) {
-            hide();
+            Platform.runLater(() -> hide());
           }
           hasHiddenScheduled = false;
         });

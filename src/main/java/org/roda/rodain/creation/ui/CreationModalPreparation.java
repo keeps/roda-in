@@ -124,7 +124,7 @@ public class CreationModalPreparation extends BorderPane {
     if (this.selectedSIP == 0 || this.selectedSIP == this.allSIP)
       sipExportSwitch.setSelected(true);
 
-    itemExportSwitch = new ToggleSwitch(I18n.t("CreationModalPreparation.exportItems"));
+    itemExportSwitch = new ToggleSwitch(I18n.t("CreationModalPreparation.includeHierarchy"));
     itemExportSwitch.selectedProperty().addListener((o, old, newValue) ->
       setSelectedLabel(countLabel));
 

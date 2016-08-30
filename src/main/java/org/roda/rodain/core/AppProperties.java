@@ -1,5 +1,29 @@
 package org.roda.rodain.core;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import java.util.Set;
+
+import javax.swing.filechooser.FileSystemView;
+
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.io.FileUtils;
@@ -7,16 +31,6 @@ import org.roda.rodain.utils.FolderBasedUTF8Control;
 import org.roda.rodain.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.swing.filechooser.FileSystemView;
-import java.io.*;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -416,7 +430,17 @@ public class AppProperties {
   }
 
   public static String getAppConfig(String key){
-    return appConfig.getString(key);
+    Object res = null;
+    if (appConfig != null && appConfig.containsKey(key)) {
+      res = appConfig.getProperty(key);
+    }
+    if (res == null)
+      return null;
+    if (res instanceof String) {
+      return (String) res;
+    }
+    // if it isn't a string then it must be a list Ex: a,b,c,d
+    return String.join(",", (List<String>) res);
   }
 
   /**
