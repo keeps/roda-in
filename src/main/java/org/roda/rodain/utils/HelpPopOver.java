@@ -19,7 +19,7 @@ import javafx.scene.web.WebView;
  * @since 29-07-2016.
  */
 public class HelpPopOver extends PopOver {
-  private static int SHOWING_DELAY = 500;
+  private static int SHOWING_DELAY = 1000;
   private static int HIDING_DELAY = 200;
   private WebView webView = initializeWebView();
   private boolean onPopup = false, onTarget = false;
