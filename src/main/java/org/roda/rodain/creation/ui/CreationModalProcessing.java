@@ -2,26 +2,35 @@ package org.roda.rodain.creation.ui;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.core.I18n;
+import org.roda.rodain.creation.CreateSips;
+import org.roda.rodain.schema.DescriptionObject;
+import org.roda.rodain.utils.OpenPathInExplorer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.StageStyle;
-
-import org.roda.rodain.core.AppProperties;
-import org.roda.rodain.core.I18n;
-import org.roda.rodain.creation.CreateSips;
-import org.roda.rodain.schema.DescriptionObject;
-import org.roda.rodain.sip.SipPreview;
-import org.roda.rodain.utils.OpenPathInExplorer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -29,7 +38,9 @@ import org.slf4j.LoggerFactory;
  */
 public class CreationModalProcessing extends BorderPane {
   private static final Logger LOGGER = LoggerFactory.getLogger(CreationModalProcessing.class.getName());
-  private CreateSips creator;
+  private static final int MAX_COUNT_ERROR_MESSAGES = 5;
+  private static final long MAX_TIME_ERROR_MESSAGES = 10000;
+  private static CreateSips creator;
   private static CreationModalStage stage;
 
   // top
@@ -40,21 +51,25 @@ public class CreationModalProcessing extends BorderPane {
   private ProgressBar progress;
   private Label sipName, sipAction, eta, etaLabel, elapsedTime;
   private HBox etaBox;
-  private Timer timer;
+  private static Timer timer;
 
   private HBox finishedBox;
+  private static Stack<Long> errorMessages;
+  private static boolean displayErrorMessage;
 
   /**
    * Creates a pane to show the progress of the SIP exportation.
    *
-   * @param creator
+   * @param creatorArg
    *          The SIP creator object
    * @param stage
    *          The stage of the pane
    */
-  public CreationModalProcessing(CreateSips creator, CreationModalStage stage) {
-    this.creator = creator;
+  public CreationModalProcessing(CreateSips creatorArg, CreationModalStage stage) {
+    creator = creatorArg;
     CreationModalProcessing.stage = stage;
+    errorMessages = new Stack<>();
+    displayErrorMessage = true;
 
     etaFormatHour = String.format("< %%d %s ", I18n.t("CreationModalProcessing.hour"));
     etaFormatHours = String.format("< %%d %s ", I18n.t("CreationModalProcessing.hours"));
@@ -262,52 +277,83 @@ public class CreationModalProcessing extends BorderPane {
    */
   public static void showError(DescriptionObject descriptionObject, Exception ex) {
     Platform.runLater(() -> {
-      Alert alert = new Alert(Alert.AlertType.ERROR);
-      alert.initStyle(StageStyle.UNDECORATED);
-      alert.initOwner(stage);
-      alert.setTitle(I18n.t("CreationModalProcessing.alert.title"));
-      String header = String.format(I18n.t("CreationModalProcessing.alert.header"), descriptionObject.getTitle());
-      alert.setHeaderText(header);
-      StringBuilder content = new StringBuilder(ex.getLocalizedMessage());
-      content.append("\n");
-      content.append(I18n.t("CreationModalProcessing.cause"));
-      if (ex.getCause() != null) {
-        content.append(": ").append(ex.getCause().getLocalizedMessage());
+      if(displayErrorMessage) {
+        addErrorMessage();
+
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.initStyle(StageStyle.UNDECORATED);
+        alert.initOwner(stage);
+        alert.setTitle(I18n.t("CreationModalProcessing.alert.title"));
+        String header = String.format(I18n.t("CreationModalProcessing.alert.header"), descriptionObject.getTitle());
+        alert.setHeaderText(header);
+        StringBuilder content = new StringBuilder(ex.getLocalizedMessage());
+        content.append("\n");
+        content.append(I18n.t("CreationModalProcessing.cause"));
+        if (ex.getCause() != null) {
+          content.append(": ").append(ex.getCause().getLocalizedMessage());
+        }
+        alert.setContentText(content.toString());
+        alert.getDialogPane().setStyle(AppProperties.getStyle("export.alert"));
+
+        // Create expandable Exception.
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        pw.println(ex.getMessage());
+        for (StackTraceElement ste : ex.getStackTrace()) {
+          pw.println("\t" + ste);
+        }
+        String exceptionText = sw.toString();
+
+        Label label = new Label(I18n.t("CreationModalProcessing.alert.stacktrace"));
+
+        TextArea textArea = new TextArea(exceptionText);
+        textArea.setEditable(false);
+        textArea.minWidthProperty().bind(alert.getDialogPane().widthProperty().subtract(20));
+        textArea.maxWidthProperty().bind(alert.getDialogPane().widthProperty().subtract(20));
+
+        GridPane expContent = new GridPane();
+        expContent.setMaxWidth(Double.MAX_VALUE);
+        expContent.add(label, 0, 0);
+        expContent.add(textArea, 0, 1);
+
+        textArea.minHeightProperty().bind(expContent.heightProperty().subtract(20));
+        // Set expandable Exception into the dialog pane.
+        alert.getDialogPane().setExpandableContent(expContent);
+        alert.getDialogPane().minWidthProperty().bind(stage.widthProperty());
+        alert.getDialogPane().minHeightProperty().bind(stage.heightProperty());
+
+        // Without this setStyle the pane won't resize correctly. Black magic...
+        alert.getDialogPane().setStyle(AppProperties.getStyle("creationmodalprocessing.blackmagic"));
+
+        alert.show();
+        checkIfTooManyErrors();
       }
-      alert.setContentText(content.toString());
-      alert.getDialogPane().setStyle(AppProperties.getStyle("export.alert"));
-
-      // Create expandable Exception.
-      StringWriter sw = new StringWriter();
-      PrintWriter pw = new PrintWriter(sw);
-      pw.println(ex.getMessage());
-      for (StackTraceElement ste : ex.getStackTrace()) {
-        pw.println("\t" + ste);
-      }
-      String exceptionText = sw.toString();
-
-      Label label = new Label(I18n.t("CreationModalProcessing.alert.stacktrace"));
-
-      TextArea textArea = new TextArea(exceptionText);
-      textArea.setEditable(false);
-      textArea.minWidthProperty().bind(alert.getDialogPane().widthProperty().subtract(20));
-      textArea.maxWidthProperty().bind(alert.getDialogPane().widthProperty().subtract(20));
-
-      GridPane expContent = new GridPane();
-      expContent.setMaxWidth(Double.MAX_VALUE);
-      expContent.add(label, 0, 0);
-      expContent.add(textArea, 0, 1);
-
-      textArea.minHeightProperty().bind(expContent.heightProperty().subtract(20));
-      // Set expandable Exception into the dialog pane.
-      alert.getDialogPane().setExpandableContent(expContent);
-      alert.getDialogPane().minWidthProperty().bind(stage.widthProperty());
-      alert.getDialogPane().minHeightProperty().bind(stage.heightProperty());
-
-      // Without this setStyle the pane won't resize correctly. Black magic...
-      alert.getDialogPane().setStyle(AppProperties.getStyle("creationmodalprocessing.blackmagic"));
-
-      alert.show();
     });
+  }
+
+  private static void checkIfTooManyErrors(){
+    long limit = System.currentTimeMillis() - MAX_TIME_ERROR_MESSAGES;
+    boolean allAfterLimit = errorMessages.size() == MAX_COUNT_ERROR_MESSAGES &&
+        errorMessages.stream().allMatch(messageTime -> messageTime > limit);
+    if(allAfterLimit){
+      displayErrorMessage = false;
+      Alert dlg = new Alert(Alert.AlertType.INFORMATION);
+      dlg.initStyle(StageStyle.UNDECORATED);
+      dlg.setHeaderText(I18n.t("CreationModalProcessing.errorMessagesStopped.header"));
+      dlg.setTitle("");
+      dlg.setContentText(I18n.t("CreationModalProcessing.errorMessagesStopped.content"));
+      dlg.initModality(Modality.APPLICATION_MODAL);
+      dlg.initOwner(stage);
+
+      dlg.show();
+    }
+  }
+
+  private static void addErrorMessage(){
+    //If the stack is too big, remove elements until it's the right size.
+    while (errorMessages.size() >= MAX_COUNT_ERROR_MESSAGES) {
+      errorMessages.remove(0);
+    }
+    errorMessages.push(System.currentTimeMillis());
   }
 }

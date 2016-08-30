@@ -14,10 +14,10 @@ import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 
 /**
- * Created by apereira on 29-08-2016.
+ * @author Andre Pereira apereira@keep.pt
+ * @since 29-08-2016.
  */
 public class DirectoryWatcher extends Thread {
-
 
   @Override
   public void run() {
