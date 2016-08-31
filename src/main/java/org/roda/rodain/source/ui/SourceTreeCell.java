@@ -1,13 +1,22 @@
 package org.roda.rodain.source.ui;
 
-import javafx.scene.control.*;
+import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.core.I18n;
+import org.roda.rodain.source.ui.items.SourceTreeDirectory;
+import org.roda.rodain.source.ui.items.SourceTreeFile;
+import org.roda.rodain.source.ui.items.SourceTreeItem;
+import org.roda.rodain.source.ui.items.SourceTreeItemState;
+import org.roda.rodain.source.ui.items.SourceTreeLoadMore;
+import org.roda.rodain.source.ui.items.SourceTreeLoading;
+
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TreeCell;
+import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-
-import org.roda.rodain.core.AppProperties;
-import org.roda.rodain.core.I18n;
-import org.roda.rodain.source.ui.items.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -16,6 +25,9 @@ import org.roda.rodain.source.ui.items.*;
 public class SourceTreeCell extends TreeCell<String> {
   private ContextMenu menu = new ContextMenu();
 
+  /**
+   * Instantiates a new SourceTreeCell object.
+   */
   public SourceTreeCell() {
     MenuItem removeIgnore = new MenuItem(I18n.t("SourceTreeCell.remove"));
     removeIgnore.setId("removeIgnore");

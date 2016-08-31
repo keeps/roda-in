@@ -1,13 +1,13 @@
 package org.roda.rodain.utils.validation;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.ls.LSInput;
-
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.ls.LSInput;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -112,13 +112,5 @@ public class Input implements LSInput {
   @Override
   public void setSystemId(String systemId) {
     this.systemId = systemId;
-  }
-
-  public BufferedInputStream getInputStream() {
-    return inputStream;
-  }
-
-  public void setInputStream(BufferedInputStream inputStream) {
-    this.inputStream = inputStream;
   }
 }

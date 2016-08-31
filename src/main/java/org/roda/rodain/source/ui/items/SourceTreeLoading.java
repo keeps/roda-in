@@ -7,6 +7,9 @@ import org.roda.rodain.core.I18n;
  * @since 17-09-2015.
  */
 public class SourceTreeLoading extends SourceTreeItem {
+  /**
+   * Instantiates a new SourceTreeLoading object.
+   */
   public SourceTreeLoading() {
     super(I18n.t("SourceTreeLoading.title"), null);
   }

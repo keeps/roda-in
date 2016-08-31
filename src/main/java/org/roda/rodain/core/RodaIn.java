@@ -679,14 +679,14 @@ public class RodaIn extends Application {
    *         pane
    */
   public static Map<DescriptionObject, List<String>> getSelectedDescriptionObjects() {
-    return schemePane.getSelectedSipPreviews();
+    return schemePane.getSelectedDescriptionObjects();
   }
 
   /**
    * @return The Map with all the SIPs of all the SchemaNodes in the scheme pane
    */
   public static Map<DescriptionObject, List<String>> getAllDescriptionObjects() {
-    return schemePane.getAllSipPreviews();
+    return schemePane.getAllDescriptionObjects();
   }
 
   /**

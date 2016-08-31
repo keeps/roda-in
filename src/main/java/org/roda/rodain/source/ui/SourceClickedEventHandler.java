@@ -1,11 +1,15 @@
 package org.roda.rodain.source.ui;
 
+import org.roda.rodain.source.ui.items.SourceTreeDirectory;
+import org.roda.rodain.source.ui.items.SourceTreeFile;
+import org.roda.rodain.source.ui.items.SourceTreeItemState;
+import org.roda.rodain.source.ui.items.SourceTreeLoadMore;
+import org.roda.rodain.source.ui.items.SourceTreeLoading;
+
 import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
-
-import org.roda.rodain.source.ui.items.*;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -15,6 +19,10 @@ public class SourceClickedEventHandler implements EventHandler<MouseEvent> {
   private TreeView<String> treeView;
   private FileExplorerPane fep;
 
+  /**
+   * Instantiates a new SourceClickedEventHandler object.
+   * @param pane The application's file explorer
+   */
   public SourceClickedEventHandler(FileExplorerPane pane) {
     this.treeView = pane.getTreeView();
     fep = pane;

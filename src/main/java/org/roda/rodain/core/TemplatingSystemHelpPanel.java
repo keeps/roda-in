@@ -13,6 +13,10 @@ import javafx.stage.StageStyle;
 public class TemplatingSystemHelpPanel extends Alert{
   private WebView webView;
 
+  /**
+   * Instantiates a new TemplatingSystemHelpPanel object.
+   * @param primaryStage The parent stage of the help panel.
+   */
   public TemplatingSystemHelpPanel(Stage primaryStage){
     super(AlertType.INFORMATION);
 

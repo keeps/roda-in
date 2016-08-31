@@ -577,6 +577,9 @@ public class SchemaPane extends BorderPane {
     treeView.getSelectionModel().clearSelection();
   }
 
+  /**
+   * Creates a new classification scheme and updates the UI.
+   */
   public void createClassificationScheme() {
     if (!confirmUpdate()) {
       return;
@@ -630,6 +633,10 @@ public class SchemaPane extends BorderPane {
     return newNode;
   }
 
+  /**
+   * Starts the association process.
+   * @see #startAssociation()
+   */
   public void startAssociation() {
     if (hasClassificationScheme.get()) {
       TreeItem<String> selected = getSelectedItem();
@@ -640,6 +647,10 @@ public class SchemaPane extends BorderPane {
     }
   }
 
+  /**
+   * Starts the association process by getting the currently selected items from the file explorer and initializing the modal that creates the association rule.
+   * @param descObj
+   */
   public void startAssociation(SchemaNode descObj) {
     Set<SourceTreeItem> sourceSet = RodaIn.getSourceSelectedItems();
     boolean valid = true;
@@ -853,10 +864,16 @@ public class SchemaPane extends BorderPane {
     return result;
   }
 
+  /**
+   * Shows the plan tree.
+   */
   public void showTree() {
     setCenter(treeBox);
   }
 
+  /**
+   * Shows the help panel.
+   */
   public void showHelp() {
     rootNode.getChildren().clear();
     setTop(new HBox());
@@ -879,19 +896,33 @@ public class SchemaPane extends BorderPane {
     return treeView;
   }
 
+  /**
+   * @return True if the plan has been modified, false otherwise.
+   */
   public boolean isModifiedPlan() {
     return modifiedPlan;
   }
 
+  /**
+   * Sets the modifiedPlan variable.
+   * @param b The new value.
+   */
   public void setModifiedPlan(boolean b) {
     modifiedPlan = b;
   }
 
+  /**
+   * @return The property which can be used to know if a classification scheme is present or not.
+   */
   public BooleanProperty hasClassificationScheme() {
     return hasClassificationScheme;
   }
 
-  public Map<DescriptionObject, List<String>> getAllSipPreviews() {
+  /**
+   * @return A map with all the description objects of the tree (not only the SIPs but also the hierarchy).
+   * Each key is a description object and each value is a list of that object's ancestors IDs.
+   */
+  public Map<DescriptionObject, List<String>> getAllDescriptionObjects() {
     Set<SchemaNode> localSchemaNodes = new HashSet<>(schemaNodes);
     localSchemaNodes.add(rootNode);
     Map<SipPreview, List<String>> sipsMap = new HashMap<>();
@@ -912,9 +943,10 @@ public class SchemaPane extends BorderPane {
   }
 
   /**
-   * @return The Map with the SIPs of all the SchemaNodes in the TreeView
+   * @return A map with the selected description objects of the tree (not only the SIPs but also the hierarchy).
+   * Each key is a description object and each value is a list of that object's ancestors IDs.
    */
-  public Map<DescriptionObject, List<String>> getSelectedSipPreviews() {
+  public Map<DescriptionObject, List<String>> getSelectedDescriptionObjects() {
     Map<SipPreview, List<String>> sipsMap = new HashMap<>();
     Map<DescriptionObject, List<String>> descObjsMap = new HashMap<>();
 
@@ -934,7 +966,7 @@ public class SchemaPane extends BorderPane {
       }
     }
     if (sipsMap.isEmpty() && descObjsMap.isEmpty()) {// add all the SIPs to the result map
-      descObjsMap = getAllSipPreviews();
+      descObjsMap = getAllDescriptionObjects();
     }else{
       // filter out the SIPs marked as "removed"
       sipsMap = sipsMap.entrySet().stream().parallel().filter(p -> !p.getKey().isRemoved()).collect(Collectors.toMap(
