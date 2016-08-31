@@ -78,7 +78,6 @@ public class MainTest extends ApplicationTest {
     sleep(5000);
     clickOn(I18n.t("SchemaPane.add"));
     sleep(2000);
-    Utils.takeScreenshot(stage, "clickOnSchemaNode.png");
     clickOn(".schemaNode");
     sleep(1000);
     clickOn("#descObjTitle");
@@ -156,7 +155,6 @@ public class MainTest extends ApplicationTest {
     sleep(5000); // wait for the tree to be created
     doubleClickOn("dir4");
     sleep(2000); // wait for the node to expand
-    Utils.takeScreenshot(stage, "beforeDirB.png");
     drag("dirB").dropTo("UCP");
     sleep(2000); // wait for the modal to open
     clickOn("#assoc3");

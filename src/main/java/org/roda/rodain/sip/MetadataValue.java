@@ -76,11 +76,20 @@ public class MetadataValue implements Comparable {
     return result;
   }
 
+  /**
+   * Returns a hash code value for the object.
+   * @return The Hash code.
+   */
   @Override
   public int hashCode() {
     return super.hashCode();
   }
 
+  /**
+   * Checks the equality of two objects
+   * @param obj The object that will be compared to the current object
+   * @return True if the obj reference equals the current object's reference or if both IDs are equal. False otherwise.
+   */
   @Override
   public boolean equals(Object obj) {
     if(obj == this){
@@ -93,6 +102,17 @@ public class MetadataValue implements Comparable {
     return false;
   }
 
+  /**
+   * Compares two MetadataValue objects.
+   *
+   * The first deciding factor is the "order" option, if it's defined on both objects.
+   * Objects with the "order" defined always appear first than objects without that property.
+   * In cases where both objects have an "order", the parsed integer of both values is compared.
+   *
+   * When neither object has the "order" option defined, its labels are compared alphabetically.
+   * @param o The object that will be compared to the current object.
+   * @return the value 0 if x == y; a value less than 0 if x < y; and a value greater than 0 if x > y
+   */
   @Override
   public int compareTo(Object o) {
     if (o == this) {

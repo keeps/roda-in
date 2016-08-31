@@ -1,11 +1,11 @@
 package org.roda.rodain.utils;
 
+import java.io.IOException;
+import java.nio.file.Path;
+
 import org.roda.rodain.inspection.trees.ContentClickedEventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.nio.file.Path;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -15,11 +15,19 @@ public class OpenPathInExplorer {
   private static final Logger LOGGER = LoggerFactory.getLogger(ContentClickedEventHandler.class.getName());
   private static String OS = System.getProperty("os.name").toLowerCase();
 
+  /**
+   * Opens the file of the parametrized path.
+   * @param path The path to the file that should be opened.
+   */
   public static void open(Path path) {
     String fileName = path.toString();
     open(fileName);
   }
 
+  /**
+   * Opens the file of the parametrized path.
+   * @param file The path string to the file that should be opened.
+   */
   public static void open(String file){
     // Different commands for different operating systems
     if (isWindows()) {

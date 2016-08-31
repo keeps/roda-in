@@ -543,6 +543,10 @@ public class FileExplorerPane extends BorderPane implements Observer {
     treeView.getRoot().setExpanded(true);
   }
 
+  /**
+   * Adds or removes the "Remove folder" button when a top folder is selected or not.
+   * @param rootSelected
+   */
   public void rootSelected(boolean rootSelected) {
     if (rootSelected) {
       if(!ignoreAndRemoveBox.getChildren().contains(removeTopFolder))
@@ -553,6 +557,10 @@ public class FileExplorerPane extends BorderPane implements Observer {
     }
   }
 
+  /**
+   * Changes the text of the "Ignore" button to "Ignore" or "Remove ignore" depending on whether the selected item is selected or not.
+   * @param b
+   */
   public void selectedIsIgnored(boolean b) {
     selectedIsIgnored = b;
     if (b) {
@@ -574,6 +582,9 @@ public class FileExplorerPane extends BorderPane implements Observer {
     return watchService;
   }
 
+  /**
+   * Calls the close() method to close the WatchService
+   */
   public void closeWatcher(){
     try {
       watcher.close();
