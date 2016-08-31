@@ -1,10 +1,10 @@
 package org.roda.rodain.source.ui;
 
-import org.roda.rodain.utils.TreeVisitor;
-
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Observable;
+
+import org.roda.rodain.utils.TreeVisitor;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -39,7 +39,6 @@ public class ComputeDirectorySize extends Observable implements TreeVisitor {
   }
 
   @Override
-
   public void visitFileFailed(Path path) {
     /*
      * This FileVisitor doesn't need to need to do anything if the visit failed

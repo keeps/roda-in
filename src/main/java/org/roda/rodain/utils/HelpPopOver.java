@@ -70,6 +70,13 @@ public class HelpPopOver extends PopOver {
     });
   }
 
+  /**
+   * Instantiates a new HelpPopOver.
+   * @param target The target of the PopOver. It's used to trigger the display of the PopOver and its location.
+   * @param content The message that will be displayed in the PopOver.
+   * @param arrowLocation Defines the location of the arrow that connects the PopOver to the target.
+   * @param maxHeight Defines the maximum height of the PopOver.
+   */
   public static void create(Node target, String content, PopOver.ArrowLocation arrowLocation, int maxHeight){
     if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))){
       instances.add(new HelpPopOver(target, content, arrowLocation, maxHeight));

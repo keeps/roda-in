@@ -140,6 +140,13 @@ public class Utils {
     return true;
   }
 
+  /**
+   * Indents an XML document.
+   * @param input The input XML document Reader.
+   * @param output The Writer for the output of the indented XML document.
+   * @throws TransformerException
+   * @throws SAXParseException
+   */
   public static void indentXML(Reader input, Writer output) throws TransformerException, SAXParseException {
     Transformer transformer = TransformerFactory.newInstance().newTransformer();
     transformer.setOutputProperty(OutputKeys.INDENT, "yes");
@@ -150,6 +157,11 @@ public class Utils {
     transformer.transform(source, result);
   }
 
+  /**
+   * Indents an XML document.
+   * @param xml The XML document string.
+   * @return A string with the XML document indented.
+   */
   public static String indentXML(String xml) {
     Reader input = new StringReader(xml);
     Writer output = new StringWriter();
@@ -162,11 +174,20 @@ public class Utils {
     return output.toString();
   }
 
+  /**
+   * @return The current version of the application.
+   * @throws ConfigurationException
+   */
   public static String getCurrentVersion() throws ConfigurationException {
     PropertiesConfiguration pc = new PropertiesConfiguration(BUILD_PROPERTIES_FILE);
     return pc.getString("current.version");
   }
 
+  /**
+   * @return The latest application version available in the cloud. Will thrown an exception if no Internet connection is available.
+   * @throws URISyntaxException
+   * @throws IOException
+   */
   public static String getLatestVersion() throws URISyntaxException, IOException {
     URI uri = new URI(LATEST_VERSION_API);
     JSONTokener tokener = new JSONTokener(uri.toURL().openStream());

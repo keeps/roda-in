@@ -48,10 +48,20 @@ public class MetadataValue implements Comparable {
     return id;
   }
 
+  /**
+   * Gets the value from the "options" map that corresponds to the key received as argument.
+   * @param key The key used to retrieve the value.
+   * @return The value that corresponds to the key, from the options map. If the map doesn't contain the required key, it returns null.
+   */
   public Object get(String key) {
     return options.get(key);
   }
 
+  /**
+   * Sets the option identified by the key argument with the value argument.
+   * @param key The identifier of the option.
+   * @param value The value of the option.
+   */
   public void set(String key, Object value) {
     options.put(key, value);
   }

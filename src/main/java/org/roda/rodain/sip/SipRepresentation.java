@@ -1,10 +1,10 @@
 package org.roda.rodain.sip;
 
-import org.roda.rodain.rules.TreeNode;
-
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.roda.rodain.rules.TreeNode;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -19,26 +19,49 @@ public class SipRepresentation {
     files = new HashSet<>();
   }
 
+  /**
+   * @return The name of the SipRepresentation
+   */
   public String getName() {
     return name;
   }
 
+  /**
+   * Sets the name of the SipRepresentation
+   * @param name The name to be set.
+   */
   public void setName(String name) {
     this.name = name;
   }
 
+  /**
+   * @return The set of direct TreeNode that the SipRepresentation contains.
+   * @see TreeNode
+   */
   public Set<TreeNode> getFiles() {
     return files;
   }
 
+  /**
+   * Adds a new file to the SipRepresentation's set of files.
+   * @param file The file to be added.
+   */
   public void addFile(TreeNode file) {
     files.add(file);
   }
 
+  /**
+   * Adds a new file to the SipRepresentation's set of files.
+   * @param path The path of the file to be added.
+   */
   public void addFile(Path path) {
     files.add(new TreeNode(path));
   }
 
+  /**
+   * Sets the set of files of the SipRepresentation
+   * @param files The set of files to be set.
+   */
   public void setFiles(Set<TreeNode> files) {
     this.files = files;
   }
