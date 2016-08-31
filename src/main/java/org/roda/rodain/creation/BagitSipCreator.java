@@ -1,20 +1,11 @@
 package org.roda.rodain.creation;
 
-import gov.loc.repository.bagit.Bag;
-import gov.loc.repository.bagit.BagFactory;
-import gov.loc.repository.bagit.PreBag;
-import gov.loc.repository.bagit.writer.impl.ZipWriter;
-import org.roda.rodain.core.I18n;
-import org.roda.rodain.creation.ui.CreationModalProcessing;
-import org.roda.rodain.rules.TreeNode;
-import org.roda.rodain.schema.DescriptionObject;
-import org.roda.rodain.sip.SipPreview;
-import org.roda.rodain.sip.SipRepresentation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import sun.security.krb5.internal.crypto.Des;
-
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
@@ -24,6 +15,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.roda.rodain.core.I18n;
+import org.roda.rodain.creation.ui.CreationModalProcessing;
+import org.roda.rodain.rules.TreeNode;
+import org.roda.rodain.schema.DescriptionObject;
+import org.roda.rodain.sip.SipPreview;
+import org.roda.rodain.sip.SipRepresentation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import gov.loc.repository.bagit.Bag;
+import gov.loc.repository.bagit.BagFactory;
+import gov.loc.repository.bagit.PreBag;
+import gov.loc.repository.bagit.writer.impl.ZipWriter;
 
 /**
  * @author Andre Pereira apereira@keep.pt

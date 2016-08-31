@@ -62,7 +62,7 @@ import javafx.stage.StageStyle;
  */
 public class FileExplorerPane extends BorderPane implements Observer {
   private static final Logger LOGGER = LoggerFactory.getLogger(FileExplorerPane.class.getName());
-  public static WatchService watcher;
+  public static final WatchService watcher = createWatcher();
   private Stage stage;
   private HBox top;
   private StackPane fileExplorer;
@@ -78,7 +78,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
   // Threads
   private ComputeDirectorySize computeSize;
-  private DirectoryWatcher directoryWatcher;
+  private static DirectoryWatcher directoryWatcher;
 
   // Filter control
   private static boolean showFiles = true;
@@ -99,8 +99,6 @@ public class FileExplorerPane extends BorderPane implements Observer {
     super();
     this.stage = stage;
     setPadding(new Insets(10, 10, 0, 10));
-
-    createWatcher();
 
     createCenterHelp();
     createTop();
@@ -564,17 +562,16 @@ public class FileExplorerPane extends BorderPane implements Observer {
     }
   }
 
-  private void createWatcher(){
+  private static WatchService createWatcher(){
+    WatchService watchService = null;
     try {
-      if(watcher != null){
-        watcher.close();
-      }
-      watcher = FileSystems.getDefault().newWatchService();
+      watchService = FileSystems.getDefault().newWatchService();
       directoryWatcher = new DirectoryWatcher();
       directoryWatcher.start();
     } catch (IOException e) {
       LOGGER.warn("Can't create a WatchService. The application will be unable to update the files of the file explorer", e);
     }
+    return watchService;
   }
 
   public void closeWatcher(){

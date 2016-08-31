@@ -77,6 +77,11 @@ public class MetadataValue implements Comparable {
   }
 
   @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
+
+  @Override
   public boolean equals(Object obj) {
     if(obj == this){
       return true;

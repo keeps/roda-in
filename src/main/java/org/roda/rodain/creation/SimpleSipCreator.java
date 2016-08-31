@@ -1,9 +1,17 @@
 package org.roda.rodain.creation;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.nio.file.Path;
 import java.time.Instant;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -19,7 +27,6 @@ import org.apache.commons.io.FileUtils;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.schema.DescriptionObject;
-import org.roda.rodain.sip.SipPreview;
 import org.roda.rodain.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
