@@ -566,6 +566,9 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
   private void createWatcher(){
     try {
+      if(watcher != null){
+        watcher.close();
+      }
       watcher = FileSystems.getDefault().newWatchService();
       directoryWatcher = new DirectoryWatcher();
       directoryWatcher.start();

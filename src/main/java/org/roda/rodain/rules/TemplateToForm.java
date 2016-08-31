@@ -1,17 +1,17 @@
 package org.roda.rodain.rules;
 
-import com.github.jknack.handlebars.Handlebars;
-import com.github.jknack.handlebars.Template;
-import org.custommonkey.xmlunit.Diff;
-import org.custommonkey.xmlunit.XMLUnit;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.roda.rodain.sip.MetadataValue;
-import org.roda.rodain.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
-import java.io.IOException;
-import java.util.*;
+import com.github.jknack.handlebars.Handlebars;
+import com.github.jknack.handlebars.Template;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -57,7 +57,7 @@ public class TemplateToForm {
       tmpl = handlebars.compileInline(content);
       tmpl.apply(new HashMap<>());
     } catch (IOException e) {
-      LOGGER.error("Error getting the MetadataValue list from the template");
+      LOGGER.error("Error getting the MetadataValue list from the template", e);
     }
     return values;
   }

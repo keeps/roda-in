@@ -1384,6 +1384,7 @@ public class InspectionPane extends BorderPane {
     });
     editButton.setOnAction(event -> editPopOver.show(editButton));
 
+
     top.getChildren().addAll(space, editButton);
 
     topSubtitle.getChildren().addAll(space, top);

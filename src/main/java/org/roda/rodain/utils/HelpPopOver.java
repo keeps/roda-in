@@ -1,5 +1,7 @@
 package org.roda.rodain.utils;
 
+import java.util.HashSet;
+
 import javax.swing.*;
 
 import org.controlsfx.control.PopOver;
@@ -25,6 +27,7 @@ public class HelpPopOver extends PopOver {
   private boolean onPopup = false, onTarget = false;
   private Node target;
   private boolean hasHiddenScheduled = false, hasShowScheduled = false;
+  private static HashSet<HelpPopOver> instances = new HashSet<>();
 
   private HelpPopOver(Node target, String content, PopOver.ArrowLocation arrowLocation, int maxHeight){
     super();
@@ -69,13 +72,13 @@ public class HelpPopOver extends PopOver {
 
   public static void create(Node target, String content, PopOver.ArrowLocation arrowLocation, int maxHeight){
     if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))){
-      new HelpPopOver(target, content, arrowLocation, maxHeight);
+      instances.add(new HelpPopOver(target, content, arrowLocation, maxHeight));
     }
   }
 
   private void updatePopup(){
     if(onPopup || onTarget) {
-      if(!isShowing()) {
+      if(!isShowing() && !hasShowScheduled) {
         hasShowScheduled = true;
         Timer timer = new Timer(SHOWING_DELAY, e -> {
           if (onPopup || onTarget) {

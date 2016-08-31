@@ -1,10 +1,10 @@
 package org.roda.rodain.sip;
 
-import org.roda.rodain.core.I18n;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.MissingResourceException;
+
+import org.roda.rodain.core.I18n;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -74,6 +74,18 @@ public class MetadataValue implements Comparable {
     if (result == null)
       result = var;
     return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if(obj == this){
+      return true;
+    }
+    if(obj instanceof MetadataValue){
+      MetadataValue mv = (MetadataValue) obj;
+      return mv.getId().equals(this.getId());
+    }
+    return false;
   }
 
   @Override

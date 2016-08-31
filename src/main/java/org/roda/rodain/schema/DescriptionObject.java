@@ -18,6 +18,8 @@ import org.roda.rodain.core.I18n;
 import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.sip.MetadataValue;
 import org.roda.rodain.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.jknack.handlebars.Handlebars;
@@ -28,6 +30,7 @@ import com.github.jknack.handlebars.Template;
  * @since 07-12-2015.
  */
 public class DescriptionObject extends Observable {
+  private static final Logger LOGGER = LoggerFactory.getLogger(DescriptionObject.class.getName());
   private String title, id, parentId, descriptionlevel;
   private List<DescObjMetadata> metadata = new ArrayList<>();
   private Map<String, Object> additionalProperties = new TreeMap<>();
@@ -158,7 +161,7 @@ public class DescriptionObject extends Observable {
         content = tmpl.apply(data);
         content = Utils.indentXML(content);
       } catch (IOException e) {
-        // log
+        LOGGER.error("Error applying the values to the template", e);
       }
       // we need to clean the '\r' character in windows,
       // otherwise the strings are different even if no modification has been
