@@ -1,12 +1,17 @@
 package org.roda.rodain.utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.AccessDeniedException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -83,6 +88,7 @@ public class WalkFileTree extends Thread {
         LOGGER.error("Error walking the file tree", e);
       }
     }
+
     handler.end();
   }
 

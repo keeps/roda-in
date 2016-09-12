@@ -1,6 +1,8 @@
 package org.roda.rodain.core;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -105,13 +107,15 @@ public class PathCollection {
     SourceTreeItemState state) {
     states.put(path, state);
 
-    Map<String, SourceTreeItemState> children = getAllChildren(path);
-    for (String child : children.keySet()) {
-      if (states.get(child) == previousState) {
-        states.put(child, state);
-        // update the item
-        if (items.containsKey(child)) {
-          items.get(child).setState(state);
+    if(Files.isDirectory(Paths.get(path))) {
+      Map<String, SourceTreeItemState> children = getAllChildren(path);
+      for (String child : children.keySet()) {
+        if (states.get(child) == previousState) {
+          states.put(child, state);
+          // update the item
+          if (items.containsKey(child)) {
+            items.get(child).setState(state);
+          }
         }
       }
     }
@@ -166,8 +170,10 @@ public class PathCollection {
       int index = path.lastIndexOf(File.separator);
       if (index > 0) {
         String parent = path.substring(0, index);
-        result = getState(parent);
-        addPath(path, result);
+        if(Files.isDirectory(Paths.get(parent))) {
+          result = getState(parent);
+          addPath(path, result);
+        }
       }
     }
     return result;
