@@ -1,10 +1,12 @@
 package org.roda.rodain.core;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
@@ -197,12 +199,21 @@ public class MainTest extends ApplicationTest {
     clickOn(I18n.t("Main.file"));
     clickOn(I18n.t("Main.exportSips"));
     output = Utils.homeDir.resolve("SIPs output");
-    output.toFile().mkdir();
+    boolean outputFolderCreated = output.toFile().mkdir();
+    if(!outputFolderCreated){
+      try {
+        FileUtils.cleanDirectory(output.toFile());
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
     CreationModalPreparation.setOutputFolder(output.toString());
     clickOn(I18n.t("start"));
 
     sleep(5000);
     clickOn(I18n.t("close"));
+
+    assert output.toFile().list().length == 2;
 
     clickOn(I18n.t("Main.file"));
     clickOn(I18n.t("Main.exportSips"));
@@ -211,6 +222,8 @@ public class MainTest extends ApplicationTest {
     clickOn(I18n.t("start"));
     sleep(5000);
     clickOn(I18n.t("close"));
+
+    assert output.toFile().list().length == 4;
 
     clickOn("FTP");
     sleep(1000);
@@ -262,5 +275,55 @@ public class MainTest extends ApplicationTest {
 
     sleep(1000);
     clickOn(I18n.t("apply"));
+  }
+
+  @Test
+  public void create10000FilesAndCreateSIPsForEachOne(){
+    Path test10000Dir = Utils.create10000Files();
+
+    sleep(5000);
+    push(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN));
+    sleep(3000);
+    try {
+      push(KeyCode.RIGHT);
+      push(KeyCode.ENTER);
+    } catch (Exception e) {
+    }
+
+    Platform.runLater(() -> {
+      fileExplorer.setFileExplorerRoot(test10000Dir);
+      stage.setMaximized(false);
+      sleep(500);
+      stage.setMaximized(true);
+      schemaPane.createClassificationScheme();
+
+    });
+
+    sleep(5000); // wait for the tree to be created
+
+    drag(test10000Dir.getFileName().toString()).dropTo("#schemaPaneDropBox");
+
+    sleep(1000); // wait for the modal to open
+    clickOn("#assoc3"); // SIP per File
+    clickOn(I18n.t("continue"));
+    sleep(1000); // wait for the modal to update
+    clickOn(I18n.t("confirm"));
+    sleep(5000); // wait for the SIPs creation
+
+    long startTimestamp = System.currentTimeMillis();
+    int timeout = 120 * 1000; // 120 seconds timeout for the SIP creation
+    boolean stop = false;
+    while(!stop && System.currentTimeMillis() - startTimestamp < timeout){
+      try{
+        clickOn(I18n.t("RuleModalProcessing.creatingPreview").toUpperCase());
+        sleep(1000);
+      } catch (Exception e){
+        stop = true;
+        // it means that the modal has been closed and SIPs are created
+      }
+    }
+
+    assert stop;
+    assert RodaIn.getAllDescriptionObjects().size() == 10000;
   }
 }

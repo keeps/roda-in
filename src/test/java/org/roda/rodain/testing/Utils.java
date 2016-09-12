@@ -1,17 +1,22 @@
 package org.roda.rodain.testing;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import javax.imageio.ImageIO;
+
+import org.apache.commons.io.FileUtils;
 
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.WritableImage;
 import javafx.stage.Stage;
-import org.apache.commons.io.FileUtils;
-
-import javax.imageio.ImageIO;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -20,6 +25,7 @@ import javax.imageio.ImageIO;
 public class Utils {
   public static final Path homeDir = getHomeDir();
   public static final Path testDir = getTestDir();
+  public static final Path test10000Dir = getTest10000Dir();
 
   private static Path getHomeDir() {
     String home = System.getProperty("java.io.tmpdir");
@@ -30,6 +36,12 @@ public class Utils {
     String home = System.getProperty("java.io.tmpdir");
     Path homePath = Paths.get(home);
     return homePath.resolve("RODA-In Test Dir");
+  }
+
+  private static Path getTest10000Dir() {
+    String home = System.getProperty("java.io.tmpdir");
+    Path homePath = Paths.get(home);
+    return homePath.resolve("RODA-In Test 10000 Dir");
   }
 
   public static Path createFolderStructure() {
@@ -102,6 +114,16 @@ public class Utils {
       createFile(dirB.resolve("file" + i + ".txt"));
 
     return testDir;
+  }
+
+  public static Path create10000Files(){
+    createDir(test10000Dir);
+
+    for(int i = 1; i <= 10000; i++){
+      createFile(test10000Dir.resolve("" + i));
+    }
+
+    return test10000Dir;
   }
 
   private static void createDir(Path p) {

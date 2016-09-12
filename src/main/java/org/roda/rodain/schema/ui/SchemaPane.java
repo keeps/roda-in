@@ -185,6 +185,7 @@ public class SchemaPane extends BorderPane {
 
   private void createDropBox() {
     dropBox = new VBox();
+    dropBox.setId("schemaPaneDropBox");
 
     HBox innerBox = new HBox();
     VBox.setVgrow(innerBox, Priority.ALWAYS);
@@ -588,6 +589,7 @@ public class SchemaPane extends BorderPane {
     setCenter(dropBox);
     setBottom(bottom);
     rootNode.getChildren().clear();
+    schemaNodes.clear();
     hasClassificationScheme.setValue(true);
     AppProperties.setAppConfig("lastClassificationScheme", "");
     AppProperties.saveAppConfig();
