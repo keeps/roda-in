@@ -112,7 +112,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
    *
    * @see #showMapped()
    */
-  public void hideMapped() {
+  public synchronized void hideMapped() {
     final ArrayList<TreeItem<String>> newChildren = new ArrayList<>(getChildren());
     Task<Void> task = new Task<Void>() {
       @Override
@@ -150,7 +150,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
    * @see #sortChildren()
    * @see #hideMapped()
    */
-  public void showMapped() {
+  public synchronized void showMapped() {
     final ArrayList<TreeItem<String>> newChildren = new ArrayList<>(getChildren());
     Task<Void> task = new Task<Void>() {
       @Override
@@ -194,7 +194,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
    *
    * @see #showIgnored()
    */
-  public void hideIgnored() {
+  public synchronized void hideIgnored() {
     final ArrayList<TreeItem<String>> children = new ArrayList<>(getChildren());
     Task<Void> task = new Task<Void>() {
       @Override
@@ -236,7 +236,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
    * @see #sortChildren()
    * @see #hideIgnored()
    */
-  public void showIgnored() {
+  public synchronized void showIgnored() {
     final ArrayList<TreeItem<String>> newChildren = new ArrayList<>(getChildren());
     Task<Void> task = new Task<Void>() {
       @Override
@@ -277,7 +277,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
    *
    * @see #showFiles() ()
    */
-  public void hideFiles() {
+  public synchronized void hideFiles() {
     final ArrayList<TreeItem<String>> children = new ArrayList<>(getChildren());
     Task<Void> task = new Task<Void>() {
       @Override
@@ -313,7 +313,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
    * @see #sortChildren()
    * @see #hideFiles() ()
    */
-  public void showFiles() {
+  public synchronized void showFiles() {
     final ArrayList<TreeItem<String>> newChildren = new ArrayList<>(getChildren());
     Task<Void> task = new Task<Void>() {
       @Override
@@ -347,7 +347,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
   /**
    * @return The set of the ignored items in the directory.
    */
-  public Set<String> getIgnored() {
+  public synchronized Set<String> getIgnored() {
     Set<String> result = new HashSet<>();
     // we need to include the items that are being shown and the hidden
     for (SourceTreeItem sti : ignored) {
@@ -367,7 +367,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
   /**
    * @return The set of the mapped items in the directory.
    */
-  public Set<String> getMapped() {
+  public synchronized Set<String> getMapped() {
     Set<String> result = new HashSet<>();
     // we need to include the items that are being shown and the hidden
     for (SourceTreeItem sti : mapped) {
@@ -482,7 +482,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
    * UI will hang while accessing the disk. Then, sets the new collection as the
    * item's children.
    */
-  public void loadMore() {
+  public synchronized void loadMore() {
     final ArrayList<TreeItem<String>> children = new ArrayList<>(getChildren());
     addToWatcher();
 
@@ -555,7 +555,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
     PathCollection.addItem(item);
   }
 
-  public void addChild(String sourceItem){
+  public synchronized void addChild(String sourceItem){
     final ArrayList<TreeItem<String>> children = new ArrayList<>(getChildren());
 
     directory.loadChild(Paths.get(sourceItem));
@@ -585,7 +585,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
       mapped.add(item);
   }
 
-  public void removeChild(SourceTreeItem item){
+  public synchronized void removeChild(SourceTreeItem item){
     getChildren().remove(item);
     mapped.remove(item);
     ignored.remove(item);
@@ -609,7 +609,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
    * collection to the ignored collection.
    * </p>
    */
-  public void moveChildrenWrongState() {
+  public synchronized void moveChildrenWrongState() {
     Platform.runLater(() -> {
       Set<SourceTreeItem> toRemove = new HashSet<>();
       boolean modified = false;
