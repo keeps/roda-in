@@ -14,7 +14,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.controlsfx.control.PopOver;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.Footer;
 import org.roda.rodain.core.I18n;
@@ -30,7 +29,6 @@ import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.AutoscrollTreeView;
-import org.roda.rodain.utils.HelpPopOver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +51,7 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Separator;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.ClipboardContent;
@@ -135,10 +134,8 @@ public class SchemaPane extends BorderPane {
     topBox.setAlignment(Pos.CENTER_LEFT);
     topBox.getChildren().add(title);
 
-    HelpPopOver.create(topBox, I18n.help("schemapane"), PopOver.ArrowLocation.LEFT_TOP, 525);
+    Tooltip.install(topBox, new Tooltip(I18n.help("tooltip.schemapane")));
   }
-
-
 
   private void createCenterHelp() {
     centerHelp = new VBox();
@@ -171,7 +168,7 @@ public class SchemaPane extends BorderPane {
     load.getStyleClass().add("helpButton");
     loadBox.getChildren().add(load);
 
-    HelpPopOver.create(load, I18n.help("secondStep"), PopOver.ArrowLocation.LEFT_CENTER, 205);
+    Tooltip.install(load, new Tooltip(I18n.help("tooltip.secondStep")));
 
     Hyperlink link = new Hyperlink(I18n.t("SchemaPane.create"));
     link.setOnAction(event -> createClassificationScheme());
@@ -518,7 +515,7 @@ public class SchemaPane extends BorderPane {
 
     bottom.getChildren().addAll(addLevel, removeLevel, space, export);
 
-    HelpPopOver.create(export, I18n.help("export"), PopOver.ArrowLocation.LEFT_BOTTOM, 225);
+    Tooltip.install(export, new Tooltip(I18n.help("tooltip.export")));
   }
 
   private void confirmRemove(List<TreeItem<String>> selectedItems, ButtonType type) {

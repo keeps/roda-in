@@ -46,7 +46,6 @@ import org.roda.rodain.source.ui.SourceTreeCell;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
-import org.roda.rodain.utils.HelpPopOver;
 import org.roda.rodain.utils.ModalStage;
 import org.roda.rodain.utils.UIPair;
 import org.roda.rodain.utils.Utils;
@@ -189,7 +188,7 @@ public class InspectionPane extends BorderPane {
     topBox.setPadding(new Insets(15, 15, 15, 15));
     topBox.setAlignment(Pos.CENTER_LEFT);
 
-    HelpPopOver.create(topBox, I18n.help("inspectionpane"), PopOver.ArrowLocation.TOP_CENTER, 85);
+    Tooltip.install(topBox, new Tooltip(I18n.help("tooltip.inspectionpane")));
   }
 
   private void createMetadata() {
@@ -397,7 +396,7 @@ public class InspectionPane extends BorderPane {
     });
     metadataTopBox.getChildren().add(titleLabel);
 
-    HelpPopOver.create(metadataTopBox, I18n.help("inspectionPanel.metadata"), PopOver.ArrowLocation.TOP_CENTER, 390);
+    Tooltip.install(metadataTopBox, new Tooltip(I18n.help("tooltip.inspectionPanel.metadata")));
     metadataTopBox.getChildren().add(space);
     updateMetadataTop();
   }
@@ -897,7 +896,7 @@ public class InspectionPane extends BorderPane {
     });
     createDocsBottom();
 
-    HelpPopOver.create(top, I18n.help("inspectionPanel.data"), PopOver.ArrowLocation.TOP_CENTER, 275);
+    Tooltip.install(top, new Tooltip(I18n.help("tooltip.inspectionPanel.data")));
     top.getChildren().addAll(space, toggleDocumentation);
   }
 
@@ -1233,7 +1232,7 @@ public class InspectionPane extends BorderPane {
     title.getStyleClass().add("title");
     top.getChildren().add(title);
 
-    HelpPopOver.create(top, I18n.help("inspectionPanel.associations"), PopOver.ArrowLocation.TOP_CENTER, 90);
+    Tooltip.install(top, new Tooltip(I18n.help("tooltip.inspectionPanel.associations")));
 
     rules.setTop(top);
     ruleList = new ListView<>();
