@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -604,12 +605,12 @@ public class RodaIn extends Application {
 
   private static boolean checkForUpdates(){
     try {
-      String currentVersion = Utils.getCurrentVersion();
-      String latestVersion = Utils.getLatestVersion();
+      Date currentVersion = Utils.getCurrentVersionBuildDate();
+      Date latestVersion = Utils.getLatestVersionBuildDate();
 
       if(currentVersion != null && latestVersion != null){
-        if(!currentVersion.equals(latestVersion)){
-          String content = String.format(I18n.t("Main.newVersion.content"), currentVersion, latestVersion);
+        if(currentVersion.compareTo(latestVersion) < 0){
+          String content = String.format(I18n.t("Main.newVersion.content"), Utils.getCurrentVersion(), Utils.getLatestVersion());
           Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
           dlg.initStyle(StageStyle.UNDECORATED);
           dlg.setHeaderText(I18n.t("Main.newVersion.header"));
