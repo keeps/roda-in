@@ -5,6 +5,7 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 import static org.roda.rodain.source.ui.FileExplorerPane.watcher;
 
+import java.nio.file.ClosedWatchServiceException;
 import java.nio.file.Path;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
@@ -27,7 +28,7 @@ public class DirectoryWatcher extends Thread {
       WatchKey key;
       try {
         key = watcher.take();
-      } catch (InterruptedException x) {
+      } catch (InterruptedException | ClosedWatchServiceException x) {
         return;
       }
 

@@ -204,11 +204,12 @@ public class FileExplorerPane extends BorderPane implements Observer {
     associate.disableProperty().bind(RodaIn.getSchemePane().hasClassificationScheme().not());
     associate.setMinWidth(100);
     associate.setOnAction(event -> RodaIn.getSchemePane().startAssociation());
-    Tooltip.install(associate, new Tooltip(I18n.help("tooltip.associate")));
 
     if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
-      bottom.getChildren().addAll(ignoreAndRemoveBox, space, associate);
+      Tooltip.install(associate, new Tooltip(I18n.help("tooltip.associate")));
     }
+
+    bottom.getChildren().addAll(ignoreAndRemoveBox, space, associate);
   }
 
   private void createCenterHelp() {

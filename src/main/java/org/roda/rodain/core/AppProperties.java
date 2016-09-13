@@ -402,6 +402,7 @@ public class AppProperties {
     String result = null;
     try {
       result = helpBundle.getString(key);
+      if("".equals(result)) throw new MissingResourceException("", "", key);
     } catch (MissingResourceException e) {
       LOGGER.warn(String.format("Missing translation for help %s in language: %s", key, locale.getDisplayName()));
       try {
