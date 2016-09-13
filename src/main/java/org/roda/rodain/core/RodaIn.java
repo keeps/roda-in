@@ -23,6 +23,7 @@ import org.roda.rodain.schema.ui.SchemaPane;
 import org.roda.rodain.source.ui.FileExplorerPane;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
+import org.roda.rodain.utils.ModalStage;
 import org.roda.rodain.utils.OpenPathInExplorer;
 import org.roda.rodain.utils.Utils;
 import org.slf4j.Logger;
@@ -513,10 +514,13 @@ public class RodaIn extends Application {
       dlg.resultProperty().addListener(o -> confirmRestart(dlg.getResult()));
     });
 
-    final MenuItem templatingHelp = new MenuItem(I18n.t("templatingSystemHelp.header"));
-    templatingHelp.setOnAction(event -> new TemplatingSystemHelpPanel(stage));
+    final MenuItem helpPage = new MenuItem(I18n.t("Main.helpPage"));
+    helpPage.setOnAction(event ->{
+      ModalStage modalStage = new ModalStage(stage);
+      modalStage.setRoot(new HelpModal(modalStage));
+    });
 
-    menuHelp.getItems().addAll(language, checkVersion, showHelp, templatingHelp);
+    menuHelp.getItems().addAll(language, checkVersion, showHelp, helpPage);
 
     menu.getMenus().addAll(menuFile, menuEdit, menuClassScheme, menuView, menuHelp);
     mainPane.setTop(menu);

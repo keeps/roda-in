@@ -188,7 +188,7 @@ public class InspectionPane extends BorderPane {
     topBox.setPadding(new Insets(15, 15, 15, 15));
     topBox.setAlignment(Pos.CENTER_LEFT);
 
-    Tooltip.install(topBox, new Tooltip(I18n.help("tooltip.inspectionpane")));
+    Tooltip.install(topBox, new Tooltip(I18n.help("tooltip.inspectionPanel")));
   }
 
   private void createMetadata() {

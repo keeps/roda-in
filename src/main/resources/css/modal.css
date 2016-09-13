@@ -110,3 +110,8 @@
 .list-cell .combo-box {
     -fx-border-color: -fx-dark;
 }
+
+/* Help menu */
+.help-menu{
+    -fx-background-color: rgba(239, 239, 239, 0.91);
+}

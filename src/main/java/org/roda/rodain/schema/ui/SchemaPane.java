@@ -134,7 +134,7 @@ public class SchemaPane extends BorderPane {
     topBox.setAlignment(Pos.CENTER_LEFT);
     topBox.getChildren().add(title);
 
-    Tooltip.install(topBox, new Tooltip(I18n.help("tooltip.schemapane")));
+    Tooltip.install(topBox, new Tooltip(I18n.help("tooltip.schemaPane")));
   }
 
   private void createCenterHelp() {
