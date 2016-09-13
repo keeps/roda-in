@@ -134,7 +134,9 @@ public class SchemaPane extends BorderPane {
     topBox.setAlignment(Pos.CENTER_LEFT);
     topBox.getChildren().add(title);
 
-    Tooltip.install(topBox, new Tooltip(I18n.help("tooltip.schemaPane")));
+    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
+      Tooltip.install(topBox, new Tooltip(I18n.help("tooltip.schemaPane")));
+    }
   }
 
   private void createCenterHelp() {
@@ -168,7 +170,9 @@ public class SchemaPane extends BorderPane {
     load.getStyleClass().add("helpButton");
     loadBox.getChildren().add(load);
 
-    Tooltip.install(load, new Tooltip(I18n.help("tooltip.secondStep")));
+    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
+      Tooltip.install(load, new Tooltip(I18n.help("tooltip.secondStep")));
+    }
 
     Hyperlink link = new Hyperlink(I18n.t("SchemaPane.create"));
     link.setOnAction(event -> createClassificationScheme());
@@ -515,7 +519,9 @@ public class SchemaPane extends BorderPane {
 
     bottom.getChildren().addAll(addLevel, removeLevel, space, export);
 
-    Tooltip.install(export, new Tooltip(I18n.help("tooltip.export")));
+    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
+      Tooltip.install(export, new Tooltip(I18n.help("tooltip.export")));
+    }
   }
 
   private void confirmRemove(List<TreeItem<String>> selectedItems, ButtonType type) {

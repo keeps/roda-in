@@ -188,7 +188,9 @@ public class InspectionPane extends BorderPane {
     topBox.setPadding(new Insets(15, 15, 15, 15));
     topBox.setAlignment(Pos.CENTER_LEFT);
 
-    Tooltip.install(topBox, new Tooltip(I18n.help("tooltip.inspectionPanel")));
+    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
+      Tooltip.install(topBox, new Tooltip(I18n.help("tooltip.inspectionPanel")));
+    }
   }
 
   private void createMetadata() {
@@ -396,7 +398,9 @@ public class InspectionPane extends BorderPane {
     });
     metadataTopBox.getChildren().add(titleLabel);
 
-    Tooltip.install(metadataTopBox, new Tooltip(I18n.help("tooltip.inspectionPanel.metadata")));
+    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
+      Tooltip.install(metadataTopBox, new Tooltip(I18n.help("tooltip.inspectionPanel.metadata")));
+    }
     metadataTopBox.getChildren().add(space);
     updateMetadataTop();
   }
@@ -896,7 +900,9 @@ public class InspectionPane extends BorderPane {
     });
     createDocsBottom();
 
-    Tooltip.install(top, new Tooltip(I18n.help("tooltip.inspectionPanel.data")));
+    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
+      Tooltip.install(top, new Tooltip(I18n.help("tooltip.inspectionPanel.data")));
+    }
     top.getChildren().addAll(space, toggleDocumentation);
   }
 
@@ -1232,7 +1238,9 @@ public class InspectionPane extends BorderPane {
     title.getStyleClass().add("title");
     top.getChildren().add(title);
 
-    Tooltip.install(top, new Tooltip(I18n.help("tooltip.inspectionPanel.associations")));
+    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
+      Tooltip.install(top, new Tooltip(I18n.help("tooltip.inspectionPanel.associations")));
+    }
 
     rules.setTop(top);
     ruleList = new ListView<>();

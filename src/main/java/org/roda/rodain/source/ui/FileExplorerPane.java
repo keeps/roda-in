@@ -16,6 +16,7 @@ import java.util.Observer;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.Footer;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.PathCollection;
@@ -141,7 +142,9 @@ public class FileExplorerPane extends BorderPane implements Observer {
     top.setPadding(new Insets(15, 15, 15, 15));
     top.getChildren().add(title);
 
-    Tooltip.install(top, new Tooltip(I18n.help("tooltip.fileExplorer")));
+    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
+      Tooltip.install(top, new Tooltip(I18n.help("tooltip.fileExplorer")));
+    }
   }
 
   private void createBottom() {
@@ -203,7 +206,9 @@ public class FileExplorerPane extends BorderPane implements Observer {
     associate.setOnAction(event -> RodaIn.getSchemePane().startAssociation());
     Tooltip.install(associate, new Tooltip(I18n.help("tooltip.associate")));
 
-    bottom.getChildren().addAll(ignoreAndRemoveBox, space, associate);
+    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
+      bottom.getChildren().addAll(ignoreAndRemoveBox, space, associate);
+    }
   }
 
   private void createCenterHelp() {
@@ -236,7 +241,9 @@ public class FileExplorerPane extends BorderPane implements Observer {
     load.getStyleClass().add("helpButton");
     loadBox.getChildren().add(load);
 
-    Tooltip.install(load, new Tooltip(I18n.help("tooltip.firstStep")));
+    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
+      Tooltip.install(load, new Tooltip(I18n.help("tooltip.firstStep")));
+    }
 
     box.getChildren().addAll(titleBox, loadBox);
     centerHelp.getChildren().add(box);

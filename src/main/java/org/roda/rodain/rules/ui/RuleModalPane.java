@@ -150,7 +150,9 @@ public class RuleModalPane extends BorderPane {
 
     subtitleBox.getChildren().add(subtitle);
 
-    Tooltip.install(subtitle, new Tooltip(I18n.help("tooltip.associationMethod")));
+    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
+      Tooltip.install(subtitle, new Tooltip(I18n.help("tooltip.associationMethod")));
+    }
 
     assocList = new ListView<>();
     assocList.setMinHeight(LIST_HEIGHT);
@@ -230,7 +232,9 @@ public class RuleModalPane extends BorderPane {
 
     subtitleBox.getChildren().addAll(subtitle);
 
-    Tooltip.install(subtitle, new Tooltip(I18n.help("tooltip.metadataMethod")));
+    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
+      Tooltip.install(subtitle, new Tooltip(I18n.help("tooltip.metadataMethod")));
+    }
 
     metaList = new ListView<>();
     metaList.setMinHeight(LIST_HEIGHT);
