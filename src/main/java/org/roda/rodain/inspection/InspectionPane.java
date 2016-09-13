@@ -1,5 +1,7 @@
 package org.roda.rodain.inspection;
 
+import static org.roda_project.commons_ip.model.IPContentType.IPContentTypeEnum.MIXED;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -114,7 +116,7 @@ public class InspectionPane extends BorderPane {
   private SchemaNode currentSchema;
   private DescriptionObject currentDescOb;
   private List<TreeItem<String>> selectedItems;
-  private Label paneTitle;
+  private Label paneTitle, topTypeLabel;
 
   private VBox centerHelp;
   // Metadata
@@ -1364,11 +1366,16 @@ public class InspectionPane extends BorderPane {
       .addListener((observable, oldValue, newValue) -> iconView.setImage(((ImageView) newValue).getImage()));
 
     HBox top = new HBox(5);
+    top.setAlignment(Pos.CENTER_RIGHT);
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
     // we need to account for the size of the combo-box, otherwise the top box
     // is too tall
     topBox.setPadding(new Insets(11, 15, 11, 15));
+
+    topTypeLabel = new Label();
+    topTypeLabel.setWrapText(true);
+    topTypeLabel.getStyleClass().add("top-subtitle");
 
     PopOver editPopOver = new PopOver();
     editPopOver.setDetachable(false);
@@ -1391,8 +1398,7 @@ public class InspectionPane extends BorderPane {
     });
     editButton.setOnAction(event -> editPopOver.show(editButton));
 
-
-    top.getChildren().addAll(space, editButton);
+    top.getChildren().addAll(space, topTypeLabel, editButton);
 
     topSubtitle.getChildren().addAll(space, top);
 
@@ -1557,7 +1563,12 @@ public class InspectionPane extends BorderPane {
 
     // Text field for the OTHER content type
     TextField otherTextField = new TextField();
-    otherTextField.textProperty().addListener((obs, old, newValue) -> sip.getContentType().setOtherType(newValue));
+    otherTextField.textProperty().addListener((obs, old, newValue) ->{
+      sip.getContentType().setOtherType(newValue);
+      if(old != null) {
+        topTypeLabel.setText(newValue);
+      }
+    });
     // Content Type combo box
     ComboBox<UIPair> contentType = new ComboBox<>();
     List<UIPair> contTypeList = new ArrayList<>();
@@ -1573,6 +1584,9 @@ public class InspectionPane extends BorderPane {
     contentType.setItems(FXCollections.observableList(contTypeList));
     contentType.valueProperty().addListener((obs, old, newValue) -> {
       sip.setContentType((IPContentType) newValue.getKey());
+      if(old != null ||((IPContentType) newValue.getKey()).getType() != MIXED) {
+        topTypeLabel.setText(((IPContentType) newValue.getKey()).asString());
+      }
       if (((IPContentType) newValue.getKey()).getType() == IPContentType.IPContentTypeEnum.OTHER) {
         if (!result.getChildren().contains(otherTextField)) {
           result.getChildren().add(otherTextField);
