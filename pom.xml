@@ -200,7 +200,7 @@
         <dependency>
             <groupId>org.roda-project</groupId>
             <artifactId>commons-ip</artifactId>
-            <version>1.0.0-alpha15</version>
+            <version>1.0.0-alpha16.1</version>
         </dependency>
         <dependency>
             <groupId>com.github.jknack</groupId>
