@@ -1,11 +1,7 @@
 package org.roda.rodain.source.ui;
 
-import javafx.application.Platform;
-import javafx.scene.control.TreeItem;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
-import javafx.stage.Stage;
+import java.nio.file.Path;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -18,7 +14,12 @@ import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.testing.Utils;
 import org.testfx.framework.junit.ApplicationTest;
 
-import java.nio.file.Path;
+import javafx.application.Platform;
+import javafx.scene.control.TreeItem;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.stage.Stage;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -35,7 +36,7 @@ public class IgnoreTest extends ApplicationTest {
     RodaIn main = new RodaIn();
     main.start(stage);
 
-    sleep(3000);
+    sleep(5000);
 
     fileExplorer = RodaIn.getFileExplorer();
     fileExplorer.setFileExplorerRoot(testDir);
