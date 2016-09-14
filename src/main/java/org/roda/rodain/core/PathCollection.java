@@ -41,7 +41,7 @@ public class PathCollection {
    *          The path to be added to the collection
    */
   public static void simpleAddPath(String path) {
-    if (!states.containsKey(path)) {
+    if (!"".equals(path) && !states.containsKey(path)) {
       states.put(path, SourceTreeItemState.NORMAL);
     }
   }
@@ -66,6 +66,9 @@ public class PathCollection {
    *          The state of the item.
    */
   public static void addPath(String path, SourceTreeItemState st) {
+    if("".equals(path)){
+      return;
+    }
     // ignoring or removing the ignore of an item
     if (st == SourceTreeItemState.IGNORED) {
       applySameStateAllChildren(path, SourceTreeItemState.NORMAL, st);
@@ -105,6 +108,9 @@ public class PathCollection {
 
   private static void applySameStateAllChildren(String path, SourceTreeItemState previousState,
     SourceTreeItemState state) {
+    if("".equals(path)){
+      return;
+    }
     states.put(path, state);
 
     if(Files.isDirectory(Paths.get(path))) {
@@ -147,6 +153,9 @@ public class PathCollection {
    */
   public static void addItem(SourceTreeItem item) {
     String path = item.getPath();
+    if("".equals(path)){
+      return;
+    }
     if (!states.containsKey(path)) {
       states.put(path, item.getState());
     }
@@ -172,7 +181,7 @@ public class PathCollection {
         String parent = path.substring(0, index);
         if(Files.isDirectory(Paths.get(parent))) {
           result = getState(parent);
-          addPath(path, result);
+//          addPath(path, result);
         }
       }
     }
@@ -218,17 +227,22 @@ public class PathCollection {
         // move the starting index for the next iteration so it's before the
         // slash
         end = index - 1;
-        verifyState(sub);
+        if(states.containsKey(sub)) {
+          verifyState(sub);
 
-        if (items.containsKey(sub)) {
-          SourceTreeDirectory dir = (SourceTreeDirectory) items.get(sub);
-          dir.moveChildrenWrongState();
+          if (items.containsKey(sub)) {
+            SourceTreeDirectory dir = (SourceTreeDirectory) items.get(sub);
+            dir.moveChildrenWrongState();
+          }
         }
       }
     }
   }
 
   private static void verifyState(String path) {
+    if("".equals(path)){
+      return;
+    }
     int normalItems = 0, ignoredItems = 0, mappedItems = 0;
     Map<String, SourceTreeItemState> children = getDirectChildren(path);
     for (String child : children.keySet()) {
