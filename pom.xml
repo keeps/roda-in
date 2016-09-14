@@ -127,26 +127,31 @@
                     </additionalClasspathElements>
                 </configuration>
             </plugin>
-        </plugins>
-        <resources>
-            <!-- include build.properties -->
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-                <includes>
-                    <include>build.properties</include>
-                </includes>
-            </resource>
+            <plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!-- this is false by default, forces the plugin to generate the file -->
+                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
 
-            <!-- exclude everything else from filtering -->
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>false</filtering>
-                <excludes>
-                    <exclude>build.properties</exclude>
-                </excludes>
-            </resource>
-        </resources>
+                    <!-- The path for the properties file to be generated. See Super Pom
+                        for default variable reference https://maven.apache.org/guides/introduction/introduction-to-the-pom.html -->
+                    <generateGitPropertiesFilename>
+                        ${project.basedir}/src/main/resources/build.properties
+                    </generateGitPropertiesFilename>
+                    <format>properties</format>
+                </configuration>
+            </plugin>
+
+        </plugins>
     </build>
 
     <profiles>
@@ -195,7 +200,7 @@
         <dependency>
             <groupId>org.roda-project</groupId>
             <artifactId>commons-ip</artifactId>
-            <version>1.0.0-alpha15</version>
+            <version>1.0.0-alpha16.1</version>
         </dependency>
         <dependency>
             <groupId>com.github.jknack</groupId>

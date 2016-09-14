@@ -179,3 +179,15 @@
     -fx-background-color: -fx-dark;
 }
 
+/* Tooltip */
+
+.tooltip {
+    -fx-font-size: 1em;
+    -fx-font-weight: normal;
+    -fx-text-fill: black;
+    -fx-background-color: rgba(255, 255, 255, 0.92);
+    -fx-background-radius: 6px;
+    -fx-background-insets: 0;
+    -fx-padding: 0.667em 0.75em 0.667em 0.75em; /* 10px */
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.5) , 10, 0.0 , 0 , 3 );
+}

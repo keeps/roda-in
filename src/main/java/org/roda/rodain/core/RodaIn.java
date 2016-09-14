@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,6 +24,7 @@ import org.roda.rodain.schema.ui.SchemaPane;
 import org.roda.rodain.source.ui.FileExplorerPane;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
+import org.roda.rodain.utils.ModalStage;
 import org.roda.rodain.utils.OpenPathInExplorer;
 import org.roda.rodain.utils.Utils;
 import org.slf4j.Logger;
@@ -513,10 +515,13 @@ public class RodaIn extends Application {
       dlg.resultProperty().addListener(o -> confirmRestart(dlg.getResult()));
     });
 
-    final MenuItem templatingHelp = new MenuItem(I18n.t("templatingSystemHelp.header"));
-    templatingHelp.setOnAction(event -> new TemplatingSystemHelpPanel(stage));
+    final MenuItem helpPage = new MenuItem(I18n.t("Main.helpPage"));
+    helpPage.setOnAction(event ->{
+      ModalStage modalStage = new ModalStage(stage);
+      modalStage.setRoot(new HelpModal(modalStage));
+    });
 
-    menuHelp.getItems().addAll(language, checkVersion, showHelp, templatingHelp);
+    menuHelp.getItems().addAll(language, checkVersion, showHelp, helpPage);
 
     menu.getMenus().addAll(menuFile, menuEdit, menuClassScheme, menuView, menuHelp);
     mainPane.setTop(menu);
@@ -600,12 +605,12 @@ public class RodaIn extends Application {
 
   private static boolean checkForUpdates(){
     try {
-      String currentVersion = Utils.getCurrentVersion();
-      String latestVersion = Utils.getLatestVersion();
+      Date currentVersion = Utils.getCurrentVersionBuildDate();
+      Date latestVersion = Utils.getLatestVersionBuildDate();
 
       if(currentVersion != null && latestVersion != null){
-        if(!currentVersion.equals(latestVersion)){
-          String content = String.format(I18n.t("Main.newVersion.content"), currentVersion, latestVersion);
+        if(currentVersion.compareTo(latestVersion) < 0){
+          String content = String.format(I18n.t("Main.newVersion.content"), Utils.getCurrentVersion(), Utils.getLatestVersion());
           Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
           dlg.initStyle(StageStyle.UNDECORATED);
           dlg.setHeaderText(I18n.t("Main.newVersion.header"));

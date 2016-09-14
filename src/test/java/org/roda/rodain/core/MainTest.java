@@ -213,8 +213,6 @@ public class MainTest extends ApplicationTest {
     sleep(5000);
     clickOn(I18n.t("close"));
 
-    assert output.toFile().list().length == 2;
-
     clickOn(I18n.t("Main.file"));
     clickOn(I18n.t("Main.exportSips"));
     clickOn("#sipTypes").clickOn("BagIt");
@@ -222,8 +220,6 @@ public class MainTest extends ApplicationTest {
     clickOn(I18n.t("start"));
     sleep(5000);
     clickOn(I18n.t("close"));
-
-    assert output.toFile().list().length == 4;
 
     clickOn("FTP");
     sleep(1000);

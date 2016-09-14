@@ -11,6 +11,9 @@ import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Scanner;
 
 import javax.xml.XMLConstants;
@@ -180,7 +183,7 @@ public class Utils {
    */
   public static String getCurrentVersion() throws ConfigurationException {
     PropertiesConfiguration pc = new PropertiesConfiguration(BUILD_PROPERTIES_FILE);
-    return pc.getString("current.version");
+    return pc.getString("git.build.version");
   }
 
   /**
@@ -194,6 +197,42 @@ public class Utils {
     JSONObject versionJSON = new JSONObject(tokener);
 
     return versionJSON.getString("tag_name");
+  }
+
+  /**
+   * @return The current version's build time.
+   * @throws ConfigurationException
+   */
+  public static Date getCurrentVersionBuildDate() throws ConfigurationException {
+    PropertiesConfiguration pc = new PropertiesConfiguration(BUILD_PROPERTIES_FILE);
+    String dateRaw = pc.getString("git.build.time");
+    SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy '@' HH:mm:ss z");
+    try {
+      return sdf.parse(dateRaw);
+    } catch (ParseException e) {
+      LOGGER.warn("Cannot parse the date \"{}\"", dateRaw, e);
+    }
+    return null;
+  }
+
+  /**
+   * @return The latest application version build time available in the cloud. Will thrown an exception if no Internet connection is available.
+   * @throws URISyntaxException
+   * @throws IOException
+   */
+  public static Date getLatestVersionBuildDate() throws URISyntaxException, IOException {
+    URI uri = new URI(LATEST_VERSION_API);
+    JSONTokener tokener = new JSONTokener(uri.toURL().openStream());
+    JSONObject versionJSON = new JSONObject(tokener);
+    String dateRaw = versionJSON.getString("published_at");
+
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    try {
+      return sdf.parse(dateRaw);
+    } catch (ParseException e) {
+      LOGGER.warn("Cannot parse the date \"{}\"", dateRaw, e);
+    }
+    return null;
   }
 
 }

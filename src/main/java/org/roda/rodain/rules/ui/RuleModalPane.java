@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.controlsfx.control.PopOver;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.rules.MetadataOptions;
@@ -16,7 +15,6 @@ import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
-import org.roda.rodain.utils.HelpPopOver;
 import org.roda.rodain.utils.UIPair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +33,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -151,7 +150,9 @@ public class RuleModalPane extends BorderPane {
 
     subtitleBox.getChildren().add(subtitle);
 
-    HelpPopOver.create(subtitle, I18n.help("associationMethod"), PopOver.ArrowLocation.LEFT_CENTER, 50);
+    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
+      Tooltip.install(subtitle, new Tooltip(I18n.help("tooltip.associationMethod")));
+    }
 
     assocList = new ListView<>();
     assocList.setMinHeight(LIST_HEIGHT);
@@ -231,7 +232,9 @@ public class RuleModalPane extends BorderPane {
 
     subtitleBox.getChildren().addAll(subtitle);
 
-    HelpPopOver.create(subtitle, I18n.help("metadataMethod"), PopOver.ArrowLocation.LEFT_CENTER, 85);
+    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
+      Tooltip.install(subtitle, new Tooltip(I18n.help("tooltip.metadataMethod")));
+    }
 
     metaList = new ListView<>();
     metaList.setMinHeight(LIST_HEIGHT);

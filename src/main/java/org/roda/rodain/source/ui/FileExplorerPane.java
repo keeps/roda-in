@@ -16,7 +16,7 @@ import java.util.Observer;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.controlsfx.control.PopOver;
+import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.Footer;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.PathCollection;
@@ -25,7 +25,6 @@ import org.roda.rodain.source.representation.SourceDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
-import org.roda.rodain.utils.HelpPopOver;
 import org.roda.rodain.utils.Utils;
 import org.roda.rodain.utils.WalkFileTree;
 import org.slf4j.Logger;
@@ -40,6 +39,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Separator;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.ClipboardContent;
@@ -142,7 +142,9 @@ public class FileExplorerPane extends BorderPane implements Observer {
     top.setPadding(new Insets(15, 15, 15, 15));
     top.getChildren().add(title);
 
-    HelpPopOver.create(top, I18n.help("fileExplorer"), PopOver.ArrowLocation.LEFT_TOP, 240);
+    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
+      Tooltip.install(top, new Tooltip(I18n.help("tooltip.fileExplorer")));
+    }
   }
 
   private void createBottom() {
@@ -202,7 +204,10 @@ public class FileExplorerPane extends BorderPane implements Observer {
     associate.disableProperty().bind(RodaIn.getSchemePane().hasClassificationScheme().not());
     associate.setMinWidth(100);
     associate.setOnAction(event -> RodaIn.getSchemePane().startAssociation());
-    HelpPopOver.create(associate, I18n.help("associate"), PopOver.ArrowLocation.LEFT_BOTTOM, 125);
+
+    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
+      Tooltip.install(associate, new Tooltip(I18n.help("tooltip.associate")));
+    }
 
     bottom.getChildren().addAll(ignoreAndRemoveBox, space, associate);
   }
@@ -237,7 +242,9 @@ public class FileExplorerPane extends BorderPane implements Observer {
     load.getStyleClass().add("helpButton");
     loadBox.getChildren().add(load);
 
-    HelpPopOver.create(load, I18n.help("firstStep"), PopOver.ArrowLocation.LEFT_CENTER, 105);
+    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
+      Tooltip.install(load, new Tooltip(I18n.help("tooltip.firstStep")));
+    }
 
     box.getChildren().addAll(titleBox, loadBox);
     centerHelp.getChildren().add(box);

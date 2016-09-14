@@ -136,6 +136,14 @@ That's it! Binaries will be on the target folder. To run the application just do
 java -jar roda-in-app-x.y.z.jar
 ```
 
+RODA-in uses [TestFX](https://github.com/TestFX/TestFX) to execute tests using the user interface. 
+TestFX needs full control of the mouse and keyboard when running the tests, so you won't be able to use them. 
+In order to make the tests run in the headless mode (so that they can run in the background) follow these steps:
+
+1. Download the [Monocle](http://mvnrepository.com/artifact/org.testfx/openjfx-monocle) graphic environment jar 
+2. Copy the jar to `<JDK_HOME>/jre/lib/ext`
+3. Run the command `mvn clean package -Dtestfx.robot=glass -Dglass.platform=Monocle -Dmonocle.platform=Headless -Dprism.order=sw` 
+
 ## Troubleshooting
 
 ### How do I change the default metadata that is added to SIPs?
