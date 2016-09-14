@@ -38,7 +38,7 @@ public class SchemaTreeCell extends TreeCell<String> {
         getStyleClass().add("tree-cell");
 
       HBox hbox = new HBox();
-      hbox.setAlignment(Pos.BOTTOM_LEFT);
+      hbox.setAlignment(Pos.CENTER_LEFT);
       Label lab = new Label(item);
       lab.getStyleClass().add("cellText");
       ImageView icon = null;

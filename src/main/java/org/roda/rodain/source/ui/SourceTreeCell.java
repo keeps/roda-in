@@ -9,6 +9,7 @@ import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.source.ui.items.SourceTreeLoadMore;
 import org.roda.rodain.source.ui.items.SourceTreeLoading;
 
+import javafx.geometry.Pos;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
@@ -49,6 +50,7 @@ public class SourceTreeCell extends TreeCell<String> {
 
     if (!empty) {
       HBox hbox = new HBox(5);
+      hbox.setAlignment(Pos.CENTER_LEFT);
       Label lab = new Label(item);
       Label optionalLabel = null;
       lab.getStyleClass().add("cellText");
