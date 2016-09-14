@@ -1,5 +1,7 @@
 package org.roda.rodain.utils;
 
+import com.sun.javafx.scene.control.skin.VirtualFlow;
+
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -8,7 +10,6 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.DragEvent;
 
-import com.sun.javafx.scene.control.skin.VirtualFlow;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -17,6 +18,7 @@ import com.sun.javafx.scene.control.skin.VirtualFlow;
  *        Code based on:
  *        http://stackoverflow.com/questions/27687249/javafx-onmousedragged-not-
  *        getting-fired-when-dragging-an-item-in-a-treeview
+ *
  */
 @SuppressWarnings("restriction")
 public class AutoscrollTreeView<T> extends TreeView<T> {
@@ -192,6 +194,8 @@ public class AutoscrollTreeView<T> extends TreeView<T> {
   }
 
   private void scrollY(double offset) {
+    // apereira 14/09/2016 In the future, it may be possible to use JavaFX 9 VirtualFlow
+    // http://download.java.net/java/jdk9/jfxdocs/javafx/scene/control/skin/VirtualFlow.html
     VirtualFlow<?> flow = ((VirtualFlow<?>) lookup("VirtualFlow"));
     flow.adjustPixels(offset);
   }
