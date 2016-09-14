@@ -180,8 +180,25 @@ public class PathCollection {
       if (index > 0) {
         String parent = path.substring(0, index);
         if(Files.isDirectory(Paths.get(parent))) {
+          result = getStateWithoutAddingParents(parent);
+          addPath(path, result);
+        }
+      }
+    }
+    return result;
+  }
+
+  private static SourceTreeItemState getStateWithoutAddingParents(String path){
+    SourceTreeItemState result = SourceTreeItemState.NORMAL;
+    if (states.containsKey(path))
+      result = states.get(path);
+    else {
+      // get the state of the parent
+      int index = path.lastIndexOf(File.separator);
+      if (index > 0) {
+        String parent = path.substring(0, index);
+        if(Files.isDirectory(Paths.get(parent))) {
           result = getState(parent);
-//          addPath(path, result);
         }
       }
     }
