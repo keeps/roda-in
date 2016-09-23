@@ -67,6 +67,13 @@
     -fx-font-size: medium;
 }
 
+.inspectionPart .formSeparator {
+	-fx-font-size: large;
+    -fx-font-weight: bold;
+    -fx-text-fill: black;
+    -fx-alignment: center;
+}
+
 .toggle-button {
     -fx-background-color: transparent;
     -fx-border-color: transparent;

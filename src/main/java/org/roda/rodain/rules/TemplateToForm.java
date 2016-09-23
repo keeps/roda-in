@@ -1,8 +1,10 @@
 package org.roda.rodain.rules;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -51,6 +53,33 @@ public class TemplateToForm {
         }
         return options.fn();
       });
+      handlebars.registerHelper("ifCond", (context, options) -> {
+          // the first parameter of ifCond is placed in the context field by the
+          // parser
+          String condition = (context == null) ? "||" : context.toString();
+          List<Object> vals = Arrays.asList(options.params);
+          boolean display;
+          if (condition.equals("||")) {
+            display = false;
+            for (Object value : vals) {
+              if (value != null) {
+                display = true;
+                break;
+              }
+            }
+          } else if (condition.equals("&&")) {
+            display = true;
+            for (Object value : vals) {
+              if (value == null) {
+                display = false;
+                break;
+              }
+            }
+          } else {
+            display = false;
+          }
+          return display ? options.fn() : options.inverse();
+        });
       // Prevent errors from unknown helpers
       handlebars.registerHelperMissing((o, options) -> options.fn());
 
