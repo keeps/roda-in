@@ -515,20 +515,24 @@ public class InspectionPane extends BorderPane {
 
 			JSONObject jsonTemplateLabel = new JSONObject(templateLabel);
 			Label label = null;
+			String labelText = null;
 			
 			if (templateLabelI18N!=null && AppProperties.getLocalizedString(templateLabelI18N) != null) {
-				label = new Label(AppProperties.getLocalizedString(templateLabelI18N));
+				labelText =AppProperties.getLocalizedString(templateLabelI18N);
 			} else if (jsonTemplateLabel.keySet().contains(l.toString())) {
-				label = new Label((String) jsonTemplateLabel.get(l.toString()));
+				labelText =(String) jsonTemplateLabel.get(l.toString());
 			} else if (jsonTemplateLabel.keySet().contains(l.getLanguage())) {
-				label = new Label((String) jsonTemplateLabel.get(l.getLanguage()));
+				labelText =(String) jsonTemplateLabel.get(l.getLanguage());
 			} else {
-				label = new Label("N/A");
+				labelText ="N/A";
 			}
+			if (getBooleanOption(metadataValue.get(("mandatory")))){
+				labelText+=" *";
+			}
+			label = new Label(labelText);
+			
 			label.setWrapText(true);
 			label.getStyleClass().add("formLabel");
-			if (getBooleanOption(metadataValue.get(("mandatory"))))
-				label.setStyle(AppProperties.getStyle("boldFont"));
 			if (metadataValue.get("description") != null) {
 				label.setTooltip(new Tooltip((String) metadataValue.get("description")));
 			}
@@ -624,7 +628,7 @@ public class InspectionPane extends BorderPane {
 			optionsLabelsI18NPrefix = (String) metadataValue.get("optionsLabelI18nKeyPrefix");
 		}
 		comboList.add(new UIPair("", ""));
-
+		Map<String,UIPair> optionsMap = new HashMap<String,UIPair>();
 		if (optionsLabels != null) {
 			JSONObject jsonOptionsLabel = new JSONObject(optionsLabels);
 			if (optionsArray != null) {
@@ -637,15 +641,18 @@ public class InspectionPane extends BorderPane {
 					} else if (jsonOptionsLabel.keySet().contains(option)) {
 						// MAP
 						JSONObject labelOption = jsonOptionsLabel.getJSONObject(option);
+						UIPair pair = null;
 						if (labelOption.keySet().contains(l.toString())) {
-							comboList.add(new UIPair(option, labelOption.getString(l.toString())));
+							pair = new UIPair(option, labelOption.getString(l.toString()));
 						} else if (labelOption.keySet().contains(l.getLanguage())) {
-							comboList.add(new UIPair(option, labelOption.getString(l.getLanguage())));
+							pair = new UIPair(option, labelOption.getString(l.getLanguage()));
 						} else if (labelOption.keySet().contains("i18n")) {
-							comboList.add(new UIPair(option, "I18N"));
+							pair = new UIPair(option, "I18N");
 						} else {
-							comboList.add(new UIPair(option, "NOT FOUND"));
+							pair = new UIPair(option, "NOT FOUND");
 						}
+						optionsMap.put(option, pair);
+						comboList.add(pair);
 					} else {
 						comboList.add(new UIPair(option, option));
 					}
@@ -657,11 +664,21 @@ public class InspectionPane extends BorderPane {
 		comboBox.setMaxWidth(Double.MAX_VALUE);
 		comboBox.setUserData(metadataValue);
 		comboBox.valueProperty().addListener((observable, oldValue, newValue) -> metadataValue.set("value", newValue));
-		String currentValue = (String) metadataValue.get("value");
-		// TODO
-		// if (currentValue != null) {
-		// comboBox.getSelectionModel().select(currentValue);
-		// }
+		
+		if(metadataValue.get("value")!=null){
+			if(metadataValue.get("value") instanceof String){
+				String currentValue = (String) metadataValue.get("value");
+				if (currentValue != null && optionsMap.containsKey(currentValue)) {
+					comboBox.getSelectionModel().select(optionsMap.get(currentValue));
+				}
+			}else if(metadataValue.get("value") instanceof UIPair){
+				UIPair currentValue = (UIPair) metadataValue.get("value");
+				if (currentValue != null && optionsMap.containsKey(currentValue.getKey())) {
+					comboBox.getSelectionModel().select(optionsMap.get(currentValue.getKey()));
+				}
+			}
+		}
+		
 		addListenersToUpdateUI(metadataValue, comboBox.valueProperty());
 
 		return comboBox;

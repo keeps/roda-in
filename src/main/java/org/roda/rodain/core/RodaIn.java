@@ -334,7 +334,7 @@ public class RodaIn extends Application {
     langHU.setUserData("hu");
     langHU.setToggleGroup(languageGroup);
     langES_CL = new RadioMenuItem("Español (Chile)");
-    langES_CL.setUserData("es-CL");
+    langES_CL.setUserData("es_CL");
     langES_CL.setToggleGroup(languageGroup);
     language.getItems().addAll(langEN, langPT, langHU, langES_CL);
 

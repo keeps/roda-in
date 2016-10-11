@@ -1,16 +1,19 @@
 package org.roda.rodain.schema.ui;
 
+import java.util.Observable;
+import java.util.Observer;
+
+import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.sip.SipPreview;
+import org.roda.rodain.utils.FontAwesomeImageCreator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javafx.application.Platform;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
-import org.roda.rodain.sip.SipPreview;
-import org.roda.rodain.utils.FontAwesomeImageCreator;
-
-import java.util.Observable;
-import java.util.Observer;
-import java.util.ResourceBundle;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -21,6 +24,7 @@ public class SipPreviewNode extends TreeItem<String> implements Observer {
   private Image iconBlack, iconWhite;
 
   private boolean blackIconSelected = true;
+  private static final Logger LOGGER = LoggerFactory.getLogger(SipPreviewNode.class.getName());
 
   /**
    * Creates a new SipPreviewNode
@@ -64,9 +68,7 @@ public class SipPreviewNode extends TreeItem<String> implements Observer {
   public void updateDescriptionLevel(String descLevel) {
     sip.setDescriptionlevel(descLevel);
     try {
-      ResourceBundle hierarchyConfig = ResourceBundle.getBundle("properties/roda-description-levels-hierarchy");
-      String category = hierarchyConfig.getString("category." + descLevel);
-      String unicode = hierarchyConfig.getString("icon." + category);
+      String unicode = AppProperties.getConfig("levels.icon." + descLevel);
 
       Platform.runLater(() -> {
         iconBlack = FontAwesomeImageCreator.generate(unicode);
@@ -74,8 +76,10 @@ public class SipPreviewNode extends TreeItem<String> implements Observer {
         this.setGraphic(new ImageView(getIcon()));
       });
     } catch (Exception e) {
-      // We don't need to process this exception, since it's expected that there
-      // will be a lot of them thrown. It could happen because the user still
+      // We don't need to process this exception, since it's expected that
+      // there
+      // will be a lot of them thrown. It could happen because the user
+      // still
       // hasn't finished writing the new description level title
       return;
     }

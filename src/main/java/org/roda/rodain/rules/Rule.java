@@ -4,6 +4,8 @@ import javafx.concurrent.Task;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+
+import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.filters.ContentFilter;
 import org.roda.rodain.sip.*;
@@ -76,22 +78,14 @@ public class Rule extends Observable implements Observer, Comparable {
   }
 
   private void createIcon() {
-    ResourceBundle hierarchyConfig = ResourceBundle.getBundle("properties/roda-description-levels-hierarchy");
+    itemIconBlack = FontAwesomeImageCreator.generate(AppProperties.getConfig("levels.icon.item"));
+    itemIconWhite = FontAwesomeImageCreator.generate(AppProperties.getConfig("levels.icon.item"), Color.WHITE);
 
-    String category = hierarchyConfig.getString("category.item");
-    String unicode = hierarchyConfig.getString("icon." + category);
-    itemIconBlack = FontAwesomeImageCreator.generate(unicode);
-    itemIconWhite = FontAwesomeImageCreator.generate(unicode, Color.WHITE);
+    fileIconBlack = FontAwesomeImageCreator.generate(AppProperties.getConfig("levels.icon.file"));
+    fileIconWhite = FontAwesomeImageCreator.generate(AppProperties.getConfig("levels.icon.file"), Color.WHITE);
 
-    category = hierarchyConfig.getString("category.file");
-    unicode = hierarchyConfig.getString("icon." + category);
-    fileIconBlack = FontAwesomeImageCreator.generate(unicode);
-    fileIconWhite = FontAwesomeImageCreator.generate(unicode, Color.WHITE);
-
-    category = hierarchyConfig.getString("category.series");
-    unicode = hierarchyConfig.getString("icon." + category);
-    dObjIconBlack = FontAwesomeImageCreator.generate(unicode);
-    dObjIconWhite = FontAwesomeImageCreator.generate(unicode, Color.WHITE);
+    dObjIconBlack = FontAwesomeImageCreator.generate(AppProperties.getConfig("levels.icon.series"));
+    dObjIconWhite = FontAwesomeImageCreator.generate(AppProperties.getConfig("levels.icon.series"), Color.WHITE);
   }
 
   private void createFilters() {

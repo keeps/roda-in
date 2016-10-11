@@ -27,6 +27,7 @@ import javax.swing.filechooser.FileSystemView;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.roda.rodain.utils.FolderBasedUTF8Control;
 import org.roda.rodain.utils.Utils;
 import org.slf4j.Logger;
@@ -42,8 +43,7 @@ public class AppProperties {
   private static final Path rodainPath = computeRodainPath();
   private static final String ENV_VARIABLE = "RODAIN_HOME";
   private static final String CONFIGFOLDER = "roda-in";
-  private static PropertiesConfiguration style = load("styles"), config = load("config"), ext_config,
-    descLevels = load("roda-description-levels-hierarchy"), appConfig;
+  private static PropertiesConfiguration style = load("styles"), config = load("config"), ext_config, appConfig;
   private static PropertiesConfiguration start_ext_config, start_app_config;
   private static ResourceBundle resourceBundle, defaultResourceBundle, helpBundle, defaultHelpBundle;
   private static Locale locale;
@@ -65,7 +65,8 @@ public class AppProperties {
       // copy config file
       if (!Files.exists(configPath)) {
         Files.copy(ClassLoader.getSystemResourceAsStream("properties/config.properties"), configPath);
-      } else { // if the file already exists, we need to check if it's missing
+      } else { // if the file already exists, we need to check if it's
+               // missing
                // any properties
         PropertiesConfiguration internal = load("config");
         PropertiesConfiguration external = new PropertiesConfiguration();
@@ -89,8 +90,9 @@ public class AppProperties {
         }
       }
 
-      if(!Files.exists(rodainPath.resolve(".app.properties"))){
-        Files.copy(ClassLoader.getSystemResourceAsStream("properties/.app.properties"), rodainPath.resolve(".app.properties"));
+      if (!Files.exists(rodainPath.resolve(".app.properties"))) {
+        Files.copy(ClassLoader.getSystemResourceAsStream("properties/.app.properties"),
+          rodainPath.resolve(".app.properties"));
       }
 
       // copy metadata templates
@@ -101,7 +103,8 @@ public class AppProperties {
         String fileName = config.getString(templateName);
         Files.copy(ClassLoader.getSystemResourceAsStream("templates/" + fileName),
           rodainPath.resolve("samples").resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
-        // copy the sample to the templates folder too, if it doesn't exist
+        // copy the sample to the templates folder too, if it doesn't
+        // exist
         // already
         if (!Files.exists(rodainPath.resolve("templates").resolve(fileName))) {
           Files.copy(ClassLoader.getSystemResourceAsStream("templates/" + fileName),
@@ -111,16 +114,17 @@ public class AppProperties {
 
       String typesRaw = getConfig("metadata.types");
       String[] types = typesRaw.split(",");
-      for(String type :types) {
+      for (String type : types) {
         String schemaName = "metadata.type." + type.trim() + ".schema";
         String schemaFileName = config.getString(schemaName);
-        if(schemaFileName == null || schemaFileName.length() == 0){
+        if (schemaFileName == null || schemaFileName.length() == 0) {
           continue;
         }
         Files.copy(ClassLoader.getSystemResourceAsStream("templates/" + schemaFileName),
-                rodainPath.resolve("schemas").resolve(schemaFileName), StandardCopyOption.REPLACE_EXISTING);
+          rodainPath.resolve("schemas").resolve(schemaFileName), StandardCopyOption.REPLACE_EXISTING);
       }
-      // ensure that the xlink.xsd and xml.xsd files are in the application home
+      // ensure that the xlink.xsd and xml.xsd files are in the
+      // application home
       // folder
       Files.copy(ClassLoader.getSystemResourceAsStream("xlink.xsd"), rodainPath.resolve("schemas").resolve("xlink.xsd"),
         StandardCopyOption.REPLACE_EXISTING);
@@ -152,31 +156,43 @@ public class AppProperties {
       start_app_config.load(new FileInputStream(rodainPath.resolve(".app.properties").toFile()));
 
       String appLanguage = getAppConfig("app.language");
-      if (appLanguage != null && !"".equals(appLanguage)) {
-        locale = Locale.forLanguageTag(appLanguage);
-      } else {
-        locale = Locale.getDefault();
-      }
-
+      locale = parseLocale(appLanguage);
       resourceBundle = ResourceBundle.getBundle("properties/lang", locale, new FolderBasedUTF8Control());
       helpBundle = ResourceBundle.getBundle("properties/help", locale, new FolderBasedUTF8Control());
-      defaultResourceBundle = ResourceBundle.getBundle("properties/lang", Locale.ENGLISH,
-        new FolderBasedUTF8Control());
-      defaultHelpBundle = ResourceBundle.getBundle("properties/help", Locale.ENGLISH,
-          new FolderBasedUTF8Control());
+      defaultResourceBundle = ResourceBundle.getBundle("properties/lang", Locale.ENGLISH, new FolderBasedUTF8Control());
+      defaultHelpBundle = ResourceBundle.getBundle("properties/help", Locale.ENGLISH, new FolderBasedUTF8Control());
     } catch (IOException e) {
       LOGGER.error("Error copying config file", e);
     } catch (MissingResourceException e) {
-      LOGGER.info("Can't find the language resource for the current locale", e);
+      LOGGER.error("Can't find the language resource for the current locale", e);
       locale = Locale.forLanguageTag("en");
       resourceBundle = ResourceBundle.getBundle("properties/lang", locale, new FolderBasedUTF8Control());
       helpBundle = ResourceBundle.getBundle("properties/help", locale, new FolderBasedUTF8Control());
     } catch (ConfigurationException e) {
       LOGGER.error("Error loading the config file", e);
+    } catch (Throwable t) {
+      LOGGER.error("Error loading the config file", t);
     } finally {
       // force the default locale for the JVM
       Locale.setDefault(locale);
     }
+  }
+
+  public static Locale parseLocale(String localeString) {
+    Locale locale = Locale.ENGLISH;
+    if (StringUtils.isNotBlank(localeString)) {
+      String[] localeArgs = localeString.split("_");
+
+      if (localeArgs.length == 1) {
+        locale = new Locale(localeArgs[0]);
+      } else if (localeArgs.length == 2) {
+        locale = new Locale(localeArgs[0], localeArgs[1]);
+      } else if (localeArgs.length == 3) {
+        locale = new Locale(localeArgs[0], localeArgs[1], localeArgs[2]);
+      }
+    }
+
+    return locale;
   }
 
   private static void createFolderStructure() {
@@ -352,14 +368,12 @@ public class AppProperties {
    *          The name of the property (description levels hierarchy)
    * @return The value of the property (description levels hierarchy)
    */
-  public static String getDescLevels(String key) {
-    Object res = descLevels.getProperty(key);
-    if (res instanceof String) {
-      return (String) res;
-    }
-    // if it isn't a string then it must be a list Ex: a,b,c,d
-    return String.join(",", descLevels.getStringArray(key));
-  }
+  /*
+   * public static String getDescLevels(String key) { Object res =
+   * descLevels.getProperty(key); if (res instanceof String) { return (String)
+   * res; } // if it isn't a string then it must be a list Ex: a,b,c,d return
+   * String.join(",", descLevels.getStringArray(key)); }
+   */
 
   public static String getLocalizedString(String key, String languageTag) {
     ResourceBundle localResourceBundle = ResourceBundle.getBundle("properties/lang", Locale.forLanguageTag(languageTag),
@@ -369,7 +383,7 @@ public class AppProperties {
     try {
       result = localResourceBundle.getString(key);
     } catch (MissingResourceException e) {
-      LOGGER.warn(String.format("Missing translation for %s in language: %s", key,
+      LOGGER.trace(String.format("Missing translation for %s in language: %s", key,
         localResourceBundle.getLocale().getDisplayName()));
       result = getLocalizedString(key);
     }
@@ -388,11 +402,11 @@ public class AppProperties {
     try {
       result = resourceBundle.getString(key);
     } catch (MissingResourceException e) {
-      LOGGER.warn(String.format("Missing translation for %s in language: %s", key, locale.getDisplayName()));
+      LOGGER.trace(String.format("Missing translation for %s in language: %s", key, locale.getDisplayName()));
       try {
         result = defaultResourceBundle.getString(key);
       } catch (Exception e1) {
-        LOGGER.warn(String.format("Missing translation for %s in language: %s", key, Locale.ENGLISH));
+        LOGGER.trace(String.format("Missing translation for %s in language: %s", key, Locale.ENGLISH));
       }
     }
     return result;
@@ -402,13 +416,14 @@ public class AppProperties {
     String result = null;
     try {
       result = helpBundle.getString(key);
-      if("".equals(result)) throw new MissingResourceException("", "", key);
+      if ("".equals(result))
+        throw new MissingResourceException("", "", key);
     } catch (MissingResourceException e) {
-      LOGGER.warn(String.format("Missing translation for help %s in language: %s", key, locale.getDisplayName()));
+      LOGGER.trace(String.format("Missing translation for help %s in language: %s", key, locale.getDisplayName()));
       try {
         result = defaultHelpBundle.getString(key);
       } catch (Exception e1) {
-        LOGGER.warn(String.format("Missing translation for help %s in language: %s", key, Locale.ENGLISH));
+        LOGGER.trace(String.format("Missing translation for help %s in language: %s", key, Locale.ENGLISH));
       }
     }
     return result;
@@ -426,11 +441,11 @@ public class AppProperties {
     ext_config.setProperty(key, value);
   }
 
-  public static void setAppConfig(String key, String value){
+  public static void setAppConfig(String key, String value) {
     appConfig.setProperty(key, value);
   }
 
-  public static String getAppConfig(String key){
+  public static String getAppConfig(String key) {
     Object res = null;
     if (appConfig != null && appConfig.containsKey(key)) {
       res = appConfig.getProperty(key);
@@ -461,13 +476,16 @@ public class AppProperties {
           if (temp.containsKey(s) && !ext_config.containsKey(s)) {
             ext_config.addProperty(s, temp.getProperty(s));
           } else {
-            // check if there's any property in the current file that is
+            // check if there's any property in the current file
+            // that is
             // different
-            // from the ones we loaded in the beginning of the execution of the
+            // from the ones we loaded in the beginning of the
+            // execution of the
             // application.
             if (temp.containsKey(s) && start_ext_config.containsKey(s)
               && !temp.getProperty(s).equals(start_ext_config.getProperty(s))) {
-              // Set the property to keep the changes made outside the
+              // Set the property to keep the changes made outside
+              // the
               // application
               ext_config.setProperty(s, temp.getProperty(s));
             }
@@ -494,11 +512,14 @@ public class AppProperties {
           if (temp.containsKey(s) && !appConfig.containsKey(s)) {
             appConfig.addProperty(s, temp.getProperty(s));
           } else {
-            // check if there's any property in the current file that is different
-            // from the ones we loaded in the beginning of the execution of the application.
+            // check if there's any property in the current file
+            // that is different
+            // from the ones we loaded in the beginning of the
+            // execution of the application.
             if (temp.containsKey(s) && start_app_config.containsKey(s)
-                && !temp.getProperty(s).equals(start_app_config.getProperty(s))) {
-              // Set the property to keep the changes made outside the
+              && !temp.getProperty(s).equals(start_app_config.getProperty(s))) {
+              // Set the property to keep the changes made outside
+              // the
               // application
               appConfig.setProperty(s, temp.getProperty(s));
             }

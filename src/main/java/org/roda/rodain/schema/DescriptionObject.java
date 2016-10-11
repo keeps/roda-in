@@ -179,13 +179,27 @@ public class DescriptionObject extends Observable {
 				Set<MetadataValue> values = getMetadataValueMap(dom);
 				if (values != null) {
 					values.forEach(metadataValue -> {
-						String val = (String) metadataValue.get("value");
-						if (val != null) {
-							val = val.replaceAll("\\s", "");
-							if (!"".equals(val)) {
-								data.put((String) metadataValue.get("name"), (String) metadataValue.get("value"));
+						if(metadataValue.get("value")!=null && metadataValue.get("value") instanceof String){
+							String val = (String) metadataValue.get("value");
+							if (val != null) {
+								val = val.replaceAll("\\s", "");
+								if (!"".equals(val)) {
+									data.put((String) metadataValue.get("name"), (String) metadataValue.get("value"));
+								}
+							}
+						}else if(metadataValue.get("value")!=null && metadataValue.get("value") instanceof UIPair){
+							UIPair valPair = (UIPair) metadataValue.get("value");
+							if (valPair != null) {
+								String val = (String) valPair.getKey();
+								val = val.replaceAll("\\s", "");
+								if (!"".equals(val)) {
+									data.put((String) metadataValue.get("name"), (String)valPair.getKey());
+								}
 							}
 						}
+						
+						
+						
 					});
 				}
 				content = tmpl.apply(data);

@@ -13,11 +13,14 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.ui.RuleModalController;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.sip.SipPreview;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -41,6 +44,8 @@ public class SchemaNode extends TreeItem<String> implements Observer {
   private boolean removed = false;
 
   private Set<SchemaNode> schemaNodes;
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(SchemaNode.class.getName());
 
   /**
    * Creates a new SchemaNode
@@ -229,12 +234,8 @@ public class SchemaNode extends TreeItem<String> implements Observer {
   public void updateDescriptionLevel(String descLevel) {
     dob.setDescriptionlevel(descLevel);
     try {
-      ResourceBundle hierarchyConfig = ResourceBundle.getBundle("properties/roda-description-levels-hierarchy");
-      String[] levels = hierarchyConfig.getString("levels_ordered").split(",");
-      if (Arrays.asList(levels).contains(descLevel)) {
-        String category = hierarchyConfig.getString("category." + descLevel);
-        String unicode = hierarchyConfig.getString("icon." + category);
-
+    	String unicode = AppProperties.getConfig("levels.icon."+descLevel);
+      if (unicode!=null) {
         Platform.runLater(() -> {
           iconBlack = FontAwesomeImageCreator.generate(unicode);
           iconWhite = FontAwesomeImageCreator.generate(unicode, Color.WHITE);
