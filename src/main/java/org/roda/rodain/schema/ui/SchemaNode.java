@@ -241,6 +241,15 @@ public class SchemaNode extends TreeItem<String> implements Observer {
           iconWhite = FontAwesomeImageCreator.generate(unicode, Color.WHITE);
           this.setGraphic(new ImageView(getIcon()));
         });
+      }else{
+        String unicodeDefault = AppProperties.getConfig("levels.internal.icon.default");
+        if (unicodeDefault!=null) {
+          Platform.runLater(() -> {
+            iconBlack = FontAwesomeImageCreator.generate(unicodeDefault);
+            iconWhite = FontAwesomeImageCreator.generate(unicodeDefault, Color.WHITE);
+            this.setGraphic(new ImageView(getIcon()));
+          });
+        }
       }
     } catch (Exception e) {
       // We don't need to process this exception, since it's expected that there
