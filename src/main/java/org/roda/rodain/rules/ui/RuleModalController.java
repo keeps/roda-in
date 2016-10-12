@@ -59,7 +59,7 @@ public class RuleModalController {
     stage.setHeight(580);
 
     LoadingPane loadingPane = new LoadingPane(schemaNode);
-    stage.setRoot(loadingPane);
+    stage.setRoot(loadingPane,false);
 
     sourceSet = source;
     schema = schemaNode;
@@ -72,7 +72,7 @@ public class RuleModalController {
       }
     };
 
-    task.setOnSucceeded(event -> Platform.runLater(() -> stage.setRoot(pane)));
+    task.setOnSucceeded(event -> Platform.runLater(() -> stage.setRoot(pane,false)));
 
     new Thread(task).start();
   }
@@ -148,7 +148,7 @@ public class RuleModalController {
       Platform.runLater(() -> {
         RuleModalProcessing processing = new RuleModalProcessing((SipPreviewCreator) visitor, visitor, visitors,
           fileWalker);
-        stage.setRoot(processing);
+        stage.setRoot(processing,false);
         stage.setHeight(180);
         stage.setWidth(400);
         stage.centerOnScreen();
@@ -175,7 +175,7 @@ public class RuleModalController {
     } else {
       removing = new RuleModalRemoving();
       r.addObserver(removing);
-      stage.setRoot(removing);
+      stage.setRoot(removing,false);
       stage.setHeight(120);
       stage.setWidth(400);
       stage.centerOnScreen();
@@ -199,7 +199,7 @@ public class RuleModalController {
     } else {
       removing = new RuleModalRemoving();
       sip.addObserver(removing);
-      stage.setRoot(removing);
+      stage.setRoot(removing,false);
       stage.setHeight(120);
       stage.setWidth(400);
       stage.centerOnScreen();

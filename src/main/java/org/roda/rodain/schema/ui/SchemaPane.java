@@ -138,7 +138,7 @@ public class SchemaPane extends BorderPane {
     topBox.setAlignment(Pos.CENTER_LEFT);
     topBox.getChildren().add(title);
 
-    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
+    if (Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
       Tooltip.install(topBox, new Tooltip(I18n.help("tooltip.schemaPane")));
     }
   }
@@ -174,7 +174,7 @@ public class SchemaPane extends BorderPane {
     load.getStyleClass().add("helpButton");
     loadBox.getChildren().add(load);
 
-    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
+    if (Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
       Tooltip.install(load, new Tooltip(I18n.help("tooltip.secondStep")));
     }
 
@@ -292,7 +292,8 @@ public class SchemaPane extends BorderPane {
   }
 
   private void createRootNode() {
-    DescriptionObject dobj = new DescriptionObject(new DescObjMetadata(MetadataOptions.TEMPLATE, "ead2002", "ead", "2002"));
+    DescriptionObject dobj = new DescriptionObject(
+      new DescObjMetadata(MetadataOptions.TEMPLATE, "ead2002", "ead", "2002"));
     dobj.setParentId(null);
     dobj.setId(null);
     rootNode = new SchemaNode(dobj);
@@ -523,7 +524,7 @@ public class SchemaPane extends BorderPane {
 
     bottom.getChildren().addAll(addLevel, removeLevel, space, export);
 
-    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
+    if (Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
       Tooltip.install(export, new Tooltip(I18n.help("tooltip.export")));
     }
   }
@@ -609,41 +610,51 @@ public class SchemaPane extends BorderPane {
     if (selectedItem instanceof SchemaNode) {
       selected = (SchemaNode) selectedItem;
     }
+    ModalStage modalStage = new ModalStage(primaryStage);
+    AddMetadataPane addMetadataPane = new AddMetadataPane(modalStage,
+      selected != null ? selected.getDob() : rootNode.getDob());
+    modalStage.setRoot(addMetadataPane, true);
+    if (addMetadataPane.getMetadataToAdd() != null) {
+      DescriptionObject dobj = new DescriptionObject(addMetadataPane.getMetadataToAdd());
 
-    DescriptionObject dobj = new DescriptionObject(new DescObjMetadata(MetadataOptions.TEMPLATE, "ead2002", "ead", "2002"));
-    dobj.setId("ID" + UUID.randomUUID().toString());
-    dobj.setTitle(I18n.t("SchemaPane.newNode"));
-    dobj.setDescriptionlevel("series");
-    SchemaNode newNode = new SchemaNode(dobj);
-    if (selected != null) {
-      dobj.setParentId(selected.getDob().getId());
-      selected.getChildren().add(newNode);
-      selected.addChildrenNode(newNode);
-      selected.sortChildren();
-      if (!selected.isExpanded())
-        selected.setExpanded(true);
+      dobj.setId("ID" + UUID.randomUUID().toString());
+      dobj.setTitle(I18n.t("SchemaPane.newNode"));
+      dobj.setDescriptionlevel("series");
+      SchemaNode newNode = new SchemaNode(dobj);
+      if (selected != null) {
+        dobj.setParentId(selected.getDob().getId());
+        selected.getChildren().add(newNode);
+        selected.addChildrenNode(newNode);
+        selected.sortChildren();
+        if (!selected.isExpanded())
+          selected.setExpanded(true);
+      } else {
+        newNode.updateDescriptionLevel("fonds");
+        rootNode.getChildren().add(newNode);
+        rootNode.addChildrenNode(newNode);
+        schemaNodes.add(newNode);
+        sortRootChildren();
+      }
+      setCenter(treeBox);
+
+      // Edit the node's title as soon as it's created
+      treeView.layout();
+      treeView.edit(newNode);
+      treeView.getSelectionModel().clearSelection();
+      treeView.getSelectionModel().select(newNode);
+      treeView.scrollTo(treeView.getSelectionModel().getSelectedIndex());
+      modifiedPlan = true;
+
+      return newNode;
     } else {
-      newNode.updateDescriptionLevel("fonds");
-      rootNode.getChildren().add(newNode);
-      rootNode.addChildrenNode(newNode);
-      schemaNodes.add(newNode);
-      sortRootChildren();
+      return null;
     }
-    setCenter(treeBox);
-
-    // Edit the node's title as soon as it's created
-    treeView.layout();
-    treeView.edit(newNode);
-    treeView.getSelectionModel().clearSelection();
-    treeView.getSelectionModel().select(newNode);
-    treeView.scrollTo(treeView.getSelectionModel().getSelectedIndex());
-    modifiedPlan = true;
-
-    return newNode;
   }
+
 
   /**
    * Starts the association process.
+   * 
    * @see #startAssociation()
    */
   public void startAssociation() {
@@ -657,7 +668,10 @@ public class SchemaPane extends BorderPane {
   }
 
   /**
-   * Starts the association process by getting the currently selected items from the file explorer and initializing the modal that creates the association rule.
+   * Starts the association process by getting the currently selected items from
+   * the file explorer and initializing the modal that creates the association
+   * rule.
+   * 
    * @param descObj
    */
   public void startAssociation(SchemaNode descObj) {
@@ -914,22 +928,26 @@ public class SchemaPane extends BorderPane {
 
   /**
    * Sets the modifiedPlan variable.
-   * @param b The new value.
+   * 
+   * @param b
+   *          The new value.
    */
   public void setModifiedPlan(boolean b) {
     modifiedPlan = b;
   }
 
   /**
-   * @return The property which can be used to know if a classification scheme is present or not.
+   * @return The property which can be used to know if a classification scheme
+   *         is present or not.
    */
   public BooleanProperty hasClassificationScheme() {
     return hasClassificationScheme;
   }
 
   /**
-   * @return A map with all the description objects of the tree (not only the SIPs but also the hierarchy).
-   * Each key is a description object and each value is a list of that object's ancestors IDs.
+   * @return A map with all the description objects of the tree (not only the
+   *         SIPs but also the hierarchy). Each key is a description object and
+   *         each value is a list of that object's ancestors IDs.
    */
   public Map<DescriptionObject, List<String>> getAllDescriptionObjects() {
     Set<SchemaNode> localSchemaNodes = new HashSet<>(schemaNodes);
@@ -941,19 +959,21 @@ public class SchemaPane extends BorderPane {
       sipsMap.putAll(sn.getSipPreviews());
       descObjsMap.putAll(sn.getDescriptionObjects());
     }
-    // we don't want to return the root, since its a hidden node that is only useful for presentation
+    // we don't want to return the root, since its a hidden node that is only
+    // useful for presentation
     descObjsMap.remove(rootNode.getDob());
     // filter out the SIPs marked as "removed"
-    sipsMap = sipsMap.entrySet().stream().parallel().filter(p -> !p.getKey().isRemoved()).collect(Collectors.toMap(
-            p -> p.getKey(), p -> p.getValue()));
+    sipsMap = sipsMap.entrySet().stream().parallel().filter(p -> !p.getKey().isRemoved())
+      .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
 
     descObjsMap.putAll(sipsMap);
     return descObjsMap;
   }
 
   /**
-   * @return A map with the selected description objects of the tree (not only the SIPs but also the hierarchy).
-   * Each key is a description object and each value is a list of that object's ancestors IDs.
+   * @return A map with the selected description objects of the tree (not only
+   *         the SIPs but also the hierarchy). Each key is a description object
+   *         and each value is a list of that object's ancestors IDs.
    */
   public Map<DescriptionObject, List<String>> getSelectedDescriptionObjects() {
     Map<SipPreview, List<String>> sipsMap = new HashMap<>();
@@ -974,12 +994,13 @@ public class SchemaPane extends BorderPane {
         }
       }
     }
-    if (sipsMap.isEmpty() && descObjsMap.isEmpty()) {// add all the SIPs to the result map
+    if (sipsMap.isEmpty() && descObjsMap.isEmpty()) {// add all the SIPs to the
+                                                     // result map
       descObjsMap = getAllDescriptionObjects();
-    }else{
+    } else {
       // filter out the SIPs marked as "removed"
-      sipsMap = sipsMap.entrySet().stream().parallel().filter(p -> !p.getKey().isRemoved()).collect(Collectors.toMap(
-          p -> p.getKey(), p -> p.getValue()));
+      sipsMap = sipsMap.entrySet().stream().parallel().filter(p -> !p.getKey().isRemoved())
+        .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
       descObjsMap.putAll(sipsMap);
     }
     return descObjsMap;

@@ -52,6 +52,18 @@ public class AddMetadataPane extends BorderPane {
   private Path selectedPath;
 
   private ComboBox<UIPair> comboTypesSingleFile, comboTypesNewFile;
+  
+  private DescObjMetadata metadataToAdd;
+  
+  
+
+  public DescObjMetadata getMetadataToAdd() {
+    return metadataToAdd;
+  }
+
+  public void setMetadataToAdd(DescObjMetadata metadataToAdd) {
+    this.metadataToAdd = metadataToAdd;
+  }
 
   public AddMetadataPane(Stage stage, DescriptionObject descriptionObject) {
     this.stage = stage;
@@ -275,7 +287,7 @@ public class AddMetadataPane extends BorderPane {
         return;
       if (selected.getUserData() instanceof OPTIONS) {
         OPTIONS option = (OPTIONS) selected.getUserData();
-        DescObjMetadata metadataToAdd = null;
+        metadataToAdd = null;
         switch (option) {
           case TEMPLATE:
             String rawTemplateType = (String) templateTypes.getSelectionModel().getSelectedItem().getKey();

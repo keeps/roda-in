@@ -518,7 +518,7 @@ public class RodaIn extends Application {
     final MenuItem helpPage = new MenuItem(I18n.t("Main.helpPage"));
     helpPage.setOnAction(event ->{
       ModalStage modalStage = new ModalStage(stage);
-      modalStage.setRoot(new HelpModal(modalStage));
+      modalStage.setRoot(new HelpModal(modalStage),false);
     });
 
     menuHelp.getItems().addAll(language, checkVersion, showHelp, helpPage);

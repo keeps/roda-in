@@ -54,7 +54,7 @@ public class ModalStage extends Stage {
    * @param root
    *          The pane to be set as root.
    */
-  public void setRoot(Parent root) {
+  public void setRoot(Parent root, boolean showAndWait) {
     this.getScene().setRoot(root);
 
     primaryStage.getScene().getRoot().setEffect(colorAdjust);
@@ -72,8 +72,12 @@ public class ModalStage extends Stage {
       thisDialog.setX(event.getScreenX() + dragDelta.x);
       thisDialog.setY(event.getScreenY() + dragDelta.y);
     });
-
-    show();
+    if(showAndWait){
+      showAndWait();
+    }else{
+      show();
+    }
+    
   }
 
   // records relative x and y co-ordinates.

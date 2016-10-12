@@ -14,6 +14,10 @@ public class MetadataValue implements Comparable {
   private String id;
   private Map<String, Object> options;
 
+  public MetadataValue(){
+    this.id = null;
+    this.options = new HashMap<>();
+  }
   /**
    * Creates a new MetadataValue object.
    *

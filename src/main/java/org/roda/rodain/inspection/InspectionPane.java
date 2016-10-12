@@ -460,7 +460,7 @@ public class InspectionPane extends BorderPane {
 	private void addMetadataAction() {
 		ModalStage modalStage = new ModalStage(stage);
 		AddMetadataPane addMetadataPane = new AddMetadataPane(modalStage, currentDescOb);
-		modalStage.setRoot(addMetadataPane);
+		modalStage.setRoot(addMetadataPane,false);
 	}
 
 	private void validationAction() {
