@@ -9,6 +9,7 @@ import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.filters.ContentFilter;
+import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.sip.PseudoDescriptionObject;
 import org.roda.rodain.sip.PseudoItem;
@@ -134,7 +135,7 @@ public class SipsWithStructure extends SipPreviewCreator {
       }
 
       // make this node a description object
-      DescriptionObject descriptionObject = new DescriptionObject();
+      DescriptionObject descriptionObject = new DescriptionObject(new DescObjMetadata(MetadataOptions.TEMPLATE, templateType, metadataType, metadataVersion));
       descriptionObject.setTitle(path.getFileName().toString());
       descriptionObject.setDescriptionlevel("series");
       descriptionObjects.put(path, descriptionObject);

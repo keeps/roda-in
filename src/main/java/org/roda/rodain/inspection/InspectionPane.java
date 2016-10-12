@@ -1560,8 +1560,7 @@ public class InspectionPane extends BorderPane {
 		currentSIPNode = null;
 		this.selectedItems = selectedItems;
 		// create a temporary description object to hold the metadata
-		currentDescOb = new DescriptionObject();
-		currentDescOb.getMetadata().clear();
+		
 
 		Map<String, MetadataValue> commonMV = new HashMap<>();
 		String commonTemplate = null, commonVersion = null, commonMetadataType = null;
@@ -1614,7 +1613,8 @@ public class InspectionPane extends BorderPane {
 				}
 			}
 		}
-
+		currentDescOb = new DescriptionObject(new DescObjMetadata(MetadataOptions.TEMPLATE, commonTemplate, commonMetadataType, commonVersion));
+                currentDescOb.getMetadata().clear();
 		if (common) {
 			DescObjMetadata dobm = new DescObjMetadata(MetadataOptions.TEMPLATE, commonTemplate, commonMetadataType,
 					commonVersion);

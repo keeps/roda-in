@@ -37,10 +37,10 @@ public class DescriptionObject extends Observable {
 	private List<DescObjMetadata> metadata = new ArrayList<>();
 	private Map<String, Object> additionalProperties = new TreeMap<>();
 
-	public DescriptionObject() {
+	public DescriptionObject(DescObjMetadata template) {
 		title = I18n.t("root");
 		id = "ID" + UUID.randomUUID().toString();
-		metadata.add(new DescObjMetadata(MetadataOptions.TEMPLATE, "ead", "ead2002", "2002"));
+		metadata.add(template);
 	}
 
 	/**

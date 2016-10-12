@@ -46,7 +46,7 @@ public class DescObjMetadata {
     this.templateType = templateType;
     this.version = version;
     this.contentEncoding = "Base64";
-    this.id = templateType + ".xml";
+    this.id = templateType + ".xml.hbs";
     this.metadataType = metadataType;
   }
 

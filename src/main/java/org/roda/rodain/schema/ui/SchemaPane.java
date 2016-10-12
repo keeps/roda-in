@@ -18,9 +18,12 @@ import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.Footer;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.RodaIn;
+import org.roda.rodain.inspection.AddMetadataPane;
+import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.rules.ui.RuleModalController;
 import org.roda.rodain.schema.ClassificationSchema;
+import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.sip.SipPreview;
 import org.roda.rodain.source.ui.SourceTreeCell;
@@ -29,6 +32,7 @@ import org.roda.rodain.source.ui.items.SourceTreeFile;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.AutoscrollTreeView;
+import org.roda.rodain.utils.ModalStage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -288,7 +292,7 @@ public class SchemaPane extends BorderPane {
   }
 
   private void createRootNode() {
-    DescriptionObject dobj = new DescriptionObject();
+    DescriptionObject dobj = new DescriptionObject(new DescObjMetadata(MetadataOptions.TEMPLATE, "ead2002", "ead", "2002"));
     dobj.setParentId(null);
     dobj.setId(null);
     rootNode = new SchemaNode(dobj);
@@ -606,7 +610,7 @@ public class SchemaPane extends BorderPane {
       selected = (SchemaNode) selectedItem;
     }
 
-    DescriptionObject dobj = new DescriptionObject();
+    DescriptionObject dobj = new DescriptionObject(new DescObjMetadata(MetadataOptions.TEMPLATE, "ead2002", "ead", "2002"));
     dobj.setId("ID" + UUID.randomUUID().toString());
     dobj.setTitle(I18n.t("SchemaPane.newNode"));
     dobj.setDescriptionlevel("series");

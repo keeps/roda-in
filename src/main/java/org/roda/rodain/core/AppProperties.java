@@ -65,7 +65,7 @@ public class AppProperties {
       // copy config file
       if (!Files.exists(configPath)) {
         Files.copy(ClassLoader.getSystemResourceAsStream("properties/config.properties"), configPath);
-      } else { // if the file already exists, we need to check if it's
+      }/* else { // if the file already exists, we need to check if it's
                // missing
                // any properties
         PropertiesConfiguration internal = load("config");
@@ -88,7 +88,7 @@ public class AppProperties {
           OutputStream out = new FileOutputStream(configPath.toFile());
           external.save(out);
         }
-      }
+      }*/
 
       if (!Files.exists(rodainPath.resolve(".app.properties"))) {
         Files.copy(ClassLoader.getSystemResourceAsStream("properties/.app.properties"),

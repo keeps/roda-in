@@ -1,6 +1,7 @@
 package org.roda.rodain.sip;
 
 import org.roda.rodain.core.PathCollection;
+import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.DescriptionObject;
@@ -32,6 +33,7 @@ public class SipPreview extends DescriptionObject implements Observer {
    *          The metadata of the SIP
    */
   public SipPreview(String name, Set<SipRepresentation> representations, DescObjMetadata metadata) {
+    super(new DescObjMetadata(MetadataOptions.TEMPLATE, "ead2002", "ead", "2002"));
     this.representations = representations;
     documentation = new HashSet<>();
     setTitle(name);
