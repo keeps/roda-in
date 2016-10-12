@@ -619,7 +619,7 @@ public class SchemaPane extends BorderPane {
 
       dobj.setId("ID" + UUID.randomUUID().toString());
       dobj.setTitle(I18n.t("SchemaPane.newNode"));
-      dobj.setDescriptionlevel("series");
+      dobj.setDescriptionlevel("internal.series");
       SchemaNode newNode = new SchemaNode(dobj);
       if (selected != null) {
         dobj.setParentId(selected.getDob().getId());
@@ -629,12 +629,13 @@ public class SchemaPane extends BorderPane {
         if (!selected.isExpanded())
           selected.setExpanded(true);
       } else {
-        newNode.updateDescriptionLevel("fonds");
+        newNode.updateDescriptionLevel("internal.fonds");
         rootNode.getChildren().add(newNode);
         rootNode.addChildrenNode(newNode);
         schemaNodes.add(newNode);
         sortRootChildren();
       }
+      selectedItem = newNode;
       setCenter(treeBox);
 
       // Edit the node's title as soon as it's created

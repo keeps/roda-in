@@ -41,7 +41,7 @@ public class SipPreview extends DescriptionObject implements Observer {
     if (metadata != null)
       tempList.add(metadata);
     setMetadata(tempList);
-    setDescriptionlevel("item");
+    setDescriptionlevel("internal.item");
     setId("ID" + UUID.randomUUID().toString());
     contentType = new IPContentType(IPContentType.IPContentTypeEnum.MIXED);
 
