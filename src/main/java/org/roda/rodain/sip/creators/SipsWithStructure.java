@@ -137,7 +137,7 @@ public class SipsWithStructure extends SipPreviewCreator {
       // make this node a description object
       DescriptionObject descriptionObject = new DescriptionObject(new DescObjMetadata(MetadataOptions.TEMPLATE, templateType, metadataType, metadataVersion));
       descriptionObject.setTitle(path.getFileName().toString());
-      descriptionObject.setDescriptionlevel("internal.series");
+      descriptionObject.setDescriptionlevel("internal.otherlevel");
       descriptionObjects.put(path, descriptionObject);
 
       // Set this node as a parent of its descriptionObject children (which can
@@ -225,7 +225,7 @@ public class SipsWithStructure extends SipPreviewCreator {
     // set the SIP's description level as file if there's more than one file in
     // the content
     if (node.getChildren().size() > 1) {
-      sipPreview.setDescriptionlevel("internal.file");
+      sipPreview.setDescriptionlevel("internal.fileLevel");
     }
 
     sipPreviewMap.put(path, sipPreview);

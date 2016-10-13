@@ -27,7 +27,7 @@ import java.util.TreeSet;
 @JsonIgnoreProperties({"path", "loaded", "version"})
 public class DescObjMetadata {
   private static final Logger LOGGER = LoggerFactory.getLogger(DescObjMetadata.class.getName());
-  private String id, content, contentEncoding, metadataType;
+  private String id, content, contentEncoding, metadataType, label;
   private Map<String, Object> additionalProperties = new HashMap<>();
   private TreeSet<MetadataValue> values;
   private Path path;
@@ -278,4 +278,14 @@ public class DescObjMetadata {
     return result;
   }
 
+  @Override
+  public String toString() {
+    return "DescObjMetadata [id=" + id + ", content=" + content + ", contentEncoding=" + contentEncoding
+      + ", metadataType=" + metadataType + ", additionalProperties=" + additionalProperties + ", values=" + values
+      + ", path=" + path + ", loaded=" + loaded + ", creatorOption=" + creatorOption + ", version=" + version
+      + ", templateType=" + templateType + "]";
+  }
+
+  
+  
 }

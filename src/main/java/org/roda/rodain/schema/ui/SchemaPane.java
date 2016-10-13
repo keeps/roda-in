@@ -611,15 +611,14 @@ public class SchemaPane extends BorderPane {
       selected = (SchemaNode) selectedItem;
     }
     ModalStage modalStage = new ModalStage(primaryStage);
-    AddMetadataPane addMetadataPane = new AddMetadataPane(modalStage,
-      selected != null ? selected.getDob() : rootNode.getDob());
+    AddMetadataPane addMetadataPane = new AddMetadataPane(modalStage, null);
     modalStage.setRoot(addMetadataPane, true);
     if (addMetadataPane.getMetadataToAdd() != null) {
       DescriptionObject dobj = new DescriptionObject(addMetadataPane.getMetadataToAdd());
 
       dobj.setId("ID" + UUID.randomUUID().toString());
       dobj.setTitle(I18n.t("SchemaPane.newNode"));
-      dobj.setDescriptionlevel("internal.series");
+      dobj.setDescriptionlevel("internal.otherLevel");
       SchemaNode newNode = new SchemaNode(dobj);
       if (selected != null) {
         dobj.setParentId(selected.getDob().getId());
@@ -629,7 +628,7 @@ public class SchemaPane extends BorderPane {
         if (!selected.isExpanded())
           selected.setExpanded(true);
       } else {
-        newNode.updateDescriptionLevel("internal.fonds");
+        newNode.updateDescriptionLevel("internal.topLevel");
         rootNode.getChildren().add(newNode);
         rootNode.addChildrenNode(newNode);
         schemaNodes.add(newNode);

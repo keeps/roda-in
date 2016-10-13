@@ -78,14 +78,14 @@ public class Rule extends Observable implements Observer, Comparable {
   }
 
   private void createIcon() {
-    itemIconBlack = FontAwesomeImageCreator.generate(AppProperties.getConfig("levels.icon.internal.item"));
-    itemIconWhite = FontAwesomeImageCreator.generate(AppProperties.getConfig("levels.icon.internal.item"), Color.WHITE);
+    itemIconBlack = FontAwesomeImageCreator.generate(AppProperties.getConfig("levels.icon.internal.itemLevel"));
+    itemIconWhite = FontAwesomeImageCreator.generate(AppProperties.getConfig("levels.icon.internal.itemLevel"), Color.WHITE);
 
-    fileIconBlack = FontAwesomeImageCreator.generate(AppProperties.getConfig("levels.icon.internal.file"));
-    fileIconWhite = FontAwesomeImageCreator.generate(AppProperties.getConfig("levels.icon.internal.file"), Color.WHITE);
+    fileIconBlack = FontAwesomeImageCreator.generate(AppProperties.getConfig("levels.icon.internal.fileLevel"));
+    fileIconWhite = FontAwesomeImageCreator.generate(AppProperties.getConfig("levels.icon.internal.fileLevel"), Color.WHITE);
 
-    dObjIconBlack = FontAwesomeImageCreator.generate(AppProperties.getConfig("levels.icon.internal.series"));
-    dObjIconWhite = FontAwesomeImageCreator.generate(AppProperties.getConfig("levels.icon.internal.series"), Color.WHITE);
+    dObjIconBlack = FontAwesomeImageCreator.generate(AppProperties.getConfig("levels.icon.internal.otherLevel"));
+    dObjIconWhite = FontAwesomeImageCreator.generate(AppProperties.getConfig("levels.icon.internal.otherLevel"), Color.WHITE);
   }
 
   private void createFilters() {
@@ -246,7 +246,7 @@ public class Rule extends Observable implements Observer, Comparable {
           SipPreview sipPreview = visit.getNext();
           sipPreview.setParentId(parentID);
           SipPreviewNode sipNode;
-          if ("internal.item".equals(sipPreview.getDescriptionlevel()))
+          if ("internal.itemLevel".equals(sipPreview.getDescriptionlevel()))
             sipNode = new SipPreviewNode(sipPreview, itemIconBlack, itemIconWhite);
           else
             sipNode = new SipPreviewNode(sipPreview, fileIconBlack, fileIconWhite);
@@ -309,7 +309,7 @@ public class Rule extends Observable implements Observer, Comparable {
       sipPreview.setParentId(parentID);
       sips.put(sipPreview.getId(), sipPreview);
       SipPreviewNode sipNode;
-      if ("internal.item".equals(sipPreview.getDescriptionlevel()))
+      if ("internal.itemLevel".equals(sipPreview.getDescriptionlevel()))
         sipNode = new SipPreviewNode(sipPreview, itemIconBlack, itemIconWhite);
       else
         sipNode = new SipPreviewNode(sipPreview, fileIconBlack, fileIconWhite);

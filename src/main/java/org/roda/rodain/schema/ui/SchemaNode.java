@@ -232,6 +232,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
   }
 
   public void updateDescriptionLevel(String descLevel) {
+    LOGGER.error("updateDescriptionLevel "+descLevel);
     dob.setDescriptionlevel(descLevel);
     try {
     	String unicode = AppProperties.getConfig("levels.icon."+descLevel);
@@ -242,7 +243,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
           this.setGraphic(new ImageView(getIcon()));
         });
       }else{
-        String unicodeDefault = AppProperties.getConfig("levels.internal.icon.default");
+        String unicodeDefault = AppProperties.getConfig("levels.icon.internal.default");
         if (unicodeDefault!=null) {
           Platform.runLater(() -> {
             iconBlack = FontAwesomeImageCreator.generate(unicodeDefault);

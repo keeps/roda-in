@@ -320,15 +320,17 @@ public class AddMetadataPane extends BorderPane {
         if (metadataToAdd == null)
           return;
         boolean add = true;
-        for (DescObjMetadata dom : descriptionObject.getMetadata()) {
-          if (dom.getId().equals(metadataToAdd.getId()))
-            add = false;
-        }
-        if (add) {
-          descriptionObject.getMetadata().add(metadataToAdd);
-          RodaIn.getInspectionPane().updateMetadataList(descriptionObject);
-        } else {
-          RodaIn.getInspectionPane().showAddMetadataError(metadataToAdd);
+        if(descriptionObject!=null){
+          for (DescObjMetadata dom : descriptionObject.getMetadata()) {
+            if (dom.getId().equals(metadataToAdd.getId()))
+              add = false;
+          }
+          if (add) {
+            descriptionObject.getMetadata().add(metadataToAdd);
+            RodaIn.getInspectionPane().updateMetadataList(descriptionObject);
+          } else {
+            RodaIn.getInspectionPane().showAddMetadataError(metadataToAdd);
+          }
         }
         stage.close();
       }
