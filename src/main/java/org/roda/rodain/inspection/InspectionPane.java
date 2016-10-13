@@ -1723,14 +1723,13 @@ public class InspectionPane extends BorderPane {
     List<DescObjMetadata> metadataList = currentDescOb.getMetadata();
     List<UIPair> comboList = new ArrayList<>();
     for (DescObjMetadata dom : metadataList) {
-      LOGGER.error(dom.toString());
-      comboList.add(new UIPair(dom, dom.getMetadataType())); //TODO
+      comboList.add(new UIPair(dom, AppProperties.getConfig("metadata.template." + dom.getTemplateType() + ".title"))); //TODO
     }
     if (comboList.isEmpty()) {
       showMetadataHelp();
     } else {
       metadataCombo.getItems().addAll(comboList);
-      metadataCombo.getSelectionModel().selectFirst();
+      metadataCombo.getSelectionModel().selectLast();
     }
   }
 

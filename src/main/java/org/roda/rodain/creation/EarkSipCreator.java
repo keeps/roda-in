@@ -122,7 +122,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
         if (metadataPath == null) {
           String content = descriptionObject.getMetadataWithReplaces(descObjMetadata);
 
-          metadataPath = tempDir.resolve(descObjMetadata.getId());
+          metadataPath = tempDir.resolve(descObjMetadata.getMetadataType()+".xml");
           FileUtils.writeStringToFile(metadataPath.toFile(), content, "UTF-8");
         }
 
