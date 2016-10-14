@@ -34,7 +34,11 @@ import javafx.stage.DirectoryChooser;
  */
 public class CreationModalPreparation extends BorderPane {
   private final int DEFAULT_WIDTH = 120;
-  public enum NAME_TYPES {ID, TITLE_ID, TITLE_DATE}
+
+  public enum NAME_TYPES {
+    ID, TITLE_ID, TITLE_DATE
+  }
+
   private CreationModalStage stage;
 
   private static Path outputFolder;
@@ -42,7 +46,7 @@ public class CreationModalPreparation extends BorderPane {
   private ComboBox<UIPair> nameTypes;
   private static Button start;
   private long selectedSIP, selectedItems, allSIP, allItems;
-  private ToggleSwitch sipExportSwitch, itemExportSwitch;
+  private ToggleSwitch sipExportSwitch, itemExportSwitch, reportCreationSwitch;
   private TextField prefixField;
 
   private String sSelectedSIP, sSelectedItems, sZeroItems, sAllSIP, sAllItems;
@@ -55,7 +59,8 @@ public class CreationModalPreparation extends BorderPane {
    * for the SIP exportation should be and the format of the SIPs.
    * </p>
    *
-   * @param stage The stage of the pane
+   * @param stage
+   *          The stage of the pane
    */
   public CreationModalPreparation(CreationModalStage stage) {
     this.stage = stage;
@@ -86,11 +91,12 @@ public class CreationModalPreparation extends BorderPane {
     center.setPadding(new Insets(10, 10, 10, 10));
 
     VBox countBox = createCountBox();
+    VBox reportBox = createReportBox();
     HBox outputFolderBox = createOutputFolder();
     HBox sipTypesBox = createSipTypes();
     HBox prefixBox = createNameBox();
 
-    center.getChildren().addAll(countBox, outputFolderBox, sipTypesBox, prefixBox);
+    center.getChildren().addAll(countBox, reportBox, outputFolderBox, sipTypesBox, prefixBox);
     setCenter(center);
   }
 
@@ -111,51 +117,59 @@ public class CreationModalPreparation extends BorderPane {
     sAllItems = String.format("%d/%d %s", this.allItems, this.allItems, I18n.t("items"));
 
     String startingLabel = sSelectedSIP;
-    if(allItems != 0){
+    if (allItems != 0) {
       startingLabel = String.format("%s %s %s", sSelectedSIP, I18n.t("and"), sZeroItems);
     }
 
     Label countLabel = new Label(startingLabel);
     countLabel.getStyleClass().add("prepareCreationSubtitle");
     sipExportSwitch = new ToggleSwitch(I18n.t("CreationModalPreparation.exportAll"));
-    sipExportSwitch.selectedProperty().addListener((o, old, newValue) ->
-        setSelectedLabel(countLabel));
+    sipExportSwitch.selectedProperty().addListener((o, old, newValue) -> setSelectedLabel(countLabel));
 
     if (this.selectedSIP == 0 || this.selectedSIP == this.allSIP)
       sipExportSwitch.setSelected(true);
 
     itemExportSwitch = new ToggleSwitch(I18n.t("CreationModalPreparation.includeHierarchy"));
-    itemExportSwitch.selectedProperty().addListener((o, old, newValue) ->
-      setSelectedLabel(countLabel));
+    itemExportSwitch.selectedProperty().addListener((o, old, newValue) -> setSelectedLabel(countLabel));
 
     countBox.getChildren().addAll(countLabel, sipExportSwitch, itemExportSwitch);
     return countBox;
   }
 
-  private void setSelectedLabel(Label label){
+  private VBox createReportBox() {
+    VBox reportBox = new VBox(10);
+    reportBox.setAlignment(Pos.CENTER);
+    reportCreationSwitch = new ToggleSwitch(I18n.t("CreationModalPreparation.createReport"));
+    reportCreationSwitch.setSelected(true);
+    reportBox.getChildren().addAll(reportCreationSwitch);
+    return reportBox;
+
+  }
+
+  private void setSelectedLabel(Label label) {
     boolean sipAll = false, exportItems = false;
     String newLabel, format = "%s %s %s";
-    if(sipExportSwitch != null){
+    if (sipExportSwitch != null) {
       sipAll = sipExportSwitch.isSelected();
     }
-    if(itemExportSwitch != null){
+    if (itemExportSwitch != null) {
       exportItems = itemExportSwitch.isSelected();
     }
     if (sipAll) {
       newLabel = sAllSIP;
-      if(allItems != 0) {
+      if (allItems != 0) {
         if (exportItems) {
           newLabel = String.format(format, sAllSIP, I18n.t("and"), sAllItems);
-        }else{
+        } else {
           newLabel = String.format(format, sAllSIP, I18n.t("and"), sZeroItems);
         }
       }
     } else {
       newLabel = sSelectedSIP;
-      if(allItems != 0) {
-        if(exportItems) {
+      if (allItems != 0) {
+        if (exportItems) {
           newLabel = String.format(format, sSelectedSIP, I18n.t("and"), sSelectedItems);
-        }else{
+        } else {
           newLabel = String.format(format, sSelectedSIP, I18n.t("and"), sZeroItems);
         }
       }
@@ -216,7 +230,8 @@ public class CreationModalPreparation extends BorderPane {
   /**
    * Sets the output folder of the SIPs. Used for testing.
    *
-   * @param out The path of the output folder
+   * @param out
+   *          The path of the output folder
    */
   public static void setOutputFolder(String out) {
     if (out != null && !"".equals(out)) {
@@ -274,7 +289,9 @@ public class CreationModalPreparation extends BorderPane {
 
         AppProperties.setConfig("export.last_prefix", prefixField.getText());
         AppProperties.saveConfig();
-        stage.startCreation(outputFolder, type, sipExportSwitch.isSelected(), itemExportSwitch.isSelected(), prefixField.getText(), (NAME_TYPES) nameTypes.getSelectionModel().getSelectedItem().getKey());
+        stage.startCreation(outputFolder, type, sipExportSwitch.isSelected(), itemExportSwitch.isSelected(),
+          prefixField.getText(), (NAME_TYPES) nameTypes.getSelectionModel().getSelectedItem().getKey(),
+          reportCreationSwitch.isSelected());
       }
     });
 

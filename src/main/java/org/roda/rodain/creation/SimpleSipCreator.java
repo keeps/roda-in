@@ -26,6 +26,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
+import org.roda.rodain.report.InventoryReportCreator;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.utils.Utils;
 import org.slf4j.Logger;
@@ -52,6 +53,7 @@ public class SimpleSipCreator extends Thread {
   protected String agent_name = "RODA-in";
 
   protected final Path outputPath;
+  protected final boolean createReport;
   protected final Map<DescriptionObject, List<String>> previews;
   protected final int sipPreviewCount;
 
@@ -87,8 +89,9 @@ public class SimpleSipCreator extends Thread {
    * @param previews
    *          The map with the SIPs that will be exported
    */
-  public SimpleSipCreator(Path outputPath, Map<DescriptionObject, List<String>> previews) {
+  public SimpleSipCreator(Path outputPath, Map<DescriptionObject, List<String>> previews, boolean createReport) {
     this.outputPath = outputPath;
+    this.createReport = createReport;
     this.previews = previews;
     sipPreviewCount = previews.size();
 
@@ -205,5 +208,10 @@ public class SimpleSipCreator extends Thread {
    */
   public double getTimeRemainingEstimate() {
     return -1;
+  }
+
+  public void createReport(Map<Path, Object> sips) {
+    InventoryReportCreator reportCreator = new InventoryReportCreator(outputPath);
+    reportCreator.start(sips);
   }
 }

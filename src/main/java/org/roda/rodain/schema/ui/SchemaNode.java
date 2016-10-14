@@ -1,7 +1,6 @@
 package org.roda.rodain.schema.ui;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -232,19 +230,18 @@ public class SchemaNode extends TreeItem<String> implements Observer {
   }
 
   public void updateDescriptionLevel(String descLevel) {
-    LOGGER.error("updateDescriptionLevel "+descLevel);
     dob.setDescriptionlevel(descLevel);
     try {
-    	String unicode = AppProperties.getConfig("levels.icon."+descLevel);
-      if (unicode!=null) {
+      String unicode = AppProperties.getConfig("levels.icon." + descLevel);
+      if (unicode != null) {
         Platform.runLater(() -> {
           iconBlack = FontAwesomeImageCreator.generate(unicode);
           iconWhite = FontAwesomeImageCreator.generate(unicode, Color.WHITE);
           this.setGraphic(new ImageView(getIcon()));
         });
-      }else{
+      } else {
         String unicodeDefault = AppProperties.getConfig("levels.icon.internal.default");
-        if (unicodeDefault!=null) {
+        if (unicodeDefault != null) {
           Platform.runLater(() -> {
             iconBlack = FontAwesomeImageCreator.generate(unicodeDefault);
             iconWhite = FontAwesomeImageCreator.generate(unicodeDefault, Color.WHITE);
@@ -364,9 +361,10 @@ public class SchemaNode extends TreeItem<String> implements Observer {
 
   /**
    * Get Descriptions Objects, non-SIPs. Includes self.
+   * 
    * @return
-     */
-  public Map<DescriptionObject, List<String>> getDescriptionObjects(){
+   */
+  public Map<DescriptionObject, List<String>> getDescriptionObjects() {
     Map<DescriptionObject, List<String>> result = new HashMap<>();
 
     result.put(getDob(), computeAncestors());
@@ -377,33 +375,35 @@ public class SchemaNode extends TreeItem<String> implements Observer {
       result.putAll(sn.getDescriptionObjects());
     }
 
-    ruleNodes.forEach((s, schNodes) -> schNodes.forEach(schemaNode ->result.putAll(schemaNode.getDescriptionObjects())));
+    ruleNodes
+      .forEach((s, schNodes) -> schNodes.forEach(schemaNode -> result.putAll(schemaNode.getDescriptionObjects())));
     return result;
   }
 
-  public List<String> computeAncestors(){
+  public List<String> computeAncestors() {
     List<String> ancestors = new ArrayList<>();
 
-    if(getDob().getId() == null){
+    if (getDob().getId() == null) {
       return ancestors;
     }
 
     SchemaNode currentNode = (SchemaNode) getParent();
-    while(currentNode != null && currentNode.getParent() != null){
+    while (currentNode != null && currentNode.getParent() != null) {
       // Stop when the top of the tree is reached
-      if(currentNode.getDob().getId() != null) {
+      if (currentNode.getDob().getId() != null) {
         ancestors.add(currentNode.getDob().getId());
         TreeItem parentItem = currentNode.getParent();
-        if(parentItem instanceof SchemaNode)
+        if (parentItem instanceof SchemaNode)
           currentNode = (SchemaNode) parentItem;
-        else currentNode = null;
-      }
-      else currentNode = null;
+        else
+          currentNode = null;
+      } else
+        currentNode = null;
     }
     return ancestors;
   }
 
-  public List<String> computeAncestorsOfSips(){
+  public List<String> computeAncestorsOfSips() {
     List<String> ancestors = new ArrayList<>();
     // Add current node
     ancestors.add(getDob().getId());

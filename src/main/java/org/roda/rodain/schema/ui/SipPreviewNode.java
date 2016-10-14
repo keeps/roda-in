@@ -66,7 +66,6 @@ public class SipPreviewNode extends TreeItem<String> implements Observer {
   }
 
   public void updateDescriptionLevel(String descLevel) {
-    LOGGER.error("updateDescriptionLevel 2 "+descLevel);
     sip.setDescriptionlevel(descLevel);
     try {
       String unicode = AppProperties.getConfig("levels.icon." + descLevel);

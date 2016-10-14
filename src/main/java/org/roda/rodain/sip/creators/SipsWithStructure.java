@@ -1,9 +1,19 @@
 package org.roda.rodain.sip.creators;
 
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.AccessDeniedException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.MetadataOptions;
@@ -135,9 +145,10 @@ public class SipsWithStructure extends SipPreviewCreator {
       }
 
       // make this node a description object
-      DescriptionObject descriptionObject = new DescriptionObject(new DescObjMetadata(MetadataOptions.TEMPLATE, templateType, metadataType, metadataVersion));
+      DescriptionObject descriptionObject = new DescriptionObject(
+        new DescObjMetadata(MetadataOptions.TEMPLATE, templateType, metadataType, metadataVersion));
       descriptionObject.setTitle(path.getFileName().toString());
-      descriptionObject.setDescriptionlevel("internal.otherlevel");
+      descriptionObject.setDescriptionlevel("internal.aggregationLevel");
       descriptionObjects.put(path, descriptionObject);
 
       // Set this node as a parent of its descriptionObject children (which can

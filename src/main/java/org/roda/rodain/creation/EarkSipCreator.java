@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,6 +23,7 @@ import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.sip.SipPreview;
 import org.roda.rodain.sip.SipRepresentation;
+import org.roda.rodain.utils.UIPair;
 import org.roda_project.commons_ip.model.IPContentType;
 import org.roda_project.commons_ip.model.IPDescriptiveMetadata;
 import org.roda_project.commons_ip.model.IPFile;
@@ -57,9 +59,11 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
    *          The path to the output folder of the SIP exportation
    * @param previews
    *          The map with the SIPs that will be exported
+   * @param createReport
    */
-  public EarkSipCreator(Path outputPath, Map<DescriptionObject, List<String>> previews, String prefix, CreationModalPreparation.NAME_TYPES name_type) {
-    super(outputPath, previews);
+  public EarkSipCreator(Path outputPath, Map<DescriptionObject, List<String>> previews, String prefix,
+    CreationModalPreparation.NAME_TYPES name_type, boolean createReport) {
+    super(outputPath, previews, createReport);
     this.prefix = prefix;
     this.name_type = name_type;
   }
@@ -69,19 +73,27 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
    */
   @Override
   public void run() {
+    Map<Path, Object> sips = new HashMap<Path, Object>();
     for (DescriptionObject preview : previews.keySet()) {
       if (canceled) {
         break;
       }
-      createEarkSip(preview);
+      UIPair pathSIP = createEarkSip(preview);
+      if (pathSIP != null) {
+        sips.put((Path) pathSIP.getKey(), (SIP) pathSIP.getValue());
+      }
+    }
+    if (createReport) {
+      createReport(sips);
     }
     currentAction = I18n.t("done");
   }
 
-  private void createEarkSip(DescriptionObject descriptionObject) {
+  private UIPair createEarkSip(DescriptionObject descriptionObject) {
     Path tempDir = Paths.get(System.getProperty("java.io.tmpdir"));
     try {
-      IPContentType contentType = descriptionObject instanceof SipPreview ? ((SipPreview) descriptionObject).getContentType() : IPContentType.getMIXED();
+      IPContentType contentType = descriptionObject instanceof SipPreview
+        ? ((SipPreview) descriptionObject).getContentType() : IPContentType.getMIXED();
       SIP earkSip = new EARKSIP(descriptionObject.getId(), contentType, agent_name);
       earkSip.addObserver(this);
       earkSip.setStatus(IPEnums.IPStatus.NEW);
@@ -122,7 +134,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
         if (metadataPath == null) {
           String content = descriptionObject.getMetadataWithReplaces(descObjMetadata);
 
-          metadataPath = tempDir.resolve(descObjMetadata.getMetadataType()+".xml");
+          metadataPath = tempDir.resolve(descObjMetadata.getMetadataType() + ".xml");
           FileUtils.writeStringToFile(metadataPath.toFile(), content, "UTF-8");
         }
 
@@ -133,12 +145,12 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
       }
 
       currentAction = actionCopyingData;
-      if(descriptionObject instanceof SipPreview) {
+      if (descriptionObject instanceof SipPreview) {
         SipPreview sip = (SipPreview) descriptionObject;
         for (SipRepresentation sr : sip.getRepresentations()) {
           IPRepresentation rep = new IPRepresentation(sr.getName());
-          rep
-              .setContentType(new RepresentationContentType(RepresentationContentType.RepresentationContentTypeEnum.MIXED));
+          rep.setContentType(
+            new RepresentationContentType(RepresentationContentType.RepresentationContentTypeEnum.MIXED));
           Set<TreeNode> files = sr.getFiles();
           currentSIPadded = 0;
           currentSIPsize = 0;
@@ -162,10 +174,10 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
       }
 
       currentAction = I18n.t("SimpleSipCreator.initZIP");
-
-      earkSip.build(outputPath, createSipName(descriptionObject));
+      Path sipPath = earkSip.build(outputPath, createSipName(descriptionObject));
 
       createdSipsCount++;
+      return new UIPair(sipPath, earkSip);
     } catch (SIPException e) {
       LOGGER.error("Commons IP exception", e);
       unsuccessful.add(descriptionObject);
@@ -181,14 +193,15 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
       unsuccessful.add(descriptionObject);
       CreationModalProcessing.showError(descriptionObject, e);
     }
+    return null;
   }
 
-  private String createSipName(DescriptionObject sip){
+  private String createSipName(DescriptionObject sip) {
     StringBuilder name = new StringBuilder();
-    if(prefix != null && !"".equals(prefix)){
+    if (prefix != null && !"".equals(prefix)) {
       name.append(prefix).append(" - ");
     }
-    switch (name_type){
+    switch (name_type) {
       case TITLE_ID:
         name.append(sip.getTitle());
         name.append(" - ");

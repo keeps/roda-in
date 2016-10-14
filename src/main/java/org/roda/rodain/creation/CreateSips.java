@@ -23,7 +23,7 @@ public class CreateSips {
 
   private int sipsCount;
   private long startedTime;
-  private boolean exportAll, exportItems;
+  private boolean exportAll, exportItems, createReport;
 
   /**
    * Creates a new object of the SIP exporter
@@ -33,13 +33,15 @@ public class CreateSips {
    * @param type
    *          The format of the SIP output
    */
-  public CreateSips(Path outputPath, SipTypes type, boolean exportAll, boolean exportItems, String prefix, CreationModalPreparation.NAME_TYPES name_type) {
+  public CreateSips(Path outputPath, SipTypes type, boolean exportAll, boolean exportItems, String prefix,
+    CreationModalPreparation.NAME_TYPES name_type, boolean createReport) {
     this.type = type;
     this.outputPath = outputPath;
     this.exportAll = exportAll;
     this.prefix = prefix;
     this.name_type = name_type;
     this.exportItems = exportItems;
+    this.createReport = createReport;
   }
 
   /**
@@ -49,22 +51,24 @@ public class CreateSips {
     Map<DescriptionObject, List<String>> sips;
     if (exportAll) {
       sips = RodaIn.getAllDescriptionObjects();
-    }else {
+    } else {
       sips = RodaIn.getSelectedDescriptionObjects();
     }
 
-    if(!exportItems)
-    sips = sips.entrySet().stream().filter(entry -> entry.getKey() instanceof SipPreview).collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
+    if (!exportItems)
+      sips = sips.entrySet().stream().filter(entry -> entry.getKey() instanceof SipPreview)
+        .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
 
     startedTime = System.currentTimeMillis();
     sipsCount = sips.size();
     if (type == SipTypes.BAGIT) {
-      creator = new BagitSipCreator(outputPath, sips);
+      creator = new BagitSipCreator(outputPath, sips, createReport);
       creator.start();
     } else {
-      creator = new EarkSipCreator(outputPath, sips, prefix, name_type);
+      creator = new EarkSipCreator(outputPath, sips, prefix, name_type, createReport);
       creator.start();
     }
+
   }
 
   /**

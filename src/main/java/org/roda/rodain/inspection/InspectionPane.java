@@ -611,7 +611,7 @@ public class InspectionPane extends BorderPane {
   }
 
   private ComboBox<UIPair> createFormCombo(MetadataValue metadataValue, Locale l) {
-
+    LOGGER.error("CREATE FORM COMBO");
     ObservableList<UIPair> comboList = FXCollections.observableArrayList();
     int selectedIndex = 0;
     String options = (String) metadataValue.get("options");
@@ -663,13 +663,21 @@ public class InspectionPane extends BorderPane {
     comboBox.valueProperty().addListener((observable, oldValue, newValue) -> metadataValue.set("value", newValue));
 
     if (metadataValue.get("value") != null) {
+
       if (metadataValue.get("value") instanceof String) {
         String currentValue = (String) metadataValue.get("value");
+        LOGGER.error("CURRENT VALUE: " + currentValue);
         if (currentValue != null && optionsMap.containsKey(currentValue)) {
           comboBox.getSelectionModel().select(optionsMap.get(currentValue));
+        } else {
+          UIPair other = new UIPair(currentValue, currentValue);
+          comboBox.getItems().add(other);
+          comboBox.getSelectionModel().select(other);
         }
       } else if (metadataValue.get("value") instanceof UIPair) {
         UIPair currentValue = (UIPair) metadataValue.get("value");
+        LOGGER.error("CURRENT VALUE KEY: " + currentValue.getKey() + " VALUE: " + currentValue.getValue());
+
         if (currentValue != null && optionsMap.containsKey(currentValue.getKey())) {
           comboBox.getSelectionModel().select(optionsMap.get(currentValue.getKey()));
         }
@@ -1599,10 +1607,40 @@ public class InspectionPane extends BorderPane {
           if (commonMV.containsKey(mv.getId())) {
             if (mv.get("value") == null && commonMV.get(mv.getId()).get("value") == null)
               continue;
-            String mvValue = (String) mv.get("value");
-            String commonMVvalue = (String) commonMV.get(mv.getId()).get("value");
-            if (mvValue == null || !mvValue.equals(commonMVvalue)) {
-              commonMV.get(mv.getId()).set("value", "{{mixed}}");
+            if (mv.get("value") instanceof String) {
+              String mvValue = (String) mv.get("value");
+              if (commonMV.get(mv.getId()).get("value") instanceof String) {
+                String commonMVvalue = (String) commonMV.get(mv.getId()).get("value");
+                LOGGER.error("commonMVValue: " + commonMVvalue);
+                LOGGER.error("mvValue: " + mvValue);
+                if (mvValue == null || !mvValue.equals(commonMVvalue)) {
+                  commonMV.get(mv.getId()).set("value", "{{mixed}}");
+                }
+              } else if (commonMV.get(mv.getId()).get("value") instanceof UIPair) {
+                UIPair commonMVvalue = (UIPair) commonMV.get(mv.getId()).get("value");
+                LOGGER.error("commonMVValue KEY:" + commonMVvalue.getKey() + " VALUE " + commonMVvalue.getValue());
+                LOGGER.error("mvValue: " + mvValue);
+                if (mvValue == null || !mvValue.equals(commonMVvalue.getKey())) {
+                  commonMV.get(mv.getId()).set("value", "{{mixed}}");
+                }
+              }
+            } else if (mv.get("value") instanceof UIPair) {
+              UIPair mvValue = (UIPair) mv.get("value");
+              if (commonMV.get(mv.getId()).get("value") instanceof String) {
+                String commonMVvalue = (String) commonMV.get(mv.getId()).get("value");
+                LOGGER.error("mvValue KEY:" + mvValue.getKey() + " VALUE " + mvValue.getValue());
+                LOGGER.error("commonMVValue: " + commonMVvalue);
+                if (mvValue == null || !mvValue.getKey().equals(commonMVvalue)) {
+                  commonMV.get(mv.getId()).set("value", "{{mixed}}");
+                }
+              } else if (commonMV.get(mv.getId()).get("value") instanceof UIPair) {
+                UIPair commonMVvalue = (UIPair) commonMV.get(mv.getId()).get("value");
+                LOGGER.error("mvValue KEY:" + mvValue.getKey() + " VALUE " + mvValue.getValue());
+                LOGGER.error("commonMVValue KEY: " + commonMVvalue.getKey() + " VALUE: " + commonMVvalue.getValue());
+                if (mvValue == null || !mvValue.getKey().equals(commonMVvalue.getKey())) {
+                  commonMV.get(mv.getId()).set("value", "{{mixed}}");
+                }
+              }
             }
           } else {
             commonMV.put(mv.getId(), mv);
@@ -1723,7 +1761,7 @@ public class InspectionPane extends BorderPane {
     List<DescObjMetadata> metadataList = currentDescOb.getMetadata();
     List<UIPair> comboList = new ArrayList<>();
     for (DescObjMetadata dom : metadataList) {
-      comboList.add(new UIPair(dom, AppProperties.getConfig("metadata.template." + dom.getTemplateType() + ".title"))); //TODO
+      comboList.add(new UIPair(dom, AppProperties.getConfig("metadata.template." + dom.getTemplateType() + ".title"))); // TODO
     }
     if (comboList.isEmpty()) {
       showMetadataHelp();

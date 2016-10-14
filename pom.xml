@@ -200,7 +200,7 @@
         <dependency>
             <groupId>org.roda-project</groupId>
             <artifactId>commons-ip</artifactId>
-            <version>1.0.0-alpha16.1</version>
+            <version>1.0.0-alpha18</version>
         </dependency>
         <dependency>
             <groupId>com.github.jknack</groupId>
@@ -261,6 +261,11 @@
             <artifactId>jacoco-maven-plugin</artifactId>
             <version>0.7.5.201505241946</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>1.4</version>
         </dependency>
     </dependencies>
 

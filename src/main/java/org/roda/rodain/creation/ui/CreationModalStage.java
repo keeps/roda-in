@@ -1,5 +1,10 @@
 package org.roda.rodain.creation.ui;
 
+import java.nio.file.Path;
+
+import org.roda.rodain.creation.CreateSips;
+import org.roda.rodain.creation.SipTypes;
+
 import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -9,17 +14,13 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import org.roda.rodain.creation.CreateSips;
-import org.roda.rodain.creation.SipTypes;
-
-import java.nio.file.Path;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 19/11/2015.
  */
 public class CreationModalStage extends Stage {
-  private static final int PREPARATION_HEIGHT = 270;
+  private static final int PREPARATION_HEIGHT = 300;
   private static final int PROCESSING_HEIGHT = PREPARATION_HEIGHT - 60;
   private ColorAdjust colorAdjust;
   private Stage primaryStage;
@@ -56,9 +57,10 @@ public class CreationModalStage extends Stage {
    * @param type
    *          The format of the SIPs
    */
-  public void startCreation(Path outputFolder, SipTypes type, boolean exportAll, boolean exportItems, String prefix, CreationModalPreparation.NAME_TYPES name_type) {
+  public void startCreation(Path outputFolder, SipTypes type, boolean exportAll, boolean exportItems, String prefix,
+    CreationModalPreparation.NAME_TYPES name_type, boolean createReport) {
     setHeight(PROCESSING_HEIGHT);
-    CreateSips creator = new CreateSips(outputFolder, type, exportAll, exportItems, prefix, name_type);
+    CreateSips creator = new CreateSips(outputFolder, type, exportAll, exportItems, prefix, name_type, createReport);
     CreationModalProcessing pane = new CreationModalProcessing(creator, this);
     setRoot(pane);
     creator.start();

@@ -1,27 +1,41 @@
 package org.roda.rodain.rules;
 
-import javafx.concurrent.Task;
-import javafx.scene.control.TreeItem;
-import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
+import java.nio.file.Path;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.filters.ContentFilter;
-import org.roda.rodain.sip.*;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SipPreviewNode;
-import org.roda.rodain.sip.creators.*;
+import org.roda.rodain.sip.PseudoDescriptionObject;
+import org.roda.rodain.sip.PseudoItem;
+import org.roda.rodain.sip.PseudoSIP;
+import org.roda.rodain.sip.SipPreview;
+import org.roda.rodain.sip.SipRepresentation;
+import org.roda.rodain.sip.creators.SipPerFile;
+import org.roda.rodain.sip.creators.SipPerSelection;
+import org.roda.rodain.sip.creators.SipPreviewCreator;
+import org.roda.rodain.sip.creators.SipSingle;
+import org.roda.rodain.sip.creators.SipsWithStructure;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.TreeVisitor;
 
-import java.nio.file.Path;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import javafx.concurrent.Task;
+import javafx.scene.control.TreeItem;
+import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -79,13 +93,16 @@ public class Rule extends Observable implements Observer, Comparable {
 
   private void createIcon() {
     itemIconBlack = FontAwesomeImageCreator.generate(AppProperties.getConfig("levels.icon.internal.itemLevel"));
-    itemIconWhite = FontAwesomeImageCreator.generate(AppProperties.getConfig("levels.icon.internal.itemLevel"), Color.WHITE);
+    itemIconWhite = FontAwesomeImageCreator.generate(AppProperties.getConfig("levels.icon.internal.itemLevel"),
+      Color.WHITE);
 
     fileIconBlack = FontAwesomeImageCreator.generate(AppProperties.getConfig("levels.icon.internal.fileLevel"));
-    fileIconWhite = FontAwesomeImageCreator.generate(AppProperties.getConfig("levels.icon.internal.fileLevel"), Color.WHITE);
+    fileIconWhite = FontAwesomeImageCreator.generate(AppProperties.getConfig("levels.icon.internal.fileLevel"),
+      Color.WHITE);
 
-    dObjIconBlack = FontAwesomeImageCreator.generate(AppProperties.getConfig("levels.icon.internal.otherLevel"));
-    dObjIconWhite = FontAwesomeImageCreator.generate(AppProperties.getConfig("levels.icon.internal.otherLevel"), Color.WHITE);
+    dObjIconBlack = FontAwesomeImageCreator.generate(AppProperties.getConfig("levels.icon.internal.aggregationLevel"));
+    dObjIconWhite = FontAwesomeImageCreator.generate(AppProperties.getConfig("levels.icon.internal.aggregationLevel"),
+      Color.WHITE);
   }
 
   private void createFilters() {

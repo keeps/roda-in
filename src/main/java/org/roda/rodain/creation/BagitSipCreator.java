@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,6 +23,7 @@ import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.sip.SipPreview;
 import org.roda.rodain.sip.SipRepresentation;
+import org.roda.rodain.utils.UIPair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,11 +50,11 @@ public class BagitSipCreator extends SimpleSipCreator {
    * @param previews
    *          The map with the SIPs that will be exported
    */
-  public BagitSipCreator(Path outputPath, Map<DescriptionObject, List<String>> previews) {
-    super(outputPath, previews);
+  public BagitSipCreator(Path outputPath, Map<DescriptionObject, List<String>> previews, boolean createReport) {
+    super(outputPath, previews, createReport);
 
     for (DescriptionObject obj : previews.keySet()) {
-      if(obj instanceof SipPreview) {
+      if (obj instanceof SipPreview) {
         SipPreview sip = (SipPreview) obj;
         for (SipRepresentation sr : sip.getRepresentations()) {
           for (TreeNode tn : sr.getFiles()) {
@@ -73,16 +75,23 @@ public class BagitSipCreator extends SimpleSipCreator {
   @Override
   public void run() {
     startTime = Instant.now();
+    Map<Path, Object> sips = new HashMap<Path, Object>();
     for (DescriptionObject preview : previews.keySet()) {
       if (canceled) {
         break;
       }
-      createBagit(preview);
+      UIPair pathBag = createBagit(preview);
+      if (pathBag != null) {
+        sips.put((Path) pathBag.getKey(), (Bag) pathBag.getValue());
+      }
+    }
+    if (createReport) {
+      createReport(sips);
     }
     currentAction = I18n.t("done");
   }
 
-  private void createBagit(DescriptionObject descriptionObject) {
+  private UIPair createBagit(DescriptionObject descriptionObject) {
     // we add a timestamp to the beginning of the SIP name to avoid same name
     // conflicts
     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd kk'h'mm'm'ss's'SSS");
@@ -96,7 +105,7 @@ public class BagitSipCreator extends SimpleSipCreator {
     new File(data.toString()).mkdirs();
 
     try {
-      if(descriptionObject instanceof SipPreview) {
+      if (descriptionObject instanceof SipPreview) {
         SipPreview sip = (SipPreview) descriptionObject;
         for (SipRepresentation sr : sip.getRepresentations()) {
           Set<TreeNode> files = sr.getFiles();
@@ -130,11 +139,14 @@ public class BagitSipCreator extends SimpleSipCreator {
       zipWriter.endPayload();
       createdSipsCount++;
       b.close();
+      UIPair ret = new UIPair(name, b);
+      return ret;
     } catch (Exception e) {
       LOGGER.error("Error creating SIP", e);
       unsuccessful.add(descriptionObject);
       CreationModalProcessing.showError(descriptionObject, e);
       deleteDirectory(name);
+      return null;
     }
   }
 

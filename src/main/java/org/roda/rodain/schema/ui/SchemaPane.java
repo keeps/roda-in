@@ -618,7 +618,7 @@ public class SchemaPane extends BorderPane {
 
       dobj.setId("ID" + UUID.randomUUID().toString());
       dobj.setTitle(I18n.t("SchemaPane.newNode"));
-      dobj.setDescriptionlevel("internal.otherLevel");
+      dobj.setDescriptionlevel("internal.aggregationLevel");
       SchemaNode newNode = new SchemaNode(dobj);
       if (selected != null) {
         dobj.setParentId(selected.getDob().getId());
@@ -650,7 +650,6 @@ public class SchemaPane extends BorderPane {
       return null;
     }
   }
-
 
   /**
    * Starts the association process.
