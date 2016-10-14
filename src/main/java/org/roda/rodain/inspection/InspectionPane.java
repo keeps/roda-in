@@ -611,7 +611,6 @@ public class InspectionPane extends BorderPane {
   }
 
   private ComboBox<UIPair> createFormCombo(MetadataValue metadataValue, Locale l) {
-    LOGGER.error("CREATE FORM COMBO");
     ObservableList<UIPair> comboList = FXCollections.observableArrayList();
     int selectedIndex = 0;
     String options = (String) metadataValue.get("options");
@@ -663,10 +662,8 @@ public class InspectionPane extends BorderPane {
     comboBox.valueProperty().addListener((observable, oldValue, newValue) -> metadataValue.set("value", newValue));
 
     if (metadataValue.get("value") != null) {
-
       if (metadataValue.get("value") instanceof String) {
         String currentValue = (String) metadataValue.get("value");
-        LOGGER.error("CURRENT VALUE: " + currentValue);
         if (currentValue != null && optionsMap.containsKey(currentValue)) {
           comboBox.getSelectionModel().select(optionsMap.get(currentValue));
         } else {
@@ -676,8 +673,6 @@ public class InspectionPane extends BorderPane {
         }
       } else if (metadataValue.get("value") instanceof UIPair) {
         UIPair currentValue = (UIPair) metadataValue.get("value");
-        LOGGER.error("CURRENT VALUE KEY: " + currentValue.getKey() + " VALUE: " + currentValue.getValue());
-
         if (currentValue != null && optionsMap.containsKey(currentValue.getKey())) {
           comboBox.getSelectionModel().select(optionsMap.get(currentValue.getKey()));
         }
@@ -1611,15 +1606,11 @@ public class InspectionPane extends BorderPane {
               String mvValue = (String) mv.get("value");
               if (commonMV.get(mv.getId()).get("value") instanceof String) {
                 String commonMVvalue = (String) commonMV.get(mv.getId()).get("value");
-                LOGGER.error("commonMVValue: " + commonMVvalue);
-                LOGGER.error("mvValue: " + mvValue);
                 if (mvValue == null || !mvValue.equals(commonMVvalue)) {
                   commonMV.get(mv.getId()).set("value", "{{mixed}}");
                 }
               } else if (commonMV.get(mv.getId()).get("value") instanceof UIPair) {
                 UIPair commonMVvalue = (UIPair) commonMV.get(mv.getId()).get("value");
-                LOGGER.error("commonMVValue KEY:" + commonMVvalue.getKey() + " VALUE " + commonMVvalue.getValue());
-                LOGGER.error("mvValue: " + mvValue);
                 if (mvValue == null || !mvValue.equals(commonMVvalue.getKey())) {
                   commonMV.get(mv.getId()).set("value", "{{mixed}}");
                 }
@@ -1628,15 +1619,11 @@ public class InspectionPane extends BorderPane {
               UIPair mvValue = (UIPair) mv.get("value");
               if (commonMV.get(mv.getId()).get("value") instanceof String) {
                 String commonMVvalue = (String) commonMV.get(mv.getId()).get("value");
-                LOGGER.error("mvValue KEY:" + mvValue.getKey() + " VALUE " + mvValue.getValue());
-                LOGGER.error("commonMVValue: " + commonMVvalue);
                 if (mvValue == null || !mvValue.getKey().equals(commonMVvalue)) {
                   commonMV.get(mv.getId()).set("value", "{{mixed}}");
                 }
               } else if (commonMV.get(mv.getId()).get("value") instanceof UIPair) {
                 UIPair commonMVvalue = (UIPair) commonMV.get(mv.getId()).get("value");
-                LOGGER.error("mvValue KEY:" + mvValue.getKey() + " VALUE " + mvValue.getValue());
-                LOGGER.error("commonMVValue KEY: " + commonMVvalue.getKey() + " VALUE: " + commonMVvalue.getValue());
                 if (mvValue == null || !mvValue.getKey().equals(commonMVvalue.getKey())) {
                   commonMV.get(mv.getId()).set("value", "{{mixed}}");
                 }

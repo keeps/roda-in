@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.loc.repository.bagit.Bag;
-import gov.loc.repository.bagit.BagFile;
+import gov.loc.repository.bagit.Manifest;
 
 public class InventoryReportCreator {
 
@@ -108,16 +108,32 @@ public class InventoryReportCreator {
   }
 
   private List<List<String>> bagToCSVLines(Path path, Bag bag) {
-    List<List<String>> line = new ArrayList<List<String>>();
-    for (Map.Entry<String, String> entry : bag.getBagInfoTxt().entrySet()) {
-      LOGGER.error(entry.getKey());
-    }
-    if (bag.getPayload() != null) {
-      for (BagFile bf : bag.getPayload()) {
-        LOGGER.error(bf.getFilepath());
+    List<List<String>> lines = new ArrayList<List<String>>();
+    for (Manifest manifest : bag.getTagManifests()) {
+      for (Map.Entry<String, String> entry : manifest.entrySet()) {
+        List<String> line = new ArrayList<String>();
+        line.add(path.getFileName().toString());
+        line.add(entry.getKey());
+        line.add("");
+        line.add("MD5");
+        line.add(entry.getValue());
+        line.add("");
+        lines.add(line);
       }
     }
-    return line;
+    for (Manifest manifest : bag.getPayloadManifests()) {
+      for (Map.Entry<String, String> entry : manifest.entrySet()) {
+        List<String> line = new ArrayList<String>();
+        line.add(path.getFileName().toString());
+        line.add(entry.getKey());
+        line.add("");
+        line.add("MD5");
+        line.add(entry.getValue());
+        line.add("");
+        lines.add(line);
+      }
+    }
+    return lines;
   }
 
 }
