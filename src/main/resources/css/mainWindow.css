@@ -361,7 +361,7 @@
 .context-menu {
   -fx-background-color: white;
   -fx-text-fill: white;
-  -fx-cursor: hand;
+  -fx-cursor: default;
 }
 
 .menu-item .label {
@@ -370,4 +370,9 @@
 
 .menu-item:focused .label {
   -fx-text-fill: white;
+}
+
+
+.date-picker-popup, .menu-item{
+	-fx-cursor: default;
 }
