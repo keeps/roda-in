@@ -352,6 +352,7 @@
     -fx-background-color: transparent;
 }
 
+/* context-menu - right click on inputs */
 .root {
   -fx-background-color: white; 
   -fx-padding: 10;
