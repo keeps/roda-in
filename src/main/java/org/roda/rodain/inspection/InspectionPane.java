@@ -1414,7 +1414,7 @@ public class InspectionPane extends BorderPane {
       metadata.getChildren().clear();
       metadata.getChildren().addAll(metadataTopBox, metaText);
       int selectedIndex = metadataCombo.getSelectionModel().getSelectedIndex();
-      updateMetadataCombo();
+      updateMetadataCombo(false);
       metadataCombo.getSelectionModel().select(selectedIndex);
     });
     new Thread(metadataTask).start();
@@ -1493,8 +1493,7 @@ public class InspectionPane extends BorderPane {
     top.getChildren().addAll(space, topTypeLabel, editButton);
 
     topSubtitle.getChildren().addAll(space, top);
-
-    updateMetadataCombo();
+    updateMetadataCombo(false);
 
     /* Center */
     center.getChildren().clear();
@@ -1545,8 +1544,7 @@ public class InspectionPane extends BorderPane {
     center.getChildren().clear();
     metadata.getChildren().clear();
     metadata.getChildren().addAll(metadataTopBox, metadataLoadingPane);
-
-    updateMetadataCombo();
+    updateMetadataCombo(false);
 
     // rules
     updateRuleList();
@@ -1665,7 +1663,7 @@ public class InspectionPane extends BorderPane {
     center.getChildren().clear();
     metadata.getChildren().clear();
     metadata.getChildren().addAll(metadataTopBox);
-    updateMetadataCombo();
+    updateMetadataCombo(false);
 
     center.getChildren().addAll(metadata, multSelectedBottom);
     setCenter(center);
@@ -1742,7 +1740,7 @@ public class InspectionPane extends BorderPane {
       topSubtitle.getChildren().add(paneTitle);
   }
 
-  private void updateMetadataCombo() {
+  private void updateMetadataCombo(boolean selectLast) {
     metadataCombo.getSelectionModel().clearSelection();
     metadataCombo.getItems().clear();
     List<DescObjMetadata> metadataList = currentDescOb.getMetadata();
@@ -1754,7 +1752,11 @@ public class InspectionPane extends BorderPane {
       showMetadataHelp();
     } else {
       metadataCombo.getItems().addAll(comboList);
+      if(selectLast){
       metadataCombo.getSelectionModel().selectLast();
+      }else{
+        metadataCombo.getSelectionModel().selectFirst();
+      }
     }
   }
 
@@ -1942,7 +1944,7 @@ public class InspectionPane extends BorderPane {
 
   public void updateMetadataList(DescriptionObject descriptionObject) {
     if (descriptionObject == currentDescOb) {
-      updateMetadataCombo();
+      updateMetadataCombo(true);
       RodaIn.getSchemePane().setModifiedPlan(true);
     }
   }

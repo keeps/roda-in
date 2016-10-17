@@ -24,16 +24,14 @@ import gov.loc.repository.bagit.Manifest;
 
 public class InventoryReportCreator {
 
-  public static final String CSV_FIELD_SIP_ID = "sipId";
-  public static final String CSV_FIELD_AIP_ID = "aipId";
-  public static final String CSV_FIELD_REPRESENTATION_ID = "representationId";
-  public static final String CSV_FIELD_FILE_PATH = "filePath";
-  public static final String CSV_FIELD_FILE_ID = "fileId";
-  public static final String CSV_FIELD_ISDIRECTORY = "isDirectory";
+  private static final String CSV_FIELD_FILE_SIZE = "size";
+  private static final String CSV_FIELD_FILE_CHECKSUM = "checksum";
+  private static final String CSV_FIELD_FILE_CHECKSUM_TYPE = "checksum_type";
+  private static final String CSV_FIELD_FILE_ABSOLUTE_PATH = "absolute path";
+  private static final String CSV_FIELD_FILE_RELATIVE_ZIP_PATH = "zip relative path";
+  public static final String CSV_FIELD_SIP_ID = "SIP ID";
+  public static final String CSV_FIELD_ZIP_RELATIVE_PATH = "ZIP relative path";
 
-  public static final String CSV_FIELD_CHECKSUM_SHA1 = "SHA-1";
-  public static final String CSV_FIELD_CHECKSUM_SHA256 = "SHA-256";
-  public static final String CSV_FIELD_CHECKSUM_MD5 = "MD5";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(InventoryReportCreator.class.getName());
   private Path outputPath;
@@ -58,12 +56,12 @@ public class InventoryReportCreator {
       fileWriter = Files.newBufferedWriter(csvTempFile);
       csvFilePrinter = new CSVPrinter(fileWriter, csvFileFormat);
       List<String> headers = new ArrayList<String>();
-      headers.add("sip");
-      headers.add("zip relative path");
-      headers.add("absolute path");
-      headers.add("checksum_type");
-      headers.add("checksum");
-      headers.add("size");
+      headers.add(CSV_FIELD_SIP_ID);
+      headers.add(CSV_FIELD_FILE_RELATIVE_ZIP_PATH);
+      headers.add(CSV_FIELD_FILE_ABSOLUTE_PATH);
+      headers.add(CSV_FIELD_FILE_CHECKSUM_TYPE);
+      headers.add(CSV_FIELD_FILE_CHECKSUM);
+      headers.add(CSV_FIELD_FILE_SIZE);
       csvFilePrinter.printRecord(headers);
       for (Map.Entry<Path, Object> entry : sips.entrySet()) {
         if (entry.getValue() instanceof Bag) {
