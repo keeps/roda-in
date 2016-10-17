@@ -431,6 +431,8 @@ public class InspectionPane extends BorderPane {
 
     if (topButtons.contains(metadataCombo))
       metadataTopBox.getChildren().add(metadataCombo);
+    
+    metadataTopBox.requestFocus();
   }
 
   private void removeMetadataAction() {
@@ -571,7 +573,6 @@ public class InspectionPane extends BorderPane {
         label.getStyleClass().add("formSeparator");
         metadataGrid.add(label, 0, i, 2, 1);
       }
-
       i++;
     }
   }

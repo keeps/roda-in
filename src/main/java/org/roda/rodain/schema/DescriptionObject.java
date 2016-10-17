@@ -239,7 +239,11 @@ public class DescriptionObject extends Observable {
               metadataValue.set("value", id);
               break;
             case "level":
-              metadataValue.set("value", descriptionlevel);
+              if(!descriptionlevel.startsWith("internal.")){
+                metadataValue.set("value", descriptionlevel);
+              }else{
+                metadataValue.set("value", "");
+              }
               break;
             case "parentid":
               metadataValue.set("value", parentId);
