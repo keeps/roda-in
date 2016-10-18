@@ -80,6 +80,8 @@ public class MainTest extends ApplicationTest {
     sleep(5000);
     clickOn(I18n.t("SchemaPane.add"));
     sleep(2000);
+    clickOn(I18n.t("continue"));
+    sleep(2000);
     clickOn(".schemaNode");
     sleep(1000);
     clickOn("#descObjTitle");
@@ -92,8 +94,10 @@ public class MainTest extends ApplicationTest {
 
     clickOn(I18n.t("SchemaPane.add"));
     sleep(500);
+    clickOn(I18n.t("continue"));
+    sleep(2000);
     clickOn(I18n.t("SchemaPane.newNode"));
-    sleep(500);
+    sleep(2000);
     clickOn("#descObjTitle");
     eraseText(50);
     write("Node2");
@@ -252,6 +256,8 @@ public class MainTest extends ApplicationTest {
     clickOn("UCP");
 
     clickOn(I18n.t("SchemaPane.add"));
+    sleep(2000);
+    clickOn(I18n.t("continue"));
     sleep(2000);
     clickOn(I18n.t("SchemaPane.newNode"));
     clickOn("file10.txt");
