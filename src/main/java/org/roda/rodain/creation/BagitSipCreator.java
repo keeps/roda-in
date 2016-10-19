@@ -8,16 +8,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.roda.rodain.core.I18n;
+import org.roda.rodain.creation.ui.CreationModalPreparation;
+import org.roda.rodain.creation.ui.CreationModalPreparation.NAME_TYPES;
 import org.roda.rodain.creation.ui.CreationModalProcessing;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.schema.DescriptionObject;
@@ -42,6 +42,9 @@ public class BagitSipCreator extends SimpleSipCreator {
 
   private Instant startTime;
 
+  private String prefix;
+  private CreationModalPreparation.NAME_TYPES name_type;
+
   /**
    * Creates a new BagIt exporter.
    *
@@ -50,9 +53,11 @@ public class BagitSipCreator extends SimpleSipCreator {
    * @param previews
    *          The map with the SIPs that will be exported
    */
-  public BagitSipCreator(Path outputPath, Map<DescriptionObject, List<String>> previews, boolean createReport) {
+  public BagitSipCreator(Path outputPath, Map<DescriptionObject, List<String>> previews, boolean createReport,
+    String prefix, NAME_TYPES name_type) {
     super(outputPath, previews, createReport);
-
+    this.prefix = prefix;
+    this.name_type = name_type;
     for (DescriptionObject obj : previews.keySet()) {
       if (obj instanceof SipPreview) {
         SipPreview sip = (SipPreview) obj;
@@ -74,6 +79,7 @@ public class BagitSipCreator extends SimpleSipCreator {
    */
   @Override
   public void run() {
+
     startTime = Instant.now();
     Map<Path, Object> sips = new HashMap<Path, Object>();
     for (DescriptionObject preview : previews.keySet()) {
@@ -88,19 +94,18 @@ public class BagitSipCreator extends SimpleSipCreator {
     if (createReport) {
       createReport(sips);
     }
+    LOGGER.error("STOP " + (System.currentTimeMillis() - startTime.toEpochMilli()));
+
     currentAction = I18n.t("done");
   }
 
   private UIPair createBagit(DescriptionObject descriptionObject) {
     // we add a timestamp to the beginning of the SIP name to avoid same name
     // conflicts
-    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd kk'h'mm'm'ss's'SSS");
-    String dateToString = format.format(new Date());
-    String timestampedName = String.format("%s %s.zip", dateToString, descriptionObject.getTitle());
     currentSipName = descriptionObject.getTitle();
     currentAction = actionCreatingFolders;
     // make the directories
-    Path name = outputPath.resolve(timestampedName);
+    Path name = outputPath.resolve(createSipName(descriptionObject, prefix, name_type));
     Path data = name.resolve(DATAFOLDER);
     new File(data.toString()).mkdirs();
 

@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,7 +102,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
       currentAction = actionCopyingMetadata;
 
       for (DescObjMetadata descObjMetadata : descriptionObject.getMetadata()) {
-        String keyMetadataTypeValue = "metadata.type." + descObjMetadata.getMetadataType() + ".value";
+        String keyMetadataTypeValue = descObjMetadata.getMetadataType();
         String metadataTypeString = AppProperties.getConfig(keyMetadataTypeValue);
         MetadataType metadataType = new MetadataType(MetadataType.MetadataTypeEnum.OTHER);
 
@@ -174,7 +172,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
       }
 
       currentAction = I18n.t("SimpleSipCreator.initZIP");
-      Path sipPath = earkSip.build(outputPath, createSipName(descriptionObject));
+      Path sipPath = earkSip.build(outputPath, createSipName(descriptionObject, prefix, name_type));
 
       createdSipsCount++;
       return new UIPair(sipPath, earkSip);
@@ -194,31 +192,6 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
       CreationModalProcessing.showError(descriptionObject, e);
     }
     return null;
-  }
-
-  private String createSipName(DescriptionObject sip) {
-    StringBuilder name = new StringBuilder();
-    if (prefix != null && !"".equals(prefix)) {
-      name.append(prefix).append(" - ");
-    }
-    switch (name_type) {
-      case TITLE_ID:
-        name.append(sip.getTitle());
-        name.append(" - ");
-        name.append(sip.getId());
-        break;
-      case TITLE_DATE:
-        name.append(sip.getTitle());
-        name.append(" - ");
-        name.append(new SimpleDateFormat("yyyy.MM.dd HH.mm.ss.SSS").format(new Date()));
-        break;
-      case ID:
-      default:
-        name.append(sip.getId());
-        break;
-    }
-
-    return name.toString();
   }
 
   private void addFileToRepresentation(TreeNode tn, List<String> relativePath, IPRepresentation rep) {

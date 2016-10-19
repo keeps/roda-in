@@ -20,6 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.loc.repository.bagit.Bag;
+import gov.loc.repository.bagit.BagFactory;
+import gov.loc.repository.bagit.BagFile;
 import gov.loc.repository.bagit.Manifest;
 
 public class InventoryReportCreator {
@@ -47,7 +49,7 @@ public class InventoryReportCreator {
 
     try {
       StringBuffer name = new StringBuffer();
-      name.append("report");
+      name.append("inventory_report");
       name.append(" - ");
       name.append(new SimpleDateFormat("yyyy.MM.dd HH.mm.ss.SSS").format(new Date()));
       name.append(".csv");
@@ -65,8 +67,7 @@ public class InventoryReportCreator {
       csvFilePrinter.printRecord(headers);
       for (Map.Entry<Path, Object> entry : sips.entrySet()) {
         if (entry.getValue() instanceof Bag) {
-          Bag bag = (Bag) entry.getValue();
-          List<List<String>> lines = bagToCSVLines(entry.getKey(), bag);
+          List<List<String>> lines = bagToCSVLines(entry.getKey());
           csvFilePrinter.printRecords(lines);
         } else if (entry.getValue() instanceof SIP) {
           SIP sip = (SIP) entry.getValue();
@@ -105,7 +106,13 @@ public class InventoryReportCreator {
     return lines;
   }
 
-  private List<List<String>> bagToCSVLines(Path path, Bag bag) {
+  private List<List<String>> bagToCSVLines(Path path) {
+    BagFactory fact = new BagFactory();
+
+    Bag bag = fact.createBag(path.toFile()); 
+    
+    
+    
     List<List<String>> lines = new ArrayList<List<String>>();
     for (Manifest manifest : bag.getTagManifests()) {
       for (Map.Entry<String, String> entry : manifest.entrySet()) {
@@ -115,7 +122,7 @@ public class InventoryReportCreator {
         line.add("");
         line.add("MD5");
         line.add(entry.getValue());
-        line.add("");
+        line.add(Long.toString(bag.getBagFile(entry.getKey()).getSize()));
         lines.add(line);
       }
     }
@@ -127,7 +134,7 @@ public class InventoryReportCreator {
         line.add("");
         line.add("MD5");
         line.add(entry.getValue());
-        line.add("");
+        line.add(Long.toString(bag.getBagFile(entry.getKey()).getSize()));
         lines.add(line);
       }
     }

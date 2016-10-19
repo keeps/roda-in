@@ -3,6 +3,8 @@ package org.roda.rodain.creation.ui;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Set;
 
 import org.controlsfx.control.ToggleSwitch;
@@ -299,5 +301,30 @@ public class CreationModalPreparation extends BorderPane {
 
     bottom.getChildren().addAll(cancel, space, start);
     setBottom(bottom);
+  }
+  
+  public static String createSipName(DescriptionObject sip, NAME_TYPES nameType, String prefix) {
+    StringBuilder name = new StringBuilder();
+    if (prefix != null && !"".equals(prefix)) {
+      name.append(prefix).append(" - ");
+    }
+    switch (nameType) {
+      case TITLE_ID:
+        name.append(sip.getTitle());
+        name.append(" - ");
+        name.append(sip.getId());
+        break;
+      case TITLE_DATE:
+        name.append(sip.getTitle());
+        name.append(" - ");
+        name.append(new SimpleDateFormat("yyyy.MM.dd HH.mm.ss.SSS").format(new Date()));
+        break;
+      case ID:
+      default:
+        name.append(sip.getId());
+        break;
+    }
+
+    return name.toString();
   }
 }

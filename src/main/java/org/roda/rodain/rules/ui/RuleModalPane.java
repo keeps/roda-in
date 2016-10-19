@@ -258,7 +258,7 @@ public class RuleModalPane extends BorderPane {
     if (metaTypesRaw != null) {
       String[] metaTypes = metaTypesRaw.split(",");
       for (String type : metaTypes) {
-        String title = AppProperties.getConfig("metadata.type." + type + ".title");
+        String title = AppProperties.getConfig("metadata." + type + ".title");
         if (title == null || type == null)
           continue;
         typesList.add(new UIPair(type, title));
@@ -401,8 +401,8 @@ public class RuleModalPane extends BorderPane {
     String[] templates = templatesRaw.split(",");
     for (String templ : templates) {
       String trimmed = templ.trim();
-      String title = AppProperties.getConfig("metadata.template." + trimmed + ".title");
-      String type = AppProperties.getConfig("metadata.template." + trimmed + ".type");
+      String title = AppProperties.getConfig("metadata." + trimmed + ".title");
+      String type = trimmed;
       if (title == null)
         continue;
       String key = trimmed;

@@ -307,6 +307,7 @@ public class CreationModalProcessing extends BorderPane {
         Label label = new Label(I18n.t("CreationModalProcessing.alert.stacktrace"));
 
         TextArea textArea = new TextArea(exceptionText);
+        textArea.setWrapText(true);
         textArea.setEditable(false);
         textArea.minWidthProperty().bind(alert.getDialogPane().widthProperty().subtract(20));
         textArea.maxWidthProperty().bind(alert.getDialogPane().widthProperty().subtract(20));

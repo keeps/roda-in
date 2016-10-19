@@ -126,7 +126,7 @@ public class AddMetadataPane extends BorderPane {
     if (metaTypesRaw != null) {
       String[] metaTypes = metaTypesRaw.split(",");
       for (String type : metaTypes) {
-        String title = AppProperties.getConfig("metadata.type." + type + ".title");
+        String title = AppProperties.getConfig("metadata." + type + ".title");
         if (title == null || type == null)
           continue;
         typesList.add(new UIPair(type, title));
@@ -228,8 +228,8 @@ public class AddMetadataPane extends BorderPane {
     String[] templates = templatesRaw.split(",");
     for (String templ : templates) {
       String trimmed = templ.trim();
-      String title = AppProperties.getConfig("metadata.template." + trimmed + ".title");
-      String type = AppProperties.getConfig("metadata.template." + trimmed + ".type");
+      String title = AppProperties.getConfig("metadata." + trimmed + ".title");
+      String type = trimmed;
       if (title == null)
         continue;
       String key = trimmed;
@@ -294,7 +294,7 @@ public class AddMetadataPane extends BorderPane {
             String[] splitted = rawTemplateType.split("!###!");
             String templateType = splitted[0], metadataType = splitted[1], metadataVersion = null;
             if (metadataType != null) {
-              metadataVersion = AppProperties.getConfig("metadata.type." + metadataType + ".version");
+              metadataVersion = AppProperties.getConfig("metadata." + metadataType + ".version");
             }
             metadataToAdd = new DescObjMetadata(MetadataOptions.TEMPLATE, templateType, metadataType, metadataVersion);
             break;
@@ -340,7 +340,7 @@ public class AddMetadataPane extends BorderPane {
   private void addTypeAndVersionToMetadata(UIPair metaType, DescObjMetadata metadataToAdd) {
     if (metaType != null) {
       String metadataType = (String) metaType.getKey();
-      String metadataVersion = AppProperties.getConfig("metadata.type." + metadataType + ".version");
+      String metadataVersion = AppProperties.getConfig("metadata." + metadataType + ".version");
       metadataToAdd.setMetadataType(metadataType);
       metadataToAdd.setVersion(metadataVersion);
     }

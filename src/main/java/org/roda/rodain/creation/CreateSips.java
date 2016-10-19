@@ -9,12 +9,16 @@ import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.creation.ui.CreationModalPreparation;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.sip.SipPreview;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 19/11/2015.
  */
 public class CreateSips {
+  private static final Logger LOGGER = LoggerFactory.getLogger(CreateSips.class.getName());
+
   private SipTypes type;
   private Path outputPath;
   private SimpleSipCreator creator;
@@ -58,11 +62,12 @@ public class CreateSips {
     if (!exportItems)
       sips = sips.entrySet().stream().filter(entry -> entry.getKey() instanceof SipPreview)
         .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
-
     startedTime = System.currentTimeMillis();
+    LOGGER.error("START: " + startedTime);
+
     sipsCount = sips.size();
     if (type == SipTypes.BAGIT) {
-      creator = new BagitSipCreator(outputPath, sips, createReport);
+      creator = new BagitSipCreator(outputPath, sips, createReport, prefix, name_type);
       creator.start();
     } else {
       creator = new EarkSipCreator(outputPath, sips, prefix, name_type, createReport);

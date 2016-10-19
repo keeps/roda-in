@@ -126,7 +126,7 @@ public class RuleModalController {
       }
 
       if (metadataType != null) {
-        metadataVersion = AppProperties.getConfig("metadata.type." + metadataType + ".version");
+        metadataVersion = AppProperties.getConfig("metadata." + metadataType + ".version");
       }
 
       Rule rule = new Rule(sourceSet, assocType, metadataPath, templateType, metadataOption, metadataType,

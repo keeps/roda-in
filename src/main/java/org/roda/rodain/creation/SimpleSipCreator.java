@@ -6,7 +6,9 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.file.Path;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -26,6 +28,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
+import org.roda.rodain.creation.ui.CreationModalPreparation;
 import org.roda.rodain.report.InventoryReportCreator;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.utils.Utils;
@@ -213,5 +216,31 @@ public class SimpleSipCreator extends Thread {
   public void createReport(Map<Path, Object> sips) {
     InventoryReportCreator reportCreator = new InventoryReportCreator(outputPath);
     reportCreator.start(sips);
+  }
+  
+  
+  public String createSipName(DescriptionObject sip, String prefix, CreationModalPreparation.NAME_TYPES name_type) {
+    StringBuilder name = new StringBuilder();
+    if (prefix != null && !"".equals(prefix)) {
+      name.append(prefix).append(" - ");
+    }
+    switch (name_type) {
+      case TITLE_ID:
+        name.append(sip.getTitle());
+        name.append(" - ");
+        name.append(sip.getId());
+        break;
+      case TITLE_DATE:
+        name.append(sip.getTitle());
+        name.append(" - ");
+        name.append(new SimpleDateFormat("yyyy.MM.dd HH.mm.ss.SSS").format(new Date()));
+        break;
+      case ID:
+      default:
+        name.append(sip.getId());
+        break;
+    }
+
+    return name.toString();
   }
 }

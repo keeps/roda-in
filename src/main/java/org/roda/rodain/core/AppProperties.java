@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -49,6 +50,8 @@ public class AppProperties {
   private static Locale locale;
 
   private static Set<Path> allSchemas;
+  
+  private Map<String,Metadata> availableMetadatas;
 
   private AppProperties() {
   }
@@ -65,30 +68,7 @@ public class AppProperties {
       // copy config file
       if (!Files.exists(configPath)) {
         Files.copy(ClassLoader.getSystemResourceAsStream("properties/config.properties"), configPath);
-      }/* else { // if the file already exists, we need to check if it's
-               // missing
-               // any properties
-        PropertiesConfiguration internal = load("config");
-        PropertiesConfiguration external = new PropertiesConfiguration();
-        external.load(new FileReader(configPath.toFile()));
-        boolean store = false;
-        Iterator<String> keys = internal.getKeys();
-        while (keys.hasNext()) {
-          String key = keys.next();
-          if (!external.containsKey(key)) {
-            external.addProperty(key, internal.getProperty(key));
-            store = true;
-          }
-          if (key.startsWith("metadata.template.") && internal.getProperty(key) == null) {
-            external.setProperty(key, internal.getProperty(key));
-            store = true;
-          }
-        }
-        if (store) {
-          OutputStream out = new FileOutputStream(configPath.toFile());
-          external.save(out);
-        }
-      }*/
+      }
 
       if (!Files.exists(rodainPath.resolve(".app.properties"))) {
         Files.copy(ClassLoader.getSystemResourceAsStream("properties/.app.properties"),
@@ -96,13 +76,16 @@ public class AppProperties {
       }
 
       // copy metadata templates
+      
+      
+      
+      
+      
       String templatesRaw = getConfig("metadata.templates");
       String[] templates = templatesRaw.split(",");
       for (String templ : templates) {
-        String templateName = "metadata.template." + templ.trim() + ".file";
+        String templateName = "metadata." + templ.trim() + ".template";
         String fileName = config.getString(templateName);
-        Files.copy(ClassLoader.getSystemResourceAsStream("templates/" + fileName),
-          rodainPath.resolve("samples").resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
         // copy the sample to the templates folder too, if it doesn't
         // exist
         // already
@@ -115,7 +98,7 @@ public class AppProperties {
       String typesRaw = getConfig("metadata.types");
       String[] types = typesRaw.split(",");
       for (String type : types) {
-        String schemaName = "metadata.type." + type.trim() + ".schema";
+        String schemaName = "metadata." + type.trim() + ".schema";
         String schemaFileName = config.getString(schemaName);
         if (schemaFileName == null || schemaFileName.length() == 0) {
           continue;
@@ -208,13 +191,13 @@ public class AppProperties {
     if (!Files.exists(rodainPath.resolve("templates"))) {
       rodainPath.resolve("templates").toFile().mkdir();
     }
-    // create samples folder
-    if (!Files.exists(rodainPath.resolve("samples"))) {
-      rodainPath.resolve("samples").toFile().mkdir();
-    }
     // create LOGGER folder
     if (!Files.exists(rodainPath.resolve("log"))) {
       rodainPath.resolve("log").toFile().mkdir();
+    }
+    // create metadata folder
+    if (!Files.exists(rodainPath.resolve("metadata"))) {
+      rodainPath.resolve("metadata").toFile().mkdir();
     }
   }
 
@@ -267,7 +250,7 @@ public class AppProperties {
    * @return The content of the template file
    */
   public static String getMetadataFile(String templateName) {
-    String completeKey = "metadata.template." + templateName + ".file";
+    String completeKey = "metadata." + templateName + ".template";
     return getFile(completeKey);
   }
 
@@ -277,7 +260,7 @@ public class AppProperties {
    * @return The content of the schema file associated to the template
    */
   public static String getSchemaFile(String templateType) {
-    String completeKey = "metadata.type." + templateType + ".schema";
+    String completeKey = "metadata." + templateType + ".schema";
     if (ext_config.containsKey(completeKey)) {
       Path filePath = rodainPath.resolve("schemas").resolve(ext_config.getString(completeKey));
       if (Files.exists(filePath)) {
@@ -297,7 +280,7 @@ public class AppProperties {
    * @return The path of the schema file associated to the template
    */
   public static Path getSchemaPath(String templateType) {
-    String completeKey = "metadata.type." + templateType + ".schema";
+    String completeKey = "metadata." + templateType + ".schema";
     if (ext_config.containsKey(completeKey)) {
       Path filePath = rodainPath.resolve("schemas").resolve(ext_config.getString(completeKey));
       if (Files.exists(filePath)) {

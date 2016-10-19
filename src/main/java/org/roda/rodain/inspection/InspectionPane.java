@@ -607,6 +607,7 @@ public class InspectionPane extends BorderPane {
     textArea.setUserData(metadataValue);
     textArea.textProperty().addListener((observable, oldValue, newValue) -> metadataValue.set("value", newValue));
     textArea.getStyleClass().add("form-text-area");
+    textArea.setWrapText(true);
     addListenersToUpdateUI(metadataValue, textArea.textProperty());
     return textArea;
   }
@@ -1747,7 +1748,7 @@ public class InspectionPane extends BorderPane {
     List<DescObjMetadata> metadataList = currentDescOb.getMetadata();
     List<UIPair> comboList = new ArrayList<>();
     for (DescObjMetadata dom : metadataList) {
-      comboList.add(new UIPair(dom, AppProperties.getConfig("metadata.template." + dom.getTemplateType() + ".title"))); // TODO
+      comboList.add(new UIPair(dom, AppProperties.getConfig("metadata." + dom.getTemplateType() + ".title"))); // TODO
     }
     if (comboList.isEmpty()) {
       showMetadataHelp();
