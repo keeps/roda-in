@@ -292,6 +292,7 @@ public class SchemaPane extends BorderPane {
   }
 
   private void createRootNode() {
+    LOGGER.error("createRootNode EAD2002");
     DescriptionObject dobj = new DescriptionObject(
       new DescObjMetadata(MetadataOptions.TEMPLATE, "ead2002", "ead", "2002"));
     dobj.setParentId(null);
@@ -382,6 +383,8 @@ public class SchemaPane extends BorderPane {
   }
 
   private void updateClassificationSchema(ClassificationSchema cs, boolean skipConfirmation) {
+    
+    initializeTemplates(cs);
     if (!skipConfirmation && !confirmUpdate())
       return;
 
@@ -395,11 +398,13 @@ public class SchemaPane extends BorderPane {
 
     try {
       for (DescriptionObject descObj : dos) {
+        LOGGER.error("DESCOBJ1: "+descObj.toString());
         // Check if the node is a root node
         if (descObj.getParentId() == null) {
           // Create a new node if it hasn't been created
           if (!nodes.containsKey(descObj.getId())) {
             SchemaNode root = new SchemaNode(descObj);
+            root.setUpdateSIP(true);
             nodes.put(descObj.getId(), root);
           }
           roots.add(nodes.get(descObj.getId()));
@@ -424,6 +429,7 @@ public class SchemaPane extends BorderPane {
             parentNode = nodes.get(parent.getId());
           } else {
             parentNode = new SchemaNode(parent);
+            parentNode.setUpdateSIP(true);
             nodes.put(parent.getId(), parentNode);
           }
           SchemaNode node;
@@ -433,6 +439,7 @@ public class SchemaPane extends BorderPane {
             node = nodes.get(descObj.getId());
           } else {
             node = new SchemaNode(descObj);
+            node.setUpdateSIP(true);
             nodes.put(descObj.getId(), node);
           }
           parentNode.getChildren().add(node);
@@ -458,6 +465,19 @@ public class SchemaPane extends BorderPane {
     } catch (Exception e) {
       LOGGER.error("Error updating the classification plan", e);
     }
+  }
+
+  private void initializeTemplates(ClassificationSchema cs) {
+    if(cs.getDos()!=null){
+      for(DescriptionObject d : cs.getDos()){
+        if(d.getMetadata()!=null){
+          for(DescObjMetadata dm : d.getMetadata()){
+            LOGGER.error(dm.toString());
+          }
+        }
+      }
+    }
+    
   }
 
   private boolean confirmUpdate() {
@@ -618,7 +638,13 @@ public class SchemaPane extends BorderPane {
 
       dobj.setId("ID" + UUID.randomUUID().toString());
       dobj.setTitle(I18n.t("SchemaPane.newNode"));
-      dobj.setDescriptionlevel("internal.aggregationLevel");
+      try{
+        String metadataAggregationLevel = AppProperties.getConfig("metadata."+dobj.getMetadata().get(0).getTemplateType()+".aggregationLevel");
+        dobj.setDescriptionlevel(metadataAggregationLevel);
+      }catch(Throwable t){
+        LOGGER.error(t.getMessage(),t);
+      }
+      
       SchemaNode newNode = new SchemaNode(dobj);
       if (selected != null) {
         dobj.setParentId(selected.getDob().getId());
@@ -628,7 +654,13 @@ public class SchemaPane extends BorderPane {
         if (!selected.isExpanded())
           selected.setExpanded(true);
       } else {
-        newNode.updateDescriptionLevel("internal.topLevel");
+        try{
+          String metadataTopLevel = AppProperties.getConfig("metadata."+dobj.getMetadata().get(0).getTemplateType()+".topLevel");
+          newNode.updateDescriptionLevel(metadataTopLevel);
+        }catch(Throwable t){
+          LOGGER.error(t.getMessage(),t);
+
+        }
         rootNode.getChildren().add(newNode);
         rootNode.addChildrenNode(newNode);
         schemaNodes.add(newNode);

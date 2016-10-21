@@ -120,13 +120,13 @@ public class RuleModalController {
           String[] splitted = template.split("!###!");
           templateType = splitted[0];
           metadataType = splitted[1];
+          metadataVersion = splitted.length==3?splitted[2]:null;
           break;
         default:
           break;
       }
-
-      if (metadataType != null) {
-        metadataVersion = AppProperties.getConfig("metadata." + metadataType + ".version");
+      if (metadataType != null && metadataVersion==null) {
+        metadataVersion = AppProperties.getConfig("metadata." + templateType + ".version");
       }
 
       Rule rule = new Rule(sourceSet, assocType, metadataPath, templateType, metadataOption, metadataType,

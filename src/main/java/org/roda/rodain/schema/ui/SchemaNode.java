@@ -59,7 +59,6 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     ruleObjects = new HashMap<>();
     schemaNodes = new HashSet<>();
     ruleNodes = new HashMap<>();
-
     if (dob.getDescriptionlevel() != null)
       updateDescriptionLevel(dob.getDescriptionlevel());
   }
@@ -411,4 +410,16 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     ancestors.addAll(computeAncestors());
     return ancestors;
   }
+
+  public boolean isUpdateSIP() {
+    return dob!=null?dob.isUpdateSIP():false;
+  }
+
+  public void setUpdateSIP(boolean isUpdateSIP) {
+    if(dob!=null){
+      dob.setUpdateSIP(isUpdateSIP);
+    }
+  }
+
+ 
 }

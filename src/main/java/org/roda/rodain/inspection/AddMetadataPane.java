@@ -25,16 +25,21 @@ import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.ui.HBoxCell;
+import org.roda.rodain.rules.ui.RuleModalPane;
 import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.UIPair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 23-03-2016.
  */
 public class AddMetadataPane extends BorderPane {
+  private static final Logger LOGGER = LoggerFactory.getLogger(AddMetadataPane.class.getName());
+
   private enum OPTIONS {
     TEMPLATE, SINGLE_FILE, EMPTY_FILE
   }
@@ -228,15 +233,20 @@ public class AddMetadataPane extends BorderPane {
     String[] templates = templatesRaw.split(",");
     for (String templ : templates) {
       String trimmed = templ.trim();
+      
       String title = AppProperties.getConfig("metadata." + trimmed + ".title");
-      String type = trimmed;
+      String type = AppProperties.getConfig("metadata." + trimmed + ".type");
+      String version = AppProperties.getConfig("metadata." + trimmed + ".version");
       if (title == null)
         continue;
       String key = trimmed;
-      String value = title;
       if (type != null) {
         key += "!###!" + type;
       }
+      if (version != null) {
+        key += "!###!" + version;
+      }
+      String value = title;
       UIPair newPair = new UIPair(key, value);
       templateTypes.getItems().add(newPair);
     }
@@ -292,10 +302,7 @@ public class AddMetadataPane extends BorderPane {
           case TEMPLATE:
             String rawTemplateType = (String) templateTypes.getSelectionModel().getSelectedItem().getKey();
             String[] splitted = rawTemplateType.split("!###!");
-            String templateType = splitted[0], metadataType = splitted[1], metadataVersion = null;
-            if (metadataType != null) {
-              metadataVersion = AppProperties.getConfig("metadata." + metadataType + ".version");
-            }
+            String templateType = splitted[0], metadataType = splitted[1], metadataVersion = splitted.length==3?splitted[2]:null;
             metadataToAdd = new DescObjMetadata(MetadataOptions.TEMPLATE, templateType, metadataType, metadataVersion);
             break;
           case SINGLE_FILE:
@@ -342,7 +349,7 @@ public class AddMetadataPane extends BorderPane {
       String metadataType = (String) metaType.getKey();
       String metadataVersion = AppProperties.getConfig("metadata." + metadataType + ".version");
       metadataToAdd.setMetadataType(metadataType);
-      metadataToAdd.setVersion(metadataVersion);
+      metadataToAdd.setMetadataVersion(metadataVersion);
     }
   }
 

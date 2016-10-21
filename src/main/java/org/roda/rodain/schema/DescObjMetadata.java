@@ -24,7 +24,7 @@ import java.util.TreeSet;
  * @author Andre Pereira apereira@keep.pt
  * @since 07-12-2015.
  */
-@JsonIgnoreProperties({"path", "loaded", "version"})
+@JsonIgnoreProperties({"path", "loaded"})
 public class DescObjMetadata {
   private static final Logger LOGGER = LoggerFactory.getLogger(DescObjMetadata.class.getName());
   private String id, content, contentEncoding, metadataType, label;
@@ -35,30 +35,34 @@ public class DescObjMetadata {
 
   // template
   private MetadataOptions creatorOption;
-  private String version, templateType;
+  private String metadataVersion, templateType;
 
   public DescObjMetadata() {
     creatorOption = MetadataOptions.NEW_FILE;
   }
 
-  public DescObjMetadata(MetadataOptions creatorOption, String templateType, String metadataType, String version) {
+  public DescObjMetadata(MetadataOptions creatorOption, String templateType, String metadataType, String metadataVersion) {
     this.creatorOption = creatorOption;
     this.templateType = templateType;
-    this.version = version;
+    this.metadataVersion = metadataVersion;
     this.contentEncoding = "Base64";
     this.id = templateType + ".xml.hbs";
     this.metadataType = metadataType;
+    
+    LOGGER.error("1 - TEMPLATE TYPE FOR "+metadataType+"-"+metadataVersion+": "+templateType);
   }
 
-  public DescObjMetadata(MetadataOptions creatorOption, Path path, String metadataType, String version) {
+  public DescObjMetadata(MetadataOptions creatorOption, Path path, String metadataType, String metadataVersion) {
     this.creatorOption = creatorOption;
     this.path = path;
     this.metadataType = metadataType;
     this.contentEncoding = "Base64";
-    this.version = version;
+    this.metadataVersion = metadataVersion;
     if (path != null) {
       this.id = path.getFileName().toString();
     }
+    LOGGER.error("2 - TEMPLATE TYPE FOR "+metadataType+"-"+metadataVersion+": "+templateType);
+
   }
 
   @JsonIgnore
@@ -74,8 +78,8 @@ public class DescObjMetadata {
     this.metadataType = metadataType;
   }
 
-  public void setVersion(String version) {
-    this.version = version;
+  public void setMetadataVersion(String metadataVersion) {
+    this.metadataVersion = metadataVersion;
   }
 
   public void setTemplateType(String templateType) {
@@ -113,11 +117,17 @@ public class DescObjMetadata {
     this.values = val;
   }
 
-  public String getVersion() {
-    return version;
+  public String getMetadataVersion() {
+    return metadataVersion;
   }
 
   public String getTemplateType() {
+    /*if(templateType==null){
+      LOGGER.error("NO TEMPLATE FOR "+this.toString());
+      String fake = (metadataType+metadataVersion).replaceAll("-", "");
+      LOGGER.error("USING FAKE: "+fake);
+      return fake.toLowerCase();
+    }*/
     return templateType;
   }
 
@@ -165,24 +175,24 @@ public class DescObjMetadata {
     if (content != null) {
       byte[] decoded = Base64.decodeBase64(content);
       return new String(decoded);
-    } else
+    } else{
       return "";
+    }
   }
 
   private void loadMetadata() {
     try {
       if (creatorOption == MetadataOptions.TEMPLATE) {
-        if (templateType != null) {
-          String tempContent = AppProperties.getMetadataFile(templateType);
+        if (getTemplateType() != null) {
+          String tempContent = AppProperties.getMetadataFile(getTemplateType());
           setContentDecoded(tempContent);
           loaded = true;
         }
-      } else {
-        if (path != null) {
+      } else if(path!=null){
           String tempContent = Utils.readFile(path.toString(), Charset.forName("UTF-8"));
           setContentDecoded(tempContent);
           loaded = true;
-        }
+        
       }
     } catch (IOException e) {
       LOGGER.error("Error reading metadata file", e);
@@ -272,7 +282,7 @@ public class DescObjMetadata {
     result.setContentEncoding(contentEncoding);
     result.setValues((TreeSet<MetadataValue>) values.clone());
     result.setPath(path);
-    result.setVersion(version);
+    result.setMetadataVersion(metadataVersion);
     result.setMetadataType(metadataType);
     result.setTemplateType(templateType);
     return result;
@@ -282,7 +292,7 @@ public class DescObjMetadata {
   public String toString() {
     return "DescObjMetadata [id=" + id + ", content=" + content + ", contentEncoding=" + contentEncoding
       + ", metadataType=" + metadataType + ", additionalProperties=" + additionalProperties + ", values=" + values
-      + ", path=" + path + ", loaded=" + loaded + ", creatorOption=" + creatorOption + ", version=" + version
+      + ", path=" + path + ", loaded=" + loaded + ", creatorOption=" + creatorOption + ", metadataVersion=" + metadataVersion
       + ", templateType=" + templateType + "]";
   }
 

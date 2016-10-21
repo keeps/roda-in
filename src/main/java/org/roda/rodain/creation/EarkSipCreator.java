@@ -33,6 +33,7 @@ import org.roda_project.commons_ip.model.SIPObserver;
 import org.roda_project.commons_ip.model.impl.eark.EARKSIP;
 import org.roda_project.commons_ip.utils.IPEnums;
 import org.roda_project.commons_ip.utils.SIPException;
+import org.roda_project.commons_ip.utils.IPEnums.IPStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,33 +95,32 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
         ? ((SipPreview) descriptionObject).getContentType() : IPContentType.getMIXED();
       SIP earkSip = new EARKSIP(descriptionObject.getId(), contentType, agent_name);
       earkSip.addObserver(this);
-      earkSip.setStatus(IPEnums.IPStatus.NEW);
       earkSip.setAncestors(previews.get(descriptionObject));
-
+      if(descriptionObject.isUpdateSIP()){
+        earkSip.setStatus(IPStatus.UPDATE);
+      }else{
+        earkSip.setStatus(IPStatus.NEW);
+      }
       currentSipProgress = 0;
       currentSipName = descriptionObject.getTitle();
       currentAction = actionCopyingMetadata;
 
       for (DescObjMetadata descObjMetadata : descriptionObject.getMetadata()) {
-        String keyMetadataTypeValue = descObjMetadata.getMetadataType();
-        String metadataTypeString = AppProperties.getConfig(keyMetadataTypeValue);
         MetadataType metadataType = new MetadataType(MetadataType.MetadataTypeEnum.OTHER);
 
         Path schemaPath = AppProperties.getSchemaPath(descObjMetadata.getMetadataType());
         if (schemaPath != null)
           earkSip.addSchema(new IPFile(schemaPath));
         // Check if one of the values from the enum can be used
-        if (metadataTypeString != null) {
-          for (MetadataType.MetadataTypeEnum val : MetadataType.MetadataTypeEnum.values()) {
-            if (metadataTypeString.equalsIgnoreCase(val.getType())) {
-              metadataType = new MetadataType(val);
-              break;
-            }
+        for (MetadataType.MetadataTypeEnum val : MetadataType.MetadataTypeEnum.values()) {
+          if (descObjMetadata.getMetadataType().equalsIgnoreCase(val.getType())) {
+            metadataType = new MetadataType(val);
+            break;
           }
         }
         // If no value was found previously, set the Other type
         if (metadataType.getType() == MetadataType.MetadataTypeEnum.OTHER) {
-          metadataType.setOtherType(metadataTypeString);
+          metadataType.setOtherType(descObjMetadata.getMetadataType());
         }
 
         Path metadataPath = null;
@@ -138,7 +138,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
 
         IPFile metadataFile = new IPFile(metadataPath);
         IPDescriptiveMetadata metadata = new IPDescriptiveMetadata(metadataFile, metadataType,
-          descObjMetadata.getVersion());
+          descObjMetadata.getMetadataVersion());
         earkSip.addDescriptiveMetadata(metadata);
       }
 

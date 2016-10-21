@@ -1,5 +1,15 @@
 package org.roda.rodain.sip;
 
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Set;
+import java.util.UUID;
+
+import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.TreeNode;
@@ -7,15 +17,16 @@ import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda_project.commons_ip.model.IPContentType;
-
-import java.nio.file.Path;
-import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 01-10-2015.
  */
 public class SipPreview extends DescriptionObject implements Observer {
+  private static final Logger LOGGER = LoggerFactory.getLogger(SipPreview.class.getName());
+
   private Set<SipRepresentation> representations;
   private Set<TreeNode> documentation;
   private IPContentType contentType;
@@ -34,6 +45,7 @@ public class SipPreview extends DescriptionObject implements Observer {
    */
   public SipPreview(String name, Set<SipRepresentation> representations, DescObjMetadata metadata) {
     super(new DescObjMetadata(MetadataOptions.TEMPLATE, "ead2002", "ead", "2002"));
+    LOGGER.error("SIP PREVIEW ead2002");
     this.representations = representations;
     documentation = new HashSet<>();
     setTitle(name);
@@ -41,7 +53,14 @@ public class SipPreview extends DescriptionObject implements Observer {
     if (metadata != null)
       tempList.add(metadata);
     setMetadata(tempList);
-    setDescriptionlevel("internal.itemLevel");
+    if(metadata!=null){
+      try {
+        String metadataItemLevel = AppProperties.getConfig("metadata." + metadata.getTemplateType() + ".itemLevel");
+        setDescriptionlevel(metadataItemLevel);
+      } catch (Throwable t) {
+        LOGGER.error(t.getMessage(), t);
+      }
+    }
     setId("ID" + UUID.randomUUID().toString());
     contentType = new IPContentType(IPContentType.IPContentTypeEnum.MIXED);
 

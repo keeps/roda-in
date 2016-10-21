@@ -1589,14 +1589,14 @@ public class InspectionPane extends BorderPane {
         if (commonTemplate == null)
           commonTemplate = dobm.getTemplateType();
         if (commonVersion == null)
-          commonVersion = dobm.getVersion();
+          commonVersion = dobm.getMetadataVersion();
         if (commonMetadataType == null) {
           commonMetadataType = dobm.getMetadataType();
         }
 
-        common = commonTemplate != null && commonTemplate.equals(dobm.getTemplateType()) && commonVersion != null
-          && commonVersion.equals(dobm.getVersion()) && commonMetadataType != null
-          && commonMetadataType.equals(dobm.getMetadataType());
+        common = commonTemplate != null && commonTemplate.equalsIgnoreCase(dobm.getTemplateType()) && commonVersion != null
+          && commonVersion.equalsIgnoreCase(dobm.getMetadataVersion()) && commonMetadataType != null
+          && commonMetadataType.equalsIgnoreCase(dobm.getMetadataType());
         // Add the metadata values to the common set
         for (MetadataValue mv : dob.getMetadataValueMap(dobm)) {
           if (commonMV.containsKey(mv.getId())) {
@@ -1637,6 +1637,7 @@ public class InspectionPane extends BorderPane {
     }
     currentDescOb = new DescriptionObject(
       new DescObjMetadata(MetadataOptions.TEMPLATE, commonTemplate, commonMetadataType, commonVersion));
+
     currentDescOb.getMetadata().clear();
     if (common) {
       DescObjMetadata dobm = new DescObjMetadata(MetadataOptions.TEMPLATE, commonTemplate, commonMetadataType,

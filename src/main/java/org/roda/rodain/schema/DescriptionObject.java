@@ -36,6 +36,7 @@ public class DescriptionObject extends Observable {
   private String title, id, parentId, descriptionlevel;
   private List<DescObjMetadata> metadata = new ArrayList<>();
   private Map<String, Object> additionalProperties = new TreeMap<>();
+  private boolean isUpdateSIP = false;
 
   public DescriptionObject() {
     title = I18n.t("root");
@@ -222,6 +223,7 @@ public class DescriptionObject extends Observable {
   @JsonIgnore
   public Set<MetadataValue> getMetadataValueMap(DescObjMetadata dom) {
     String content = AppProperties.getMetadataFile(dom.getTemplateType());
+    
     if (content != null) {
       Set<MetadataValue> values = dom.getValues();
       values.forEach(metadataValue -> {
@@ -239,11 +241,7 @@ public class DescriptionObject extends Observable {
               metadataValue.set("value", id);
               break;
             case "level":
-              if(!descriptionlevel.startsWith("internal.")){
-                metadataValue.set("value", descriptionlevel);
-              }else{
-                metadataValue.set("value", "");
-              }
+              metadataValue.set("value", descriptionlevel);
               break;
             case "parentid":
               metadataValue.set("value", parentId);
@@ -274,12 +272,14 @@ public class DescriptionObject extends Observable {
           break;
         case "level":
           Object value = metadataValue.get("value");
-          if (value instanceof String) {
-            descriptionlevel = (String) metadataValue.get("value");
-          } else if (value instanceof UIPair) {
-            descriptionlevel = (String) ((UIPair) metadataValue.get("value")).getKey();
-          } else {
-            descriptionlevel = value.toString();
+          if(value!=null){
+            if (value instanceof String) {
+              descriptionlevel = (String) metadataValue.get("value");
+            } else if (value instanceof UIPair) {
+              descriptionlevel = (String) ((UIPair) metadataValue.get("value")).getKey();
+            } else {
+              descriptionlevel = value.toString();
+            }
           }
           break;
         case "parentid":
@@ -319,5 +319,23 @@ public class DescriptionObject extends Observable {
   public void setAdditionalProperty(String name, Object value) {
     this.additionalProperties.put(name, value);
   }
+
+  @Override
+  public String toString() {
+    return "DescriptionObject [title=" + title + ", id=" + id + ", parentId=" + parentId + ", descriptionlevel="
+      + descriptionlevel + ", metadata=" + metadata + ", additionalProperties=" + additionalProperties + "]";
+  }
+
+  public boolean isUpdateSIP() {
+    return isUpdateSIP;
+  }
+
+  public void setUpdateSIP(boolean isUpdateSIP) {
+    this.isUpdateSIP = isUpdateSIP;
+  }
+  
+  
+  
+  
 
 }

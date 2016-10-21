@@ -402,14 +402,18 @@ public class RuleModalPane extends BorderPane {
     for (String templ : templates) {
       String trimmed = templ.trim();
       String title = AppProperties.getConfig("metadata." + trimmed + ".title");
-      String type = trimmed;
+      String type = AppProperties.getConfig("metadata." + trimmed + ".type");
+      String version = AppProperties.getConfig("metadata." + trimmed + ".version");
       if (title == null)
         continue;
       String key = trimmed;
-      String value = title;
       if (type != null) {
         key += "!###!" + type;
       }
+      if (version != null) {
+        key += "!###!" + version;
+      }
+      String value = title;
       UIPair newPair = new UIPair(key, value);
       templateTypes.getItems().add(newPair);
     }

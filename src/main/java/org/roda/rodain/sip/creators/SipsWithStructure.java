@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.TreeNode;
@@ -148,7 +149,12 @@ public class SipsWithStructure extends SipPreviewCreator {
       DescriptionObject descriptionObject = new DescriptionObject(
         new DescObjMetadata(MetadataOptions.TEMPLATE, templateType, metadataType, metadataVersion));
       descriptionObject.setTitle(path.getFileName().toString());
-      descriptionObject.setDescriptionlevel("internal.aggregationLevel");
+      try {
+        String metadataAggregationLevel = AppProperties.getConfig("metadata." + templateType + ".aggregationLevel");
+        descriptionObject.setDescriptionlevel(metadataAggregationLevel);
+      } catch (Throwable t) {
+        LOGGER.error(t.getMessage(), t);
+      }
       descriptionObjects.put(path, descriptionObject);
 
       // Set this node as a parent of its descriptionObject children (which can
@@ -233,11 +239,8 @@ public class SipsWithStructure extends SipPreviewCreator {
     Path path = node.getPath();
     SipPreview sipPreview = createSip(path, node);
 
-    // set the SIP's description level as file if there's more than one file in
-    // the content
-    if (node.getChildren().size() > 1) {
-      sipPreview.setDescriptionlevel("internal.fileLevel");
-    }
+    String fileLevelItem = AppProperties.getConfig("metadata." + templateType + ".fileLevel");
+    sipPreview.setDescriptionlevel(fileLevelItem);
 
     sipPreviewMap.put(path, sipPreview);
   }
