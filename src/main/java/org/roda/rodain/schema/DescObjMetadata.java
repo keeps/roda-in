@@ -48,8 +48,6 @@ public class DescObjMetadata {
     this.contentEncoding = "Base64";
     this.id = templateType + ".xml.hbs";
     this.metadataType = metadataType;
-    
-    LOGGER.error("1 - TEMPLATE TYPE FOR "+metadataType+"-"+metadataVersion+": "+templateType);
   }
 
   public DescObjMetadata(MetadataOptions creatorOption, Path path, String metadataType, String metadataVersion) {
@@ -61,8 +59,6 @@ public class DescObjMetadata {
     if (path != null) {
       this.id = path.getFileName().toString();
     }
-    LOGGER.error("2 - TEMPLATE TYPE FOR "+metadataType+"-"+metadataVersion+": "+templateType);
-
   }
 
   @JsonIgnore

@@ -45,7 +45,6 @@ public class SipPreview extends DescriptionObject implements Observer {
    */
   public SipPreview(String name, Set<SipRepresentation> representations, DescObjMetadata metadata) {
     super(new DescObjMetadata(MetadataOptions.TEMPLATE, "ead2002", "ead", "2002"));
-    LOGGER.error("SIP PREVIEW ead2002");
     this.representations = representations;
     documentation = new HashSet<>();
     setTitle(name);

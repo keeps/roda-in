@@ -7,6 +7,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
 import org.apache.commons.io.FilenameUtils;
+import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.rules.filters.ContentFilter;
@@ -241,9 +242,11 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
     SipPreview sipPreview = new SipPreview(path.getFileName().toString(), repSet, null);
     node.addObserver(sipPreview);
 
-    if (metadataOption == MetadataOptions.TEMPLATE)
+    if (metadataOption == MetadataOptions.TEMPLATE){
       sipPreview.getMetadata().add(new DescObjMetadata(metadataOption, templateType, metadataType, metadataVersion));
-    else {
+      String level = AppProperties.getConfig("metadata." + templateType + ".fileLevel");
+      sipPreview.setDescriptionlevel(level);
+    }else {
       metaPath.forEach(mPath -> sipPreview.getMetadata()
         .add(new DescObjMetadata(metadataOption, mPath, metadataType, metadataVersion)));
     }
