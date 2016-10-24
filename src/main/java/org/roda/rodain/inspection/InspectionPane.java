@@ -603,6 +603,7 @@ public class InspectionPane extends BorderPane {
 
   private TextArea createFormTextArea(MetadataValue metadataValue) {
     TextArea textArea = new TextArea((String) metadataValue.get("value"));
+    textArea.setWrapText(true);
     HBox.setHgrow(textArea, Priority.ALWAYS);
     textArea.setUserData(metadataValue);
     textArea.textProperty().addListener((observable, oldValue, newValue) -> metadataValue.set("value", newValue));
