@@ -63,7 +63,6 @@ public class CreateSips {
       sips = sips.entrySet().stream().filter(entry -> entry.getKey() instanceof SipPreview)
         .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
     startedTime = System.currentTimeMillis();
-    LOGGER.error("START: " + startedTime);
 
     sipsCount = sips.size();
     if (type == SipTypes.BAGIT) {

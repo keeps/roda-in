@@ -398,7 +398,6 @@ public class SchemaPane extends BorderPane {
 
     try {
       for (DescriptionObject descObj : dos) {
-        LOGGER.error("DESCOBJ1: "+descObj.toString());
         // Check if the node is a root node
         if (descObj.getParentId() == null) {
           // Create a new node if it hasn't been created

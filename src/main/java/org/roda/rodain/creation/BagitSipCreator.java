@@ -94,7 +94,6 @@ public class BagitSipCreator extends SimpleSipCreator {
     if (createReport) {
       createReport(sips);
     }
-    LOGGER.error("STOP " + (System.currentTimeMillis() - startTime.toEpochMilli()));
 
     currentAction = I18n.t("done");
   }
