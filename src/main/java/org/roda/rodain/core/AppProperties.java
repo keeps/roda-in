@@ -51,8 +51,6 @@ public class AppProperties {
 
   private static Set<Path> allSchemas;
   
-  private Map<String,Metadata> availableMetadatas;
-
   private AppProperties() {
   }
 
