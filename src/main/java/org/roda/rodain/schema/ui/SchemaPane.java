@@ -33,6 +33,7 @@ import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.AutoscrollTreeView;
 import org.roda.rodain.utils.ModalStage;
+import org.roda.rodain.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,8 +87,6 @@ public class SchemaPane extends BorderPane {
   private VBox dropBox;
   private static Stage primaryStage;
   private Set<SchemaNode> schemaNodes;
-
-  private boolean modifiedPlan = false;
 
   // center help
   private VBox centerHelp;
@@ -373,7 +372,6 @@ public class SchemaPane extends BorderPane {
     // create ObjectMapper instance
     ObjectMapper objectMapper = new ObjectMapper();
 
-    modifiedPlan = false;
     // convert json string to object
     return objectMapper.readValue(input, ClassificationSchema.class);
   }
@@ -460,7 +458,6 @@ public class SchemaPane extends BorderPane {
         sortRootChildren();
         hasClassificationScheme.setValue(true);
       }
-      modifiedPlan = false;
     } catch (Exception e) {
       LOGGER.error("Error updating the classification plan", e);
     }
@@ -471,7 +468,8 @@ public class SchemaPane extends BorderPane {
       for(DescriptionObject d : cs.getDos()){
         if(d.getMetadata()!=null){
           for(DescObjMetadata dm : d.getMetadata()){
-            LOGGER.error(dm.toString());
+            dm = Utils.updateTemplate(dm);
+            LOGGER.error("OLA");
           }
         }
       }
@@ -620,7 +618,6 @@ public class SchemaPane extends BorderPane {
     hasClassificationScheme.setValue(true);
     AppProperties.setAppConfig("lastClassificationScheme", "");
     AppProperties.saveAppConfig();
-    modifiedPlan = true;
   }
 
   private SchemaNode addNewLevel() {
@@ -674,7 +671,6 @@ public class SchemaPane extends BorderPane {
       treeView.getSelectionModel().clearSelection();
       treeView.getSelectionModel().select(newNode);
       treeView.scrollTo(treeView.getSelectionModel().getSelectedIndex());
-      modifiedPlan = true;
 
       return newNode;
     } else {
@@ -826,7 +822,6 @@ public class SchemaPane extends BorderPane {
 
           TreeItem parent = selected.getParent();
           parent.getChildren().remove(selected);
-          modifiedPlan = true;
 
           SchemaNode schemaNode = (SchemaNode) selected;
           if (node == null) {
@@ -947,23 +942,6 @@ public class SchemaPane extends BorderPane {
    */
   public TreeView<String> getTreeView() {
     return treeView;
-  }
-
-  /**
-   * @return True if the plan has been modified, false otherwise.
-   */
-  public boolean isModifiedPlan() {
-    return modifiedPlan;
-  }
-
-  /**
-   * Sets the modifiedPlan variable.
-   * 
-   * @param b
-   *          The new value.
-   */
-  public void setModifiedPlan(boolean b) {
-    modifiedPlan = b;
   }
 
   /**

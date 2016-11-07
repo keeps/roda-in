@@ -17,7 +17,8 @@ import java.util.UUID;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.rules.MetadataOptions;
-import org.roda.rodain.sip.MetadataValue;
+import org.roda.rodain.template.TemplateFieldValue;
+import org.roda.rodain.template.TemplateUtils;
 import org.roda.rodain.utils.UIPair;
 import org.roda.rodain.utils.Utils;
 import org.slf4j.Logger;
@@ -147,6 +148,7 @@ public class DescriptionObject extends Observable {
   @JsonIgnore
   public String getMetadataWithReplaces(DescObjMetadata dom) {
     String content = dom.getContentDecoded();
+    String templateContent = AppProperties.getTemplateContent(dom.getTemplateType());
     if (content != null && dom.getCreatorOption() == MetadataOptions.TEMPLATE) {
       try {
         Handlebars handlebars = new Handlebars();
@@ -180,9 +182,9 @@ public class DescriptionObject extends Observable {
           }
           return display ? options.fn() : options.inverse();
         });
-        Template tmpl = handlebars.compileInline(content);
+        Template tmpl = handlebars.compileInline(templateContent);
 
-        Set<MetadataValue> values = getMetadataValueMap(dom);
+        Set<TemplateFieldValue> values = getMetadataValueMap(dom);
         if (values != null) {
           values.forEach(metadataValue -> {
             if (metadataValue.get("value") != null && metadataValue.get("value") instanceof String) {
@@ -221,11 +223,13 @@ public class DescriptionObject extends Observable {
   }
 
   @JsonIgnore
-  public Set<MetadataValue> getMetadataValueMap(DescObjMetadata dom) {
-    String content = AppProperties.getMetadataFile(dom.getTemplateType());
-    
+  public Set<TemplateFieldValue> getMetadataValueMap(DescObjMetadata dom) {
+    String content = AppProperties.getTemplateContent(dom.getTemplateType());
+    if(dom.getValues()==null){
+      dom.initializeValues();
+    }
     if (content != null) {
-      Set<MetadataValue> values = dom.getValues();
+      Set<TemplateFieldValue> values = dom.getValues();
       values.forEach(metadataValue -> {
         String autoGenerate = (String) metadataValue.get("auto-generate");
         if (autoGenerate != null) {
@@ -272,7 +276,7 @@ public class DescriptionObject extends Observable {
           break;
         case "level":
           Object value = metadataValue.get("value");
-          if(value!=null){
+          if (value != null) {
             if (value instanceof String) {
               descriptionlevel = (String) metadataValue.get("value");
             } else if (value instanceof UIPair) {
@@ -333,9 +337,5 @@ public class DescriptionObject extends Observable {
   public void setUpdateSIP(boolean isUpdateSIP) {
     this.isUpdateSIP = isUpdateSIP;
   }
-  
-  
-  
-  
 
 }

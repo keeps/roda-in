@@ -6,8 +6,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.net.util.Base64;
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.rules.MetadataOptions;
-import org.roda.rodain.rules.TemplateToForm;
-import org.roda.rodain.sip.MetadataValue;
+import org.roda.rodain.template.TemplateFieldValue;
+import org.roda.rodain.template.TemplateUtils;
 import org.roda.rodain.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +15,9 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -24,12 +26,12 @@ import java.util.TreeSet;
  * @author Andre Pereira apereira@keep.pt
  * @since 07-12-2015.
  */
-@JsonIgnoreProperties({"path", "loaded"})
+@JsonIgnoreProperties({"path", "loaded","values"})
 public class DescObjMetadata {
   private static final Logger LOGGER = LoggerFactory.getLogger(DescObjMetadata.class.getName());
   private String id, content, contentEncoding, metadataType, label;
   private Map<String, Object> additionalProperties = new HashMap<>();
-  private TreeSet<MetadataValue> values;
+  private TreeSet<TemplateFieldValue> values;
   private Path path;
   private boolean loaded = false;
 
@@ -103,14 +105,16 @@ public class DescObjMetadata {
   /**
    * @return The set of MetadataValue objects. Used to create the form.
    */
-  public Set<MetadataValue> getValues() {
+  @JsonIgnore
+  public Set<TemplateFieldValue> getValues() {
     if (values == null) {
-      values = TemplateToForm.transform(getContentDecoded());
+      // TODO FIX
+      values = TemplateUtils.getTemplateFields(this);
     }
     return values;
   }
 
-  public void setValues(TreeSet<MetadataValue> val) {
+  public void setValues(TreeSet<TemplateFieldValue> val) {
     this.values = val;
   }
 
@@ -153,9 +157,6 @@ public class DescObjMetadata {
    * @return The content
    */
   public String getContent() {
-    if (content == null) {
-      loadMetadata();
-    }
     return this.content;
   }
 
@@ -180,9 +181,11 @@ public class DescObjMetadata {
   private void loadMetadata() {
     try {
       if (creatorOption == MetadataOptions.TEMPLATE) {
-        if (getTemplateType() != null) {
-          String tempContent = AppProperties.getMetadataFile(getTemplateType());
-          setContentDecoded(tempContent);
+        if (getTemplateType() != null && getContent()==null) {
+          String tempContent = AppProperties.getTemplateContent(getTemplateType());
+          setContentDecoded(TemplateUtils.getXMLFromTemplate(tempContent));
+          loaded = true;
+        }else{
           loaded = true;
         }
       } else if(path!=null){
@@ -198,7 +201,7 @@ public class DescObjMetadata {
 
   /**
    * Sets the content of the description object metadata.
-   *
+   *Set
    * @param content
    *          The content encoded in Base64
    */
@@ -277,7 +280,7 @@ public class DescObjMetadata {
     result.setId(id);
     result.setContent(content);
     result.setContentEncoding(contentEncoding);
-    result.setValues((TreeSet<MetadataValue>) values.clone());
+    result.setValues((TreeSet<TemplateFieldValue>) values.clone());
     result.setPath(path);
     result.setMetadataVersion(metadataVersion);
     result.setMetadataType(metadataType);
@@ -291,6 +294,10 @@ public class DescObjMetadata {
       + ", metadataType=" + metadataType + ", additionalProperties=" + additionalProperties + ", values=" + values
       + ", path=" + path + ", loaded=" + loaded + ", creatorOption=" + creatorOption + ", metadataVersion=" + metadataVersion
       + ", templateType=" + templateType + "]";
+  }
+
+  public void initializeValues() {
+    values = TemplateUtils.getTemplateFields(this);
   }
 
   

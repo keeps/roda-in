@@ -34,6 +34,8 @@ import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.rules.MetadataOptions;
+import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.utils.validation.ResourceResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -233,6 +235,26 @@ public class Utils {
       LOGGER.warn("Cannot parse the date \"{}\"", dateRaw, e);
     }
     return null;
+  }
+
+  public static DescObjMetadata updateTemplate(DescObjMetadata dm) {
+    String metaTypesRaw = AppProperties.getConfig("metadata.types");
+    if (metaTypesRaw != null) {
+      String[] metaTypes = metaTypesRaw.split(",");
+      for (String metaType : metaTypes) {
+        String typeKey = "metadata."+metaType+".type";
+        String versionKey = "metadata."+metaType+".version";
+        String type = AppProperties.getConfig(typeKey);
+        String version = AppProperties.getConfig(versionKey);
+        if(dm.getMetadataType()!=null && dm.getMetadataType().equalsIgnoreCase(type)){
+          if(dm.getMetadataVersion()!=null && dm.getMetadataVersion().equalsIgnoreCase(version)){
+            dm.setTemplateType(metaType);
+            dm.setCreatorOption(MetadataOptions.TEMPLATE);
+          }
+        }
+      }
+    }
+    return dm;
   }
 
 }

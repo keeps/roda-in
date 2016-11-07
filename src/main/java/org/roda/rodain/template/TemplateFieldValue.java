@@ -1,4 +1,4 @@
-package org.roda.rodain.sip;
+package org.roda.rodain.template;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,11 +10,11 @@ import org.roda.rodain.core.I18n;
  * @author Andre Pereira apereira@keep.pt
  * @since 08-02-2016.
  */
-public class MetadataValue implements Comparable {
+public class TemplateFieldValue implements Comparable {
   private String id;
   private Map<String, Object> options;
 
-  public MetadataValue(){
+  public TemplateFieldValue(){
     this.id = null;
     this.options = new HashMap<>();
   }
@@ -26,7 +26,7 @@ public class MetadataValue implements Comparable {
    * @param options
    *          The options map of the MetadataValue
    */
-  public MetadataValue(String id, Map<String, Object> options) {
+  public TemplateFieldValue(String id, Map<String, Object> options) {
     this.id = id;
     if (options == null || options.isEmpty()) {
       this.options = new HashMap<>();
@@ -105,8 +105,8 @@ public class MetadataValue implements Comparable {
     if(obj == this){
       return true;
     }
-    if(obj instanceof MetadataValue){
-      MetadataValue mv = (MetadataValue) obj;
+    if(obj instanceof TemplateFieldValue){
+      TemplateFieldValue mv = (TemplateFieldValue) obj;
       return mv.getId().equals(this.getId());
     }
     return false;
@@ -128,9 +128,9 @@ public class MetadataValue implements Comparable {
     if (o == this) {
       return 0;
     }
-    if (o instanceof MetadataValue) {
+    if (o instanceof TemplateFieldValue) {
       // Compare the order option
-      MetadataValue mv = (MetadataValue) o;
+      TemplateFieldValue mv = (TemplateFieldValue) o;
       Object selfOrder = get("order");
       Object mvOrder = mv.get("order");
       if (selfOrder != null) {

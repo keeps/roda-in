@@ -43,12 +43,12 @@ import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SipPreviewNode;
-import org.roda.rodain.sip.MetadataValue;
 import org.roda.rodain.sip.SipPreview;
 import org.roda.rodain.sip.SipRepresentation;
 import org.roda.rodain.source.ui.SourceTreeCell;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
+import org.roda.rodain.template.TemplateFieldValue;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.ModalStage;
 import org.roda.rodain.utils.UIPair;
@@ -431,7 +431,7 @@ public class InspectionPane extends BorderPane {
 
     if (topButtons.contains(metadataCombo))
       metadataTopBox.getChildren().add(metadataCombo);
-    
+
     metadataTopBox.requestFocus();
   }
 
@@ -454,7 +454,6 @@ public class InspectionPane extends BorderPane {
       currentDescOb.getMetadata().remove(toRemove);
       metadataCombo.getItems().remove(metadataCombo.getSelectionModel().getSelectedItem());
       metadataCombo.getSelectionModel().selectFirst();
-      RodaIn.getSchemePane().setModifiedPlan(true);
     }
   }
 
@@ -500,13 +499,13 @@ public class InspectionPane extends BorderPane {
 
   private void updateForm() {
     Locale l = AppProperties.getLocale();
-    Set<MetadataValue> metadataValues = getMetadataValues();
+    Set<TemplateFieldValue> metadataValues = getMetadataValues();
     if (metadataValues == null || metadataValues.isEmpty()) {
       noForm();
       return;
     }
     int i = 0;
-    for (MetadataValue metadataValue : metadataValues) {
+    for (TemplateFieldValue metadataValue : metadataValues) {
       // do not process this entry if it's marked as hidden
       if (getBooleanOption(metadataValue.get("hidden")))
         continue;
@@ -589,7 +588,7 @@ public class InspectionPane extends BorderPane {
     return result;
   }
 
-  private TextField createFormTextField(MetadataValue metadataValue) {
+  private TextField createFormTextField(TemplateFieldValue metadataValue) {
     TextField textField = new TextField((String) metadataValue.get("value"));
     HBox.setHgrow(textField, Priority.ALWAYS);
     textField.setUserData(metadataValue);
@@ -601,7 +600,7 @@ public class InspectionPane extends BorderPane {
     return textField;
   }
 
-  private TextArea createFormTextArea(MetadataValue metadataValue) {
+  private TextArea createFormTextArea(TemplateFieldValue metadataValue) {
     TextArea textArea = new TextArea((String) metadataValue.get("value"));
     textArea.setWrapText(true);
     HBox.setHgrow(textArea, Priority.ALWAYS);
@@ -613,7 +612,7 @@ public class InspectionPane extends BorderPane {
     return textArea;
   }
 
-  private ComboBox<UIPair> createFormCombo(MetadataValue metadataValue, Locale l) {
+  private ComboBox<UIPair> createFormCombo(TemplateFieldValue metadataValue, Locale l) {
     ObservableList<UIPair> comboList = FXCollections.observableArrayList();
     int selectedIndex = 0;
     String options = (String) metadataValue.get("options");
@@ -687,7 +686,7 @@ public class InspectionPane extends BorderPane {
     return comboBox;
   }
 
-  private void addListenersToUpdateUI(MetadataValue metadataValue, Property property) {
+  private void addListenersToUpdateUI(TemplateFieldValue metadataValue, Property property) {
     if (metadataValue.getId().equals("title")) {
       paneTitle.textProperty().bind(property);
       if (currentSIPNode != null) {
@@ -728,7 +727,7 @@ public class InspectionPane extends BorderPane {
     }
   }
 
-  private DatePicker createFormDatePicker(MetadataValue metadataValue) {
+  private DatePicker createFormDatePicker(TemplateFieldValue metadataValue) {
     String pattern = "yyyy-MM-dd";
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
     LocalDateStringConverter ldsc = new LocalDateStringConverter(formatter, null);
@@ -766,7 +765,7 @@ public class InspectionPane extends BorderPane {
     updateMetadataTop();
   }
 
-  private Set<MetadataValue> getMetadataValues() {
+  private Set<TemplateFieldValue> getMetadataValues() {
     if (currentDescOb != null) {
       UIPair selectedPair = metadataCombo.getSelectionModel().getSelectedItem();
       if (selectedPair != null) {
@@ -831,7 +830,10 @@ public class InspectionPane extends BorderPane {
     if (metadata.getChildren().contains(metadataFormWrapper)) {
       if (currentDescOb != null) {
         currentDescOb.updatedMetadata(selectedDescObjMetadata);
-        updateTextArea(currentDescOb.getMetadataWithReplaces(selectedDescObjMetadata));
+        String updatedContent = currentDescOb.getMetadataWithReplaces(selectedDescObjMetadata);
+        updateTextArea(updatedContent);
+        selectedDescObjMetadata.setContentDecoded(updatedContent);
+        saveMetadataPrivate(selectedDescObjMetadata);;
       }
     } else {
       saveMetadataPrivate(selectedDescObjMetadata);
@@ -1198,10 +1200,10 @@ public class InspectionPane extends BorderPane {
       for (DescObjMetadata descObjMetadata : descObj.getMetadata()) {
         if (descObjMetadata.getId().equals(metadataObj.getId())) {
           merged = true;
-          Set<MetadataValue> metadataObjValues = metadataObj.getValues();
-          Set<MetadataValue> descObjMetadataValues = descObjMetadata.getValues();
-          for (MetadataValue metadataObjValue : metadataObjValues) {
-            for (MetadataValue descObjMetadataValue : descObjMetadataValues) {
+          Set<TemplateFieldValue> metadataObjValues = metadataObj.getValues();
+          Set<TemplateFieldValue> descObjMetadataValues = descObjMetadata.getValues();
+          for (TemplateFieldValue metadataObjValue : metadataObjValues) {
+            for (TemplateFieldValue descObjMetadataValue : descObjMetadataValues) {
               if (metadataObjValue.getId().equals(descObjMetadataValue.getId())) {
                 // ignore the new value when it's
                 // {{auto-generate}} or {{mixed}}
@@ -1399,7 +1401,7 @@ public class InspectionPane extends BorderPane {
     Task thisMetadataTask = metadataTask;
     metadataTask.setOnSucceeded(Void -> {
       if (metadataTask != null && metadataTask == thisMetadataTask) {
-        Set<MetadataValue> values = currentDescOb.getMetadataValueMap(dom);
+        Set<TemplateFieldValue> values = currentDescOb.getMetadataValueMap(dom);
         boolean show = values != null && !values.isEmpty();
         showMetadataPane(show);
       }
@@ -1563,7 +1565,7 @@ public class InspectionPane extends BorderPane {
     this.selectedItems = selectedItems;
     // create a temporary description object to hold the metadata
 
-    Map<String, MetadataValue> commonMV = new HashMap<>();
+    Map<String, TemplateFieldValue> commonMV = new HashMap<>();
     String commonTemplate = null, commonVersion = null, commonMetadataType = null;
     boolean common = true;
     for (TreeItem ti : selectedItems) {
@@ -1595,11 +1597,11 @@ public class InspectionPane extends BorderPane {
           commonMetadataType = dobm.getMetadataType();
         }
 
-        common = commonTemplate != null && commonTemplate.equalsIgnoreCase(dobm.getTemplateType()) && commonVersion != null
-          && commonVersion.equalsIgnoreCase(dobm.getMetadataVersion()) && commonMetadataType != null
-          && commonMetadataType.equalsIgnoreCase(dobm.getMetadataType());
+        common = commonTemplate != null && commonTemplate.equalsIgnoreCase(dobm.getTemplateType())
+          && commonVersion != null && commonVersion.equalsIgnoreCase(dobm.getMetadataVersion())
+          && commonMetadataType != null && commonMetadataType.equalsIgnoreCase(dobm.getMetadataType());
         // Add the metadata values to the common set
-        for (MetadataValue mv : dob.getMetadataValueMap(dobm)) {
+        for (TemplateFieldValue mv : dob.getMetadataValueMap(dobm)) {
           if (commonMV.containsKey(mv.getId())) {
             if (mv.get("value") == null && commonMV.get(mv.getId()).get("value") == null)
               continue;
@@ -1756,9 +1758,9 @@ public class InspectionPane extends BorderPane {
       showMetadataHelp();
     } else {
       metadataCombo.getItems().addAll(comboList);
-      if(selectLast){
-      metadataCombo.getSelectionModel().selectLast();
-      }else{
+      if (selectLast) {
+        metadataCombo.getSelectionModel().selectLast();
+      } else {
         metadataCombo.getSelectionModel().selectFirst();
       }
     }
@@ -1949,7 +1951,6 @@ public class InspectionPane extends BorderPane {
   public void updateMetadataList(DescriptionObject descriptionObject) {
     if (descriptionObject == currentDescOb) {
       updateMetadataCombo(true);
-      RodaIn.getSchemePane().setModifiedPlan(true);
     }
   }
 

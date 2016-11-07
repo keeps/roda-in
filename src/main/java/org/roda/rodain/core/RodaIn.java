@@ -194,7 +194,7 @@ public class RodaIn extends Application {
       Footer.addBindings(fileExplorer);
 
       String rodaInEnv = System.getenv("RODAIN_ENV");
-      if(rodaInEnv == null || !rodaInEnv.equals("testing")) {
+      if (rodaInEnv == null || !rodaInEnv.equals("testing")) {
         checkForUpdates();
       }
     });
@@ -464,7 +464,7 @@ public class RodaIn extends Application {
     final MenuItem checkVersion = new MenuItem(I18n.t("Main.checkVersion"));
     checkVersion.setAccelerator(KeyCombination.keyCombination("Ctrl+U"));
     checkVersion.setOnAction(event -> {
-      if(!checkForUpdates()){
+      if (!checkForUpdates()) {
         try {
           Alert dlg = new Alert(Alert.AlertType.INFORMATION);
           dlg.initStyle(StageStyle.UNDECORATED);
@@ -483,21 +483,21 @@ public class RodaIn extends Application {
 
     String startingValue = AppProperties.getAppConfig("app.helpEnabled");
     String showHelpText;
-    if(Boolean.parseBoolean(startingValue)){
+    if (Boolean.parseBoolean(startingValue)) {
       showHelpText = I18n.t("Main.hideHelp");
-    }else {
+    } else {
       showHelpText = I18n.t("Main.showHelp");
     }
     final MenuItem showHelp = new MenuItem(showHelpText);
     showHelp.setAccelerator(KeyCombination.keyCombination("Ctrl+H"));
     showHelp.setOnAction(event -> {
       String currentValue = AppProperties.getAppConfig("app.helpEnabled");
-      if(Boolean.parseBoolean(currentValue)){
+      if (Boolean.parseBoolean(currentValue)) {
         showHelp.setText(I18n.t("Main.showHelp"));
         AppProperties.setAppConfig("app.helpEnabled", "false");
         currentValue = I18n.t("Main.hideHelp");
         AppProperties.saveAppConfig();
-      }else {
+      } else {
         showHelp.setText(I18n.t("Main.hideHelp"));
         AppProperties.setAppConfig("app.helpEnabled", "true");
         currentValue = I18n.t("Main.showHelp");
@@ -506,7 +506,7 @@ public class RodaIn extends Application {
       Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
       dlg.getButtonTypes().clear();
       dlg.getButtonTypes().addAll(new ButtonType(I18n.t("cancel"), ButtonBar.ButtonData.CANCEL_CLOSE),
-          new ButtonType(I18n.t("restart"), ButtonBar.ButtonData.OK_DONE));
+        new ButtonType(I18n.t("restart"), ButtonBar.ButtonData.OK_DONE));
       dlg.initStyle(StageStyle.UNDECORATED);
       dlg.setHeaderText(currentValue);
       dlg.setContentText(I18n.t("Main.updateLang.content"));
@@ -517,9 +517,9 @@ public class RodaIn extends Application {
     });
 
     final MenuItem helpPage = new MenuItem(I18n.t("Main.helpPage"));
-    helpPage.setOnAction(event ->{
+    helpPage.setOnAction(event -> {
       ModalStage modalStage = new ModalStage(stage);
-      modalStage.setRoot(new HelpModal(modalStage),false);
+      modalStage.setRoot(new HelpModal(modalStage), false);
     });
 
     menuHelp.getItems().addAll(language, checkVersion, showHelp, helpPage);
@@ -551,8 +551,8 @@ public class RodaIn extends Application {
     }
   }
 
-  private void confirmRestart(ButtonType result){
-    if(result.getButtonData() == ButtonBar.ButtonData.OK_DONE){
+  private void confirmRestart(ButtonType result) {
+    if (result.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
       restartApplication();
     }
   }
@@ -595,23 +595,22 @@ public class RodaIn extends Application {
   }
 
   private static void closeApp() {
-    if (schemePane.isModifiedPlan()) {
-      exportCS(AppProperties.getRodainPath().resolve(".plan.temp").toString());
-    }
+    exportCS(AppProperties.getRodainPath().resolve(".plan.temp").toString());
     fileExplorer.closeWatcher();
     VisitorStack.end();
     Footer.getInstance().cancelMemoryAutoUpdater();
     Platform.exit();
   }
 
-  private static boolean checkForUpdates(){
+  private static boolean checkForUpdates() {
     try {
       Date currentVersion = Utils.getCurrentVersionBuildDate();
       Date latestVersion = Utils.getLatestVersionBuildDate();
 
-      if(currentVersion != null && latestVersion != null){
-        if(currentVersion.compareTo(latestVersion) < 0){
-          String content = String.format(I18n.t("Main.newVersion.content"), Utils.getCurrentVersion(), Utils.getLatestVersion());
+      if (currentVersion != null && latestVersion != null) {
+        if (currentVersion.compareTo(latestVersion) < 0) {
+          String content = String.format(I18n.t("Main.newVersion.content"), Utils.getCurrentVersion(),
+            Utils.getLatestVersion());
           Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
           dlg.initStyle(StageStyle.UNDECORATED);
           dlg.setHeaderText(I18n.t("Main.newVersion.header"));

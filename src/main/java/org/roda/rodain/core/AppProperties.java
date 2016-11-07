@@ -247,7 +247,7 @@ public class AppProperties {
    *          The name of the template
    * @return The content of the template file
    */
-  public static String getMetadataFile(String templateName) {
+  public static String getTemplateContent(String templateName) {
     String completeKey = "metadata." + templateName + ".template";
     return getFile(completeKey);
   }
