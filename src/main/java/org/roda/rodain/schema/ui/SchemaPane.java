@@ -469,7 +469,6 @@ public class SchemaPane extends BorderPane {
         if(d.getMetadata()!=null){
           for(DescObjMetadata dm : d.getMetadata()){
             dm = Utils.updateTemplate(dm);
-            LOGGER.error("OLA");
           }
         }
       }
