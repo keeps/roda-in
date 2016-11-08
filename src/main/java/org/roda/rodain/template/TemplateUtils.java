@@ -82,7 +82,7 @@ public class TemplateUtils {
   }
 
   public static TreeSet<TemplateFieldValue> getTemplateFields(DescObjMetadata dom) {
-    TreeSet<TemplateFieldValue> fields = null;
+    TreeSet<TemplateFieldValue> fields = new TreeSet<TemplateFieldValue>();
     String content = dom.getContentDecoded();
     String templateContent = dom.getTemplateType() != null ? AppProperties.getTemplateContent(dom.getTemplateType())
       : null;

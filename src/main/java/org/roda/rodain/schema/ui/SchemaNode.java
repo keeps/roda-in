@@ -294,6 +294,13 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     for (Rule r : allRules) {
       removeRule(r);
     }
+    
+    if(schemaNodes!=null){
+      for(SchemaNode node : schemaNodes){
+        node.remove();
+      }
+    }
+    
     sips.clear();
     schemaNodes.clear();
     ruleNodes.clear();

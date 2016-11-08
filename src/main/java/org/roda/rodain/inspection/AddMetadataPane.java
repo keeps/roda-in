@@ -50,14 +50,14 @@ public class AddMetadataPane extends BorderPane {
   private ListView<HBoxCell> metaList;
   private ComboBox<UIPair> templateTypes;
   private Button chooseFile, btCancel, btContinue;
-  private TextField emptyFileNameTxtField;
+  private TextField emptyFileNameTxtField, emptyFileMetadataTypeTxtField, emptyFileMetadataTypeVersionTxtField;
 
   private HBoxCell cellSingleFile, cellEmptyFile;
   private Stage stage;
   private DescriptionObject descriptionObject;
   private Path selectedPath;
 
-  private ComboBox<UIPair> comboTypesSingleFile, comboTypesNewFile;
+  private ComboBox<UIPair> comboTypesSingleFile;
   
   private DescObjMetadata metadataToAdd;
   
@@ -211,17 +211,14 @@ public class AddMetadataPane extends BorderPane {
     emptyFileNameTxtField = new TextField("metadata.xml");
 
     Label typeLabel = new Label(I18n.t("type") + ":");
-    comboTypesNewFile = new ComboBox<>(FXCollections.observableList(metaTypeList));
-    comboTypesNewFile.getSelectionModel().selectFirst();
-    comboTypesNewFile.valueProperty().addListener(observable -> {
-      metaList.getSelectionModel().clearSelection();
-      metaList.getSelectionModel().select(cellEmptyFile);
-    });
+    emptyFileMetadataTypeTxtField = new TextField(I18n.t("type"));
+    Label versionlabel = new Label(I18n.t("version") + ":");
+    emptyFileMetadataTypeVersionTxtField = new TextField(I18n.t("version"));
 
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
-    box.getChildren().addAll(lab, emptyFileNameTxtField, space, typeLabel, comboTypesNewFile);
+    box.getChildren().addAll(lab, emptyFileNameTxtField, space, typeLabel, emptyFileMetadataTypeTxtField,versionlabel,emptyFileMetadataTypeVersionTxtField );
     return box;
   }
 
@@ -320,8 +317,13 @@ public class AddMetadataPane extends BorderPane {
             metadataToAdd = new DescObjMetadata();
             metadataToAdd.setId(name);
             metadataToAdd.setContentDecoded("");
-            UIPair metaTypeEmpty = comboTypesNewFile.getSelectionModel().getSelectedItem();
-            addTypeAndVersionToMetadata(metaTypeEmpty, metadataToAdd);
+            if(emptyFileMetadataTypeTxtField.getText()!=null){
+              metadataToAdd.setMetadataType(emptyFileMetadataTypeTxtField.getText());
+            }
+            if(emptyFileMetadataTypeVersionTxtField.getText()!=null){
+              metadataToAdd.setMetadataVersion(emptyFileMetadataTypeVersionTxtField.getText());
+            }
+            metadataToAdd = Utils.updateTemplate(metadataToAdd);
             break;
         }
 
