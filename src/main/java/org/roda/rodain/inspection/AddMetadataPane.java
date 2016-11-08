@@ -30,6 +30,7 @@ import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.UIPair;
+import org.roda.rodain.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -346,10 +347,12 @@ public class AddMetadataPane extends BorderPane {
 
   private void addTypeAndVersionToMetadata(UIPair metaType, DescObjMetadata metadataToAdd) {
     if (metaType != null) {
-      String metadataType = (String) metaType.getKey();
-      String metadataVersion = AppProperties.getConfig("metadata." + metadataType + ".version");
+      String templateVersion = (String) metaType.getKey();
+      String metadataVersion = AppProperties.getConfig("metadata." + templateVersion + ".version");
+      String metadataType = AppProperties.getConfig("metadata." + templateVersion + ".type");
       metadataToAdd.setMetadataType(metadataType);
       metadataToAdd.setMetadataVersion(metadataVersion);
+      metadataToAdd.setTemplateType(templateVersion);
     }
   }
 
