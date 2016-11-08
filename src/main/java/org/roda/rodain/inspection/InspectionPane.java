@@ -786,7 +786,7 @@ public class InspectionPane extends BorderPane {
     }
     // only update if there's been modifications or there's no old
     // metadata and the new isn't empty
-    boolean update = false;
+    boolean update = true;
     if (selectedDescObjMetadata.getCreatorOption() == MetadataOptions.TEMPLATE) {
       currentDescOb.updatedMetadata(selectedDescObjMetadata);
     } else {
