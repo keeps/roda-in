@@ -83,7 +83,7 @@ public class MainTest extends ApplicationTest {
     clickOn(I18n.t("continue"));
     sleep(2000);
     clickOn(".schemaNode");
-    sleep(1000);
+    sleep(2000);
     clickOn("#descObjTitle");
     eraseText(50);
     write("Node1");

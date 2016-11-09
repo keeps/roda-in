@@ -629,7 +629,7 @@ public class RodaIn extends Application {
         }
       }
     } catch (ConfigurationException e) {
-      LOGGER.error("Could not retrieve application version from " + Utils.BUILD_PROPERTIES_FILE, e);
+      LOGGER.error("Could not retrieve application version from build.properties", e);
     } catch (URISyntaxException e) {
       LOGGER.warn("The URI is malformed", e);
     } catch (IOException e) {

@@ -48,7 +48,6 @@ import org.xml.sax.SAXParseException;
  */
 public class Utils {
   private static final String LATEST_VERSION_API = "https://api.github.com/repos/keeps/roda-in/releases/latest";
-  public static final String BUILD_PROPERTIES_FILE = "build.properties";
   private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class.getName());
   private static String UTF8_BOM = "\uFEFF";
 
@@ -184,7 +183,7 @@ public class Utils {
    * @throws ConfigurationException
    */
   public static String getCurrentVersion() throws ConfigurationException {
-    PropertiesConfiguration pc = new PropertiesConfiguration(BUILD_PROPERTIES_FILE);
+    PropertiesConfiguration pc = new PropertiesConfiguration(AppProperties.getBuildProperties());
     return pc.getString("git.build.version");
   }
 
@@ -206,8 +205,9 @@ public class Utils {
    * @throws ConfigurationException
    */
   public static Date getCurrentVersionBuildDate() throws ConfigurationException {
-    PropertiesConfiguration pc = new PropertiesConfiguration(BUILD_PROPERTIES_FILE);
+    PropertiesConfiguration pc = new PropertiesConfiguration(AppProperties.getBuildProperties());
     String dateRaw = pc.getString("git.build.time");
+    LOGGER.error("Current git.build.time: "+dateRaw);
     SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy '@' HH:mm:ss z");
     try {
       return sdf.parse(dateRaw);

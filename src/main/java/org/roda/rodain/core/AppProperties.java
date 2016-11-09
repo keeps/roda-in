@@ -512,4 +512,8 @@ public class AppProperties {
       LOGGER.error("Error saving the app config file", e);
     }
   }
+  
+  public static URL getBuildProperties(){
+    return ClassLoader.getSystemResource("build.properties");
+  }
 }
