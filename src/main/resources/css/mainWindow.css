@@ -32,7 +32,9 @@
 .inspectionPart .hbox {
     -fx-background-color: -fx-dark;
 }
-
+.error {
+    -fx-text-fill: red;
+}
 .inspectionPart .label {
     -fx-font-size: medium;
     -fx-text-fill: white;

@@ -9,6 +9,10 @@
     -fx-background-color: -fx-dark;
 }
 
+.error {
+    -fx-text-fill: red;
+}
+
 #title {
     -fx-font-size: large;
     -fx-text-fill: white;

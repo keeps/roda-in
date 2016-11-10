@@ -1,9 +1,25 @@
 package org.roda.rodain.inspection;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.roda.rodain.core.AppProperties;
+import org.roda.rodain.core.I18n;
+import org.roda.rodain.core.RodaIn;
+import org.roda.rodain.rules.MetadataOptions;
+import org.roda.rodain.rules.ui.HBoxCell;
+import org.roda.rodain.schema.DescObjMetadata;
+import org.roda.rodain.schema.DescriptionObject;
+import org.roda.rodain.utils.FontAwesomeImageCreator;
+import org.roda.rodain.utils.UIPair;
+import org.roda.rodain.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -12,27 +28,23 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.Separator;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
-import org.roda.rodain.core.AppProperties;
-import org.roda.rodain.core.I18n;
-import org.roda.rodain.core.RodaIn;
-import org.roda.rodain.rules.MetadataOptions;
-import org.roda.rodain.rules.ui.HBoxCell;
-import org.roda.rodain.rules.ui.RuleModalPane;
-import org.roda.rodain.schema.DescObjMetadata;
-import org.roda.rodain.schema.DescriptionObject;
-import org.roda.rodain.utils.FontAwesomeImageCreator;
-import org.roda.rodain.utils.UIPair;
-import org.roda.rodain.utils.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -59,9 +71,9 @@ public class AddMetadataPane extends BorderPane {
 
   private ComboBox<UIPair> comboTypesSingleFile;
   
+  private Label error;
+
   private DescObjMetadata metadataToAdd;
-  
-  
 
   public DescObjMetadata getMetadataToAdd() {
     return metadataToAdd;
@@ -173,6 +185,8 @@ public class AddMetadataPane extends BorderPane {
 
   private HBox optionsSingleFile(List<UIPair> metaTypeList) {
     HBox box = new HBox(5);
+    error = new Label("");
+    error.setStyle("error");
     box.setAlignment(Pos.CENTER_LEFT);
 
     chooseFile = new Button(I18n.t("RuleModalPane.chooseFile"));
@@ -199,7 +213,7 @@ public class AddMetadataPane extends BorderPane {
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
-    box.getChildren().addAll(chooseFile, space, typeLabel, comboTypesSingleFile);
+    box.getChildren().addAll(chooseFile, error, space, typeLabel, comboTypesSingleFile);
     return box;
   }
 
@@ -218,7 +232,8 @@ public class AddMetadataPane extends BorderPane {
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
-    box.getChildren().addAll(lab, emptyFileNameTxtField, space, typeLabel, emptyFileMetadataTypeTxtField,versionlabel,emptyFileMetadataTypeVersionTxtField );
+    box.getChildren().addAll(lab, emptyFileNameTxtField, space, typeLabel, emptyFileMetadataTypeTxtField, versionlabel,
+      emptyFileMetadataTypeVersionTxtField);
     return box;
   }
 
@@ -231,7 +246,7 @@ public class AddMetadataPane extends BorderPane {
     String[] templates = templatesRaw.split(",");
     for (String templ : templates) {
       String trimmed = templ.trim();
-      
+
       String title = AppProperties.getConfig("metadata." + trimmed + ".title");
       String type = AppProperties.getConfig("metadata." + trimmed + ".type");
       String version = AppProperties.getConfig("metadata." + trimmed + ".version");
@@ -300,15 +315,28 @@ public class AddMetadataPane extends BorderPane {
           case TEMPLATE:
             String rawTemplateType = (String) templateTypes.getSelectionModel().getSelectedItem().getKey();
             String[] splitted = rawTemplateType.split("!###!");
-            String templateType = splitted[0], metadataType = splitted[1], metadataVersion = splitted.length==3?splitted[2]:null;
+            String templateType = splitted[0], metadataType = splitted[1],
+              metadataVersion = splitted.length == 3 ? splitted[2] : null;
             metadataToAdd = new DescObjMetadata(MetadataOptions.TEMPLATE, templateType, metadataType, metadataVersion);
             break;
           case SINGLE_FILE:
             if (selectedPath == null)
               return;
             metadataToAdd = new DescObjMetadata(MetadataOptions.SINGLE_FILE, selectedPath, "", "");
+
             UIPair metaType = comboTypesSingleFile.getSelectionModel().getSelectedItem();
             addTypeAndVersionToMetadata(metaType, metadataToAdd);
+            try {
+              String fileContent = Utils.readFile(selectedPath.toString(), Charset.forName("UTF-8"));
+              if (!Utils.validateSchema(fileContent, metadataToAdd.getSchema())) {
+                metadataToAdd = null;
+              }
+            } catch (IOException | SAXException e) {
+              metadataToAdd = null;
+            }
+            if(metadataToAdd==null){
+              error.setText("Error validating file...");
+            }
             break;
           case EMPTY_FILE:
             String name = emptyFileNameTxtField.getText();
@@ -317,10 +345,10 @@ public class AddMetadataPane extends BorderPane {
             metadataToAdd = new DescObjMetadata();
             metadataToAdd.setId(name);
             metadataToAdd.setContentDecoded("");
-            if(emptyFileMetadataTypeTxtField.getText()!=null){
+            if (emptyFileMetadataTypeTxtField.getText() != null) {
               metadataToAdd.setMetadataType(emptyFileMetadataTypeTxtField.getText());
             }
-            if(emptyFileMetadataTypeVersionTxtField.getText()!=null){
+            if (emptyFileMetadataTypeVersionTxtField.getText() != null) {
               metadataToAdd.setMetadataVersion(emptyFileMetadataTypeVersionTxtField.getText());
             }
             metadataToAdd = Utils.updateTemplate(metadataToAdd);
@@ -330,7 +358,7 @@ public class AddMetadataPane extends BorderPane {
         if (metadataToAdd == null)
           return;
         boolean add = true;
-        if(descriptionObject!=null){
+        if (descriptionObject != null) {
           for (DescObjMetadata dom : descriptionObject.getMetadata()) {
             if (dom.getId().equals(metadataToAdd.getId()))
               add = false;

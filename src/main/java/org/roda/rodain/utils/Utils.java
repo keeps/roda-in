@@ -119,6 +119,8 @@ public class Utils {
   public static boolean validateSchema(String content, String schemaString) throws SAXException {
     boolean isValid = false;
     try {
+      LOGGER.error("Content: "+content);
+      LOGGER.error("Schema: " +schemaString);
       isValid = validateSchemaWithoutCatch(content, IOUtils.toInputStream(schemaString, "UTF-8"));
     } catch (IOException e) {
       LOGGER.error("Can't access the schema file", e);
@@ -207,7 +209,6 @@ public class Utils {
   public static Date getCurrentVersionBuildDate() throws ConfigurationException {
     PropertiesConfiguration pc = new PropertiesConfiguration(AppProperties.getBuildProperties());
     String dateRaw = pc.getString("git.build.time");
-    LOGGER.error("Current git.build.time: "+dateRaw);
     SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy '@' HH:mm:ss z");
     try {
       return sdf.parse(dateRaw);

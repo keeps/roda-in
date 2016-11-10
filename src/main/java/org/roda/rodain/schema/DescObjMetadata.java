@@ -244,8 +244,8 @@ public class DescObjMetadata {
   @JsonIgnore
   public String getSchema() {
     String result = null;
-    if (metadataType != null) {
-      result = AppProperties.getSchemaFile(metadataType);
+    if (templateType != null) {
+      result = AppProperties.getSchemaFile(templateType);
     } else {
       if (path != null)
         result = AppProperties.getSchemaFile(FilenameUtils.removeExtension(path.getFileName().toString()));

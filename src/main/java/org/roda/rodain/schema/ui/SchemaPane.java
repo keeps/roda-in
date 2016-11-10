@@ -291,7 +291,6 @@ public class SchemaPane extends BorderPane {
   }
 
   private void createRootNode() {
-    LOGGER.error("createRootNode EAD2002");
     DescriptionObject dobj = new DescriptionObject(
       new DescObjMetadata(MetadataOptions.TEMPLATE, "ead2002", "ead", "2002"));
     dobj.setParentId(null);
