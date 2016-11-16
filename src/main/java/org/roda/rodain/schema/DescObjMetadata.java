@@ -49,17 +49,24 @@ public class DescObjMetadata {
     this.templateType = templateType;
     this.metadataVersion = metadataVersion;
     this.contentEncoding = "Base64";
-    this.id = templateType + ".xml.hbs";
     this.metadataType = metadataType;
+    if(templateType!=null){
+      this.id = templateType+".xml";
+    }else{
+      this.id = (metadataType!=null?metadataType:"")+(metadataVersion!=null?"_"+metadataVersion:"")+".xml";
+    }
   }
 
-  public DescObjMetadata(MetadataOptions creatorOption, Path path, String metadataType, String metadataVersion) {
+  public DescObjMetadata(MetadataOptions creatorOption, Path path, String metadataType, String metadataVersion, String templateType) {
     this.creatorOption = creatorOption;
     this.path = path;
     this.metadataType = metadataType;
     this.contentEncoding = "Base64";
     this.metadataVersion = metadataVersion;
-    if (path != null) {
+    this.templateType = templateType;
+    if(templateType!=null){
+      this.id = templateType+".xml";
+    }else if (path != null) {
       this.id = path.getFileName().toString();
     }
   }

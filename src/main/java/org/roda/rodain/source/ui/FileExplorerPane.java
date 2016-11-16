@@ -6,6 +6,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.WatchService;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -142,7 +143,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     top.setPadding(new Insets(15, 15, 15, 15));
     top.getChildren().add(title);
 
-    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
+    if (Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
       Tooltip.install(top, new Tooltip(I18n.help("tooltip.fileExplorer")));
     }
   }
@@ -179,7 +180,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     removeTopFolder = new Button(I18n.t("FileExplorerPane.removeFolder"));
     removeTopFolder.setId("bt_removeTopFolder");
     removeTopFolder.setMinWidth(100);
-    removeTopFolder.setOnAction( event -> {
+    removeTopFolder.setOnAction(event -> {
       SourceTreeDirectory selectedItem = (SourceTreeDirectory) treeView.getSelectionModel().getSelectedItem();
       if (selectedItem == null)
         return;
@@ -205,7 +206,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     associate.setMinWidth(100);
     associate.setOnAction(event -> RodaIn.getSchemePane().startAssociation());
 
-    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
+    if (Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
       Tooltip.install(associate, new Tooltip(I18n.help("tooltip.associate")));
     }
 
@@ -242,7 +243,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     load.getStyleClass().add("helpButton");
     loadBox.getChildren().add(load);
 
-    if(Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
+    if (Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
       Tooltip.install(load, new Tooltip(I18n.help("tooltip.firstStep")));
     }
 
@@ -346,9 +347,19 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
   public void updateAttributes() {
     ObservableList<TreeItem<String>> items = treeView.getSelectionModel().getSelectedItems();
+    List<TreeItem<String>> copy = new ArrayList<>(items);
     Set<String> paths = new HashSet<>();
-    if(items != null)
-      items.forEach(sourceTreeItem -> paths.add(((SourceTreeItem) sourceTreeItem).getPath()));
+    if (copy != null && copy.size() > 0) {
+      for (int i = 0; i < copy.size(); i++) {
+
+        TreeItem<String> item = copy.get(i);
+        if (item == null || ((SourceTreeItem) item).getPath() == null) {
+          LOGGER.error("AAA");
+        } else {
+          paths.add(((SourceTreeItem) item).getPath());
+        }
+      }
+    }
     updateAttributes(paths);
   }
 
@@ -444,16 +455,15 @@ public class FileExplorerPane extends BorderPane implements Observer {
       return Collections.emptySet();
     Set<SourceTreeItem> result = new HashSet<>();
     for (TreeItem item : treeView.getSelectionModel().getSelectedItems()) {
-        result.add((SourceTreeItem) item);
+      result.add((SourceTreeItem) item);
     }
 
     Set<SourceTreeItem> toRemove = new HashSet<>();
     result.forEach(currentItem -> {
-      Set<SourceTreeItem> ancestors = result.stream().filter(p ->
-              !currentItem.getPath().equals(p.getPath()) &&
-              currentItem.getPath().startsWith(p.getPath())).collect(Collectors.toSet()
-      );
-      if(ancestors != null && !ancestors.isEmpty())
+      Set<SourceTreeItem> ancestors = result.stream()
+        .filter(p -> !currentItem.getPath().equals(p.getPath()) && currentItem.getPath().startsWith(p.getPath()))
+        .collect(Collectors.toSet());
+      if (ancestors != null && !ancestors.isEmpty())
         toRemove.add(currentItem);
     });
     result.removeAll(toRemove);
@@ -551,21 +561,25 @@ public class FileExplorerPane extends BorderPane implements Observer {
   }
 
   /**
-   * Adds or removes the "Remove folder" button when a top folder is selected or not.
+   * Adds or removes the "Remove folder" button when a top folder is selected or
+   * not.
+   * 
    * @param rootSelected
    */
   public void rootSelected(boolean rootSelected) {
     if (rootSelected) {
-      if(!ignoreAndRemoveBox.getChildren().contains(removeTopFolder))
+      if (!ignoreAndRemoveBox.getChildren().contains(removeTopFolder))
         ignoreAndRemoveBox.getChildren().add(removeTopFolder);
     } else {
-      if(ignoreAndRemoveBox.getChildren().contains(removeTopFolder))
+      if (ignoreAndRemoveBox.getChildren().contains(removeTopFolder))
         ignoreAndRemoveBox.getChildren().remove(removeTopFolder);
     }
   }
 
   /**
-   * Changes the text of the "Ignore" button to "Ignore" or "Remove ignore" depending on whether the selected item is selected or not.
+   * Changes the text of the "Ignore" button to "Ignore" or "Remove ignore"
+   * depending on whether the selected item is selected or not.
+   * 
    * @param b
    */
   public void selectedIsIgnored(boolean b) {
@@ -577,14 +591,15 @@ public class FileExplorerPane extends BorderPane implements Observer {
     }
   }
 
-  private static WatchService createWatcher(){
+  private static WatchService createWatcher() {
     WatchService watchService = null;
     try {
       watchService = FileSystems.getDefault().newWatchService();
       directoryWatcher = new DirectoryWatcher();
       directoryWatcher.start();
     } catch (IOException e) {
-      LOGGER.warn("Can't create a WatchService. The application will be unable to update the files of the file explorer", e);
+      LOGGER.warn(
+        "Can't create a WatchService. The application will be unable to update the files of the file explorer", e);
     }
     return watchService;
   }
@@ -592,7 +607,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
   /**
    * Calls the close() method to close the WatchService
    */
-  public void closeWatcher(){
+  public void closeWatcher() {
     try {
       watcher.close();
     } catch (IOException e) {

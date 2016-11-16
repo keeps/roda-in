@@ -255,11 +255,21 @@ public class InspectionPane extends BorderPane {
 
   private void createMetadataTextBox() {
     metaText = new CodeArea();
+    metaText.setWrapText(true);
     VBox.setVgrow(metaText, Priority.ALWAYS);
     metaText.textProperty().addListener((observable, oldValue, newValue) -> {
       metaText.setStyleSpans(0, XMLEditor.computeHighlighting(newValue));
       UIPair selectedPair = metadataCombo.getSelectionModel().getSelectedItem();
       DescObjMetadata selected = (DescObjMetadata) selectedPair.getKey();
+      
+      String metadataLabel = "";
+      if(selected.getMetadataType()!=null){
+        metadataLabel = "( " + selected.getMetadataType();
+        if(selected.getMetadataVersion()!=null){
+          metadataLabel += " : "+ selected.getMetadataVersion();
+        }
+        metadataLabel +=" )";
+      }
       if (oldValue != null && !"".equals(oldValue) && topButtons != null && topButtons.contains(toggleForm)
         && !textBoxCancelledChange) {
         String changeContent = I18n.t("InspectionPane.changeTemplate.content");
@@ -385,7 +395,7 @@ public class InspectionPane extends BorderPane {
         topButtons.add(metadataCombo);
         topButtons.add(removeMetadata);
       } else {
-        topButtons.remove(metadataCombo);
+        topButtons.add(metadataCombo);
         topButtons.remove(removeMetadata);
       }
       updateMetadataTop();
@@ -626,6 +636,7 @@ public class InspectionPane extends BorderPane {
     if (metadataValue.get("optionsLabelI18nKeyPrefix") != null) {
       optionsLabelsI18NPrefix = (String) metadataValue.get("optionsLabelI18nKeyPrefix");
     }
+
     comboList.add(new UIPair("", ""));
     Map<String, UIPair> optionsMap = new HashMap<String, UIPair>();
     if (optionsLabels != null) {
@@ -904,8 +915,9 @@ public class InspectionPane extends BorderPane {
           paths.add(file.toPath());
         }
         addDocumentationToSIP(null, paths);
-      } else
+      } else {
         addDocumentationToSIP(null);
+      }
 
       dataBox.getChildren().clear();
       sipDocumentation.setRoot(docsRoot);
@@ -1752,7 +1764,14 @@ public class InspectionPane extends BorderPane {
     List<DescObjMetadata> metadataList = currentDescOb.getMetadata();
     List<UIPair> comboList = new ArrayList<>();
     for (DescObjMetadata dom : metadataList) {
-      comboList.add(new UIPair(dom, AppProperties.getConfig("metadata." + dom.getTemplateType() + ".title"))); // TODO
+      String title = AppProperties.getConfig("metadata." + dom.getTemplateType() + ".title");
+      if(title==null){
+        title = dom.getMetadataType();
+      }
+      if(title==null){
+        title="N/A";
+      }
+      comboList.add(new UIPair(dom, title )); // TODO
     }
     if (comboList.isEmpty()) {
       showMetadataHelp();
@@ -1927,11 +1946,12 @@ public class InspectionPane extends BorderPane {
 
     if (target instanceof SipContentDirectory) {
       SipContentDirectory dir = (SipContentDirectory) target;
-      for (TreeNode tn : result)
+      for (TreeNode tn : result){
         dir.getTreeNode().add(tn);
-    } else
+      }
+    } else {
       currentSIPNode.getSip().addDocumentation(result);
-
+    }
     SipContentDirectory parent = target != null ? (SipContentDirectory) target : docsRoot;
     for (TreeNode treeNode : result) {
       TreeItem<Object> startingItem = recCreateSipContent(treeNode, parent);

@@ -70,7 +70,7 @@ public class AddMetadataPane extends BorderPane {
   private Path selectedPath;
 
   private ComboBox<UIPair> comboTypesSingleFile;
-  
+
   private Label error;
 
   private DescObjMetadata metadataToAdd;
@@ -186,7 +186,6 @@ public class AddMetadataPane extends BorderPane {
   private HBox optionsSingleFile(List<UIPair> metaTypeList) {
     HBox box = new HBox(5);
     error = new Label("");
-    error.setStyle("error");
     box.setAlignment(Pos.CENTER_LEFT);
 
     chooseFile = new Button(I18n.t("RuleModalPane.chooseFile"));
@@ -322,7 +321,7 @@ public class AddMetadataPane extends BorderPane {
           case SINGLE_FILE:
             if (selectedPath == null)
               return;
-            metadataToAdd = new DescObjMetadata(MetadataOptions.SINGLE_FILE, selectedPath, "", "");
+            metadataToAdd = new DescObjMetadata(MetadataOptions.SINGLE_FILE, selectedPath, "", "",null);
 
             UIPair metaType = comboTypesSingleFile.getSelectionModel().getSelectedItem();
             addTypeAndVersionToMetadata(metaType, metadataToAdd);
@@ -334,8 +333,9 @@ public class AddMetadataPane extends BorderPane {
             } catch (IOException | SAXException e) {
               metadataToAdd = null;
             }
-            if(metadataToAdd==null){
-              error.setText("Error validating file...");
+            if (metadataToAdd == null) {
+              error.setText(I18n.t("errorValidatingMetadata"));
+              error.getStyleClass().add("error");
             }
             break;
           case EMPTY_FILE:

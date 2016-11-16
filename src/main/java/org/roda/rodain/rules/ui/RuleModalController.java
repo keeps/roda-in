@@ -104,12 +104,13 @@ public class RuleModalController {
       switch (metadataOption) {
         case DIFF_DIRECTORY:
           metadataPath = pane.getDiffDir();
-          metadataType = pane.getMetadataTypeDiffFolder();
+          templateType = pane.getMetadataTypeDiffFolder();
+          metadataType = AppProperties.getConfig("metadata." + templateType + ".type");
           break;
         case SINGLE_FILE:
           metadataPath = pane.getFromFile();
-          metadataType = pane.getMetadataTypeSingleFile();
-          templateType = metadataType;
+          templateType = pane.getMetadataTypeSingleFile();
+          metadataType = AppProperties.getConfig("metadata." + templateType + ".type");
           break;
         case SAME_DIRECTORY:
           templateType = pane.getSameFolderPattern();

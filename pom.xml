@@ -6,7 +6,7 @@
 
     <groupId>org.roda</groupId>
     <artifactId>rodain</artifactId>
-    <version>2.0.0-alpha.8</version>
+    <version>2.0.0-alpha.9.0</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -200,7 +200,7 @@
         <dependency>
             <groupId>org.roda-project</groupId>
             <artifactId>commons-ip</artifactId>
-            <version>1.0.0-alpha23</version>
+            <version>1.0.0-alpha24</version>
         </dependency>
         <dependency>
             <groupId>com.github.jknack</groupId>

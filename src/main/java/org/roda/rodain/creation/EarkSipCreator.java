@@ -108,7 +108,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
       for (DescObjMetadata descObjMetadata : descriptionObject.getMetadata()) {
         MetadataType metadataType = new MetadataType(MetadataType.MetadataTypeEnum.OTHER);
 
-        Path schemaPath = AppProperties.getSchemaPath(descObjMetadata.getMetadataType());
+        Path schemaPath = AppProperties.getSchemaPath(descObjMetadata.getTemplateType());
         if (schemaPath != null)
           earkSip.addSchema(new IPFile(schemaPath));
         // Check if one of the values from the enum can be used
@@ -132,13 +132,14 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
         if (metadataPath == null) {
           String content = descriptionObject.getMetadataWithReplaces(descObjMetadata);
 
-          metadataPath = tempDir.resolve(descObjMetadata.getMetadataType() + ".xml");
+          metadataPath = tempDir.resolve(descObjMetadata.getId());
           FileUtils.writeStringToFile(metadataPath.toFile(), content, "UTF-8");
         }
 
         IPFile metadataFile = new IPFile(metadataPath);
-        IPDescriptiveMetadata metadata = new IPDescriptiveMetadata(metadataFile, metadataType,
+        IPDescriptiveMetadata metadata = new IPDescriptiveMetadata(descObjMetadata.getId(),metadataFile, metadataType,
           descObjMetadata.getMetadataVersion());
+        
         earkSip.addDescriptiveMetadata(metadata);
       }
 

@@ -15,6 +15,7 @@ import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.sip.SipPreview;
 import org.roda.rodain.sip.SipRepresentation;
 import org.roda.rodain.utils.TreeVisitor;
+import org.roda.rodain.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -247,8 +248,11 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
       String level = AppProperties.getConfig("metadata." + templateType + ".fileLevel");
       sipPreview.setDescriptionlevel(level);
     }else {
-      metaPath.forEach(mPath -> sipPreview.getMetadata()
-        .add(new DescObjMetadata(metadataOption, mPath, metadataType, metadataVersion)));
+      for(Path m : metaPath){
+        DescObjMetadata dom = new DescObjMetadata(metadataOption, m, metadataType, metadataVersion,templateType);
+        dom = Utils.updateTemplate(dom);
+        sipPreview.getMetadata().add(dom);
+      }
     }
 
     sips.add(sipPreview);

@@ -9,8 +9,8 @@
     -fx-background-color: -fx-dark;
 }
 
-.error {
-    -fx-text-fill: red;
+.error{
+	-fx-text-fill: red;
 }
 
 #title {

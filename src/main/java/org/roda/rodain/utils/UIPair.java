@@ -1,5 +1,8 @@
 package org.roda.rodain.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * A class to hold a key-value pair, but the toString method only returns the
  * value. This is useful for comboBoxes, because we may want to have data
@@ -9,6 +12,8 @@ package org.roda.rodain.utils;
  * @since 28/12/2015.
  */
 public class UIPair {
+  private static final Logger LOGGER = LoggerFactory.getLogger(UIPair.class.getName());
+
   private Object key, value;
 
   /**

@@ -119,8 +119,6 @@ public class Utils {
   public static boolean validateSchema(String content, String schemaString) throws SAXException {
     boolean isValid = false;
     try {
-      LOGGER.error("Content: "+content);
-      LOGGER.error("Schema: " +schemaString);
       isValid = validateSchemaWithoutCatch(content, IOUtils.toInputStream(schemaString, "UTF-8"));
     } catch (IOException e) {
       LOGGER.error("Can't access the schema file", e);

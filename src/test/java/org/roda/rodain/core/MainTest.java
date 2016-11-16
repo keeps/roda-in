@@ -18,6 +18,8 @@ import org.roda.rodain.schema.ui.SchemaPane;
 import org.roda.rodain.schema.ui.SipPreviewNode;
 import org.roda.rodain.source.ui.FileExplorerPane;
 import org.roda.rodain.testing.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testfx.framework.junit.ApplicationTest;
 
 import javafx.application.Platform;
@@ -32,6 +34,8 @@ import javafx.stage.Stage;
  * @since 17-12-2015.
  */
 public class MainTest extends ApplicationTest {
+  private static final Logger LOGGER = LoggerFactory.getLogger(MainTest.class.getName());
+
   private static Path testDir, output;
   private SchemaPane schemaPane;
   private FileExplorerPane fileExplorer;
@@ -88,7 +92,7 @@ public class MainTest extends ApplicationTest {
     eraseText(50);
     write("Node1");
     sleep(1000);
-
+    
     TreeItem<String> item = RodaIn.getSchemePane().getTreeView().getSelectionModel().getSelectedItem();
     assert "Node1".equals(item.getValue());
 
@@ -115,8 +119,10 @@ public class MainTest extends ApplicationTest {
 
     sleep(2000);
     drag("Node2").dropTo(".tree-view");
+
     assert RodaIn.getSchemePane().getTreeView().getRoot().getChildren().size() == 2;
     sleep(1000);
+
     clickOn("Node2").clickOn("#removeLevel");
     sleep(5000);
     try {
@@ -204,7 +210,7 @@ public class MainTest extends ApplicationTest {
     clickOn(I18n.t("Main.exportSips"));
     output = Utils.homeDir.resolve("SIPs output");
     boolean outputFolderCreated = output.toFile().mkdir();
-    if(!outputFolderCreated){
+    if (!outputFolderCreated) {
       try {
         FileUtils.cleanDirectory(output.toFile());
       } catch (IOException e) {
@@ -264,7 +270,7 @@ public class MainTest extends ApplicationTest {
     sleep(1000);
 
     Platform.runLater(() -> {
-      schemaPane.getTreeView().getSelectionModel().selectRange(10,15);
+      schemaPane.getTreeView().getSelectionModel().selectRange(10, 15);
       inspectionPane.update(schemaPane.getTreeView().getSelectionModel().getSelectedItems());
     });
 
@@ -280,7 +286,7 @@ public class MainTest extends ApplicationTest {
   }
 
   @Test
-  public void create10000FilesAndCreateSIPsForEachOne(){
+  public void create10000FilesAndCreateSIPsForEachOne() {
     Path test10000Dir = Utils.create10000Files();
 
     sleep(5000);
@@ -301,7 +307,7 @@ public class MainTest extends ApplicationTest {
 
     });
 
-    sleep(5000); // wait for the tree to be created
+    sleep(10000); // wait for the tree to be created
 
     drag(test10000Dir.getFileName().toString()).dropTo("#schemaPaneDropBox");
 
@@ -315,11 +321,11 @@ public class MainTest extends ApplicationTest {
     long startTimestamp = System.currentTimeMillis();
     int timeout = 120 * 1000; // 120 seconds timeout for the SIP creation
     boolean stop = false;
-    while(!stop && System.currentTimeMillis() - startTimestamp < timeout){
-      try{
+    while (!stop && System.currentTimeMillis() - startTimestamp < timeout) {
+      try {
         clickOn(I18n.t("RuleModalProcessing.creatingPreview").toUpperCase());
         sleep(1000);
-      } catch (Exception e){
+      } catch (Exception e) {
         stop = true;
         // it means that the modal has been closed and SIPs are created
       }
