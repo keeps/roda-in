@@ -9,9 +9,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.core.RodaIn;
+import org.roda.rodain.core.Utils;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeFile;
-import org.roda.rodain.testing.Utils;
 import org.testfx.framework.junit.ApplicationTest;
 
 import java.io.File;

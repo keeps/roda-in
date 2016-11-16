@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -1955,9 +1956,29 @@ public class InspectionPane extends BorderPane {
     SipContentDirectory parent = target != null ? (SipContentDirectory) target : docsRoot;
     for (TreeNode treeNode : result) {
       TreeItem<Object> startingItem = recCreateSipContent(treeNode, parent);
-      parent.getChildren().add(startingItem);
+      if(!containsDocumentation(parent.getChildren(),startingItem)){
+        parent.getChildren().add(startingItem);
+      }
     }
     parent.sortChildren();
+  }
+
+  private boolean containsDocumentation(ObservableList<TreeItem<Object>> list, TreeItem<Object> itemToAdd) {
+    boolean contains = false;
+    if(list!=null && list.size()>0){
+      Iterator<TreeItem<Object>> it = list.iterator();
+      while(it.hasNext()){
+        TreeItem<Object> next = it.next();
+        String nextValue = (String) next.getValue();
+        String itemValue = (String) itemToAdd.getValue();
+        if(nextValue.equalsIgnoreCase(itemValue)){
+          contains=true;
+          break;
+        }
+      }
+    
+    }
+    return contains;
   }
 
   public List<InspectionTreeItem> getDocumentationSelectedItems() {

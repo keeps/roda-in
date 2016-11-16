@@ -17,7 +17,6 @@ import org.roda.rodain.schema.ui.SchemaNode;
 import org.roda.rodain.schema.ui.SchemaPane;
 import org.roda.rodain.schema.ui.SipPreviewNode;
 import org.roda.rodain.source.ui.FileExplorerPane;
-import org.roda.rodain.testing.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testfx.framework.junit.ApplicationTest;

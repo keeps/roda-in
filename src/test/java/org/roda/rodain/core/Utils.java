@@ -1,4 +1,4 @@
-package org.roda.rodain.testing;
+package org.roda.rodain.core;
 
 import java.io.File;
 import java.io.FileNotFoundException;

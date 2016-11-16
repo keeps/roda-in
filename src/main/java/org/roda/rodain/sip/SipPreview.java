@@ -3,6 +3,7 @@ package org.roda.rodain.sip;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -201,7 +202,29 @@ public class SipPreview extends DescriptionObject implements Observer {
   }
 
   public void addDocumentation(Set<TreeNode> docs) {
-    documentation.addAll(docs);
+    if(docs!=null){
+      Iterator<TreeNode> it = docs.iterator();
+      while(it.hasNext()){
+        TreeNode t = it.next();
+        if(!alreadyExistsDocumentation(t)){
+          documentation.add(t);
+        }
+      }
+    }
+    //documentation.addAll(docs);
+  }
+
+  private boolean alreadyExistsDocumentation(TreeNode t) {
+    boolean exist = false;
+    if(documentation!=null){
+      Iterator<TreeNode> it = documentation.iterator();
+      while(it.hasNext()){
+        if(it.next().getPath().toString().equals(t.getPath().toString())){
+          exist = true;
+        }
+      }
+    }
+    return exist;
   }
 
   public void removeDocumentation(Set<Path> paths) {
