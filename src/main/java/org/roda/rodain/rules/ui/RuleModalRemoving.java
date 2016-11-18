@@ -10,6 +10,8 @@ import javafx.scene.layout.VBox;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.rules.Rule;
 import org.roda.rodain.sip.SipPreview;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -18,6 +20,8 @@ import java.util.*;
  * @since 19/11/2015.
  */
 public class RuleModalRemoving extends BorderPane implements Observer {
+  private static final Logger LOGGER = LoggerFactory.getLogger(RuleModalRemoving.class.getName());
+
   // rule ID -> progress
   private Map<Integer, Float> rules;
   private Map<Integer, Rule> ruleObjects;
@@ -79,19 +83,20 @@ public class RuleModalRemoving extends BorderPane implements Observer {
     TimerTask updater = new TimerTask() {
       @Override
       public void run() {
-        Iterator<Integer> it = ruleObjects.keySet().iterator();
-        while (it.hasNext()) {
-          it.next();
-          if (ruleObjects.get(it).getSipCount() == 0)
-            it.remove();
+        for(Map.Entry<String, SipPreview> entry : sipObjects.entrySet()){
+          SipPreview sp = entry.getValue();
+          sp.removeFromRule();
         }
-
-        Iterator<String> its = sipObjects.keySet().iterator();
-        while (its.hasNext()) {
-          its.next();
-          if (sipObjects.get(its).isRemoved())
-            its.remove();
+        sipObjects.clear();
+        
+        
+        for(Map.Entry<Integer, Rule> entry : ruleObjects.entrySet()){
+          Rule r = entry.getValue();
+          if (r.getSipCount() == 0)
+            r.remove();
         }
+        ruleObjects.clear();
+                
         Platform.runLater(() -> {
           if (sipObjects.isEmpty() && ruleObjects.isEmpty()) {
             close();
