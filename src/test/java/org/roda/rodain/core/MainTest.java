@@ -186,6 +186,7 @@ public class MainTest extends ApplicationTest {
 
     clickOn("UCP");
     sleep(1000);
+    
     clickOn("#removeRule1");
     sleep(1000); // wait for the rule to be removed
 
