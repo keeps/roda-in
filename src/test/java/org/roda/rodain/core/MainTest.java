@@ -185,6 +185,7 @@ public class MainTest extends ApplicationTest {
     assert parent.getChildren().size() == 14;
 
     clickOn("UCP");
+    sleep(1000);
     clickOn("#removeRule1");
     sleep(1000); // wait for the rule to be removed
 
