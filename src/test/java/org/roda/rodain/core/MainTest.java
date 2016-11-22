@@ -199,10 +199,11 @@ public class MainTest extends ApplicationTest {
     release(KeyCode.CONTROL);
 
     drag().dropTo("UCP");
-    sleep(1000); // wait for the modal to open
+    sleep(2000); // wait for the modal to open
     clickOn("#assoc2");
+    sleep(2000); // wait for the modal to update
     clickOn(I18n.t("continue"));
-    sleep(1000); // wait for the modal to update
+    sleep(2000); // wait for the modal to update
     clickOn("#meta4");
     clickOn(I18n.t("confirm"));
     sleep(5000); // wait for the SIPs creation
