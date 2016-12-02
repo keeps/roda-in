@@ -524,8 +524,10 @@ public class SourceTreeDirectory extends SourceTreeItem {
   private void addChild(List children, String sourceItem) {
     SourceTreeItemState newState = PathCollection.getState(sourceItem);
     Path sourceItemPath = Paths.get(sourceItem);
-    if (IgnoredFilter.isIgnored(sourceItemPath))
+    boolean ignored = IgnoredFilter.isIgnored(sourceItemPath);
+    if (ignored){
       newState = SourceTreeItemState.IGNORED;
+    }
 
     SourceTreeItem item;
     Path sourcePath = Paths.get(sourceItem);

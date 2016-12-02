@@ -1,16 +1,25 @@
 package org.roda.rodain.rules.filters;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.roda.rodain.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 04-01-2016.
  */
 public class IgnoredFilter {
+  
+  private static final Logger LOGGER = LoggerFactory.getLogger(IgnoredFilter.class.getName());
+
+  
   private static Set<String> rules = new HashSet<>();
 
   private IgnoredFilter() {
@@ -61,6 +70,12 @@ public class IgnoredFilter {
       if (isIgnored(path.getName(i).toString())) {
         result = true;
         break;
+      }
+    }
+
+    if(!result){
+      if (Files.isDirectory(path)) {
+        result = !Utils.containsAtLeastOneNotIgnoredFile(path);
       }
     }
     return result;

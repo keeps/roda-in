@@ -10,6 +10,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -146,8 +147,11 @@ public class Utils {
 
   /**
    * Indents an XML document.
-   * @param input The input XML document Reader.
-   * @param output The Writer for the output of the indented XML document.
+   * 
+   * @param input
+   *          The input XML document Reader.
+   * @param output
+   *          The Writer for the output of the indented XML document.
    * @throws TransformerException
    * @throws SAXParseException
    */
@@ -163,7 +167,9 @@ public class Utils {
 
   /**
    * Indents an XML document.
-   * @param xml The XML document string.
+   * 
+   * @param xml
+   *          The XML document string.
    * @return A string with the XML document indented.
    */
   public static String indentXML(String xml) {
@@ -188,7 +194,8 @@ public class Utils {
   }
 
   /**
-   * @return The latest application version available in the cloud. Will thrown an exception if no Internet connection is available.
+   * @return The latest application version available in the cloud. Will thrown
+   *         an exception if no Internet connection is available.
    * @throws URISyntaxException
    * @throws IOException
    */
@@ -217,7 +224,8 @@ public class Utils {
   }
 
   /**
-   * @return The latest application version build time available in the cloud. Will thrown an exception if no Internet connection is available.
+   * @return The latest application version build time available in the cloud.
+   *         Will thrown an exception if no Internet connection is available.
    * @throws URISyntaxException
    * @throws IOException
    */
@@ -241,12 +249,12 @@ public class Utils {
     if (metaTypesRaw != null) {
       String[] metaTypes = metaTypesRaw.split(",");
       for (String metaType : metaTypes) {
-        String typeKey = "metadata."+metaType+".type";
-        String versionKey = "metadata."+metaType+".version";
+        String typeKey = "metadata." + metaType + ".type";
+        String versionKey = "metadata." + metaType + ".version";
         String type = AppProperties.getConfig(typeKey);
         String version = AppProperties.getConfig(versionKey);
-        if(dm.getMetadataType()!=null && dm.getMetadataType().equalsIgnoreCase(type)){
-          if(dm.getMetadataVersion()!=null && dm.getMetadataVersion().equalsIgnoreCase(version)){
+        if (dm.getMetadataType() != null && dm.getMetadataType().equalsIgnoreCase(type)) {
+          if (dm.getMetadataVersion() != null && dm.getMetadataVersion().equalsIgnoreCase(version)) {
             dm.setTemplateType(metaType);
             dm.setCreatorOption(MetadataOptions.TEMPLATE);
           }
@@ -254,6 +262,25 @@ public class Utils {
       }
     }
     return dm;
+  }
+
+  public static boolean containsAtLeastOneNotIgnoredFile(Path path) {
+    boolean res = true;
+    try {
+      if (path.toFile().listFiles().length == 0) {
+        res = false;
+      } else {
+        ValidFilesCounter visitor = new ValidFilesCounter();
+        Files.walkFileTree(path, visitor);
+        int validFiles = visitor.getValidFiles();
+        if (validFiles == 0) {
+          res = false;
+        }
+      }
+    } catch (Exception e) {
+      LOGGER.debug("Error while checking if directory contains at least on valid file: " + e.getMessage(), e);
+    }
+    return res;
   }
 
 }

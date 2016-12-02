@@ -354,7 +354,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
         TreeItem<String> item = copy.get(i);
         if (item == null || ((SourceTreeItem) item).getPath() == null) {
-          LOGGER.error("AAA");
+          //LOGGER.error("AAA");
         } else {
           paths.add(((SourceTreeItem) item).getPath());
         }
