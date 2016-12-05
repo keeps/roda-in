@@ -157,11 +157,13 @@ public class RodaIn extends Application {
 
         AppProperties.initialize();
         String ignoredRaw = AppProperties.getAppConfig("app.ignoredFiles");
-        String[] ignored = ignoredRaw.split(",");
-        for (String s : ignored) {
-          IgnoredFilter.addIgnoreRule(s);
+        if(ignoredRaw!=null && !ignoredRaw.trim().equalsIgnoreCase("")){
+          String[] ignored = ignoredRaw.split(",");
+          for (String s : ignored) {
+            IgnoredFilter.addIgnoreRule(s);
+          }
         }
-
+        
         // load the custom fonts
         Font.loadFont(ClassLoader.getSystemResource("fonts/Ubuntu-Regular.ttf").toExternalForm(), 10);
         Font.loadFont(ClassLoader.getSystemResource("fonts/Ubuntu-Medium.ttf").toExternalForm(), 10);

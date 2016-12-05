@@ -265,17 +265,19 @@ public class Utils {
   }
 
   public static boolean containsAtLeastOneNotIgnoredFile(Path path) {
+    //LOGGER.error("containsAtLeastOneNotIgnoredFile("+path.toString()+")");
     boolean res = true;
     try {
       if (path.toFile().listFiles().length == 0) {
         res = false;
       } else {
+        /*
         ValidFilesCounter visitor = new ValidFilesCounter();
         Files.walkFileTree(path, visitor);
         int validFiles = visitor.getValidFiles();
         if (validFiles == 0) {
           res = false;
-        }
+        }*/
       }
     } catch (Exception e) {
       LOGGER.debug("Error while checking if directory contains at least on valid file: " + e.getMessage(), e);
