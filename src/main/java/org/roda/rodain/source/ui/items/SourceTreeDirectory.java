@@ -56,7 +56,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
   public SourceTreeDirectory(Path file, SourceDirectory directory, SourceTreeItemState st, SourceTreeDirectory parent) {
     this(file, directory, parent);
     state = st;
-    PathCollection.simpleAddPath(fullPath);
+    PathCollection.simpleAddPath(Paths.get(fullPath));
   }
 
   public SourceTreeDirectory(Path file, SourceDirectory directory, SourceTreeDirectory parent) {
@@ -64,7 +64,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
     this.directory = directory;
     this.fullPath = file.toString();
     this.parent = parent;
-    state = PathCollection.getState(fullPath);
+    state = PathCollection.getState(Paths.get(fullPath));
     ignored = new HashSet<>();
     mapped = new HashSet<>();
     files = new HashSet<>();
@@ -444,7 +444,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
   public void addIgnore() {
     if (state == SourceTreeItemState.NORMAL) {
       state = SourceTreeItemState.IGNORED;
-      PathCollection.addPath(fullPath, state);
+      PathCollection.addPath(Paths.get(fullPath), state);
     }
     forceUpdate();
   }
@@ -466,7 +466,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
   public void removeIgnore() {
     if (state == SourceTreeItemState.IGNORED) {
       state = SourceTreeItemState.NORMAL;
-      PathCollection.addPath(fullPath, state);
+      PathCollection.addPath(Paths.get(fullPath), state);
     }
   }
 
@@ -522,7 +522,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
   }
 
   private void addChild(List children, String sourceItem) {
-    SourceTreeItemState newState = PathCollection.getState(sourceItem);
+    SourceTreeItemState newState = PathCollection.getState(Paths.get(sourceItem));
     Path sourceItemPath = Paths.get(sourceItem);
     boolean ignored = IgnoredFilter.isIgnored(sourceItemPath);
     if (ignored){

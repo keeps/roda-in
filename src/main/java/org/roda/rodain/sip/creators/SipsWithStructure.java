@@ -90,13 +90,13 @@ public class SipsWithStructure extends SipPreviewCreator {
       Files.walkFileTree(Paths.get(path), new SimpleFileVisitor<Path>() {
         @Override
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-          PathCollection.simpleAddPath(file.toString());
+          PathCollection.simpleAddPath(file);
           return isTerminated();
         }
 
         @Override
         public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-          PathCollection.simpleAddPath(dir.toString());
+          PathCollection.simpleAddPath(dir);
           return isTerminated();
         }
       });
@@ -229,7 +229,7 @@ public class SipsWithStructure extends SipPreviewCreator {
 
     // Map the paths of the description objects only AFTER the SIPs are created
     // to avoid unwanted filtering
-    descObjs.forEach(pseudoDescriptionObject -> PathCollection.addPath(pseudoDescriptionObject.getPath().toString(),
+    descObjs.forEach(pseudoDescriptionObject -> PathCollection.addPath(pseudoDescriptionObject.getPath(),
       SourceTreeItemState.MAPPED));
     setChanged();
     notifyObservers("Finished");

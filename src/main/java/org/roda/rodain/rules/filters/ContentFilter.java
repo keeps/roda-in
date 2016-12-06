@@ -80,7 +80,7 @@ public class ContentFilter {
    */
   public boolean filter(String st) {
     boolean result = false;
-    if (ignored.contains(st) || mapped.contains(st) || PathCollection.getState(st) != SourceTreeItemState.NORMAL
+    if (ignored.contains(st) || mapped.contains(st) || PathCollection.getState(Paths.get(st)) != SourceTreeItemState.NORMAL
       || IgnoredFilter.isIgnored(Paths.get(st))) {
       result = true;
     } else {

@@ -2,6 +2,7 @@ package org.roda.rodain.core;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,9 +11,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
+import org.roda.rodain.sip.SipPreview;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A collection of paths and it's associated state and SourceTreeItem.
@@ -28,8 +32,9 @@ import org.roda.rodain.source.ui.items.SourceTreeItemState;
  * @since 12-11-2015.
  */
 public class PathCollection {
-  private static Map<String, SourceTreeItemState> states = new ConcurrentHashMap<>();
-  private static Map<String, SourceTreeItem> items = new HashMap<>();
+  private static Map<Path, SourceTreeItemState> states = new ConcurrentHashMap<>();
+  private static Map<Path, SourceTreeItem> items = new HashMap<>();
+  private static final Logger LOGGER = LoggerFactory.getLogger(PathCollection.class.getName());
 
   private PathCollection() {
   }
@@ -40,8 +45,8 @@ public class PathCollection {
    * @param path
    *          The path to be added to the collection
    */
-  public static void simpleAddPath(String path) {
-    if (!"".equals(path) && !states.containsKey(path)) {
+  public static void simpleAddPath(Path path) {
+    if (!"".equals(path.toString()) && !states.containsKey(path)) {
       states.put(path, SourceTreeItemState.NORMAL);
     }
   }
@@ -65,7 +70,7 @@ public class PathCollection {
    * @param st
    *          The state of the item.
    */
-  public static void addPath(String path, SourceTreeItemState st) {
+  public static void addPath(Path path, SourceTreeItemState st) {
     if("".equals(path)){
       return;
     }
@@ -99,23 +104,23 @@ public class PathCollection {
       }
     }
 
+    Path parent = path.getParent();
     // move the modified children in the parent
-    String parent = path.substring(0, path.lastIndexOf(File.separator));
-    if (items.containsKey(parent) && items.get(parent) instanceof SourceTreeDirectory) {
+    if (parent!=null && items.containsKey(parent) && items.get(parent) instanceof SourceTreeDirectory) {
       ((SourceTreeDirectory) items.get(parent)).moveChildrenWrongState();
     }
   }
 
-  private static void applySameStateAllChildren(String path, SourceTreeItemState previousState,
+  private static void applySameStateAllChildren(Path path, SourceTreeItemState previousState,
     SourceTreeItemState state) {
     if("".equals(path)){
       return;
     }
     states.put(path, state);
 
-    if(Files.isDirectory(Paths.get(path))) {
-      Map<String, SourceTreeItemState> children = getAllChildren(path);
-      for (String child : children.keySet()) {
+    if(Files.isDirectory(path)) {
+      Map<Path, SourceTreeItemState> children = getAllChildren(path);
+      for (Path child : children.keySet()) {
         if (states.get(child) == previousState) {
           states.put(child, state);
           // update the item
@@ -138,7 +143,7 @@ public class PathCollection {
    */
   public static void addPaths(Set<String> paths, SourceTreeItemState st) {
     for (String path : paths)
-      addPath(path, st);
+      addPath(Paths.get(path), st);
   }
 
   /**
@@ -157,9 +162,9 @@ public class PathCollection {
       return;
     }
     if (!states.containsKey(path)) {
-      states.put(path, item.getState());
+      states.put(Paths.get(path), item.getState());
     }
-    items.put(path, item);
+    items.put(Paths.get(path), item);
   }
 
   /**
@@ -170,16 +175,14 @@ public class PathCollection {
    * @return The path's associated state if the path is in the collection,
    *         otherwise NORMAL.
    */
-  public static SourceTreeItemState getState(String path) {
+  public static SourceTreeItemState getState(Path path) {
     SourceTreeItemState result = SourceTreeItemState.NORMAL;
     if (states.containsKey(path))
       result = states.get(path);
     else {
-      // get the state of the parent
-      int index = path.lastIndexOf(File.separator);
-      if (index > 0) {
-        String parent = path.substring(0, index);
-        if(Files.isDirectory(Paths.get(parent))) {
+      Path parent = path.getParent();
+      if(parent!=null){
+        if(Files.isDirectory(parent)) {
           result = getStateWithoutAddingParents(parent);
           addPath(path, result);
         }
@@ -188,16 +191,14 @@ public class PathCollection {
     return result;
   }
 
-  private static SourceTreeItemState getStateWithoutAddingParents(String path){
+  private static SourceTreeItemState getStateWithoutAddingParents(Path path){
     SourceTreeItemState result = SourceTreeItemState.NORMAL;
     if (states.containsKey(path))
       result = states.get(path);
     else {
-      // get the state of the parent
-      int index = path.lastIndexOf(File.separator);
-      if (index > 0) {
-        String parent = path.substring(0, index);
-        if(Files.isDirectory(Paths.get(parent))) {
+      Path parent = path.getParent();
+      if(parent!=null){
+        if(Files.isDirectory(parent)) {
           result = getState(parent);
         }
       }
@@ -213,56 +214,52 @@ public class PathCollection {
    * @return The associated item if the path is in the collection, null
    *         otherwise.
    */
-  public static SourceTreeItem getItem(String path) {
+  public static SourceTreeItem getItem(Path path) {
     return items.get(path);
   }
 
-  public static void removePathAndItem(String path){
+  public static void removePathAndItem(Path path){
     states.remove(path);
     items.remove(path);
 
-    Map<String, SourceTreeItemState> children = getAllChildren(path);
+    Map<Path, SourceTreeItemState> children = getAllChildren(path);
     children.keySet().forEach(PathCollection::removePathAndItem);
   }
 
-  private static void verifyStateAncestors(String path) {
-    int index = 0, end = path.length();
-    String separator = File.separator;
+  private static void verifyStateAncestors(Path path) {
+    while(path.getParent()!=null){
+      path = path.getParent();
+      boolean updated = true;
+      if(states.containsKey(path)) {
+         updated = verifyState(path);
 
-    // while we still have string to read and haven't found a matching path
-    while (index >= 0) {
-      // get the path until the slash we're checking
-      index = path.lastIndexOf(separator, end);
-      if (index == -1) {
+        if (items.containsKey(path)) {
+          SourceTreeDirectory dir = (SourceTreeDirectory) items.get(path);
+          dir.moveChildrenWrongState();
+        }
+      }
+      if(!updated){
         break;
-      } else {
-        String sub = path.substring(0, index);
-        // avoid "C:", "D:", etc in Windows
-        if (sub.matches("[A-Z]:")) {
-          sub += separator;
-        }
-        // move the starting index for the next iteration so it's before the
-        // slash
-        end = index - 1;
-        if(states.containsKey(sub)) {
-          verifyState(sub);
-
-          if (items.containsKey(sub)) {
-            SourceTreeDirectory dir = (SourceTreeDirectory) items.get(sub);
-            dir.moveChildrenWrongState();
-          }
-        }
       }
     }
   }
 
-  private static void verifyState(String path) {
+  /*
+   * Returns true if the state was updated, false if the state was the same.
+   */
+  private static boolean verifyState(Path path) {
     if("".equals(path)){
-      return;
+      return false;
+    }
+    
+    SourceTreeItemState currentState = null;
+    SourceTreeItemState newState = null;
+    if(states.containsKey(path)){
+      currentState = states.get(path);
     }
     int normalItems = 0, ignoredItems = 0, mappedItems = 0;
-    Map<String, SourceTreeItemState> children = getDirectChildren(path);
-    for (String child : children.keySet()) {
+    Map<Path, SourceTreeItemState> children = getDirectChildren(path);
+    for (Path child : children.keySet()) {
       switch (states.get(child)) {
         case MAPPED:
           mappedItems++;
@@ -279,18 +276,22 @@ public class PathCollection {
     if (normalItems == 0) {
       // only MAPPED items, the directory is MAPPED
       if (mappedItems != 0 && ignoredItems == 0) {
+        newState = SourceTreeItemState.MAPPED;
         states.put(path, SourceTreeItemState.MAPPED);
       }
       // only IGNORED items, the directory is IGNORED
       if (mappedItems == 0 && ignoredItems != 0) {
+        newState = SourceTreeItemState.IGNORED;
         states.put(path, SourceTreeItemState.IGNORED);
       }
       // IGNORED and MAPPED items, the directory is MAPPED
       if (mappedItems != 0 && ignoredItems != 0) {
+        newState = SourceTreeItemState.MAPPED;
         states.put(path, SourceTreeItemState.MAPPED);
       }
     } else { // there's at least one NORMAL item, so the directory must be
       // NORMAL
+      newState = SourceTreeItemState.NORMAL;
       states.put(path, SourceTreeItemState.NORMAL);
     }
 
@@ -298,17 +299,22 @@ public class PathCollection {
       SourceTreeItem item = items.get(path);
       item.setState(states.get(path));
     }
+    
+    if(currentState!=null && newState!=null){
+      return currentState!=newState;
+    }
+    return true;
   }
 
-  private static Map<String, SourceTreeItemState> getDirectChildren(String path) {
-    int countSeparators = StringUtils.countMatches(path, File.separator) + 1;
+  private static Map<Path, SourceTreeItemState> getDirectChildren(Path path) {
+    int countSeparators = StringUtils.countMatches(path.toString(), File.separator) + 1;
     return states.entrySet().stream().parallel()
       .filter(
-        p -> p.getKey().startsWith(path) && StringUtils.countMatches(p.getKey(), File.separator) == countSeparators)
+        p -> p.getKey().startsWith(path) && StringUtils.countMatches(p.getKey().toString(), File.separator) == countSeparators)
       .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
   }
 
-  private static Map<String, SourceTreeItemState> getAllChildren(String path) {
+  private static Map<Path, SourceTreeItemState> getAllChildren(Path path) {
     return states.entrySet().stream().parallel().filter(p -> p.getKey().startsWith(path))
       .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
   }

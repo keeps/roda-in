@@ -1,6 +1,7 @@
 package org.roda.rodain.sip;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -67,7 +68,7 @@ public class SipPreview extends DescriptionObject implements Observer {
     // set paths as mapped
     for (SipRepresentation sr : representations) {
       for (TreeNode tn : sr.getFiles()) {
-        PathCollection.addPath(tn.getPath().toString(), SourceTreeItemState.MAPPED);
+        PathCollection.addPath(tn.getPath(), SourceTreeItemState.MAPPED);
       }
     }
   }
@@ -108,6 +109,7 @@ public class SipPreview extends DescriptionObject implements Observer {
       }
       sr.getFiles().removeAll(toRemove);
     }
+    
     PathCollection.addPaths(ignored, SourceTreeItemState.NORMAL);
   }
 
@@ -153,7 +155,7 @@ public class SipPreview extends DescriptionObject implements Observer {
     for (SipRepresentation sr : representations) {
       for (TreeNode tn : sr.getFiles()) {
         for (String path : tn.getFullTreePaths()) {
-          PathCollection.addPath(path, SourceTreeItemState.NORMAL);
+          PathCollection.addPath(Paths.get(path), SourceTreeItemState.NORMAL);
           removedPaths++;
           update++;
           if (update >= 10) {

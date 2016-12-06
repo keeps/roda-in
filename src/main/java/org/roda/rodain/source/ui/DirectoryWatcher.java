@@ -7,6 +7,7 @@ import static org.roda.rodain.source.ui.FileExplorerPane.watcher;
 
 import java.nio.file.ClosedWatchServiceException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 
@@ -53,17 +54,17 @@ public class DirectoryWatcher extends Thread {
         Path filename = ev.context();
 
         String fullPath = watchedPath.resolve(filename).toString();
-        SourceTreeItem sourceTreeItem = PathCollection.getItem(watchedPath.toString());
+        SourceTreeItem sourceTreeItem = PathCollection.getItem(watchedPath);
         if(sourceTreeItem instanceof SourceTreeDirectory){
           SourceTreeDirectory directory = ((SourceTreeDirectory) sourceTreeItem);
           if(kind == ENTRY_CREATE) {
             directory.addChild(fullPath);
           }else if(kind == ENTRY_DELETE){
-            SourceTreeItem itemToDelete = PathCollection.getItem(fullPath);
+            SourceTreeItem itemToDelete = PathCollection.getItem(Paths.get(fullPath));
             if(itemToDelete != null) {
               directory.removeChild(itemToDelete);
             }
-            PathCollection.removePathAndItem(fullPath);
+            PathCollection.removePathAndItem(Paths.get(fullPath));
           }
         }
       }

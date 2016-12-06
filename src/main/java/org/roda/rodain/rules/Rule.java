@@ -1,6 +1,7 @@
 package org.roda.rodain.rules;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -370,7 +371,7 @@ public class Rule extends Observable implements Observer, Comparable {
           for (SipRepresentation sr : sip.getRepresentations()) {
             for (TreeNode tn : sr.getFiles()) {
               for (String path : tn.getFullTreePaths()) {
-                PathCollection.addPath(path, SourceTreeItemState.NORMAL);
+                PathCollection.addPath(Paths.get(path), SourceTreeItemState.NORMAL);
                 removedPaths++;
                 float result = (float) removedPaths / paths;
                 setChanged();

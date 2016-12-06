@@ -1880,7 +1880,7 @@ public class InspectionPane extends BorderPane {
 
     // Set paths as mapped
     for (TreeNode tn : result) {
-      PathCollection.addPath(tn.getPath().toString(), SourceTreeItemState.MAPPED);
+      PathCollection.addPath(tn.getPath(), SourceTreeItemState.MAPPED);
     }
 
     // Add to the SIP, either to a Directory or to a Representation

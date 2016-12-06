@@ -2,6 +2,7 @@ package org.roda.rodain.source.ui.items;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Observable;
 
 import org.roda.rodain.core.PathCollection;
@@ -62,7 +63,7 @@ public class SourceTreeFile extends SourceTreeItem {
       }
     }
 
-    state = PathCollection.getState(fullPath);
+    state = PathCollection.getState(Paths.get(fullPath));
   }
 
   /**
@@ -85,7 +86,7 @@ public class SourceTreeFile extends SourceTreeItem {
   public void addIgnore() {
     if (state == SourceTreeItemState.NORMAL) {
       state = SourceTreeItemState.IGNORED;
-      PathCollection.addPath(fullPath, state);
+      PathCollection.addPath(Paths.get(fullPath), state);
     }
   }
 
@@ -110,7 +111,7 @@ public class SourceTreeFile extends SourceTreeItem {
   public void removeIgnore() {
     if (state == SourceTreeItemState.IGNORED) {
       state = SourceTreeItemState.NORMAL;
-      PathCollection.addPath(fullPath, state);
+      PathCollection.addPath(Paths.get(fullPath), state);
     }
   }
 
@@ -123,9 +124,9 @@ public class SourceTreeFile extends SourceTreeItem {
   @Override
   public void removeMapping(Rule r) {
     if (rule == null || r == rule) {
-      if (PathCollection.getState(fullPath) == SourceTreeItemState.MAPPED) {
+      if (PathCollection.getState(Paths.get(fullPath)) == SourceTreeItemState.MAPPED) {
         state = SourceTreeItemState.NORMAL;
-        PathCollection.addPath(fullPath, state);
+        PathCollection.addPath(Paths.get(fullPath), state);
       }
     }
   }

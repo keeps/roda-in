@@ -56,14 +56,14 @@ public class SipPerFile extends SipPreviewCreator {
         @Override
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
           if (!filter(file))
-            PathCollection.simpleAddPath(file.toString());
+            PathCollection.simpleAddPath(file);
           return isTerminated();
         }
 
         @Override
         public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
           if (!filter(dir))
-            PathCollection.simpleAddPath(dir.toString());
+            PathCollection.simpleAddPath(dir);
           return isTerminated();
         }
       });
@@ -91,8 +91,8 @@ public class SipPerFile extends SipPreviewCreator {
    */
   @Override
   public void postVisitDirectory(Path path) {
-    if (PathCollection.getState(path.toString()) == SourceTreeItemState.NORMAL) {
-      PathCollection.addPath(path.toString(), SourceTreeItemState.MAPPED);
+    if (PathCollection.getState(path) == SourceTreeItemState.NORMAL) {
+      PathCollection.addPath(path, SourceTreeItemState.MAPPED);
     }
   }
 
