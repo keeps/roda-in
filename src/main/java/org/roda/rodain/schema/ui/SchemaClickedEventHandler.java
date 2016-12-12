@@ -30,8 +30,8 @@ public class SchemaClickedEventHandler implements EventHandler<MouseEvent> {
    */
   @Override
   public void handle(MouseEvent mouseEvent) {
-    if (mouseEvent.getClickCount() == 2) {
+    /*if (mouseEvent.getClickCount() == 2) {
       treeView.getSelectionModel().clearSelection();
-    }
+    }*/
   }
 }
