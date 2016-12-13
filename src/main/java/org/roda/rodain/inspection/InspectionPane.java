@@ -668,6 +668,13 @@ public class InspectionPane extends BorderPane {
           }
         }
       }
+    }else{
+      for (int pos = 0; pos < optionsArray.length(); pos++) {
+        String option = optionsArray.get(pos).toString();
+        UIPair pair = new UIPair(option, option);
+        optionsMap.put(option, pair);
+        comboList.add(pair);
+      }
     }
     ComboBox<UIPair> comboBox = new ComboBox<>(comboList);
     HBox.setHgrow(comboBox, Priority.ALWAYS);
