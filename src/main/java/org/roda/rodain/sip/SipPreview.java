@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
-import java.util.UUID;
 
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.PathCollection;
@@ -18,6 +17,7 @@ import org.roda.rodain.rules.TreeNode;
 import org.roda.rodain.schema.DescObjMetadata;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
+import org.roda.rodain.utils.Utils;
 import org.roda_project.commons_ip.model.IPContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +62,7 @@ public class SipPreview extends DescriptionObject implements Observer {
         LOGGER.error(t.getMessage(), t);
       }
     }
-    setId("uuid-" + UUID.randomUUID().toString());
+    setId(Utils.createID());
     contentType = new IPContentType(IPContentType.IPContentTypeEnum.MIXED);
 
     // set paths as mapped

@@ -16,6 +16,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
+import java.util.UUID;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.OutputKeys;
@@ -265,24 +266,30 @@ public class Utils {
   }
 
   public static boolean containsAtLeastOneNotIgnoredFile(Path path) {
-    //LOGGER.error("containsAtLeastOneNotIgnoredFile("+path.toString()+")");
+    // LOGGER.error("containsAtLeastOneNotIgnoredFile("+path.toString()+")");
     boolean res = true;
     try {
       if (path.toFile().listFiles().length == 0) {
         res = false;
       } else {
         /*
-        ValidFilesCounter visitor = new ValidFilesCounter();
-        Files.walkFileTree(path, visitor);
-        int validFiles = visitor.getValidFiles();
-        if (validFiles == 0) {
-          res = false;
-        }*/
+         * ValidFilesCounter visitor = new ValidFilesCounter();
+         * Files.walkFileTree(path, visitor); int validFiles =
+         * visitor.getValidFiles(); if (validFiles == 0) { res = false; }
+         */
       }
     } catch (Exception e) {
       LOGGER.debug("Error while checking if directory contains at least on valid file: " + e.getMessage(), e);
     }
     return res;
+  }
+
+  public static String createID() {
+    String prefix = AppProperties.getConfig("idPrefix");
+    if (prefix == null) {
+      prefix = "uuid-";
+    }
+    return prefix + UUID.randomUUID().toString();
   }
 
 }

@@ -11,7 +11,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.roda.rodain.core.AppProperties;
@@ -630,7 +629,7 @@ public class SchemaPane extends BorderPane {
     if (addMetadataPane.getMetadataToAdd() != null) {
       DescriptionObject dobj = new DescriptionObject(addMetadataPane.getMetadataToAdd());
 
-      dobj.setId("uuid-" + UUID.randomUUID().toString());
+      dobj.setId(Utils.createID());
       dobj.setTitle(I18n.t("SchemaPane.newNode"));
       try{
         String metadataAggregationLevel = AppProperties.getConfig("metadata."+dobj.getMetadata().get(0).getTemplateType()+".aggregationLevel");
@@ -856,7 +855,7 @@ public class SchemaPane extends BorderPane {
               if (target != rootNode)
                 newParentID = target.getDob().getId();
               sourceSIP.getSip().setParentId(newParentID);
-              target.addChild("uuid-" + UUID.randomUUID().toString(), sourceSIP);
+              target.addChild(Utils.createID(), sourceSIP);
               target.getChildren().add(sourceSIP);
               target.sortChildren();
             }

@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.UUID;
 
 import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
@@ -41,12 +40,12 @@ public class DescriptionObject extends Observable {
 
   public DescriptionObject() {
     title = I18n.t("root");
-    id = "uuid-" + UUID.randomUUID().toString();
+    id = Utils.createID();
   }
 
   public DescriptionObject(DescObjMetadata template) {
     title = I18n.t("root");
-    id = "uuid-" + UUID.randomUUID().toString();
+    id = Utils.createID();
     metadata.add(template);
   }
 
