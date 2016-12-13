@@ -532,15 +532,7 @@ public class SchemaPane extends BorderPane {
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
-    Button export = new Button(I18n.t("export"));
-    export.setMinWidth(100);
-    export.setOnAction(event -> RodaIn.exportSIPs());
-
-    bottom.getChildren().addAll(addLevel, removeLevel, space, export);
-
-    if (Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
-      Tooltip.install(export, new Tooltip(I18n.help("tooltip.export")));
-    }
+    bottom.getChildren().addAll(addLevel, removeLevel, space);
   }
 
   private void confirmRemove(List<TreeItem<String>> selectedItems, ButtonType type) {

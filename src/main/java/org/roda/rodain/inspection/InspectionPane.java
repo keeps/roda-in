@@ -150,6 +150,8 @@ public class InspectionPane extends BorderPane {
   private BorderPane rules;
   private ListView<RuleCell> ruleList;
   private VBox emptyRulesPane;
+  
+  private HBox exportBox;
 
   /**
    * Creates a new inspection pane.
@@ -168,6 +170,7 @@ public class InspectionPane extends BorderPane {
     createMetadata();
     createContent();
     createRulesList();
+    createExportBox();
     createLoadingPanes();
     createMultipleSelectedBottom();
 
@@ -175,6 +178,7 @@ public class InspectionPane extends BorderPane {
     center.setPadding(new Insets(10, 0, 10, 0));
 
     setCenter(centerHelp);
+    setBottom(exportBox);
 
     metadata.minHeightProperty().bind(stage.heightProperty().multiply(0.40));
     this.minWidthProperty().bind(stage.widthProperty().multiply(0.3));
@@ -1401,6 +1405,26 @@ public class InspectionPane extends BorderPane {
     rules.setCenter(emptyRulesPane);
   }
 
+  private void createExportBox() {
+    exportBox = new HBox(10);
+    exportBox.setPadding(new Insets(10, 10, 10, 10));
+    exportBox.setAlignment(Pos.CENTER);
+
+    HBox space = new HBox();
+    HBox.setHgrow(space, Priority.ALWAYS);
+
+    Button export = new Button(I18n.t("export"));
+    export.setMinWidth(100);
+    export.setOnAction(event -> RodaIn.exportSIPs());
+
+    exportBox.getChildren().addAll(space, export);
+
+    if (Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
+      Tooltip.install(export, new Tooltip(I18n.help("tooltip.export")));
+    }
+  }
+  
+  
   private void updateSelectedMetadata(DescObjMetadata dom) {
     metadata.getChildren().removeAll(metadataFormWrapper, metaText, metadataHelpBox);
     if (!metadata.getChildren().contains(metadataLoadingPane))
@@ -1464,6 +1488,7 @@ public class InspectionPane extends BorderPane {
   public void update(SipPreviewNode sip) {
     setTop(topBox);
     setCenter(center);
+    setBottom(exportBox);
     currentSIPNode = sip;
     currentDescOb = sip.getSip();
     currentSchema = null;
@@ -1530,6 +1555,7 @@ public class InspectionPane extends BorderPane {
 
     center.getChildren().addAll(metadata, content);
     setCenter(center);
+    setBottom(exportBox);
   }
 
   /**
@@ -1576,6 +1602,7 @@ public class InspectionPane extends BorderPane {
 
     center.getChildren().addAll(metadata, rules);
     setCenter(center);
+    setBottom(exportBox);
   }
 
   public void update(List<TreeItem<String>> selectedItems) {
@@ -1693,6 +1720,7 @@ public class InspectionPane extends BorderPane {
 
     center.getChildren().addAll(metadata, multSelectedBottom);
     setCenter(center);
+    setBottom(exportBox);
   }
 
   private HBox createSIPTypeComboBox() {
@@ -1818,6 +1846,7 @@ public class InspectionPane extends BorderPane {
    */
   public void showHelp() {
     setCenter(centerHelp);
+    setBottom(exportBox);
     setTop(new HBox());
   }
 
