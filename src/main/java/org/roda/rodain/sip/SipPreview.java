@@ -62,7 +62,7 @@ public class SipPreview extends DescriptionObject implements Observer {
         LOGGER.error(t.getMessage(), t);
       }
     }
-    setId("ID" + UUID.randomUUID().toString());
+    setId("uuid-" + UUID.randomUUID().toString());
     contentType = new IPContentType(IPContentType.IPContentTypeEnum.MIXED);
 
     // set paths as mapped

@@ -41,12 +41,12 @@ public class DescriptionObject extends Observable {
 
   public DescriptionObject() {
     title = I18n.t("root");
-    id = "ID" + UUID.randomUUID().toString();
+    id = "uuid-" + UUID.randomUUID().toString();
   }
 
   public DescriptionObject(DescObjMetadata template) {
     title = I18n.t("root");
-    id = "ID" + UUID.randomUUID().toString();
+    id = "uuid-" + UUID.randomUUID().toString();
     metadata.add(template);
   }
 
