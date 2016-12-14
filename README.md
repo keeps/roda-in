@@ -185,6 +185,13 @@ For more information or commercial support, contact [KEEP SOLUTIONS](http://www.
 4. Push to the branch: `git push origin my-new-feature`
 5. Submit a pull request :D
 
+To increase the changes of you code being accepted and merged into RODA source here's a checklist of things to go over before submitting a contribution. For example:
+
+- Has unit tests (that covers at least 80% of the code)
+- Has documentation (at least 80% of public API)
+- Agrees to contributor license agreement, certifying that any contributed code is original work and that the copyright is turned over to the project
+
+
 ### Translating
 To help make RODA-in better you can translate it to your language. 
 
