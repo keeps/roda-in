@@ -86,7 +86,7 @@ public class InventoryReportCreator {
 
   private List<List<String>> SIPToCSVLines(Path path, SIP sip) {
     List<List<String>> lines = new ArrayList<List<String>>();
-    for (ZipEntryInfo entry : sip.getZipEntries()) {
+    for (ZipEntryInfo entry : sip.getZipEntries().values()) {
       if (!(entry instanceof METSZipEntryInfo)) {
         try {
           List<String> line = new ArrayList<String>();

@@ -17,6 +17,7 @@ import org.roda.rodain.rules.ui.RuleModalController;
 import org.roda.rodain.schema.DescriptionObject;
 import org.roda.rodain.sip.SipPreview;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
+import org.roda_project.commons_ip.model.IPContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -427,6 +428,4 @@ public class SchemaNode extends TreeItem<String> implements Observer {
       dob.setUpdateSIP(isUpdateSIP);
     }
   }
-
- 
 }

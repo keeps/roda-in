@@ -20,6 +20,7 @@ import org.roda.rodain.template.TemplateFieldValue;
 import org.roda.rodain.template.TemplateUtils;
 import org.roda.rodain.utils.UIPair;
 import org.roda.rodain.utils.Utils;
+import org.roda_project.commons_ip.model.IPContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,16 +38,20 @@ public class DescriptionObject extends Observable {
   private List<DescObjMetadata> metadata = new ArrayList<>();
   private Map<String, Object> additionalProperties = new TreeMap<>();
   private boolean isUpdateSIP = false;
+  private String type;
+
 
   public DescriptionObject() {
     title = I18n.t("root");
     id = Utils.createID();
+    this.type = IPContentType.getMIXED().asString();
   }
 
   public DescriptionObject(DescObjMetadata template) {
     title = I18n.t("root");
     id = Utils.createID();
     metadata.add(template);
+    this.type = IPContentType.getMIXED().asString();
   }
 
   /**
@@ -336,5 +341,25 @@ public class DescriptionObject extends Observable {
   public void setUpdateSIP(boolean isUpdateSIP) {
     this.isUpdateSIP = isUpdateSIP;
   }
+
+  @JsonIgnore
+  public IPContentType getContentType() {
+    return new IPContentType(type);
+  }
+
+  public void setContentType(IPContentType contentType) {
+    this.type = contentType.asString();
+  }
+
+  public String getType() {
+    return type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
+  }
+  
+  
+  
 
 }

@@ -32,6 +32,7 @@ import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.FontAwesomeImageCreator;
 import org.roda.rodain.utils.TreeVisitor;
+import org.roda_project.commons_ip.model.IPContentType;
 
 import javafx.concurrent.Task;
 import javafx.scene.control.TreeItem;

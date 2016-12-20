@@ -1,12 +1,16 @@
 package org.roda.rodain.inspection.trees;
 
+import javafx.event.EventHandler;
+import javafx.scene.control.Alert;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.util.Callback;
 import org.roda.rodain.core.RodaIn;
@@ -34,7 +38,20 @@ public class SipDataTreeView extends AutoscrollTreeView {
       }
     });
     getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-    setOnMouseClicked(new ContentClickedEventHandler(this));
+    
+    EventHandler<MouseEvent> mouseEventHandle = (MouseEvent event) -> {
+      if(getSelectionModel().getSelectedItem().getClass()==SipContentRepresentation.class){
+        SipContentRepresentation scr = (SipContentRepresentation)getSelectionModel().getSelectedItem();
+        RodaIn.getInspectionPane().setCurrentRepresentation(scr);
+        RodaIn.getInspectionPane().showEditRepresentationTypeButton(scr);
+      }else{
+        RodaIn.getInspectionPane().setCurrentRepresentation(null);
+        RodaIn.getInspectionPane().hideEditRepresentationTypeButton();
+      }
+    };
+
+    setOnMouseClicked(mouseEventHandle);
+
     setShowRoot(false);
   }
 

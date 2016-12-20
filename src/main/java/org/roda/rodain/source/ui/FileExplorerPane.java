@@ -107,6 +107,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     createBottom();
 
     this.setCenter(centerHelp);
+    this.setTop(top);
     this.prefWidthProperty().bind(stage.widthProperty().multiply(0.32));
     this.minWidthProperty().bind(stage.widthProperty().multiply(0.2));
   }
@@ -227,7 +228,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
     HBox titleBox = new HBox();
     titleBox.setAlignment(Pos.CENTER);
-    Label title = new Label("1. " + I18n.t("FileExplorerPane.help.title"));
+    Label title = new Label(I18n.t("FileExplorerPane.help.title"));
     title.setWrapText(true);
     title.getStyleClass().add("helpTitle");
     title.setTextAlignment(TextAlignment.CENTER);

@@ -32,7 +32,6 @@ import org.roda_project.commons_ip.model.SIP;
 import org.roda_project.commons_ip.model.SIPObserver;
 import org.roda_project.commons_ip.model.impl.eark.EARKSIP;
 import org.roda_project.commons_ip.utils.IPEnums;
-import org.roda_project.commons_ip.utils.SIPException;
 import org.roda_project.commons_ip.utils.IPEnums.IPStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -148,8 +147,8 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
         SipPreview sip = (SipPreview) descriptionObject;
         for (SipRepresentation sr : sip.getRepresentations()) {
           IPRepresentation rep = new IPRepresentation(sr.getName());
-          rep.setContentType(
-            new RepresentationContentType(RepresentationContentType.RepresentationContentTypeEnum.MIXED));
+          rep.setContentType(sr.getType());
+          
           Set<TreeNode> files = sr.getFiles();
           currentSIPadded = 0;
           currentSIPsize = 0;
@@ -177,10 +176,6 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
 
       createdSipsCount++;
       return new UIPair(sipPath, earkSip);
-    } catch (SIPException e) {
-      LOGGER.error("Commons IP exception", e);
-      unsuccessful.add(descriptionObject);
-      CreationModalProcessing.showError(descriptionObject, e);
     } catch (InterruptedException e) {
       canceled = true;
     } catch (IOException e) {

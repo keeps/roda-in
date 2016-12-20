@@ -33,6 +33,7 @@ import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.roda.rodain.utils.AutoscrollTreeView;
 import org.roda.rodain.utils.ModalStage;
 import org.roda.rodain.utils.Utils;
+import org.roda_project.commons_ip.model.IPContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,6 +110,7 @@ public class SchemaPane extends BorderPane {
 
     createCenterHelp();
     this.setCenter(centerHelp);
+    this.setTop(topBox);
 
     hasClassificationScheme = new SimpleBooleanProperty(false);
 
@@ -157,7 +159,7 @@ public class SchemaPane extends BorderPane {
 
     HBox titleBox = new HBox();
     titleBox.setAlignment(Pos.CENTER);
-    Label title = new Label("2 . " + I18n.t("SchemaPane.help.title"));
+    Label title = new Label(I18n.t("SchemaPane.help.title"));
     title.getStyleClass().add("helpTitle");
     title.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().addAll(title);
@@ -449,7 +451,7 @@ public class SchemaPane extends BorderPane {
       }
       // if there were no nodes in the file, show the help panel
       if (roots.isEmpty()) {
-        setTop(new HBox());
+        setTop(topBox);
         setCenter(centerHelp);
         setBottom(new HBox());
       } else {
@@ -913,7 +915,7 @@ public class SchemaPane extends BorderPane {
    */
   public void showHelp() {
     rootNode.getChildren().clear();
-    setTop(new HBox());
+    setTop(topBox);
     setCenter(centerHelp);
     setBottom(new HBox());
     hasClassificationScheme.setValue(false);

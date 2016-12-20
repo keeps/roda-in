@@ -28,10 +28,8 @@ import org.slf4j.LoggerFactory;
  */
 public class SipPreview extends DescriptionObject implements Observer {
   private static final Logger LOGGER = LoggerFactory.getLogger(SipPreview.class.getName());
-
   private Set<SipRepresentation> representations;
   private Set<TreeNode> documentation;
-  private IPContentType contentType;
   private boolean contentModified = false;
   private boolean removed = false;
 
@@ -63,7 +61,6 @@ public class SipPreview extends DescriptionObject implements Observer {
       }
     }
     setId(Utils.createID());
-    contentType = new IPContentType(IPContentType.IPContentTypeEnum.MIXED);
 
     // set paths as mapped
     for (SipRepresentation sr : representations) {
@@ -71,14 +68,6 @@ public class SipPreview extends DescriptionObject implements Observer {
         PathCollection.addPath(tn.getPath(), SourceTreeItemState.MAPPED);
       }
     }
-  }
-
-  public void setContentType(IPContentType contentType) {
-    this.contentType = contentType;
-  }
-
-  public IPContentType getContentType() {
-    return contentType;
   }
 
   /**

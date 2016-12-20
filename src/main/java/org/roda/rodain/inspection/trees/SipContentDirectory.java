@@ -1,16 +1,18 @@
 package org.roda.rodain.inspection.trees;
 
-import javafx.event.EventHandler;
-import javafx.scene.control.TreeItem;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import org.roda.rodain.rules.TreeNode;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+
+import org.roda.rodain.rules.TreeNode;
+
+import javafx.event.EventHandler;
+import javafx.scene.control.TreeItem;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -66,6 +68,7 @@ public class SipContentDirectory extends TreeItem<Object> implements InspectionT
       @Override
       public void handle(TreeModificationEvent<Object> e) {
         Object sourceObject = e.getSource();
+        
         if (sourceObject instanceof SipContentDirectory) {
           SipContentDirectory source = (SipContentDirectory) sourceObject;
           if (!source.isExpanded()) {
@@ -75,6 +78,7 @@ public class SipContentDirectory extends TreeItem<Object> implements InspectionT
         }
       }
     });
+
   }
 
   /**
