@@ -6,18 +6,22 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import javax.swing.filechooser.FileSystemView;
 
@@ -97,8 +101,6 @@ public class AppProperties {
           rodainPath.resolve("schemas").resolve(schemaFileName), StandardCopyOption.REPLACE_EXISTING);
       }
 
-      
-
       // ensure that the xlink.xsd and xml.xsd files are in the
       // application home
       // folder
@@ -137,29 +139,20 @@ public class AppProperties {
       helpBundle = ResourceBundle.getBundle("properties/help", locale, new FolderBasedUTF8Control());
       defaultResourceBundle = ResourceBundle.getBundle("properties/lang", Locale.ENGLISH, new FolderBasedUTF8Control());
       defaultHelpBundle = ResourceBundle.getBundle("properties/help", Locale.ENGLISH, new FolderBasedUTF8Control());
-      
+
       if (!Files.exists(rodainPath.resolve("help"))) {
         Path helpDir = rodainPath.resolve("help");
         Files.createDirectory(helpDir);
-        
-        //URL url = ClassLoader.getSystemResource("help/");
-        URL url = AppProperties.class.getResource("help/");
-        if (url == null) {
-             // error - missing folder
-        } else {
-            File dir = new File(url.toURI());
-            for (File nextFile : dir.listFiles()) {
-              Files.copy(nextFile.toPath(), rodainPath.resolve("help/"+nextFile.getName()));
-            }
-        }
+        copyHelpFiles(helpDir);
         /*
-        String fileName = "help/help_" + getLocale().toString() + ".html";
-        InputStream helpFile = ClassLoader.getSystemResourceAsStream("help/help_" + getLocale().toString() + ".html");
-        if (helpFile == null) {
-          helpFile = ClassLoader.getSystemResourceAsStream("help/help.html");
-          fileName = "help/help.html";
-        }
-        Files.copy(helpFile, rodainPath.resolve(fileName));*/
+         * String fileName = "help/help_" + getLocale().toString() + ".html";
+         * InputStream helpFile =
+         * ClassLoader.getSystemResourceAsStream("help/help_" +
+         * getLocale().toString() + ".html"); if (helpFile == null) { helpFile =
+         * ClassLoader.getSystemResourceAsStream("help/help.html"); fileName =
+         * "help/help.html"; } Files.copy(helpFile,
+         * rodainPath.resolve(fileName));
+         */
       }
     } catch (IOException e) {
       LOGGER.error("Error copying config file", e);
@@ -176,6 +169,43 @@ public class AppProperties {
       // force the default locale for the JVM
       Locale.setDefault(locale);
     }
+  }
+
+  private static void copyHelpFiles(Path helpDir) {
+    final String path = "help";
+    final File jarFile = new File(AppProperties.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+
+    if (jarFile.isFile()) { // Run with JAR file
+      try {
+        final JarFile jar = new JarFile(jarFile);
+        final Enumeration<JarEntry> entries = jar.entries();
+        while (entries.hasMoreElements()) {
+          JarEntry entry = entries.nextElement();
+          if (entry.getName().startsWith("help") && !entry.isDirectory()) {
+            InputStream input = jar.getInputStream(entry);
+            Files.copy(input, rodainPath.resolve(entry.getName()));
+            input.close();
+          }
+
+        }
+        jar.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    } else { // Run with IDE
+      final URL url = AppProperties.class.getResource("/" + path);
+      if (url != null) {
+        try {
+          final File apps = new File(url.toURI());
+          for (File app : apps.listFiles()) {
+            Files.copy(app.toPath(), helpDir.resolve(app.getName()));
+          }
+        } catch (URISyntaxException | IOException ex) {
+          ex.printStackTrace();
+        }
+      }
+    }
+
   }
 
   public static Locale parseLocale(String localeString) {
@@ -266,7 +296,6 @@ public class AppProperties {
     if (!Files.exists(helpFile)) {
       helpFile = rodainPath.resolve("help/help.html");
     }
-    System.out.println(helpFile.toString());
     return "file://" + helpFile.toString();
   }
 
