@@ -1,0 +1,212 @@
+<html>
+<head>
+<meta charset="UTF-8">
+</head>
+<body>
+
+
+
+<h1>Introducion</h1>
+
+<p>
+  O RODA-in é uma ferramenta que permite que entidades produtoras de informação de arquivo possam preparar pacotes de submissão contendo dados e metadados para serem enviados para o Arquivo Digital a fim de serem ingeridos. Ao Arquivo Digital tipicamente chamamos Repositório Digital ou apenas Repositório.
+</p>
+<p>
+  Os pacotes produzidos por esta ferramenta chamam-se SIPs (do inglês "Submission Information Packages").
+</p>
+<p>
+  Para se criar um conjunto de SIPs, o utilizador deverá seguir um conjunto de passos:
+  <ol>
+    <li><strong>Selecionar ficheiros </strong> no painél "Explorador de ficheiros".</li>
+    <li><strong>Agregar ficheiros </strong>em pacotes arrastando os ficheiros/pastas para área dedicada à gestão de Pacotes de Informação.</li>
+    <li><strong>Selecionar um esquema</strong> de metadados</li>
+    <li><strong>Inspecionar</strong> o pacote para aferir a sua completude e definir os metadados descritivos.</li>
+    <li><strong>Criar os SIP(s)</strong>.</li>
+  </ol>
+</p>
+
+<h1>Painéis da aplicação</h1>
+<p>
+  A aplicação é composta por 4 painéis distintos assinalados a cor azul claro:
+  <ol>
+    <li><strong>Explorador de ficheiros</strong> - Onde o utilizador deve selecionar os ficheiros que pretende empacotar.</li>
+    <li><strong>Pacotes de Informação</strong> - onde o utilizador pode consultar os SIP que já foram preparados.</li>
+    <li><strong>Inspecionar</strong> - onde o utilizador pode consultar a informação (metadados e dados) que se encontra dentro do pacote de submissão.</li>
+    <li><strong>Pacotes de submissão</strong> - onde o utilizador pode exportar os pacotes que foram preparados.</li>
+  </ol>
+</p>
+
+
+
+<img src="layout.png" width="100%"/>
+
+Cada um destes painéis é explicado em detalhe de seguida.
+
+<h2>Explorador de ficheiros</h2>
+
+<p>
+  Esta área de trabalho da aplicação permite localizar os ficheiros no disco local que se pretendem empacotar. Para começar, o utilizador deverá aceder ao menu "Ficheiro &gt; Adicionar pasta" para adicionar ao projeto de preparação de SIPs um conjunto de ficheiros.</p>
+  <p>Um ficheiro pode estar num de 3 estados: normal, ignorado ou mapeado: </p>
+<ul>
+  <li><strong>Normal</strong> - é o estado normal de um ficheiro e o único estado a partir do qual SIPs podem ser criados.</li>
+  <li><strong>Ignorado</strong> - não serão utilizados na criação de pacotes. Podem ser ignorados tendo por base regras definidas na configuração da aplicação ou manualmente através do botão "Ignorar". Este objetos são escondidos por omissão, mas podem ser apresentados ativando uma opção do menu "Ver".</li>
+  <li><strong>Mapeado</strong> - é um ficheiro que já foi adicionado a um SIP. O objetivo é implementar uma estratégia "mapear e esquecer" onde os utilizadores arrastam ficheiros a partir deste painél, desaparecendo depois da interface. Isto permite ao utilizador focar-se apenas nos objetos restantes, melhorando assim a sua produtividade no projeto de criação de SIPs.</li>
+</ul>
+</p>
+
+<h2>Pacotes de informação </h2>
+
+Nesta área poderá visualizar os pacotes de informação que já foram preparados e a sua posição no atual plano de classificação. Pode também mudar a sua posição no plano.
+
+<h2>Inspecionar</h2>
+
+<p>
+Depois de criados os pacotes de informação, poderá querer enriquecê-los com metadados ou tratar alguns casos excecionais. Este é um passo opcional, mas oferece algumas funcionalidades importantes que não devem ser negligenciadas, tais como criar e validar metadados, manipular o conteúdo do SIP ou adicionar documentação. Esta operações podem ser realizadas no painel "Inspecionar".
+</p>
+
+<h2>Pacotes de submissão</h2>
+<p>
+  Trata-se da última operação do fluxo de trabalho. Este painel apenas oferece uma opção que é "Criar os SIP(s)" que foram preparados nos painéis anteriores.
+</p>
+
+<h1>Modo de utilização</h1>
+
+<h2>1. Adicione pastas ao Explorador de ficheiros</h2>
+
+<p>O primeiro passo do processo é escolher os ficheiros e pastas do computador a arquivar e adicioná-los ao explorador de ficheiro da aplicação. Esta ação irá apresentar a pasta e o seu conteúdo numa vista de árvore. As pastas e ficheiros são claramente distinguíveis umas das outras (uma vez que são utilizados ícones diferentes) e as pastas podem ser expandidas de modo a inspecionar o seu conteúdo.</p>
+
+<h2>2. Arraste pastas/ficheiros do Explorador de ficheiros para o painel central</h2>
+<p>
+  Ao arrastar um conjunto de pastas ou ficheiros do painel da esquerda para o painel central irá criar pacotes de informação que poderão posteriormente ser enriquecidos com metadados ou mais ficheiros. Ao realizar esta operação, a ferramenta irá apresentar um conjunto de opções que deverão escolher para obter o resultado desejado.
+</p>
+<p>Também pode clicar no botão "Associar" para iniciar o processo.</p>
+
+<h3>Selecione uma regra de associação.</h3>
+
+<p>
+O método de associação de dados define as regras que são utilizadas para transformar as pastas e ficheiros em SIPs. Existem atualmente 4 métodos disponíveis, conforme se pode verificar na figura seguinte:
+</p>
+<p>
+
+<img src="association.png" width="100%"/>
+</p>
+
+
+<h3>Selecione um método de associação de metadados</h3>
+
+<p>
+Após a seleção de um método de associação de ficheiros em pacotes, o sistema irá apresentar-lhe várias opções para associação de metadados ao pacote em questão. Estas opções podem ser consultadas na figura que se segue:
+</p>
+
+<p>
+
+<img src="metadata.png" width="100%"/>
+</p>
+
+<h2>3. Reorganize os seus pacotes de informação no plano de classificação</h2>
+
+Uma vez criados pacotes de informação, o utilizador pode reorganizá-los numa estrutura hierárquica que depois se irá reflectir no repositório. Por exemplo, o utilizador pode criar um pacote de informação apenas com metadados ao qual poderá chamar "Correspondência recebida em 2015" que permite agrupar um conjunto de pacotes de dados sob a alçada de um elemento agregador.
+
+<h2>4. Inspecione e/ou altere os pacotes preparados</h2>
+
+<p>Os dados dos pacotes estão divididos em "representações" que podem ser adicionadas ou removidas. Também é possível remover ficheiros e pastas do conteúdo do SIP. Estes ficheiros regressam ao estado <em>normal</em> e passam a estar disponíveis no Explorador de ficheiros para serem incluídos noutro SIP. O sistema de "drag n' drop" da estrutura de pasta de dados permite reorganizar o conteúdo do SIP e mover ficheiros entre representações. Ao clicar no botão mais à direita, o painel altera entre "Dados" e "Documentação".</p>
+
+<p><strong>Documentação</strong> pode ser adicionada aos SIPs para complementar a compreensão da informação que se está a arquivar na secção de "Dados". Os ficheiros adicionados à documentação não altera o estado dos ficheiros para "mapeado", de modo a que o produtor possa adicionar o mesmo ficheiro à documentação de 1 ou mais SIPs. Depois de adicionados, os ficheiros podem ser removidos e reorganizados tal como acontece na secção de "Dados".</p>
+
+<p>Quando os SIPs são criados através da opção de modelo de metadados, pode editar os metadados através de um <strong>formulário</strong>. Para além disso, o <strong>conteúdo XML</strong> do ficheiro de metadados pode ser apresentado e editado através da interface.</P>
+<p>Para além de editar ficheiros de metadados, é possível <strong>adicionar</strong> e <strong>remover</strong> ficheiros de metadados. Existem 3 opções disponíveis ao adicionar um novo ficheiro de metadados:</p>
+<ol>
+<li>Novo ficheiro de metadados baseado num modelo de metadado existente</li>
+<li>Novo ficheiro de metadados baseado num ficheiro existente</li>
+<li>Ficheiro de metadado vazio</li>
+</ol>
+<p>Para evitar conflitos, não é possível adicionar dois ficheiros de metadados com o mesmo esquema. </p>
+
+<p>
+A ferramenta  oferece ainda uma funcionalidade de <strong>validação de metadados</strong>. Esta funcionalidade encontra-se apenas disponível para ficheiros de metadados criados a partir de modelos de metadados que possuem o esquema especificado na configuração. </p>
+
+
+<h2>5. Crie os pacotes de submissão</h2>
+
+<p>
+O último passo no fluxo de criação de SIP é exportar os SIPs  para um formato de saída para serem submetidos para o repositório.</p><p>O utilizador pode adaptar o processo de exportação às suas necessidades. A primeira decisão que pode tomar é se pretende exportar todos os SIPs preparados ou apenas os selecionados. Por omissão, os SIPs criados são os <strong>selecionados</strong>.</p>
+<p>O utilizador deverá definir o destino dos SIPs depois de exportados.</p>
+<p>É também nessa altura que o formato de exportação deve ser escolhido. De momento, o RODA-in suporta 2 formatos: E-ARK SIP e BagIt.</p>
+
+
+
+<h1>Opções avançadas</h1>
+
+<h2>Gerir planos de classificação </h2>
+
+<p>O plano de classificação pode ser importado a partir de um ficheiro ou criado diretamente na aplicação.</p>
+<p>Na primeira opção, o utilizador precisa de importar um ficheiro que foi fornecido pelo responsável pelo Repositório</p>
+
+<p>Para criar um plano de classificação, o primeiro passo é adicionar itens de descrição através do botão "Adicionar" apresentado na zona inferior do painel central. Ao clicar no botão,um novo item de descrição é criado e adicionado por baixo do item de descrição selecionado no painel central ou na raíz se nenhum item estiver selecionado ou se o item selecionado for um SIP.</p>
+
+<p>Para além de poder adicionar itens, existem duas outras ações disponíveis: remover e reorganizar.</p>
+
+
+
+<p>Para criar um plano de classificação no RODA-in, o primeiro passo é adicionar items de descrição utilizado o botão <strong>Adicionar</strong> situado na parte inferior do painel central. Ao carregar nesse botão, um novo item de descrição é criado e adicionado por baixo do item de descrição selecionado ou na raíz se nenhum item estiver selecionado no painel central ou se o item selecionado for um SIP.</p>
+
+<p>Arrastando e largando os itens selecionados por cima de outros itens, o plano de classificação pode ser  <strong>reorganizado</strong>. O comportamento do sistema de Drag'n'drop pode ser descrito da seguinte forma:</p>
+<ul>
+<li>Ao largar itens por cima de um item de descrição existente, estes são adicionados como descendentes diretos do item existente.</li>
+<li>Ao largar itens numa secção vazia da árvore, estes são adicionados na raíz desta árvore.</li>
+<li>Ao largar itens por cima de um pacote de informação, estes são adicionados com irmãos deste. Isto acontece pois pacotes não podem ter descendentes no RODA-in.</li>
+<li>Ao largar um pai por cima de um dos seus descendentes, a ação é cancelada, pois caso contrário, deixaria de existir uma ligação entre a árvore e sub-árvore selecionada (que começa no item que se está a arrastar).</li>
+</ul>
+
+<p>Depois do plano de classificação estar completo, pode querer guardá-lo para usar no futuro utilizando a funcionalidade "Exportar" , que se encontra por baixo do <strong>menu Plano de Classificação</strong>.</p>
+
+
+<h2>Formulários de recolha de metadados</h2>
+
+<p>
+Os pacotes de informação podem conter dados e metadados. Os metadados são incluídos em cada pacote através de regras de associação. Estas regras de associação definem a forma com os metadados descritivos selecionados do sistema de ficheiro são incluídos dentro de cada SIP.
+</p>
+
+<p>Uma vez que editar os ficheiros XML é um processo moroso e complexo, foi adicionada uma forma de configurar formulários de recolha de dados. Estes formulários são construídos à custa de ficheiros de configuração que estão localizados na pasta "roda-in" (em Documentos se estiver a usar Windows ou na raiz do utilizador se usar Linux), debaixo da pasta "templates".</p>
+
+<p>Através do  motor de templating Handlebars, um utilizador avançado pode criar formulários de recolha de dados. Para além de uma etiqueta simples, (por exemplo {{pessoa}}), é possível adicionar opções que vão modificar a forma como cada campo é criado e guardado no XML resultante. Para mais informações consulte a página <a href="http://rodain.roda-community.org">http://rodain.roda-community.org</a>.</p>
+
+<p>As opções disponíveis para alterar a criação dos campos para cada etiqueta são:</p>
+
+<ul>
+<li>value - o valor por omissão do campo</li>
+<li>order - a posição/ordem do campo no formulário</li>
+<li>type - o tipo do campo. Os valores disponíveis são:
+
+<ul>
+<li>text - campo de texto</li>
+<li>text-area - Área de texto. Maior do que um campo de texto</li>
+<li>date - campo de texto com um seleccionador de data</li>
+<li>
+list - lista com os valores possíveis do campo (combo box)
+<ul>
+<li>options - Lista com os possíveis valores que um campo pode ter. Esta lista é um array. Exemplo: options="["final","revised","draft"]"</li>
+<li>optionsLabels - Mapa com as etiquetas para cada opção. A chave tem de corresponder a uma das opções especificadas na lista "options". O valor associado à chave é outro mapa, que mapeia o idioma (chave) à etiqueta (valor). Exemplo: optionsLabels="{"final": {"en":"Final", "pt_PT":"Final"},"revised": {"en":"Revised", "pt_PT":"Verificado"},"draft": {"en":"Draft", "pt_PT":"Rascunho"}}"</li>
+</ul>
+</li>
+</ul></li>
+<li>label - A legenda que aparece à esquerda do campo no formulário</li>
+<li>mandatory - Se estiver com o valor "true" a legenda aparece a negrito para chamar à atenção.li>
+<li>hidden -Se estiver com o valor "true" o campo é escondido</li>
+<li>auto-generate - Preenche o valor com um dos geradores disponíveis. Sobrepõe a opção "value":
+
+<ul>
+<li>now - a data atual no formato ano-mês-dia</li>
+<li>id - gera um identificador</li>
+<li>title - gera um título</li>
+<li>level - adiciona o nível descritivo atual</li>
+<li>parentid - adiciona o identificador do pai, se este existir</li>
+<li>language - adiciona a linguagem do sistema. Por exemplo: "português" ou "English"</li>
+</ul></li>
+</ul>
+
+<p>Exemplo de uma possível utilização das etiquetas para criar um campo no formulário:</p>
+
+<p><code>{{title order=1 type="text" label="Título do campo" mandatory=true auto-generate="title"}}</code></p>
+</body>
+</html>

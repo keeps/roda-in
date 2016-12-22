@@ -3,11 +3,9 @@ package org.roda.rodain.core;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -15,10 +13,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -50,7 +46,7 @@ public class AppProperties {
   private static Locale locale;
 
   private static Set<Path> allSchemas;
-  
+
   private AppProperties() {
   }
 
@@ -74,11 +70,7 @@ public class AppProperties {
       }
 
       // copy metadata templates
-      
-      
-      
-      
-      
+
       String templatesRaw = getConfig("metadata.templates");
       String[] templates = templatesRaw.split(",");
       for (String templ : templates) {
@@ -104,6 +96,9 @@ public class AppProperties {
         Files.copy(ClassLoader.getSystemResourceAsStream("templates/" + schemaFileName),
           rodainPath.resolve("schemas").resolve(schemaFileName), StandardCopyOption.REPLACE_EXISTING);
       }
+
+      
+
       // ensure that the xlink.xsd and xml.xsd files are in the
       // application home
       // folder
@@ -142,6 +137,30 @@ public class AppProperties {
       helpBundle = ResourceBundle.getBundle("properties/help", locale, new FolderBasedUTF8Control());
       defaultResourceBundle = ResourceBundle.getBundle("properties/lang", Locale.ENGLISH, new FolderBasedUTF8Control());
       defaultHelpBundle = ResourceBundle.getBundle("properties/help", Locale.ENGLISH, new FolderBasedUTF8Control());
+      
+      if (!Files.exists(rodainPath.resolve("help"))) {
+        Path helpDir = rodainPath.resolve("help");
+        Files.createDirectory(helpDir);
+        
+        //URL url = ClassLoader.getSystemResource("help/");
+        URL url = AppProperties.class.getResource("help/");
+        if (url == null) {
+             // error - missing folder
+        } else {
+            File dir = new File(url.toURI());
+            for (File nextFile : dir.listFiles()) {
+              Files.copy(nextFile.toPath(), rodainPath.resolve("help/"+nextFile.getName()));
+            }
+        }
+        /*
+        String fileName = "help/help_" + getLocale().toString() + ".html";
+        InputStream helpFile = ClassLoader.getSystemResourceAsStream("help/help_" + getLocale().toString() + ".html");
+        if (helpFile == null) {
+          helpFile = ClassLoader.getSystemResourceAsStream("help/help.html");
+          fileName = "help/help.html";
+        }
+        Files.copy(helpFile, rodainPath.resolve(fileName));*/
+      }
     } catch (IOException e) {
       LOGGER.error("Error copying config file", e);
     } catch (MissingResourceException e) {
@@ -240,6 +259,15 @@ public class AppProperties {
       LOGGER.error("Error loading the config file", e);
     }
     return result;
+  }
+
+  public static String getHelpFile() {
+    Path helpFile = rodainPath.resolve("help/help_" + getLocale().toString() + ".html");
+    if (!Files.exists(helpFile)) {
+      helpFile = rodainPath.resolve("help/help.html");
+    }
+    System.out.println(helpFile.toString());
+    return "file://" + helpFile.toString();
   }
 
   /**
@@ -512,8 +540,8 @@ public class AppProperties {
       LOGGER.error("Error saving the app config file", e);
     }
   }
-  
-  public static URL getBuildProperties(){
+
+  public static URL getBuildProperties() {
     return ClassLoader.getSystemResource("build.properties");
   }
 }
