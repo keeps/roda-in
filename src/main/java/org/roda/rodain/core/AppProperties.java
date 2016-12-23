@@ -181,7 +181,7 @@ public class AppProperties {
         final Enumeration<JarEntry> entries = jar.entries();
         while (entries.hasMoreElements()) {
           JarEntry entry = entries.nextElement();
-          if (entry.getName().startsWith("help") && !entry.isDirectory()) {
+          if (entry.getName().startsWith("help/") && !entry.isDirectory()) {
             InputStream input = jar.getInputStream(entry);
             Files.copy(input, rodainPath.resolve(entry.getName()));
             input.close();
