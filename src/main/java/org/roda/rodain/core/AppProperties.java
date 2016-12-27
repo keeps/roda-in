@@ -294,7 +294,10 @@ public class AppProperties {
   public static String getHelpFile() {
     Path helpFile = rodainPath.resolve("help/help_" + getLocale().toString() + ".html");
     if (!Files.exists(helpFile)) {
-      helpFile = rodainPath.resolve("help/help.html");
+      helpFile = rodainPath.resolve("help/help_en.html");
+      if(!Files.exists(helpFile)){
+        helpFile = rodainPath.resolve("help/help.html");
+      }
     }
     return "file://" + helpFile.toString();
   }
