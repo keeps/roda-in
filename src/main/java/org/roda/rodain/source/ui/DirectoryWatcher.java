@@ -12,14 +12,18 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 
 import org.roda.rodain.core.PathCollection;
+import org.roda.rodain.creation.EarkSipCreator;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 29-08-2016.
  */
 public class DirectoryWatcher extends Thread {
+  private static final Logger LOGGER = LoggerFactory.getLogger(DirectoryWatcher.class.getName());
 
   @Override
   public void run() {

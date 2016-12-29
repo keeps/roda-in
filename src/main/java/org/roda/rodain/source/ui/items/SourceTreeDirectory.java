@@ -25,6 +25,7 @@ import org.roda.rodain.source.representation.SourceDirectory;
 import org.roda.rodain.source.representation.SourceItem;
 import org.roda.rodain.source.ui.ExpandedEventHandler;
 import org.roda.rodain.source.ui.FileExplorerPane;
+import org.roda.rodain.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -535,26 +536,31 @@ public class SourceTreeDirectory extends SourceTreeItem {
       item = new SourceTreeDirectory(sourcePath, directory.getChildDirectory(sourcePath), newState, this);
     } else
       item = new SourceTreeFile(sourcePath, newState, this);
-
-    switch (newState) {
-      case IGNORED:
-        addChildIgnored(children, item);
-        break;
-      case MAPPED:
-        addChildMapped(children, item);
-        break;
-      case NORMAL:
-        if (item instanceof SourceTreeFile)
-          if (FileExplorerPane.isShowFiles())
-            children.add(item);
-          else
-            files.add((SourceTreeFile) item);
-        else
-          children.add(item);
-        break;
-      default:
+    
+    if(!Utils.containsAtLeastOneNotIgnoredFile(sourcePath)){
+      item = null;
     }
-    PathCollection.addItem(item);
+    if(item!=null){
+      switch (newState) {
+        case IGNORED:
+          addChildIgnored(children, item);
+          break;
+        case MAPPED:
+          addChildMapped(children, item);
+          break;
+        case NORMAL:
+          if (item instanceof SourceTreeFile)
+            if (FileExplorerPane.isShowFiles())
+              children.add(item);
+            else
+              files.add((SourceTreeFile) item);
+          else
+            children.add(item);
+          break;
+        default:
+      }
+      PathCollection.addItem(item);
+    }
   }
 
   public synchronized void addChild(String sourceItem){
