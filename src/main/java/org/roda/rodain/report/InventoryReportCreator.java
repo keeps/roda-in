@@ -99,7 +99,7 @@ public class InventoryReportCreator {
           line.add(Long.toString(size));
           lines.add(line);
         } catch (IOException e) {
-          LOGGER.debug("Error calculating file size", e);
+          // LOGGER.debug("Error calculating file size", e);
         }
       }
     }

@@ -255,9 +255,17 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
       }
     }
 
+    String fileLevelItem = AppProperties.getConfig("metadata." + templateType + ".fileLevel");
+    sipPreview.setDescriptionlevel(fileLevelItem);
+    
     sips.add(sipPreview);
     sipsMap.put(sipPreview.getId(), sipPreview);
     added++;
+    
+    
+    
+    
+    
     return sipPreview;
   }
 

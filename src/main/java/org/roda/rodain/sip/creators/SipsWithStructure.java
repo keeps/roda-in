@@ -238,10 +238,6 @@ public class SipsWithStructure extends SipPreviewCreator {
   private void createSip(TreeNode node) {
     Path path = node.getPath();
     SipPreview sipPreview = createSip(path, node);
-
-    String fileLevelItem = AppProperties.getConfig("metadata." + templateType + ".fileLevel");
-    sipPreview.setDescriptionlevel(fileLevelItem);
-
     sipPreviewMap.put(path, sipPreview);
   }
 
