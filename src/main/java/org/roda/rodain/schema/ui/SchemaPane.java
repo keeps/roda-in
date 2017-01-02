@@ -283,7 +283,25 @@ public class SchemaPane extends BorderPane {
             sits.createAndUpdateFooter();
           } else {
             // more than one item is selected
-            RodaIn.getInspectionPane().update(selectedItems);
+            String multipleEditMax = AppProperties.getAppConfig("app.multipleEdit.max");
+            int multipleEditMaxInt = 100;
+            if(multipleEditMax!=null){
+              multipleEditMaxInt = Integer.parseInt(multipleEditMax);
+            }
+            if(selectedItems.size()<multipleEditMaxInt){
+              RodaIn.getInspectionPane().update(selectedItems);
+            }else{
+              RodaIn.getInspectionPane().resetTop();
+              RodaIn.getInspectionPane().setCenter(new HBox());
+              Alert dlg = new Alert(Alert.AlertType.WARNING);
+              dlg.initStyle(StageStyle.UNDECORATED);
+              dlg.setHeaderText(I18n.t("SchemaPane.tooManySelected.header"));
+              dlg.setTitle(I18n.t("SchemaPane.tooManySelected.title"));
+              dlg.setContentText(I18n.t("SchemaPane.tooManySelected.content"));
+              dlg.initModality(Modality.APPLICATION_MODAL);
+              dlg.initOwner(primaryStage);
+              dlg.show();
+            }
           }
         } else
           Footer.setClassPlanStatus("");

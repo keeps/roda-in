@@ -217,6 +217,11 @@ public class InspectionPane extends BorderPane {
       Tooltip.install(topBox, new Tooltip(I18n.help("tooltip.inspectionPanel")));
     }
   }
+  
+  public void resetTop(){
+    createTop();
+    setTop(topBox);
+  }
 
   private void createMetadata() {
     metadata = new VBox();
