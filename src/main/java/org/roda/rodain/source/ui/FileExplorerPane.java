@@ -189,7 +189,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
       dummyRoot.getChildren().remove(selectedItem);
       realRoots.remove(selectedItem.getPath());
       if (realRoots.isEmpty()) {
-        this.setTop(new HBox());
+        this.setTop(top);
         this.setCenter(centerHelp);
         this.setBottom(new HBox());
         ignoreAndRemoveBox.getChildren().remove(removeTopFolder);
