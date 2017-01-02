@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
@@ -282,11 +283,14 @@ public class Rule extends Observable implements Observer, Comparable {
         sipNodes.remove(sip.getId());
         sips.remove(sip.getId());
         setChanged();
-
-        schemaNodes.forEach(schemaNode -> {
-          if (schemaNode.isRemoved())
-            schemaNodes.remove(schemaNode);
-        });
+        
+        Iterator<SchemaNode> iter = schemaNodes.iterator();
+        while (iter.hasNext()) {
+          if(iter.next().isRemoved()){
+            iter.remove();
+          }
+        }
+        
         if (sips.isEmpty() && schemaNodes.isEmpty()) {
           notifyObservers("Removed rule");
         } else
