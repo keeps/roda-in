@@ -271,6 +271,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
     // first start the modal to give feedback to the user
     for (SipPreview sipPreview : allSips.keySet()) {
       RuleModalController.removeSipPreview(sipPreview);
+      sipPreview.removeSIP();
     }
 
     // then we start the remove process
@@ -296,11 +297,11 @@ public class SchemaNode extends TreeItem<String> implements Observer {
       removeRule(r);
     }
     
-    if(schemaNodes!=null){
+    /*if(schemaNodes!=null){
       for(SchemaNode node : schemaNodes){
         node.remove();
       }
-    }
+    }*/
     
     sips.clear();
     schemaNodes.clear();
