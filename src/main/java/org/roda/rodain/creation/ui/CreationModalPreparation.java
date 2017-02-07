@@ -187,6 +187,7 @@ public class CreationModalPreparation extends BorderPane {
 
     Label outputFolderLabel = new Label(I18n.t("CreationModalPreparation.outputDirectory"));
     Button chooseFile = new Button(I18n.t("CreationModalPreparation.choose"));
+    chooseFile.setMnemonicParsing(false);
     chooseFile.setMinWidth(DEFAULT_WIDTH);
     chooseFile.setOnAction(new EventHandler<ActionEvent>() {
       @Override
