@@ -212,9 +212,12 @@ public class RuleModalPane extends BorderPane {
         cellSipPerFile.setDisable(true);
       }
     }
-    if (fileCount != 0) {
+    /*
+     * If there is some files selected, block the classification scheme option
+     if (fileCount != 0) {
       cellStructure.setDisable(true);
     }
+    */
 
     boxAssociation.getChildren().addAll(subtitleBox, assocList);
   }
