@@ -70,6 +70,7 @@ import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
@@ -1593,6 +1594,7 @@ public class InspectionPane extends BorderPane {
     topTypeLabel = new Label();
     topTypeLabel.setWrapText(true);
     topTypeLabel.getStyleClass().add("top-subtitle");
+    topTypeLabel.setMinWidth(60);
 
     PopOver editPopOver = new PopOver();
     editPopOver.setDetachable(false);
@@ -1667,6 +1669,8 @@ public class InspectionPane extends BorderPane {
     topTypeLabel = new Label();
     topTypeLabel.setWrapText(true);
     topTypeLabel.getStyleClass().add("top-subtitle");
+    topTypeLabel.setMinWidth(60);
+
 
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
@@ -1812,6 +1816,8 @@ public class InspectionPane extends BorderPane {
     topTypeLabel = new Label();
     topTypeLabel.setWrapText(true);
     topTypeLabel.getStyleClass().add("top-subtitle");
+    topTypeLabel.setMinWidth(60);
+
 
     PopOver editPopOver = new PopOver();
     editPopOver.setDetachable(false);
