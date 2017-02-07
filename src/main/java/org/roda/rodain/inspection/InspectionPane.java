@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -781,7 +782,14 @@ public class InspectionPane extends BorderPane {
     LocalDateStringConverter ldsc = new LocalDateStringConverter(formatter, null);
 
     String currentValue = metadataValue.get("value") != null ? (String) metadataValue.get("value") : "";
-    DatePicker datePicker = new DatePicker(ldsc.fromString(currentValue));
+    
+    LocalDate date = null;
+    try{
+      date = ldsc.fromString(currentValue);
+    }catch(DateTimeParseException e){
+      // maybe because of {{mixed}}
+    }
+    DatePicker datePicker = new DatePicker(date);
     datePicker.setMaxWidth(Double.MAX_VALUE);
     datePicker.setConverter(new StringConverter<LocalDate>() {
       private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern);
