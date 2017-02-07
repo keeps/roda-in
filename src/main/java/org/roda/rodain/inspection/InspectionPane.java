@@ -1594,7 +1594,6 @@ public class InspectionPane extends BorderPane {
     topTypeLabel = new Label();
     topTypeLabel.setWrapText(true);
     topTypeLabel.getStyleClass().add("top-subtitle");
-    topTypeLabel.setMinWidth(60);
 
     PopOver editPopOver = new PopOver();
     editPopOver.setDetachable(false);
@@ -1669,7 +1668,6 @@ public class InspectionPane extends BorderPane {
     topTypeLabel = new Label();
     topTypeLabel.setWrapText(true);
     topTypeLabel.getStyleClass().add("top-subtitle");
-    topTypeLabel.setMinWidth(60);
 
 
     HBox space = new HBox();
@@ -1816,7 +1814,6 @@ public class InspectionPane extends BorderPane {
     topTypeLabel = new Label();
     topTypeLabel.setWrapText(true);
     topTypeLabel.getStyleClass().add("top-subtitle");
-    topTypeLabel.setMinWidth(60);
 
 
     PopOver editPopOver = new PopOver();

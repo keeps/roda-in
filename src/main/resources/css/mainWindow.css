@@ -7,6 +7,7 @@
 .top-subtitle {
     -fx-font-size: medium;
     -fx-text-fill: white;
+    -fx-min-width: 60;
 }
 
 .title-box {
