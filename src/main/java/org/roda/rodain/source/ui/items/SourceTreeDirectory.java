@@ -5,10 +5,13 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.WatchKey;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -526,7 +529,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
     SourceTreeItemState newState = PathCollection.getState(Paths.get(sourceItem));
     Path sourceItemPath = Paths.get(sourceItem);
     boolean ignored = IgnoredFilter.isIgnored(sourceItemPath);
-    if (ignored){
+    if (ignored) {
       newState = SourceTreeItemState.IGNORED;
     }
 
@@ -536,11 +539,11 @@ public class SourceTreeDirectory extends SourceTreeItem {
       item = new SourceTreeDirectory(sourcePath, directory.getChildDirectory(sourcePath), newState, this);
     } else
       item = new SourceTreeFile(sourcePath, newState, this);
-    
-    if(!Utils.containsAtLeastOneNotIgnoredFile(sourcePath)){
+
+    if (!Utils.containsAtLeastOneNotIgnoredFile(sourcePath)) {
       item = null;
     }
-    if(item!=null){
+    if (item != null) {
       switch (newState) {
         case IGNORED:
           addChildIgnored(children, item);
@@ -563,7 +566,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
     }
   }
 
-  public synchronized void addChild(String sourceItem){
+  public synchronized void addChild(String sourceItem) {
     final ArrayList<TreeItem<String>> children = new ArrayList<>(getChildren());
 
     directory.loadChild(Paths.get(sourceItem));
@@ -593,7 +596,7 @@ public class SourceTreeDirectory extends SourceTreeItem {
       mapped.add(item);
   }
 
-  public synchronized void removeChild(SourceTreeItem item){
+  public synchronized void removeChild(SourceTreeItem item) {
     getChildren().remove(item);
     mapped.remove(item);
     ignored.remove(item);
@@ -668,10 +671,17 @@ public class SourceTreeDirectory extends SourceTreeItem {
     });
   }
 
-  private void addToWatcher(){
+  private void addToWatcher() {
     try {
-      if(watchKey == null) {
+      if (watchKey == null) {
         watchKey = directory.getPath().register(FileExplorerPane.watcher, ENTRY_CREATE, ENTRY_DELETE);
+        Files.walkFileTree(directory.getPath(), new SimpleFileVisitor<Path>() {
+          @Override
+          public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+            dir.register(FileExplorerPane.watcher, ENTRY_CREATE, ENTRY_DELETE);
+            return FileVisitResult.CONTINUE;
+          }
+        });
       }
     } catch (IOException e) {
       LOGGER.warn("Can't register path to watcher. Will be unable to update the directory: " + directory.getPath(), e);

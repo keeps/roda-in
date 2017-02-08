@@ -10,9 +10,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
+import java.util.List;
+import java.util.Map;
 
 import org.roda.rodain.core.PathCollection;
+import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.creation.EarkSipCreator;
+import org.roda.rodain.rules.TreeNode;
+import org.roda.rodain.schema.DescriptionObject;
+import org.roda.rodain.sip.SipPreview;
+import org.roda.rodain.sip.SipRepresentation;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
 import org.roda.rodain.source.ui.items.SourceTreeItemState;
@@ -63,14 +70,61 @@ public class DirectoryWatcher extends Thread {
         if(sourceTreeItem instanceof SourceTreeDirectory){
           SourceTreeDirectory directory = ((SourceTreeDirectory) sourceTreeItem);
           if(kind == ENTRY_CREATE) {
+            LOGGER.error("CREATE "+fullPath);
             directory.addChild(fullPath);
             PathCollection.addPath(watchedPath.resolve(filename), SourceTreeItemState.NORMAL);
           }else if(kind == ENTRY_DELETE){
+            LOGGER.error("DELETE "+fullPath);
             SourceTreeItem itemToDelete = PathCollection.getItem(Paths.get(fullPath));
-            if(itemToDelete != null) {
+            if(itemToDelete==null){     //file
+              Map<DescriptionObject,List<String>> dos = RodaIn.getAllDescriptionObjects();
+              boolean match = false;
+              for(Map.Entry<DescriptionObject, List<String>> entry : dos.entrySet()){
+                DescriptionObject descriptionObject = entry.getKey();
+                if (descriptionObject instanceof SipPreview) {
+                  SipPreview sip = (SipPreview) descriptionObject;
+                  for (SipRepresentation sr : sip.getRepresentations()) {
+                    if(sr.getFiles()!=null){
+                      for(TreeNode t : sr.getFiles()){
+                        if(t.getPath()!=null){
+                          if(t.getPath().toString().equalsIgnoreCase(fullPath)){
+                            sr.remove(t.getPath());
+                            if(sr.getFiles().size()==0){
+                              sip.removeRepresentation(sr);
+                            }
+                            match = true;
+                            break;
+                          }
+                        }
+                        
+                      }
+                      if(match){
+                        break;
+                      }
+                    }
+                  }
+                }
+                if(match){
+                  break;
+                }
+              }
+            }else{
+             /*
+              if(itemToDelete.getState()==SourceTreeItemState.MAPPED){
+                Map<DescriptionObject,List<String>> dos = RodaIn.getAllDescriptionObjects();
+                for(Map.Entry<DescriptionObject, List<String>> entry : dos.entrySet()){
+                  LOGGER.error("----------------------------");
+                  LOGGER.error(entry.getKey().getTitle());
+                  LOGGER.error("----------------------------");
+                }
+              }
+              */
               directory.removeChild(itemToDelete);
+              
             }
             PathCollection.removePathAndItem(Paths.get(fullPath));
+          }else{
+            LOGGER.error(kind.toString()+" "+fullPath);
           }
         }
       }
