@@ -130,12 +130,6 @@ public class DescObjMetadata {
   }
 
   public String getTemplateType() {
-    /*if(templateType==null){
-      LOGGER.error("NO TEMPLATE FOR "+this.toString());
-      String fake = (metadataType+metadataVersion).replaceAll("-", "");
-      LOGGER.error("USING FAKE: "+fake);
-      return fake.toLowerCase();
-    }*/
     return templateType;
   }
 

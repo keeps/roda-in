@@ -70,11 +70,11 @@ public class DirectoryWatcher extends Thread {
         if(sourceTreeItem instanceof SourceTreeDirectory){
           SourceTreeDirectory directory = ((SourceTreeDirectory) sourceTreeItem);
           if(kind == ENTRY_CREATE) {
-            LOGGER.error("CREATE "+fullPath);
+            LOGGER.debug("CREATE "+fullPath);
             directory.addChild(fullPath);
             PathCollection.addPath(watchedPath.resolve(filename), SourceTreeItemState.NORMAL);
           }else if(kind == ENTRY_DELETE){
-            LOGGER.error("DELETE "+fullPath);
+            LOGGER.debug("DELETE "+fullPath);
             SourceTreeItem itemToDelete = PathCollection.getItem(Paths.get(fullPath));
             if(itemToDelete==null){     //file
               Map<DescriptionObject,List<String>> dos = RodaIn.getAllDescriptionObjects();
@@ -109,16 +109,8 @@ public class DirectoryWatcher extends Thread {
                 }
               }
             }else{
-             /*
-              if(itemToDelete.getState()==SourceTreeItemState.MAPPED){
-                Map<DescriptionObject,List<String>> dos = RodaIn.getAllDescriptionObjects();
-                for(Map.Entry<DescriptionObject, List<String>> entry : dos.entrySet()){
-                  LOGGER.error("----------------------------");
-                  LOGGER.error(entry.getKey().getTitle());
-                  LOGGER.error("----------------------------");
-                }
-              }
-              */
+              //TODO support folder removing when mapped...
+             
               directory.removeChild(itemToDelete);
               
             }
