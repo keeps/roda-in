@@ -15,6 +15,7 @@ import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.creation.EarkSipCreator;
 import org.roda.rodain.source.ui.items.SourceTreeDirectory;
 import org.roda.rodain.source.ui.items.SourceTreeItem;
+import org.roda.rodain.source.ui.items.SourceTreeItemState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,6 +64,7 @@ public class DirectoryWatcher extends Thread {
           SourceTreeDirectory directory = ((SourceTreeDirectory) sourceTreeItem);
           if(kind == ENTRY_CREATE) {
             directory.addChild(fullPath);
+            PathCollection.addPath(watchedPath.resolve(filename), SourceTreeItemState.NORMAL);
           }else if(kind == ENTRY_DELETE){
             SourceTreeItem itemToDelete = PathCollection.getItem(Paths.get(fullPath));
             if(itemToDelete != null) {
