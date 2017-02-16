@@ -268,7 +268,7 @@ public class Utils {
   public static boolean containsAtLeastOneNotIgnoredFile(Path path) {
     boolean res = true;
     try {
-      if (path==null || path.toFile().listFiles().length == 0) {
+      if (path==null || !Files.isDirectory(path) || path.toFile().listFiles().length == 0) {
         res = false;
       } else {
         //TODO FIX!!!!!!!!!!!!!!!!!!!!!!!

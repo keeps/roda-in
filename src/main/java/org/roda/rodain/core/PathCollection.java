@@ -191,6 +191,13 @@ public class PathCollection {
     return result;
   }
 
+  public static SourceTreeItemState getStateWithoutFallback(Path path) {
+    SourceTreeItemState result = null;
+    if (states.containsKey(path))
+      result = states.get(path);
+    return result;
+  }
+  
   private static SourceTreeItemState getStateWithoutAddingParents(Path path){
     SourceTreeItemState result = SourceTreeItemState.NORMAL;
     if (states.containsKey(path))

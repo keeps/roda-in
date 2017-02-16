@@ -598,7 +598,6 @@ public class RodaIn extends Application {
 
   private static void closeApp() {
     exportCS(AppProperties.getRodainPath().resolve(".plan.temp").toString());
-    fileExplorer.closeWatcher();
     VisitorStack.end();
     Footer.getInstance().cancelMemoryAutoUpdater();
     Platform.exit();

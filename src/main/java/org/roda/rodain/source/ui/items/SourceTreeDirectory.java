@@ -488,7 +488,6 @@ public class SourceTreeDirectory extends SourceTreeItem {
    */
   public synchronized void loadMore() {
     final ArrayList<TreeItem<String>> children = new ArrayList<>(getChildren());
-    addToWatcher();
 
     // Remove "loading" items
     List<Object> toRemove = children.stream()
@@ -669,22 +668,5 @@ public class SourceTreeDirectory extends SourceTreeItem {
       if (!toRemove.isEmpty() || modified)
         sortChildren();
     });
-  }
-
-  private void addToWatcher() {
-    try {
-      if (watchKey == null) {
-        watchKey = directory.getPath().register(FileExplorerPane.watcher, ENTRY_CREATE, ENTRY_DELETE);
-        Files.walkFileTree(directory.getPath(), new SimpleFileVisitor<Path>() {
-          @Override
-          public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-            dir.register(FileExplorerPane.watcher, ENTRY_CREATE, ENTRY_DELETE);
-            return FileVisitResult.CONTINUE;
-          }
-        });
-      }
-    } catch (IOException e) {
-      LOGGER.warn("Can't register path to watcher. Will be unable to update the directory: " + directory.getPath(), e);
-    }
   }
 }

@@ -63,15 +63,14 @@ import javafx.stage.StageStyle;
  */
 public class FileExplorerPane extends BorderPane implements Observer {
   private static final Logger LOGGER = LoggerFactory.getLogger(FileExplorerPane.class.getName());
-  public static final WatchService watcher = createWatcher();
   private Stage stage;
   private HBox top;
   private StackPane fileExplorer;
   private TreeView<String> treeView;
   private HBox bottom;
   private VBox centerHelp;
-  private Button ignore, removeTopFolder;
-  private HBox ignoreAndRemoveBox;
+  private Button ignore, removeTopFolder, refresh;
+  private HBox ignoreAndRemoveAndRefreshBox;
 
   private SourceTreeDirectory dummyRoot;
   private Map<String, SourceTreeDirectory> realRoots;
@@ -79,7 +78,6 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
   // Threads
   private ComputeDirectorySize computeSize;
-  private static DirectoryWatcher directoryWatcher;
 
   // Filter control
   private static boolean showFiles = true;
@@ -142,7 +140,15 @@ public class FileExplorerPane extends BorderPane implements Observer {
     top.getStyleClass().add("title-box");
     top.setAlignment(Pos.CENTER_LEFT);
     top.setPadding(new Insets(15, 15, 15, 15));
-    top.getChildren().add(title);
+    
+    refresh = new Button(I18n.t("refresh"));
+    refresh.setId("bt_refresh");
+    refresh.setMinWidth(100);
+    refresh.setOnAction(event -> {
+      refresh();
+    });
+    
+    top.getChildren().addAll(title,refresh);
 
     if (Boolean.parseBoolean(AppProperties.getAppConfig("app.helpEnabled"))) {
       Tooltip.install(top, new Tooltip(I18n.help("tooltip.fileExplorer")));
@@ -192,12 +198,14 @@ public class FileExplorerPane extends BorderPane implements Observer {
         this.setTop(top);
         this.setCenter(centerHelp);
         this.setBottom(new HBox());
-        ignoreAndRemoveBox.getChildren().remove(removeTopFolder);
+        ignoreAndRemoveAndRefreshBox.getChildren().remove(removeTopFolder);
       }
     });
 
-    ignoreAndRemoveBox = new HBox(10);
-    ignoreAndRemoveBox.getChildren().addAll(ignore);
+    
+    
+    ignoreAndRemoveAndRefreshBox = new HBox(10);
+    ignoreAndRemoveAndRefreshBox.getChildren().addAll(ignore);
 
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
@@ -211,7 +219,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
       Tooltip.install(associate, new Tooltip(I18n.help("tooltip.associate")));
     }
 
-    bottom.getChildren().addAll(ignoreAndRemoveBox, space, associate);
+    bottom.getChildren().addAll(ignoreAndRemoveAndRefreshBox, space, associate);
   }
 
   private void createCenterHelp() {
@@ -506,6 +514,14 @@ public class FileExplorerPane extends BorderPane implements Observer {
     Set<SourceTreeItem> items = getSelectedItems();
     ignore(items);
   }
+  
+  //refresh the file explorer
+  public void refresh() {
+    if(realRoots!=null){
+      WalkFileTree wft = new WalkFileTree(realRoots.keySet(),new UpdateFolderTreeVisitor());
+      wft.run();
+    }
+  }
 
   public void toggleFilesShowing() {
     if (realRoots == null || realRoots.isEmpty())
@@ -569,11 +585,11 @@ public class FileExplorerPane extends BorderPane implements Observer {
    */
   public void rootSelected(boolean rootSelected) {
     if (rootSelected) {
-      if (!ignoreAndRemoveBox.getChildren().contains(removeTopFolder))
-        ignoreAndRemoveBox.getChildren().add(removeTopFolder);
+      if (!ignoreAndRemoveAndRefreshBox.getChildren().contains(removeTopFolder))
+        ignoreAndRemoveAndRefreshBox.getChildren().add(removeTopFolder);
     } else {
-      if (ignoreAndRemoveBox.getChildren().contains(removeTopFolder))
-        ignoreAndRemoveBox.getChildren().remove(removeTopFolder);
+      if (ignoreAndRemoveAndRefreshBox.getChildren().contains(removeTopFolder))
+        ignoreAndRemoveAndRefreshBox.getChildren().remove(removeTopFolder);
     }
   }
 
@@ -589,30 +605,6 @@ public class FileExplorerPane extends BorderPane implements Observer {
       ignore.setText(I18n.t("SourceTreeCell.remove"));
     } else {
       ignore.setText(I18n.t("ignore"));
-    }
-  }
-
-  private static WatchService createWatcher() {
-    WatchService watchService = null;
-    try {
-      watchService = FileSystems.getDefault().newWatchService();
-      directoryWatcher = new DirectoryWatcher();
-      directoryWatcher.start();
-    } catch (IOException e) {
-      LOGGER.warn(
-        "Can't create a WatchService. The application will be unable to update the files of the file explorer", e);
-    }
-    return watchService;
-  }
-
-  /**
-   * Calls the close() method to close the WatchService
-   */
-  public void closeWatcher() {
-    try {
-      watcher.close();
-    } catch (IOException e) {
-      LOGGER.debug("Error closing file explorer watcher", e);
     }
   }
 }
