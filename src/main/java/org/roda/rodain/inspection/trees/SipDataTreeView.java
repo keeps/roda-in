@@ -40,7 +40,7 @@ public class SipDataTreeView extends AutoscrollTreeView {
     getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     
     EventHandler<MouseEvent> mouseEventHandle = (MouseEvent event) -> {
-      if(getSelectionModel().getSelectedItem().getClass()==SipContentRepresentation.class){
+      if(getSelectionModel().getSelectedItem()!=null && getSelectionModel().getSelectedItem().getClass()==SipContentRepresentation.class){
         SipContentRepresentation scr = (SipContentRepresentation)getSelectionModel().getSelectedItem();
         RodaIn.getInspectionPane().setCurrentRepresentation(scr);
         RodaIn.getInspectionPane().showEditRepresentationTypeButton(scr);
