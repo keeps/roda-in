@@ -718,7 +718,7 @@ public class InspectionPane extends BorderPane {
         String currentValue = (String) metadataValue.get("value");
         if (currentValue != null && optionsMap.containsKey(currentValue)) {
           comboBox.getSelectionModel().select(optionsMap.get(currentValue));
-        } else {
+        } else if(!currentValue.trim().equalsIgnoreCase("")){
           UIPair other = new UIPair(currentValue, currentValue);
           comboBox.getItems().add(other);
           comboBox.getSelectionModel().select(other);
