@@ -214,7 +214,7 @@ public class Utils {
    */
   public static Date getCurrentVersionBuildDate() throws ConfigurationException {
     PropertiesConfiguration pc = new PropertiesConfiguration(AppProperties.getBuildProperties());
-    String dateRaw = pc.getString("git.build.time");
+    String dateRaw = pc.getString("git.commit.time");
     SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy '@' HH:mm:ss z");
     try {
       return sdf.parse(dateRaw);
@@ -234,7 +234,7 @@ public class Utils {
     URI uri = new URI(LATEST_VERSION_API);
     JSONTokener tokener = new JSONTokener(uri.toURL().openStream());
     JSONObject versionJSON = new JSONObject(tokener);
-    String dateRaw = versionJSON.getString("published_at");
+    String dateRaw = versionJSON.getString("created_at");
 
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
     try {
