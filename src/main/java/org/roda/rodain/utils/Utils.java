@@ -257,7 +257,7 @@ public class Utils {
         if (dm.getMetadataType() != null && dm.getMetadataType().equalsIgnoreCase(type)) {
           if (dm.getMetadataVersion() != null && dm.getMetadataVersion().equalsIgnoreCase(version)) {
             dm.setTemplateType(metaType);
-            dm.setCreatorOption(MetadataOptions.TEMPLATE);
+            //dm.setCreatorOption(MetadataOptions.TEMPLATE);
           }
         }
       }

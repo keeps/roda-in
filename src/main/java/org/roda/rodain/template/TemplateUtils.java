@@ -44,42 +44,7 @@ import net.sf.saxon.s9api.XdmValue;
 public class TemplateUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(TemplateUtils.class.getName());
 
-  public static Set<TemplateFieldValue> getTemplateFields(DescriptionObject dob, DescObjMetadata dom) {
-    String content = AppProperties.getTemplateContent(dom.getTemplateType());
-
-    if (content != null) {
-      TreeSet<TemplateFieldValue> values = getTemplateFields(dom);
-      values.forEach(metadataValue -> {
-        String autoGenerate = (String) metadataValue.get("auto-generate");
-        if (autoGenerate != null) {
-          autoGenerate = autoGenerate.toLowerCase();
-          switch (autoGenerate) {
-            case "title":
-              metadataValue.set("value", dob.getTitle());
-              break;
-            case "now":
-              metadataValue.set("value", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
-              break;
-            case "id":
-              metadataValue.set("value", dob.getId());
-              break;
-            case "level":
-              metadataValue.set("value", dob.getDescriptionlevel());
-              break;
-            case "parentid":
-              metadataValue.set("value", dob.getParentId());
-              break;
-            case "language":
-              metadataValue.set("value", Locale.getDefault().getDisplayLanguage());
-              break;
-          }
-        }
-      });
-      dom.setValues(values);
-      return values;
-    }
-    return null;
-  }
+  
 
   public static TreeSet<TemplateFieldValue> getTemplateFields(DescObjMetadata dom) {
     TreeSet<TemplateFieldValue> fields = new TreeSet<TemplateFieldValue>();
@@ -177,81 +142,6 @@ public class TemplateUtils {
       LOGGER.error("Error getting the MetadataValue list from the template", e);
     }
     return values;
-  }
-
-  public static String getXMLFromDescObject(DescriptionObject dob, DescObjMetadata dom) {
-    String content = dom.getContentDecoded();
-    if (content != null && dom.getCreatorOption() == MetadataOptions.TEMPLATE) {
-      try {
-        Handlebars handlebars = new Handlebars();
-        Map<String, String> data = new HashMap<>();
-        handlebars.registerHelper("field", (o, options) -> options.fn());
-        handlebars.registerHelper("ifCond", (context, options) -> {
-          // the first parameter of ifCond is placed in the context
-          // field by the
-          // parser
-          String condition = (context == null) ? "||" : context.toString();
-          List<Object> values = Arrays.asList(options.params);
-          boolean display;
-          if (condition.equals("||")) {
-            display = false;
-            for (Object value : values) {
-              if (value != null) {
-                display = true;
-                break;
-              }
-            }
-          } else if (condition.equals("&&")) {
-            display = true;
-            for (Object value : values) {
-              if (value == null) {
-                display = false;
-                break;
-              }
-            }
-          } else {
-            display = false;
-          }
-          return display ? options.fn() : options.inverse();
-        });
-        Template tmpl = handlebars.compileInline(content);
-
-        Set<TemplateFieldValue> values = TemplateUtils.getTemplateFields(dob, dom);
-        if (values != null) {
-          values.forEach(metadataValue -> {
-            if (metadataValue.get("value") != null && metadataValue.get("value") instanceof String) {
-              String val = (String) metadataValue.get("value");
-              if (val != null) {
-                val = val.replaceAll("\\s", "");
-                if (!"".equals(val)) {
-                  data.put((String) metadataValue.get("name"), (String) metadataValue.get("value"));
-                }
-              }
-            } else if (metadataValue.get("value") != null && metadataValue.get("value") instanceof UIPair) {
-              UIPair valPair = (UIPair) metadataValue.get("value");
-              if (valPair != null) {
-                String val = (String) valPair.getKey();
-                val = val.replaceAll("\\s", "");
-                if (!"".equals(val)) {
-                  data.put((String) metadataValue.get("name"), (String) valPair.getKey());
-                }
-              }
-            }
-
-          });
-        }
-        content = tmpl.apply(data);
-        content = Utils.indentXML(content);
-      } catch (IOException e) {
-        LOGGER.error("Error applying the values to the template", e);
-      }
-      // we need to clean the '\r' character in windows,
-      // otherwise the strings are different even if no modification has
-      // been
-      // made
-      content = content.replace("\r", "");
-    }
-    return content;
   }
 
   public static String getXMLFromTemplate(String templateContent) {

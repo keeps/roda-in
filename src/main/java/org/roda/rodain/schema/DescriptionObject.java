@@ -17,7 +17,6 @@ import org.roda.rodain.core.AppProperties;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.rules.MetadataOptions;
 import org.roda.rodain.template.TemplateFieldValue;
-import org.roda.rodain.template.TemplateUtils;
 import org.roda.rodain.utils.UIPair;
 import org.roda.rodain.utils.Utils;
 import org.roda_project.commons_ip.model.IPContentType;
@@ -39,7 +38,6 @@ public class DescriptionObject extends Observable {
   private Map<String, Object> additionalProperties = new TreeMap<>();
   private boolean isUpdateSIP = false;
   private String type;
-
 
   public DescriptionObject() {
     title = I18n.t("root");
@@ -229,14 +227,14 @@ public class DescriptionObject extends Observable {
   @JsonIgnore
   public Set<TemplateFieldValue> getMetadataValueMap(DescObjMetadata dom) {
     String content = AppProperties.getTemplateContent(dom.getTemplateType());
-    if(dom.getValues()==null){
+    if (dom.getValues() == null) {
       dom.initializeValues();
     }
     if (content != null) {
       Set<TemplateFieldValue> values = dom.getValues();
       values.forEach(metadataValue -> {
         String autoGenerate = (String) metadataValue.get("auto-generate");
-        if (autoGenerate != null) {
+        if (autoGenerate != null && isEmptyMetadataValue(metadataValue.get("value")) ) {
           autoGenerate = autoGenerate.toLowerCase();
           switch (autoGenerate) {
             case "title":
@@ -263,6 +261,21 @@ public class DescriptionObject extends Observable {
       return values;
     }
     return null;
+  }
+
+  private boolean isEmptyMetadataValue(Object value) {
+    boolean isEmpty = false;
+    
+    if(value==null){
+      isEmpty = true;
+    }else if(value instanceof String){
+      if(((String) value).trim().equalsIgnoreCase("")){
+        isEmpty = true;
+      }
+    }else{
+      LOGGER.error("Unknown data type: "+value.getClass().toString());
+    }
+    return isEmpty;
   }
 
   public void updatedMetadata(DescObjMetadata dom) {
@@ -358,8 +371,5 @@ public class DescriptionObject extends Observable {
   public void setType(String type) {
     this.type = type;
   }
-  
-  
-  
 
 }
