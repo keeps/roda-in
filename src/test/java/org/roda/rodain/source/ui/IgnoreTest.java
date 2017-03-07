@@ -4,14 +4,16 @@ import java.nio.file.Path;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.roda.rodain.core.Constants.PathState;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.PathCollection;
-import org.roda.rodain.core.RodaIn;
 import org.roda.rodain.core.Utils;
-import org.roda.rodain.source.ui.items.SourceTreeDirectory;
-import org.roda.rodain.source.ui.items.SourceTreeFile;
-import org.roda.rodain.source.ui.items.SourceTreeItemState;
+import org.roda.rodain.ui.RodaInApplication;
+import org.roda.rodain.ui.source.FileExplorerPane;
+import org.roda.rodain.ui.source.items.SourceTreeDirectory;
+import org.roda.rodain.ui.source.items.SourceTreeFile;
 import org.testfx.framework.junit.ApplicationTest;
 
 import javafx.application.Platform;
@@ -25,6 +27,7 @@ import javafx.stage.Stage;
  * @author Andre Pereira apereira@keep.pt
  * @since 15-12-2015.
  */
+@Ignore
 public class IgnoreTest extends ApplicationTest {
   private static Path testDir;
   private FileExplorerPane fileExplorer;
@@ -33,12 +36,12 @@ public class IgnoreTest extends ApplicationTest {
   @Override
   public void start(Stage stage) throws Exception {
     this.stage = stage;
-    RodaIn main = new RodaIn();
+    RodaInApplication main = new RodaInApplication();
     main.start(stage);
 
     sleep(5000);
 
-    fileExplorer = RodaIn.getFileExplorer();
+    fileExplorer = RodaInApplication.getFileExplorer();
     fileExplorer.setFileExplorerRoot(testDir);
   }
 
@@ -71,7 +74,7 @@ public class IgnoreTest extends ApplicationTest {
     SourceTreeDirectory dir4 = (SourceTreeDirectory) root.getChildren().get(3);
 
     clickOn("#bt_ignore");
-    assert dir4.getState() == SourceTreeItemState.IGNORED;
+    assert dir4.getState() == PathState.IGNORED;
     assert root.getChildren().size() == 3;
     assert root.getChildren().get(2) != dir4;
 
@@ -82,7 +85,7 @@ public class IgnoreTest extends ApplicationTest {
 
     doubleClickOn(dir4.getValue());
     SourceTreeDirectory dirA = (SourceTreeDirectory) dir4.getChildren().get(0);
-    assert dirA.getState() == SourceTreeItemState.IGNORED;
+    assert dirA.getState() == PathState.IGNORED;
     sleep(1000);
 
     if (!dirA.isExpanded())
@@ -91,39 +94,39 @@ public class IgnoreTest extends ApplicationTest {
     SourceTreeDirectory dirAA = (SourceTreeDirectory) dirA.getChildren().get(0);
     dirAA.removeIgnore();
     sleep(1000);
-    assert dirAA.getState() == SourceTreeItemState.NORMAL;
+    assert dirAA.getState() == PathState.NORMAL;
     if (dirAA.isExpanded())
       doubleClickOn("dirAA");
 
     SourceTreeDirectory dirAB = (SourceTreeDirectory) dirA.getChildren().get(1);
     dirAB.removeIgnore();
     sleep(1000);
-    assert dirAB.getState() == SourceTreeItemState.NORMAL;
+    assert dirAB.getState() == PathState.NORMAL;
 
     if (!dirAB.isExpanded())
       doubleClickOn("dirAB");
     sleep(1000);
     SourceTreeFile file1AB = (SourceTreeFile) dirAB.getChildren().get(0);
-    assert file1AB.getState() == SourceTreeItemState.NORMAL;
+    assert file1AB.getState() == PathState.NORMAL;
 
-    assert dirA.getState() == SourceTreeItemState.NORMAL;
-    assert dir4.getState() == SourceTreeItemState.NORMAL;
+    assert dirA.getState() == PathState.NORMAL;
+    assert dir4.getState() == PathState.NORMAL;
 
     SourceTreeDirectory dirB = (SourceTreeDirectory) dir4.getChildren().get(1);
-    assert dirB.getState() == SourceTreeItemState.IGNORED;
+    assert dirB.getState() == PathState.IGNORED;
     SourceTreeFile fileA = (SourceTreeFile) dir4.getChildren().get(2);
-    assert fileA.getState() == SourceTreeItemState.IGNORED;
+    assert fileA.getState() == PathState.IGNORED;
 
     clickOn("dir4");
     clickOn(I18n.t("ignore"));
-    assert dir4.getState() == SourceTreeItemState.IGNORED;
-    assert fileA.getState() == SourceTreeItemState.IGNORED;
-    assert dirA.getState() == SourceTreeItemState.IGNORED;
-    assert dirAB.getState() == SourceTreeItemState.IGNORED;
+    assert dir4.getState() == PathState.IGNORED;
+    assert fileA.getState() == PathState.IGNORED;
+    assert dirA.getState() == PathState.IGNORED;
+    assert dirAB.getState() == PathState.IGNORED;
 
     dir4.removeIgnore();
     sleep(1000);
-    assert dir4.getState() == SourceTreeItemState.NORMAL;
-    assert fileA.getState() == SourceTreeItemState.NORMAL;
+    assert dir4.getState() == PathState.NORMAL;
+    assert fileA.getState() == PathState.NORMAL;
   }
 }

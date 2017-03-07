@@ -1,28 +1,32 @@
 package org.roda.rodain.source.ui;
 
-import javafx.application.Platform;
-import javafx.scene.control.TreeItem;
-import javafx.scene.input.KeyCode;
-import javafx.stage.Stage;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.roda.rodain.core.PathCollection;
-import org.roda.rodain.core.RodaIn;
-import org.roda.rodain.core.Utils;
-import org.roda.rodain.source.ui.items.SourceTreeDirectory;
-import org.roda.rodain.source.ui.items.SourceTreeFile;
-import org.testfx.framework.junit.ApplicationTest;
-
 import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.roda.rodain.core.PathCollection;
+import org.roda.rodain.core.Utils;
+import org.roda.rodain.ui.RodaInApplication;
+import org.roda.rodain.ui.source.FileExplorerPane;
+import org.roda.rodain.ui.source.items.SourceTreeDirectory;
+import org.roda.rodain.ui.source.items.SourceTreeFile;
+import org.testfx.framework.junit.ApplicationTest;
+
+import javafx.application.Platform;
+import javafx.scene.control.TreeItem;
+import javafx.scene.input.KeyCode;
+import javafx.stage.Stage;
+
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 14-12-2015.
  */
+@Ignore
 public class FileExplorerPaneTest extends ApplicationTest {
   private static int LOAD_MORE_SIZE = 100;
   private static Path testDir;
@@ -32,12 +36,12 @@ public class FileExplorerPaneTest extends ApplicationTest {
   @Override
   public void start(Stage stage) throws Exception {
     this.stage = stage;
-    RodaIn main = new RodaIn();
+    RodaInApplication main = new RodaInApplication();
     main.start(stage);
 
     sleep(5000);
 
-    fileExplorer = RodaIn.getFileExplorer();
+    fileExplorer = RodaInApplication.getFileExplorer();
     fileExplorer.setFileExplorerRoot(testDir);
     sleep(5000);
   }

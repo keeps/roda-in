@@ -1,63 +1,78 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration debug="false">
-    <property name="LOG_PATH" value="${roda-in-log-path:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}}"/>
-    <!--Suppress logback's initial debug output-->
-    <statusListener class="ch.qos.logback.core.status.NopStatusListener"/>
 
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>warn</level>
-        </filter>
-    </appender>
+	<property name="LOG_PATH"
+		value="${rodain.log:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}}" />
+	<!--Suppress logback's initial debug output -->
+	<statusListener class="ch.qos.logback.core.status.NopStatusListener" />
 
-    <appender name="LOGFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_PATH}/roda-in.log</file>
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <Pattern>
-                %d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n
-            </Pattern>
-        </encoder>
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>warn</level>
+		</filter>
+	</appender>
 
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- rollover daily -->
-            <fileNamePattern>${LOG_PATH}/Log archive/log.%d{yyyy-MM-dd}.%i.log
-            </fileNamePattern>
-            <timeBasedFileNamingAndTriggeringPolicy
-                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>10MB</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
-        </rollingPolicy>
+	<appender name="LOGFILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_PATH}/roda-in.log</file>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>
+				%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n
+			</Pattern>
+		</encoder>
 
-    </appender>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- rollover daily -->
+			<fileNamePattern>${LOG_PATH}/Log archive/log.%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>10MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
 
-    <logger name="debugToConsole" level="trace" additivity="false">
-        <appender-ref ref="STDOUT"/>
-    </logger>
+	</appender>
 
-    <logger name="logToFile" level="error" additivity="false">
-        <appender-ref ref="LOGFILE"/>
-    </logger>
+	<logger name="debugToConsole" level="trace" additivity="false">
+		<appender-ref ref="STDOUT" />
+	</logger>
 
-    <logger name="org.apache.commons.configuration.PropertiesConfiguration" additivity="false">
-        <appender-ref ref="LOGFILE"/>
-    </logger>
+	<logger name="logToFile" level="error" additivity="false">
+		<appender-ref ref="LOGFILE" />
+	</logger>
 
-    <logger name="gov.loc.repository.bagit" additivity="false">
-        <level value="WARN"/>
-        <appender-ref ref="LOGFILE"/>
-    </logger>
+	<logger name="org.apache.commons.configuration.PropertiesConfiguration"
+		additivity="false">
+		<appender-ref ref="LOGFILE" />
+	</logger>
 
-    <logger name="org.roda_project.commons_ip" additivity="false">
-        <level value="WARN"/>
-        <appender-ref ref="LOGFILE"/>
-    </logger>
+	<logger name="gov.loc.repository.bagit" additivity="false">
+		<level value="WARN" />
+		<appender-ref ref="LOGFILE" />
+	</logger>
 
-    <root level="trace">
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="LOGFILE"/>
-    </root>
+	<logger name="com.github.jknack.handlebars" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="LOGFILE" />
+	</logger>
+
+	<logger name="org.roda.rodain" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="LOGFILE" />
+	</logger>
+
+	<logger name="org.roda_project.commons_ip" additivity="false">
+		<level value="WARN" />
+		<appender-ref ref="LOGFILE" />
+	</logger>
+
+	<root level="trace">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="LOGFILE" />
+	</root>
 
 </configuration>

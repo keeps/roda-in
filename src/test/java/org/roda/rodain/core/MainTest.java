@@ -9,17 +9,22 @@ import java.nio.file.Paths;
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.roda.rodain.creation.ui.CreationModalPreparation;
-import org.roda.rodain.inspection.InspectionPane;
-import org.roda.rodain.schema.DescriptionObject;
-import org.roda.rodain.schema.ui.SchemaNode;
-import org.roda.rodain.schema.ui.SchemaPane;
-import org.roda.rodain.schema.ui.SipPreviewNode;
-import org.roda.rodain.source.ui.FileExplorerPane;
+import org.roda.rodain.core.schema.ClassificationSchema;
+import org.roda.rodain.core.schema.DescriptionObject;
+import org.roda.rodain.ui.RodaInApplication;
+import org.roda.rodain.ui.creation.CreationModalPreparation;
+import org.roda.rodain.ui.inspection.InspectionPane;
+import org.roda.rodain.ui.schema.ui.SchemaNode;
+import org.roda.rodain.ui.schema.ui.SchemaPane;
+import org.roda.rodain.ui.schema.ui.SipPreviewNode;
+import org.roda.rodain.ui.source.FileExplorerPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testfx.framework.junit.ApplicationTest;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javafx.application.Platform;
 import javafx.scene.control.TreeItem;
@@ -32,6 +37,7 @@ import javafx.stage.Stage;
  * @author Andre Pereira apereira@keep.pt
  * @since 17-12-2015.
  */
+@Ignore
 public class MainTest extends ApplicationTest {
   private static final Logger LOGGER = LoggerFactory.getLogger(MainTest.class.getName());
 
@@ -39,24 +45,45 @@ public class MainTest extends ApplicationTest {
   private SchemaPane schemaPane;
   private FileExplorerPane fileExplorer;
   private InspectionPane inspectionPane;
-  private static RodaIn main;
+  private static RodaInApplication main;
   private Stage stage;
 
   @Override
   public void start(Stage stage) throws Exception {
     this.stage = stage;
-    main = new RodaIn();
+    main = new RodaInApplication();
     main.start(stage);
 
     sleep(6000);
 
-    schemaPane = RodaIn.getSchemePane();
-    fileExplorer = RodaIn.getFileExplorer();
-    inspectionPane = RodaIn.getInspectionPane();
+    schemaPane = RodaInApplication.getSchemePane();
+    fileExplorer = RodaInApplication.getFileExplorer();
+    inspectionPane = RodaInApplication.getInspectionPane();
 
     Path path = Paths.get("src/test/resources/plan_with_errors.json");
     InputStream stream = new FileInputStream(path.toFile());
-    schemaPane.loadClassificationSchemeFromStream(stream);
+    loadClassificationSchemeFromStream(stream, schemaPane);
+  }
+
+  /**
+   * Creates a ClassificationSchema object from the InputStream and builds a
+   * tree using it.
+   *
+   * @param stream
+   *          The stream with the JSON file used to create the
+   *          ClassificationSchema
+   */
+  private static void loadClassificationSchemeFromStream(InputStream stream, SchemaPane schemaPane) {
+    try {
+      schemaPane.getRootNode().getChildren().clear();
+      // create ObjectMapper instance
+      ObjectMapper objectMapper = new ObjectMapper();
+      // convert stream to object
+      ClassificationSchema scheme = objectMapper.readValue(stream, ClassificationSchema.class);
+      schemaPane.updateClassificationSchema(scheme);
+    } catch (IOException e) {
+      LOGGER.error("Error reading classification scheme from stream", e);
+    }
   }
 
   @Before
@@ -91,8 +118,8 @@ public class MainTest extends ApplicationTest {
     eraseText(50);
     write("Node1");
     sleep(1000);
-    
-    TreeItem<String> item = RodaIn.getSchemePane().getTreeView().getSelectionModel().getSelectedItem();
+
+    TreeItem<String> item = RodaInApplication.getSchemePane().getTreeView().getSelectionModel().getSelectedItem();
     assert "Node1".equals(item.getValue());
 
     clickOn(I18n.t("SchemaPane.add"));
@@ -110,7 +137,7 @@ public class MainTest extends ApplicationTest {
 
     clickOn("Node2");
 
-    TreeItem<String> newItem = RodaIn.getSchemePane().getTreeView().getSelectionModel().getSelectedItem();
+    TreeItem<String> newItem = RodaInApplication.getSchemePane().getTreeView().getSelectionModel().getSelectedItem();
     assert newItem instanceof SchemaNode;
     SchemaNode newNode = (SchemaNode) newItem;
     DescriptionObject dobj = newNode.getDob();
@@ -119,7 +146,7 @@ public class MainTest extends ApplicationTest {
     sleep(2000);
     drag("Node2").dropTo(".tree-view");
 
-    assert RodaIn.getSchemePane().getTreeView().getRoot().getChildren().size() == 2;
+    assert RodaInApplication.getSchemePane().getTreeView().getRoot().getChildren().size() == 2;
     sleep(1000);
 
     clickOn("Node2").clickOn("#removeLevel");
@@ -130,7 +157,7 @@ public class MainTest extends ApplicationTest {
       push(KeyCode.RIGHT);
       push(KeyCode.ENTER);
     }
-    assert RodaIn.getSchemePane().getTreeView().getRoot().getChildren().size() == 1;
+    assert RodaInApplication.getSchemePane().getTreeView().getRoot().getChildren().size() == 1;
   }
 
   @Test
@@ -186,7 +213,7 @@ public class MainTest extends ApplicationTest {
 
     clickOn("UCP");
     sleep(1000);
-    
+
     clickOn("#removeRule1");
     sleep(1000); // wait for the rule to be removed
 
@@ -334,6 +361,6 @@ public class MainTest extends ApplicationTest {
     }
 
     assert stop;
-    assert RodaIn.getAllDescriptionObjects().size() == 10000;
+    assert RodaInApplication.getAllDescriptionObjects().size() == 10000;
   }
 }

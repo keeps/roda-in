@@ -46,11 +46,11 @@ public class Utils {
 
   public static Path createFolderStructure() {
     /*
-      Create a directory structure to test the file explorer
+     * Create a directory structure to test the file explorer
      */
     createDir(testDir);
     /*
-      Dir 1
+     * Dir 1
      */
     Path dir1 = testDir.resolve("dir1");
     createDir(dir1);
@@ -58,7 +58,7 @@ public class Utils {
       createFile(dir1.resolve("file" + i + ".txt"));
     }
     /*
-      Dir 2
+     * Dir 2
      */
     Path dir2 = testDir.resolve("dir2");
     createDir(dir2);
@@ -66,7 +66,7 @@ public class Utils {
       createDir(dir2.resolve("dir" + i));
     }
     /*
-      Dir 3
+     * Dir 3
      */
     Path dir3 = testDir.resolve("dir3");
     createDir(dir3);
@@ -75,7 +75,7 @@ public class Utils {
       createDir(dir3.resolve("dir" + i));
     }
     /*
-      Dir 4
+     * Dir 4
      */
     Path dir4 = testDir.resolve("dir4");
     createDir(dir4);
@@ -83,7 +83,7 @@ public class Utils {
     createFile(dir4.resolve("fileB.txt"));
     createFile(dir4.resolve("fileC.txt"));
 
-    //dir4/dirA
+    // dir4/dirA
     Path dirA = dir4.resolve("dirA");
     createDir(dirA);
 
@@ -107,7 +107,7 @@ public class Utils {
     createDir(dirAB);
     createFile(dirAB.resolve("file1.txt"));
 
-    //dir4/dirB
+    // dir4/dirB
     Path dirB = dir4.resolve("dirB");
     createDir(dirB);
     for (int i = 0; i < 13; i++)
@@ -116,10 +116,10 @@ public class Utils {
     return testDir;
   }
 
-  public static Path create10000Files(){
+  public static Path create10000Files() {
     createDir(test10000Dir);
 
-    for(int i = 1; i <= 10000; i++){
+    for (int i = 1; i <= 10000; i++) {
       createFile(test10000Dir.resolve("" + i));
     }
 
@@ -133,7 +133,7 @@ public class Utils {
 
   private static void createFile(Path p) {
     try {
-      PrintWriter writer = new PrintWriter(p.toString(), "UTF-8");
+      PrintWriter writer = new PrintWriter(p.toString(), Constants.RODAIN_DEFAULT_ENCODING);
       writer.println(p.toString());
       writer.close();
     } catch (FileNotFoundException e) {
@@ -148,7 +148,7 @@ public class Utils {
       FileUtils.deleteDirectory(testDir.toFile());
   }
 
-  public static void takeScreenshot(Stage stage, String fileName){
+  public static void takeScreenshot(Stage stage, String fileName) {
     Platform.runLater(() -> {
       try {
         WritableImage snapshot = stage.getScene().snapshot(null);
