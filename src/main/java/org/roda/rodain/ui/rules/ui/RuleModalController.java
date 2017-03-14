@@ -11,13 +11,13 @@ import org.roda.rodain.core.Constants.RuleType;
 import org.roda.rodain.core.sip.SipPreview;
 import org.roda.rodain.core.sip.creators.SipPreviewCreator;
 import org.roda.rodain.core.utils.TreeVisitor;
+import org.roda.rodain.core.utils.WalkFileTree;
 import org.roda.rodain.ui.ModalStage;
 import org.roda.rodain.ui.RodaInApplication;
 import org.roda.rodain.ui.rules.Rule;
 import org.roda.rodain.ui.rules.VisitorStack;
 import org.roda.rodain.ui.schema.ui.SchemaNode;
 import org.roda.rodain.ui.source.items.SourceTreeItem;
-import org.roda.rodain.ui.utils.WalkFileTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,7 +119,7 @@ public class RuleModalController {
           break;
         case TEMPLATE:
           String template = pane.getTemplate();
-          String[] splitted = template.split("!###!");
+          String[] splitted = template.split(Constants.MISC_METADATA_SEP);
           templateType = splitted[0];
           metadataType = splitted[1];
           metadataVersion = splitted.length == 3 ? splitted[2] : null;

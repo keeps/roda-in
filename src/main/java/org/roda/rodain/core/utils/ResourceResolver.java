@@ -1,4 +1,4 @@
-package org.roda.rodain.core.utils.validation;
+package org.roda.rodain.core.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +31,7 @@ public class ResourceResolver implements LSResourceResolver {
     } catch (IOException e) {
       LOGGER.error("Can't get file from URL", e);
     }
-    return new Input(publicId, systemId, resourceAsStream);
+    return new ResourceResolverInput(publicId, systemId, resourceAsStream);
   }
 
 }

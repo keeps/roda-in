@@ -65,7 +65,7 @@ public class RuleCell extends HBox implements Observer {
   public RuleCell(SchemaNode node, Rule rule) {
     this.rule = rule;
     this.schemaNode = node;
-    this.getStyleClass().add("ruleCell");
+    this.getStyleClass().add(Constants.CSS_RULECELL);
 
     VBox root = new VBox(5);
     HBox.setHgrow(root, Priority.ALWAYS);
@@ -86,7 +86,7 @@ public class RuleCell extends HBox implements Observer {
     top.setPadding(new Insets(5, 5, 5, 5));
     top.setAlignment(Pos.CENTER_LEFT);
     HBox.setHgrow(top, Priority.ALWAYS);
-    top.getStyleClass().add("top");
+    top.getStyleClass().add(Constants.CSS_TOP);
 
     HBox spaceLeft = new HBox();
     HBox spaceRight = new HBox();
@@ -94,7 +94,7 @@ public class RuleCell extends HBox implements Observer {
     HBox.setHgrow(spaceRight, Priority.ALWAYS);
 
     Label id = new Label("#" + rule.getId());
-    id.getStyleClass().add("title");
+    id.getStyleClass().add(Constants.CSS_TITLE);
 
     Button remove = new Button(I18n.t(Constants.I18N_REMOVE));
     remove.setId("removeRule" + rule.getId());

@@ -1,5 +1,7 @@
 package org.roda.rodain.ui.inspection.trees;
 
+import org.roda.rodain.core.Constants;
+
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 
@@ -35,8 +37,8 @@ public class InspectionTreeCell extends TreeCell<String> {
       if (!getStyleClass().isEmpty())
         getStyleClass().clear();
     } else {
-      if (!getStyleClass().contains("tree-cell"))
-        getStyleClass().addAll("cell", "indexed-cell", "tree-cell");
+      if (!getStyleClass().contains(Constants.CSS_TREE_CELL))
+        getStyleClass().addAll(Constants.CSS_CELL, Constants.CSS_INDEXED_CELL, Constants.CSS_TREE_CELL);
       setText(item);
       TreeItem treeItem = getTreeItem();
       if (treeItem != null) {

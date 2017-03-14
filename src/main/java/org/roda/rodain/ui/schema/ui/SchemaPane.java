@@ -17,7 +17,7 @@ import org.roda.rodain.core.Constants.PathState;
 import org.roda.rodain.core.Controller;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.schema.ClassificationSchema;
-import org.roda.rodain.core.schema.DescObjMetadata;
+import org.roda.rodain.core.schema.DescriptiveMetadata;
 import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.core.sip.SipPreview;
 import org.roda.rodain.ui.Footer;
@@ -130,10 +130,10 @@ public class SchemaPane extends BorderPane {
 
   private void createTop() {
     Label title = new Label(I18n.t(Constants.I18N_SCHEMAPANE_TITLE).toUpperCase());
-    title.getStyleClass().add("title");
+    title.getStyleClass().add(Constants.CSS_TITLE);
 
     topBox = new HBox();
-    topBox.getStyleClass().add("title-box");
+    topBox.getStyleClass().add(Constants.CSS_TITLE_BOX);
     topBox.setPadding(new Insets(15, 15, 15, 15));
     topBox.setAlignment(Pos.CENTER_LEFT);
     topBox.getChildren().add(title);
@@ -160,7 +160,7 @@ public class SchemaPane extends BorderPane {
     HBox titleBox = new HBox();
     titleBox.setAlignment(Pos.CENTER);
     Label title = new Label(I18n.t(Constants.I18N_SCHEMAPANE_HELP_TITLE));
-    title.getStyleClass().add("helpTitle");
+    title.getStyleClass().add(Constants.CSS_HELPTITLE);
     title.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().addAll(title);
 
@@ -171,7 +171,7 @@ public class SchemaPane extends BorderPane {
     load.setMinWidth(130);
     load.setMaxWidth(130);
     load.setOnAction(event -> loadClassificationSchema());
-    load.getStyleClass().add("helpButton");
+    load.getStyleClass().add(Constants.CSS_HELPBUTTON);
     loadBox.getChildren().add(load);
 
     if (Boolean.parseBoolean(ConfigurationManager.getAppConfig(Constants.CONF_K_APP_HELP_ENABLED))) {
@@ -201,7 +201,7 @@ public class SchemaPane extends BorderPane {
     Separator separatorBottom = new Separator();
 
     Label title = new Label(I18n.t(Constants.I18N_SCHEMAPANE_DRAG_HELP));
-    title.getStyleClass().add("helpTitle");
+    title.getStyleClass().add(Constants.CSS_HELPTITLE);
     title.setTextAlignment(TextAlignment.CENTER);
     innerBox.getChildren().add(title);
     dropBox.getChildren().addAll(separatorTop, innerBox, separatorBottom);
@@ -235,7 +235,7 @@ public class SchemaPane extends BorderPane {
 
     // create the tree view
     treeView = new AutoscrollTreeView<>(rootNode);
-    treeView.getStyleClass().add("main-tree");
+    treeView.getStyleClass().add(Constants.CSS_MAIN_TREE);
     treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     VBox.setVgrow(treeView, Priority.ALWAYS);
     treeView.setShowRoot(false);
@@ -310,7 +310,7 @@ public class SchemaPane extends BorderPane {
   }
 
   private void createRootNode() {
-    Sip dobj = new Sip(DescObjMetadata.buildDefaultDescObjMetadata());
+    Sip dobj = new Sip(DescriptiveMetadata.buildDefaultDescObjMetadata());
     dobj.setParentId(null);
     dobj.setId(null);
     rootNode = new SchemaNode(dobj);
@@ -451,7 +451,7 @@ public class SchemaPane extends BorderPane {
     if (cs.getDos() != null) {
       for (Sip d : cs.getDos()) {
         if (d.getMetadata() != null) {
-          for (DescObjMetadata dm : d.getMetadata()) {
+          for (DescriptiveMetadata dm : d.getMetadata()) {
             dm = Controller.updateTemplate(dm);
           }
         }
@@ -761,7 +761,7 @@ public class SchemaPane extends BorderPane {
       if (treeItem instanceof SchemaNode) {
         SchemaNode item = (SchemaNode) cell.getTreeItem();
         if (item != null && event.getGestureSource() != cell && event.getDragboard().hasString()) {
-          cell.getStyleClass().add("schemaNodeHovered");
+          cell.getStyleClass().add(Constants.CSS_SCHEMANODEHOVERED);
         }
       }
       event.consume();
@@ -771,7 +771,7 @@ public class SchemaPane extends BorderPane {
   private void setOnDragExited(final SchemaTreeCell cell) {
     // on a Target
     cell.setOnDragExited(event -> {
-      cell.getStyleClass().remove("schemaNodeHovered");
+      cell.getStyleClass().remove(Constants.CSS_SCHEMANODEHOVERED);
       cell.updateItem(cell.getItem(), false);
       event.consume();
     });

@@ -12,7 +12,7 @@ import org.roda.rodain.core.Constants.MetadataOption;
 import org.roda.rodain.core.Controller;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.Pair;
-import org.roda.rodain.core.schema.DescObjMetadata;
+import org.roda.rodain.core.schema.DescriptiveMetadata;
 import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.ui.RodaInApplication;
 import org.roda.rodain.ui.rules.ui.HBoxCell;
@@ -73,13 +73,13 @@ public class AddMetadataPane extends BorderPane {
 
   private Label error;
 
-  private DescObjMetadata metadataToAdd;
+  private DescriptiveMetadata metadataToAdd;
 
-  public DescObjMetadata getMetadataToAdd() {
+  public DescriptiveMetadata getMetadataToAdd() {
     return metadataToAdd;
   }
 
-  public void setMetadataToAdd(DescObjMetadata metadataToAdd) {
+  public void setMetadataToAdd(DescriptiveMetadata metadataToAdd) {
     this.metadataToAdd = metadataToAdd;
   }
 
@@ -87,7 +87,7 @@ public class AddMetadataPane extends BorderPane {
     this.stage = stage;
     this.descriptionObject = descriptionObject;
 
-    getStyleClass().add("modal");
+    getStyleClass().add(Constants.CSS_MODAL);
 
     createTop();
     createCenterMetadata();
@@ -101,7 +101,7 @@ public class AddMetadataPane extends BorderPane {
 
     VBox box = new VBox(5);
     box.setAlignment(Pos.CENTER_LEFT);
-    box.getStyleClass().add("hbox");
+    box.getStyleClass().add(Constants.CSS_HBOX);
     box.setPadding(new Insets(10, 10, 10, 10));
     pane.getChildren().add(box);
 
@@ -130,10 +130,11 @@ public class AddMetadataPane extends BorderPane {
       public void changed(ObservableValue<? extends HBoxCell> observable, final HBoxCell oldValue, HBoxCell newValue) {
         if (newValue != null && newValue.isDisabled()) {
           Platform.runLater(() -> {
-            if (oldValue != null)
+            if (oldValue != null) {
               metaList.getSelectionModel().select(oldValue);
-            else
+            } else {
               metaList.getSelectionModel().clearSelection();
+            }
           });
         }
       }
@@ -145,8 +146,9 @@ public class AddMetadataPane extends BorderPane {
       String[] metaTypes = metaTypesRaw.split(Constants.MISC_COMMA);
       for (String type : metaTypes) {
         String title = ConfigurationManager.getMetadataConfig(type + Constants.CONF_K_SUFIX_TITLE);
-        if (title == null || type == null)
+        if (title == null || type == null) {
           continue;
+        }
         typesList.add(new Pair(type, title));
       }
     }
@@ -195,8 +197,9 @@ public class AddMetadataPane extends BorderPane {
       FileChooser chooser = new FileChooser();
       chooser.setTitle(I18n.t(Constants.I18N_FILE_CHOOSER_TITLE));
       File selectedFile = chooser.showOpenDialog(stage);
-      if (selectedFile == null)
+      if (selectedFile == null) {
         return;
+      }
       selectedPath = selectedFile.toPath();
       chooseFile.setText(selectedPath.getFileName().toString());
       chooseFile.setUserData(selectedPath.toString());
@@ -249,14 +252,15 @@ public class AddMetadataPane extends BorderPane {
       String title = ConfigurationManager.getMetadataConfig(trimmed + Constants.CONF_K_SUFIX_TITLE);
       String type = ConfigurationManager.getMetadataConfig(trimmed + Constants.CONF_K_SUFIX_TYPE);
       String version = ConfigurationManager.getMetadataConfig(trimmed + Constants.CONF_K_SUFIX_VERSION);
-      if (title == null)
+      if (title == null) {
         continue;
+      }
       String key = trimmed;
       if (type != null) {
-        key += "!###!" + type;
+        key += Constants.MISC_METADATA_SEP + type;
       }
       if (version != null) {
-        key += "!###!" + version;
+        key += Constants.MISC_METADATA_SEP + version;
       }
       String value = title;
       Pair newPair = new Pair(key, value);
@@ -305,23 +309,26 @@ public class AddMetadataPane extends BorderPane {
 
     btContinue.setOnAction(event -> {
       HBoxCell selected = metaList.getSelectionModel().getSelectedItem();
-      if (selected == null)
+      if (selected == null) {
         return;
+      }
       if (selected.getUserData() instanceof OPTIONS) {
         OPTIONS option = (OPTIONS) selected.getUserData();
         metadataToAdd = null;
         switch (option) {
           case TEMPLATE:
             String rawTemplateType = (String) templateTypes.getSelectionModel().getSelectedItem().getKey();
-            String[] splitted = rawTemplateType.split("!###!");
+            String[] splitted = rawTemplateType.split(Constants.MISC_METADATA_SEP);
             String templateType = splitted[0], metadataType = splitted[1],
               metadataVersion = splitted.length == 3 ? splitted[2] : null;
-            metadataToAdd = new DescObjMetadata(MetadataOption.TEMPLATE, templateType, metadataType, metadataVersion);
+            metadataToAdd = new DescriptiveMetadata(MetadataOption.TEMPLATE, templateType, metadataType,
+              metadataVersion);
             break;
           case SINGLE_FILE:
-            if (selectedPath == null)
+            if (selectedPath == null) {
               return;
-            metadataToAdd = new DescObjMetadata(MetadataOption.SINGLE_FILE, selectedPath, "", "", null);
+            }
+            metadataToAdd = new DescriptiveMetadata(MetadataOption.SINGLE_FILE, selectedPath, "", "", null);
 
             Pair metaType = comboTypesSingleFile.getSelectionModel().getSelectedItem();
             addTypeAndVersionToMetadata(metaType, metadataToAdd);
@@ -334,14 +341,15 @@ public class AddMetadataPane extends BorderPane {
             }
             if (metadataToAdd == null) {
               error.setText(I18n.t(Constants.I18N_ERROR_VALIDATING_METADATA));
-              error.getStyleClass().add("error");
+              error.getStyleClass().add(Constants.CSS_ERROR);
             }
             break;
           case EMPTY_FILE:
             String name = emptyFileNameTxtField.getText();
-            if (name == null || "".equals(name))
+            if (name == null || "".equals(name)) {
               return;
-            metadataToAdd = new DescObjMetadata();
+            }
+            metadataToAdd = new DescriptiveMetadata();
             metadataToAdd.setId(name);
             metadataToAdd.setContentDecoded("");
             if (emptyFileMetadataTypeTxtField.getText() != null) {
@@ -354,13 +362,15 @@ public class AddMetadataPane extends BorderPane {
             break;
         }
 
-        if (metadataToAdd == null)
+        if (metadataToAdd == null) {
           return;
+        }
         boolean add = true;
         if (descriptionObject != null) {
-          for (DescObjMetadata dom : descriptionObject.getMetadata()) {
-            if (dom.getId().equals(metadataToAdd.getId()))
+          for (DescriptiveMetadata dom : descriptionObject.getMetadata()) {
+            if (dom.getId().equals(metadataToAdd.getId())) {
               add = false;
+            }
           }
           if (add) {
             descriptionObject.getMetadata().add(metadataToAdd);
@@ -374,7 +384,7 @@ public class AddMetadataPane extends BorderPane {
     });
   }
 
-  private void addTypeAndVersionToMetadata(Pair metaType, DescObjMetadata metadataToAdd) {
+  private void addTypeAndVersionToMetadata(Pair metaType, DescriptiveMetadata metadataToAdd) {
     if (metaType != null) {
       String templateVersion = (String) metaType.getKey();
       String metadataVersion = ConfigurationManager.getMetadataConfig(templateVersion + Constants.CONF_K_SUFIX_VERSION);

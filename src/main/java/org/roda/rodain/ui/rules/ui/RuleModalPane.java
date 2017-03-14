@@ -103,7 +103,7 @@ public class RuleModalPane extends BorderPane {
     schema = schemaNode;
     this.sourceSet = sourceSet;
     this.stage = stage;
-    getStyleClass().add("modal");
+    getStyleClass().add(Constants.CSS_MODAL);
 
     createTop();
     createCenter();
@@ -118,7 +118,7 @@ public class RuleModalPane extends BorderPane {
 
     VBox box = new VBox(5);
     box.setAlignment(Pos.CENTER_LEFT);
-    box.getStyleClass().add("hbox");
+    box.getStyleClass().add(Constants.CSS_HBOX);
     box.setPadding(new Insets(15, 15, 15, 15));
     pane.getChildren().add(box);
 
@@ -410,10 +410,10 @@ public class RuleModalPane extends BorderPane {
         continue;
       String key = trimmed;
       if (type != null) {
-        key += "!###!" + type;
+        key += Constants.MISC_METADATA_SEP + type;
       }
       if (version != null) {
-        key += "!###!" + version;
+        key += Constants.MISC_METADATA_SEP + version;
       }
       String value = title;
       Pair newPair = new Pair(key, value);

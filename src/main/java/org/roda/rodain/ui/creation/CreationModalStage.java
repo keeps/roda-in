@@ -66,8 +66,7 @@ public class CreationModalStage extends Stage {
   public void startCreation(Path outputFolder, SipType type, boolean exportAll, boolean exportItems, String prefix,
     SipNameStrategy sipNameStrategy, boolean createReport) {
     setHeight(PROCESSING_HEIGHT);
-    CreateSips creator = new CreateSips(outputFolder, type, exportAll, exportItems, prefix, sipNameStrategy,
-      createReport);
+    CreateSips creator = new CreateSips(outputFolder, type, exportItems, prefix, sipNameStrategy, createReport);
     CreationModalProcessing pane = new CreationModalProcessing(creator, this);
     setRoot(pane);
 

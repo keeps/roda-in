@@ -27,7 +27,7 @@ public class CreateSips {
 
   private int sipsCount;
   private long startedTime;
-  private boolean exportAll, exportItems, createReport;
+  private boolean exportItems, createReport;
 
   /**
    * Creates a new object of the SIP exporter
@@ -37,11 +37,10 @@ public class CreateSips {
    * @param type
    *          The format of the SIP output
    */
-  public CreateSips(Path outputPath, SipType type, boolean exportAll, boolean exportItems, String prefix,
-    SipNameStrategy sipNameStrategy, boolean createReport) {
+  public CreateSips(Path outputPath, SipType type, boolean exportItems, String prefix, SipNameStrategy sipNameStrategy,
+    boolean createReport) {
     this.type = type;
     this.outputPath = outputPath;
-    this.exportAll = exportAll;
     this.prefix = prefix;
     this.sipNameStrategy = sipNameStrategy;
     this.exportItems = exportItems;
@@ -52,13 +51,6 @@ public class CreateSips {
    * Starts the exportation process.
    */
   public void start(Map<Sip, List<String>> sips) {
-    // Map<DescriptionObject, List<String>> sips;
-    // if (exportAll) {
-    // sips = RodaInApplication.getAllDescriptionObjects();
-    // } else {
-    // sips = RodaInApplication.getSelectedDescriptionObjects();
-    // }
-
     if (!exportItems)
       sips = sips.entrySet().stream().filter(entry -> entry.getKey() instanceof SipPreview)
         .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
@@ -72,7 +64,6 @@ public class CreateSips {
       creator = new EarkSipCreator(outputPath, sips, prefix, sipNameStrategy, createReport);
       creator.start();
     }
-
   }
 
   /**

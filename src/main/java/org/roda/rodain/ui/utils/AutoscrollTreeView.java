@@ -10,7 +10,6 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.DragEvent;
 
-
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 31-05-2016.

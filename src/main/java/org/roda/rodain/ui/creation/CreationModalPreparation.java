@@ -72,7 +72,7 @@ public class CreationModalPreparation extends BorderPane {
   public CreationModalPreparation(CreationModalStage stage) {
     this.stage = stage;
 
-    getStyleClass().add("sipcreator");
+    getStyleClass().add(Constants.CSS_SIPCREATOR);
 
     createTop();
     createCenter();
@@ -81,7 +81,7 @@ public class CreationModalPreparation extends BorderPane {
 
   private void createTop() {
     VBox top = new VBox(5);
-    top.getStyleClass().add("hbox");
+    top.getStyleClass().add(Constants.CSS_HBOX);
     top.setPadding(new Insets(10, 10, 10, 0));
     top.setAlignment(Pos.CENTER);
 
@@ -129,7 +129,7 @@ public class CreationModalPreparation extends BorderPane {
     }
 
     Label countLabel = new Label(startingLabel);
-    countLabel.getStyleClass().add("prepareCreationSubtitle");
+    countLabel.getStyleClass().add(Constants.CSS_PREPARECREATIONSUBTITLE);
     sipExportSwitch = new ToggleSwitch(I18n.t(Constants.I18N_CREATIONMODALPREPARATION_EXPORT_ALL));
     sipExportSwitch.selectedProperty().addListener((o, old, newValue) -> setSelectedLabel(countLabel));
 

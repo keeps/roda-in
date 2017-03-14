@@ -14,7 +14,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.roda.rodain.core.ConfigurationManager;
 import org.roda.rodain.core.Constants;
-import org.roda.rodain.core.schema.DescObjMetadata;
+import org.roda.rodain.core.schema.DescriptiveMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +36,7 @@ import net.sf.saxon.s9api.XdmValue;
 public class TemplateUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(TemplateUtils.class.getName());
 
-  public static TreeSet<TemplateFieldValue> getTemplateFields(DescObjMetadata dom) {
+  public static TreeSet<TemplateFieldValue> getTemplateFields(DescriptiveMetadata dom) {
     TreeSet<TemplateFieldValue> fields = new TreeSet<TemplateFieldValue>();
     String content = dom.getContentDecoded();
     String templateContent = dom.getTemplateType() != null

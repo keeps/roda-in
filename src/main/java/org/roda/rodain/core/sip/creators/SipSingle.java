@@ -11,7 +11,7 @@ import org.roda.rodain.core.Constants.MetadataOption;
 import org.roda.rodain.core.Controller;
 import org.roda.rodain.core.rules.TreeNode;
 import org.roda.rodain.core.rules.filters.ContentFilter;
-import org.roda.rodain.core.schema.DescObjMetadata;
+import org.roda.rodain.core.schema.DescriptiveMetadata;
 import org.roda.rodain.core.sip.SipPreview;
 import org.roda.rodain.core.sip.SipRepresentation;
 
@@ -118,10 +118,10 @@ public class SipSingle extends SipPreviewCreator {
     SipPreview sipPreview = new SipPreview(path.getFileName().toString(), repSet, null);
 
     if (metadataOption == MetadataOption.TEMPLATE)
-      sipPreview.getMetadata().add(new DescObjMetadata(metadataOption, templateType, metadataType, metadataVersion));
+      sipPreview.getMetadata().add(new DescriptiveMetadata(metadataOption, templateType, metadataType, metadataVersion));
     else {
       for (Path p : metaPath) {
-        DescObjMetadata dom = new DescObjMetadata(metadataOption, p, metadataType, metadataVersion, templateType);
+        DescriptiveMetadata dom = new DescriptiveMetadata(metadataOption, p, metadataType, metadataVersion, templateType);
         dom = Controller.updateTemplate(dom);
         sipPreview.getMetadata().add(dom);
       }

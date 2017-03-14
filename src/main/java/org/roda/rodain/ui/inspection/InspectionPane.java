@@ -34,7 +34,7 @@ import org.roda.rodain.core.Pair;
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.core.rules.TreeNode;
 import org.roda.rodain.core.rules.filters.ContentFilter;
-import org.roda.rodain.core.schema.DescObjMetadata;
+import org.roda.rodain.core.schema.DescriptiveMetadata;
 import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.core.sip.SipPreview;
 import org.roda.rodain.core.sip.SipRepresentation;
@@ -195,20 +195,20 @@ public class InspectionPane extends BorderPane {
     editRepresentationTypeButton.setVisible(false);
 
     representationTypeBox = new HBox();
-    representationTypeBox.getStyleClass().add("title-box");
+    representationTypeBox.getStyleClass().add(Constants.CSS_TITLE_BOX);
     representationTypeBox.setAlignment(Pos.CENTER);
 
   }
 
   private void createTop() {
     Label title = new Label(I18n.t(Constants.I18N_INSPECTIONPANE_TITLE).toUpperCase());
-    title.getStyleClass().add("title");
+    title.getStyleClass().add(Constants.CSS_TITLE);
     title.setMinWidth(110);
     topSubtitle = new HBox(1);
     HBox.setHgrow(topSubtitle, Priority.ALWAYS);
 
     topBox = new HBox(15);
-    topBox.getStyleClass().add("title-box");
+    topBox.getStyleClass().add(Constants.CSS_TITLE_BOX);
     topBox.getChildren().addAll(title, topSubtitle);
     topBox.setPadding(new Insets(15, 15, 15, 15));
     topBox.setAlignment(Pos.CENTER_LEFT);
@@ -225,13 +225,13 @@ public class InspectionPane extends BorderPane {
 
   private void createMetadata() {
     metadata = new VBox();
-    metadata.getStyleClass().add("inspectionPart");
+    metadata.getStyleClass().add(Constants.CSS_INSPECTIONPART);
     VBox.setVgrow(metadata, Priority.ALWAYS);
 
     metadataGrid = new GridPane();
     metadataGrid.setVgap(5);
     metadataGrid.setPadding(new Insets(5, 5, 5, 5));
-    metadataGrid.setStyle(ConfigurationManager.getStyle("backgroundWhite"));
+    metadataGrid.setStyle(ConfigurationManager.getStyle(Constants.CSS_BACKGROUNDWHITE));
     ColumnConstraints column1 = new ColumnConstraints();
     column1.setPercentWidth(25);
     ColumnConstraints column2 = new ColumnConstraints();
@@ -264,7 +264,7 @@ public class InspectionPane extends BorderPane {
     HBox titleBox = new HBox();
     titleBox.setAlignment(Pos.CENTER);
     Label title = new Label(I18n.t(Constants.I18N_INSPECTIONPANE_ADDMETADATA));
-    title.getStyleClass().add("helpTitle");
+    title.getStyleClass().add(Constants.CSS_HELPTITLE);
     title.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(title);
 
@@ -273,7 +273,7 @@ public class InspectionPane extends BorderPane {
     addMetadataBtn.setMinWidth(130);
     addMetadataBtn.setMaxWidth(130);
     addMetadataBtn.setOnAction(event -> addMetadataAction());
-    addMetadataBtn.getStyleClass().add("helpButton");
+    addMetadataBtn.getStyleClass().add(Constants.CSS_HELPBUTTON);
 
     box.getChildren().addAll(titleBox, addMetadataBtn);
     metadataHelpBox.getChildren().add(box);
@@ -286,7 +286,7 @@ public class InspectionPane extends BorderPane {
     metaText.textProperty().addListener((observable, oldValue, newValue) -> {
       metaText.setStyleSpans(0, XMLEditor.computeHighlighting(newValue));
       Pair selectedPair = metadataCombo.getSelectionModel().getSelectedItem();
-      DescObjMetadata selected = (DescObjMetadata) selectedPair.getKey();
+      DescriptiveMetadata selected = (DescriptiveMetadata) selectedPair.getKey();
 
       String metadataLabel = "";
       if (selected.getMetadataType() != null) {
@@ -347,17 +347,17 @@ public class InspectionPane extends BorderPane {
 
   private void createMetadataTop() {
     metadataTopBox = new HBox(10);
-    metadataTopBox.getStyleClass().add("hbox");
+    metadataTopBox.getStyleClass().add(Constants.CSS_HBOX);
     metadataTopBox.setPadding(new Insets(5, 15, 5, 15));
     metadataTopBox.setAlignment(Pos.CENTER_LEFT);
 
     Label titleLabel = new Label(I18n.t(Constants.I18N_INSPECTIONPANE_METADATA).toUpperCase());
-    titleLabel.getStyleClass().add("title");
+    titleLabel.getStyleClass().add(Constants.CSS_TITLE);
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
 
     toggleForm = new ToggleButton();
-    toggleForm.getStyleClass().add("dark-button");
+    toggleForm.getStyleClass().add(Constants.CSS_DARK_BUTTON);
     toggleForm.setTooltip(new Tooltip(I18n.t(Constants.I18N_INSPECTIONPANE_TEXTCONTENT)));
     Platform.runLater(() -> {
       Image selected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CODE, Color.WHITE);
@@ -394,21 +394,21 @@ public class InspectionPane extends BorderPane {
       .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CHECK, Color.WHITE))));
 
     validationButton.setOnAction(event -> validationAction());
-    validationButton.getStyleClass().add("dark-button");
+    validationButton.getStyleClass().add(Constants.CSS_DARK_BUTTON);
 
     addMetadata = new Button();
     addMetadata.setTooltip(new Tooltip(I18n.t(Constants.I18N_INSPECTIONPANE_ADDMETADATA)));
     Platform.runLater(() -> addMetadata
       .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.PLUS, Color.WHITE))));
     addMetadata.setOnAction(event -> addMetadataAction());
-    addMetadata.getStyleClass().add("dark-button");
+    addMetadata.getStyleClass().add(Constants.CSS_DARK_BUTTON);
 
     removeMetadata = new Button();
     removeMetadata.setTooltip(new Tooltip(I18n.t(Constants.I18N_INSPECTIONPANE_REMOVE_METADATA)));
     Platform.runLater(() -> removeMetadata
       .setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.MINUS, Color.WHITE))));
     removeMetadata.setOnAction(event -> removeMetadataAction());
-    removeMetadata.getStyleClass().add("dark-button");
+    removeMetadata.getStyleClass().add(Constants.CSS_DARK_BUTTON);
 
     metadataTopSeparator = new Separator(Orientation.VERTICAL);
 
@@ -433,10 +433,10 @@ public class InspectionPane extends BorderPane {
     metadataCombo.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
       if (newValue != null) {
         if (oldValue != null)
-          saveMetadataPrivate((DescObjMetadata) oldValue.getKey());
+          saveMetadataPrivate((DescriptiveMetadata) oldValue.getKey());
         // we need this to prevent the alert from being shown
         textBoxCancelledChange = true;
-        updateSelectedMetadata((DescObjMetadata) newValue.getKey());
+        updateSelectedMetadata((DescriptiveMetadata) newValue.getKey());
       } else {
         showMetadataHelp();
       }
@@ -490,7 +490,7 @@ public class InspectionPane extends BorderPane {
     dlg.showAndWait();
 
     if (dlg.getResult().getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-      DescObjMetadata toRemove = (DescObjMetadata) metadataCombo.getSelectionModel().getSelectedItem().getKey();
+      DescriptiveMetadata toRemove = (DescriptiveMetadata) metadataCombo.getSelectionModel().getSelectedItem().getKey();
       currentDescOb.getMetadata().remove(toRemove);
       metadataCombo.getItems().remove(metadataCombo.getSelectionModel().getSelectedItem());
       metadataCombo.getSelectionModel().selectFirst();
@@ -520,7 +520,7 @@ public class InspectionPane extends BorderPane {
           if (currentDescOb != null) {
             Pair selectedInCombo = metadataCombo.getSelectionModel().getSelectedItem();
             if (selectedInCombo != null) {
-              DescObjMetadata dom = (DescObjMetadata) selectedInCombo.getKey();
+              DescriptiveMetadata dom = (DescriptiveMetadata) selectedInCombo.getKey();
               if (Controller.validateSchema(metaText.getText(), dom.getSchema())) {
                 result = true;
               }
@@ -550,7 +550,7 @@ public class InspectionPane extends BorderPane {
     // choosen metadata type/version & the file content
     Pair selectedInCombo = metadataCombo.getSelectionModel().getSelectedItem();
     if (selectedInCombo != null) {
-      DescObjMetadata dom = (DescObjMetadata) selectedInCombo.getKey();
+      DescriptiveMetadata dom = (DescriptiveMetadata) selectedInCombo.getKey();
       try {
         if ((dom.getCreatorOption() != MetadataOption.TEMPLATE)
           && !Controller.validateSchema(metaText.getText(), dom.getSchema())) {
@@ -591,7 +591,7 @@ public class InspectionPane extends BorderPane {
       label = new Label(labelText);
 
       label.setWrapText(true);
-      label.getStyleClass().add("formLabel");
+      label.getStyleClass().add(Constants.CSS_FORMLABEL);
       if (metadataValue.get("description") != null) {
         label.setTooltip(new Tooltip((String) metadataValue.get("description")));
       }
@@ -628,7 +628,7 @@ public class InspectionPane extends BorderPane {
         metadataGrid.add(label, 0, i);
         metadataGrid.add(control, 1, i);
       } else {
-        label.getStyleClass().add("formSeparator");
+        label.getStyleClass().add(Constants.CSS_FORMSEPARATOR);
         metadataGrid.add(label, 0, i, 2, 1);
       }
       i++;
@@ -665,7 +665,7 @@ public class InspectionPane extends BorderPane {
     HBox.setHgrow(textArea, Priority.ALWAYS);
     textArea.setUserData(metadataValue);
     textArea.textProperty().addListener((observable, oldValue, newValue) -> metadataValue.set("value", newValue));
-    textArea.getStyleClass().add("form-text-area");
+    textArea.getStyleClass().add(Constants.CSS_FORM_TEXT_AREA);
     textArea.setWrapText(true);
     addListenersToUpdateUI(metadataValue, textArea.textProperty());
     return textArea;
@@ -842,7 +842,7 @@ public class InspectionPane extends BorderPane {
     if (currentDescOb != null) {
       Pair selectedPair = metadataCombo.getSelectionModel().getSelectedItem();
       if (selectedPair != null) {
-        DescObjMetadata dom = (DescObjMetadata) selectedPair.getKey();
+        DescriptiveMetadata dom = (DescriptiveMetadata) selectedPair.getKey();
         if (dom != null)
           return currentDescOb.getMetadataValueMap(dom);
       }
@@ -851,7 +851,7 @@ public class InspectionPane extends BorderPane {
     return null;
   }
 
-  private void saveMetadataPrivate(DescObjMetadata selectedDescObjMetadata) {
+  private void saveMetadataPrivate(DescriptiveMetadata selectedDescObjMetadata) {
     String oldMetadata = null, newMetadata = null;
     if (currentDescOb != null) {
       newMetadata = metaText.getText();
@@ -875,7 +875,7 @@ public class InspectionPane extends BorderPane {
       if (currentDescOb != null) {
         selectedDescObjMetadata.setContentDecoded(newMetadata);
       } else {
-        DescObjMetadata newObjMetadata = new DescObjMetadata();
+        DescriptiveMetadata newObjMetadata = new DescriptiveMetadata();
         newObjMetadata.setContentEncoding(Constants.ENCODING_BASE64);
         newObjMetadata.setContentDecoded(newMetadata);
         currentDescOb.getMetadata().add(newObjMetadata);
@@ -895,9 +895,9 @@ public class InspectionPane extends BorderPane {
     if (metadataCombo == null)
       return;
     Pair selectedObject = metadataCombo.getSelectionModel().getSelectedItem();
-    DescObjMetadata selectedDescObjMetadata;
-    if (selectedObject != null && selectedObject.getKey() instanceof DescObjMetadata)
-      selectedDescObjMetadata = (DescObjMetadata) selectedObject.getKey();
+    DescriptiveMetadata selectedDescObjMetadata;
+    if (selectedObject != null && selectedObject.getKey() instanceof DescriptiveMetadata)
+      selectedDescObjMetadata = (DescriptiveMetadata) selectedObject.getKey();
     else
       return;
     if (metadata.getChildren().contains(metadataFormWrapper)) {
@@ -928,7 +928,7 @@ public class InspectionPane extends BorderPane {
     HBox titleBox = new HBox();
     titleBox.setAlignment(Pos.CENTER);
     Label title = new Label(I18n.t(Constants.I18N_INSPECTIONPANE_HELP_TITLE));
-    title.getStyleClass().add("helpTitle");
+    title.getStyleClass().add(Constants.CSS_HELPTITLE);
     title.setTextAlignment(TextAlignment.CENTER);
     title.setWrapText(true);
     titleBox.getChildren().add(title);
@@ -953,7 +953,7 @@ public class InspectionPane extends BorderPane {
     HBox titleBox = new HBox();
     titleBox.setAlignment(Pos.CENTER);
     Label title = new Label(I18n.t(Constants.I18N_INSPECTIONPANE_DOCS_HELP_TITLE));
-    title.getStyleClass().add("helpTitle");
+    title.getStyleClass().add(Constants.CSS_HELPTITLE);
     title.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(title);
 
@@ -997,37 +997,37 @@ public class InspectionPane extends BorderPane {
 
   private void createContent() {
     content = new BorderPane();
-    content.getStyleClass().add("inspectionPart");
+    content.getStyleClass().add(Constants.CSS_INSPECTIONPART);
     VBox.setVgrow(content, Priority.ALWAYS);
     content.setMinHeight(200);
 
     HBox top = new HBox(10);
-    top.getStyleClass().add("hbox");
+    top.getStyleClass().add(Constants.CSS_HBOX);
     top.setPadding(new Insets(5, 15, 5, 15));
     top.setAlignment(Pos.CENTER);
 
     Label title = new Label(I18n.t(Constants.I18N_DATA).toUpperCase());
-    title.getStyleClass().add("title");
+    title.getStyleClass().add(Constants.CSS_TITLE);
 
     representationTypeLabel = new Label();
-    representationTypeLabel.getStyleClass().add("title");
+    representationTypeLabel.getStyleClass().add(Constants.CSS_TITLE);
 
     PopOver editRepresentationTypePopOver = new PopOver();
     editRepresentationTypePopOver.setDetachable(false);
     editRepresentationTypePopOver.setArrowLocation(PopOver.ArrowLocation.TOP_RIGHT);
 
     HBox popOverContent = new HBox(10);
-    popOverContent.getStyleClass().add("inspectionPart");
+    popOverContent.getStyleClass().add(Constants.CSS_INSPECTIONPART);
     popOverContent.setPadding(new Insets(5, 15, 5, 15));
     popOverContent.setAlignment(Pos.CENTER);
     HBox.setHgrow(popOverContent, Priority.ALWAYS);
     Label sipTypeLabel = new Label(I18n.t(Constants.I18N_INSPECTIONPANE_REPRESENTATION_TYPE_TOOLTIP));
-    sipTypeLabel.setStyle("-fx-text-fill: black");
+    sipTypeLabel.setStyle(Constants.CSS_FX_TEXT_FILL_BLACK);
     popOverContent.getChildren().addAll(sipTypeLabel, createRepresentationTypeComboBox());
     editRepresentationTypePopOver.setContentNode(popOverContent);
 
     editRepresentationTypeButton = new Button();
-    editRepresentationTypeButton.getStyleClass().add("dark-button");
+    editRepresentationTypeButton.getStyleClass().add(Constants.CSS_DARK_BUTTON);
     Platform.runLater(() -> {
       ImageView iv = new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.PENCIL, Color.WHITE, 16));
       editRepresentationTypeButton.setGraphic(iv);
@@ -1061,7 +1061,7 @@ public class InspectionPane extends BorderPane {
     docsRoot = new SipContentDirectory(new TreeNode(Paths.get("")), null);
     sipDocumentation.setRoot(docsRoot);
     toggleDocumentation = new ToggleButton();
-    toggleDocumentation.getStyleClass().add("dark-button");
+    toggleDocumentation.getStyleClass().add(Constants.CSS_DARK_BUTTON);
     toggleDocumentation.setTooltip(new Tooltip(I18n.t(Constants.I18N_DOCUMENTATION)));
     Platform.runLater(() -> {
       Image selected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.OPEN_FOLDER, Color.WHITE);
@@ -1195,36 +1195,36 @@ public class InspectionPane extends BorderPane {
 
   private void createMultipleSelectedBottom() {
     BorderPane help = new BorderPane();
-    help.getStyleClass().add("inspectionPart");
+    help.getStyleClass().add(Constants.CSS_INSPECTIONPART);
 
     HBox top = new HBox();
-    top.getStyleClass().add("hbox");
+    top.getStyleClass().add(Constants.CSS_HBOX);
     top.setPadding(new Insets(5, 15, 10, 15));
 
     Label title = new Label(I18n.t(Constants.I18N_INSPECTIONPANE_MULTIPLE_SELECTED_HELP_TITLE).toUpperCase());
     title.setPadding(new Insets(5, 0, 0, 0));
-    title.getStyleClass().add("title");
+    title.getStyleClass().add(Constants.CSS_TITLE);
     top.getChildren().add(title);
     help.setTop(top);
 
     Label multSelectedHelp = new Label(I18n.t(Constants.I18N_INSPECTIONPANE_MULTIPLE_SELECTED_HELP));
     multSelectedHelp.setPadding(new Insets(10, 10, 10, 10));
-    multSelectedHelp.setStyle("-fx-text-fill: black");
+    multSelectedHelp.setStyle(Constants.CSS_FX_TEXT_FILL_BLACK);
     multSelectedHelp.setWrapText(true);
 
     help.setCenter(multSelectedHelp);
 
     BorderPane confirm = new BorderPane();
-    confirm.getStyleClass().add("inspectionPart");
+    confirm.getStyleClass().add(Constants.CSS_INSPECTIONPART);
 
     HBox confirmTop = new HBox();
-    confirmTop.getStyleClass().add("hbox");
+    confirmTop.getStyleClass().add(Constants.CSS_HBOX);
     confirmTop.setPadding(new Insets(5, 15, 10, 15));
 
     Label confirmTitle = new Label(I18n.t(Constants.I18N_APPLY).toUpperCase());
     confirmTitle.setAlignment(Pos.CENTER_LEFT);
     confirmTitle.setPadding(new Insets(5, 0, 0, 0));
-    confirmTitle.getStyleClass().add("title");
+    confirmTitle.getStyleClass().add(Constants.CSS_TITLE);
     confirmTop.getChildren().add(confirmTitle);
     confirm.setTop(confirmTop);
 
@@ -1237,7 +1237,7 @@ public class InspectionPane extends BorderPane {
     popOverContent.setAlignment(Pos.CENTER);
     HBox.setHgrow(popOverContent, Priority.ALWAYS);
     Label popOverTitle = new Label(I18n.t(Constants.I18N_INSPECTIONPANE_MULTIPLE_SELECTED_APPLIED_MESSAGE));
-    popOverTitle.setStyle("-fx-font-size: 16px");
+    popOverTitle.setStyle(Constants.CSS_FX_FONT_SIZE_16PX);
     Platform.runLater(() -> {
       ImageView iv = new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CHECK, Color.GREEN, 32));
       popOverContent.getChildren().addAll(popOverTitle, iv);
@@ -1247,9 +1247,9 @@ public class InspectionPane extends BorderPane {
     HBox multSelectedSaveBox = new HBox(5);
     multSelectedSaveBox.setPadding(new Insets(10, 10, 10, 10));
     multSelectedSaveBox.getStyleClass();
-    multSelectedSaveBox.setStyle("-fx-text-fill: black");
+    multSelectedSaveBox.setStyle(Constants.CSS_FX_TEXT_FILL_BLACK);
     Label confirmationLabel = new Label(I18n.t(Constants.I18N_INSPECTIONPANE_MULTIPLE_SELECTED_CONFIRM));
-    confirmationLabel.setStyle("-fx-text-fill: black;");
+    confirmationLabel.setStyle(Constants.CSS_FX_TEXT_FILL_BLACK_);
     Button save = new Button(I18n.t(Constants.I18N_APPLY));
     save.setOnAction(event -> {
       applyMetadatasToMultipleItems();
@@ -1267,7 +1267,7 @@ public class InspectionPane extends BorderPane {
   }
 
   private void applyMetadatasToMultipleItems() {
-    List<DescObjMetadata> metadataList = currentDescOb.getMetadata();
+    List<DescriptiveMetadata> metadataList = currentDescOb.getMetadata();
     if (!metadataList.isEmpty()) {
       selectedItems.forEach(item -> {
         Sip itemDO = null;
@@ -1278,7 +1278,7 @@ public class InspectionPane extends BorderPane {
         if (itemDO != null) {
           applyIPTypeToDescriptionObject(itemDO,
             (IPContentType) contentType.getSelectionModel().getSelectedItem().getKey());
-          for (DescObjMetadata metadataObj : metadataList) {
+          for (DescriptiveMetadata metadataObj : metadataList) {
             applyMetadataFileToDescriptionObject(metadataObj, itemDO, item);
           }
         }
@@ -1293,11 +1293,11 @@ public class InspectionPane extends BorderPane {
     }
   }
 
-  private void applyMetadataFileToDescriptionObject(DescObjMetadata metadataObj, Sip descObj,
+  private void applyMetadataFileToDescriptionObject(DescriptiveMetadata metadataObj, Sip descObj,
     TreeItem<String> treeItem) {
     if (metadataObj.getCreatorOption() != MetadataOption.TEMPLATE) {
       // remove the metadata files with the same ID as the new one
-      List<DescObjMetadata> toRemove = new ArrayList<>();
+      List<DescriptiveMetadata> toRemove = new ArrayList<>();
       descObj.getMetadata().forEach(descObjMetadata -> {
         if (descObjMetadata.getId().equals(metadataObj.getId()))
           toRemove.add(descObjMetadata);
@@ -1307,7 +1307,7 @@ public class InspectionPane extends BorderPane {
       descObj.getMetadata().add(metadataObj.clone());
     } else {
       boolean merged = false;
-      for (DescObjMetadata descObjMetadata : descObj.getMetadata()) {
+      for (DescriptiveMetadata descObjMetadata : descObj.getMetadata()) {
         if (descObjMetadata.getId().equals(metadataObj.getId())) {
           merged = true;
           Set<TemplateFieldValue> metadataObjValues = metadataObj.getValues();
@@ -1434,16 +1434,16 @@ public class InspectionPane extends BorderPane {
 
   private void createRulesList() {
     rules = new BorderPane();
-    rules.getStyleClass().add("inspectionPart");
+    rules.getStyleClass().add(Constants.CSS_INSPECTIONPART);
     VBox.setVgrow(rules, Priority.ALWAYS);
     rules.setMinHeight(200);
 
     HBox top = new HBox(10);
-    top.getStyleClass().add("hbox");
+    top.getStyleClass().add(Constants.CSS_HBOX);
     top.setPadding(new Insets(10, 15, 10, 15));
 
     Label title = new Label(I18n.t(Constants.I18N_INSPECTIONPANE_RULES).toUpperCase());
-    title.getStyleClass().add("title");
+    title.getStyleClass().add(Constants.CSS_TITLE);
     top.getChildren().add(title);
 
     if (Boolean.parseBoolean(ConfigurationManager.getAppConfig(Constants.CONF_K_APP_HELP_ENABLED))) {
@@ -1464,7 +1464,7 @@ public class InspectionPane extends BorderPane {
     HBox titleBox = new HBox();
     titleBox.setAlignment(Pos.CENTER);
     Label emptyText = new Label(I18n.t(Constants.I18N_INSPECTIONPANE_HELP_RULE_LIST));
-    emptyText.getStyleClass().add("helpTitle");
+    emptyText.getStyleClass().add(Constants.CSS_HELPTITLE);
     emptyText.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(emptyText);
 
@@ -1495,10 +1495,10 @@ public class InspectionPane extends BorderPane {
     exportBox = new HBox(10);
     exportBox.setPadding(new Insets(10, 10, 10, 10));
     exportBox.setAlignment(Pos.CENTER);
-    exportBox.getStyleClass().add("title-box");
+    exportBox.getStyleClass().add(Constants.CSS_TITLE_BOX);
 
     Label title = new Label(I18n.t(Constants.I18N_EXPORT_BOX_TITLE).toUpperCase());
-    title.getStyleClass().add("title");
+    title.getStyleClass().add(Constants.CSS_TITLE);
     title.setMinWidth(110);
 
     HBox space = new HBox();
@@ -1507,7 +1507,7 @@ public class InspectionPane extends BorderPane {
     export = new Button(I18n.t(Constants.I18N_EXPORT));
     export.setMinWidth(100);
     export.setOnAction(event -> RodaInApplication.exportSIPs());
-    export.getStyleClass().add("export-button");
+    export.getStyleClass().add(Constants.CSS_EXPORT_BUTTON);
 
     exportBox.getChildren().addAll(title, space, export);
 
@@ -1516,7 +1516,7 @@ public class InspectionPane extends BorderPane {
     }
   }
 
-  private void updateSelectedMetadata(DescObjMetadata dom) {
+  private void updateSelectedMetadata(DescriptiveMetadata dom) {
     metadata.getChildren().removeAll(metadataFormWrapper, metaText, metadataHelpBox);
     if (!metadata.getChildren().contains(metadataLoadingPane))
       metadata.getChildren().add(metadataLoadingPane);
@@ -1609,19 +1609,19 @@ public class InspectionPane extends BorderPane {
 
     topTypeLabel = new Label();
     topTypeLabel.setWrapText(true);
-    topTypeLabel.getStyleClass().add("top-subtitle");
+    topTypeLabel.getStyleClass().add(Constants.CSS_TOP_SUBTITLE);
 
     PopOver editPopOver = new PopOver();
     editPopOver.setDetachable(false);
     editPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_RIGHT);
 
     HBox popOverContent = new HBox(10);
-    popOverContent.getStyleClass().add("inspectionPart");
+    popOverContent.getStyleClass().add(Constants.CSS_INSPECTIONPART);
     popOverContent.setPadding(new Insets(5, 15, 5, 15));
     popOverContent.setAlignment(Pos.CENTER);
     HBox.setHgrow(popOverContent, Priority.ALWAYS);
     Label sipTypeLabel = new Label(I18n.t(Constants.I18N_INSPECTIONPANE_SIP_TYPE_TOOLTIP));
-    sipTypeLabel.setStyle("-fx-text-fill: black");
+    sipTypeLabel.setStyle(Constants.CSS_FX_TEXT_FILL_BLACK);
     popOverContent.getChildren().addAll(sipTypeLabel, createTypeComboBox(sip.getSip()));
     editPopOver.setContentNode(popOverContent);
 
@@ -1683,7 +1683,7 @@ public class InspectionPane extends BorderPane {
     /* top */
     topTypeLabel = new Label();
     topTypeLabel.setWrapText(true);
-    topTypeLabel.getStyleClass().add("top-subtitle");
+    topTypeLabel.getStyleClass().add(Constants.CSS_TOP_SUBTITLE);
 
     HBox space = new HBox();
     HBox.setHgrow(space, Priority.ALWAYS);
@@ -1692,12 +1692,12 @@ public class InspectionPane extends BorderPane {
     editPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_RIGHT);
 
     HBox popOverContent = new HBox(10);
-    popOverContent.getStyleClass().add("inspectionPart");
+    popOverContent.getStyleClass().add(Constants.CSS_INSPECTIONPART);
     popOverContent.setPadding(new Insets(5, 15, 5, 15));
     popOverContent.setAlignment(Pos.CENTER);
     HBox.setHgrow(popOverContent, Priority.ALWAYS);
     Label sipTypeLabel = new Label(I18n.t(Constants.I18N_INSPECTIONPANE_SIP_TYPE_TOOLTIP));
-    sipTypeLabel.setStyle("-fx-text-fill: black");
+    sipTypeLabel.setStyle(Constants.CSS_FX_TEXT_FILL_BLACK);
     popOverContent.getChildren().addAll(sipTypeLabel, createTypeComboBox(node.getDob()));
     editPopOver.setContentNode(popOverContent);
 
@@ -1766,7 +1766,7 @@ public class InspectionPane extends BorderPane {
           commonIPType = new IPContentType("{{mixed}}");
         }
       }
-      for (DescObjMetadata dobm : dob.getMetadata()) {
+      for (DescriptiveMetadata dobm : dob.getMetadata()) {
         // Check if the creator option, template and version are the
         // same as the
         // previously analysed items
@@ -1824,23 +1824,23 @@ public class InspectionPane extends BorderPane {
       }
     }
     currentDescOb = new Sip(
-      new DescObjMetadata(MetadataOption.TEMPLATE, commonTemplate, commonMetadataType, commonVersion));
+      new DescriptiveMetadata(MetadataOption.TEMPLATE, commonTemplate, commonMetadataType, commonVersion));
 
     topTypeLabel = new Label();
     topTypeLabel.setWrapText(true);
-    topTypeLabel.getStyleClass().add("top-subtitle");
+    topTypeLabel.getStyleClass().add(Constants.CSS_TOP_SUBTITLE);
 
     PopOver editPopOver = new PopOver();
     editPopOver.setDetachable(false);
     editPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_RIGHT);
 
     HBox popOverContent = new HBox(10);
-    popOverContent.getStyleClass().add("inspectionPart");
+    popOverContent.getStyleClass().add(Constants.CSS_INSPECTIONPART);
     popOverContent.setPadding(new Insets(5, 15, 5, 15));
     popOverContent.setAlignment(Pos.CENTER);
     HBox.setHgrow(popOverContent, Priority.ALWAYS);
     Label sipTypeLabel = new Label(I18n.t(Constants.I18N_INSPECTIONPANE_SIP_TYPE_TOOLTIP));
-    sipTypeLabel.setStyle("-fx-text-fill: black");
+    sipTypeLabel.setStyle(Constants.CSS_FX_TEXT_FILL_BLACK);
     popOverContent.getChildren().addAll(sipTypeLabel, createTypeComboBox(currentDescOb));
     editPopOver.setContentNode(popOverContent);
 
@@ -1865,7 +1865,7 @@ public class InspectionPane extends BorderPane {
 
     currentDescOb.getMetadata().clear();
     if (common) {
-      DescObjMetadata dobm = new DescObjMetadata(MetadataOption.TEMPLATE, commonTemplate, commonMetadataType,
+      DescriptiveMetadata dobm = new DescriptiveMetadata(MetadataOption.TEMPLATE, commonTemplate, commonMetadataType,
         commonVersion);
       dobm.setValues(new TreeSet<>(commonMV.values()));
       currentDescOb.getMetadata().add(dobm);
@@ -1967,7 +1967,7 @@ public class InspectionPane extends BorderPane {
   private void createTopSubtitle(ImageView icon, String text) {
     paneTitle = new Label(text);
     paneTitle.setWrapText(true);
-    paneTitle.getStyleClass().add("top-subtitle");
+    paneTitle.getStyleClass().add(Constants.CSS_TOP_SUBTITLE);
     topSubtitle.setAlignment(Pos.CENTER_LEFT);
     topSubtitle.getChildren().clear();
     if (icon != null)
@@ -1979,9 +1979,9 @@ public class InspectionPane extends BorderPane {
   private void updateMetadataCombo(boolean selectLast) {
     metadataCombo.getSelectionModel().clearSelection();
     metadataCombo.getItems().clear();
-    List<DescObjMetadata> metadataList = currentDescOb.getMetadata();
+    List<DescriptiveMetadata> metadataList = currentDescOb.getMetadata();
     List<Pair> comboList = new ArrayList<>();
-    for (DescObjMetadata dom : metadataList) {
+    for (DescriptiveMetadata dom : metadataList) {
       String title = ConfigurationManager.getMetadataConfig(dom.getTemplateType() + Constants.CONF_K_SUFIX_TITLE);
       if (title == null) {
         title = dom.getMetadataType();
@@ -2213,7 +2213,7 @@ public class InspectionPane extends BorderPane {
     }
   }
 
-  public void showAddMetadataError(DescObjMetadata metadataToAdd) {
+  public void showAddMetadataError(DescriptiveMetadata metadataToAdd) {
     String showContent = String.format(I18n.t(Constants.I18N_INSPECTIONPANE_ADD_METADATA_ERROR_CONTENT),
       metadataToAdd.getId());
     Alert dlg = new Alert(Alert.AlertType.INFORMATION);

@@ -28,7 +28,7 @@ public class HelpModal extends BorderPane {
 
   public HelpModal(Stage stage) {
     this.stage = stage;
-    getStyleClass().add("modal");
+    getStyleClass().add(Constants.CSS_MODAL);
 
     createTop();
     createCenter();
@@ -37,7 +37,7 @@ public class HelpModal extends BorderPane {
   private void createTop() {
     VBox top = new VBox(5);
     top.setAlignment(Pos.CENTER);
-    top.getStyleClass().add("hbox");
+    top.getStyleClass().add(Constants.CSS_HBOX);
     top.setPadding(new Insets(10, 10, 10, 0));
 
     Label title = new Label(I18n.t(Constants.I18N_HELP).toUpperCase());

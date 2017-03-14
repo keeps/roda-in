@@ -15,7 +15,7 @@ import java.util.Set;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.roda.rodain.core.schema.ClassificationSchema;
-import org.roda.rodain.core.schema.DescObjMetadata;
+import org.roda.rodain.core.schema.DescriptiveMetadata;
 import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.ui.schema.ui.SchemaNode;
 import org.slf4j.Logger;
@@ -80,7 +80,7 @@ public class Controller {
     }
     ClassificationSchema cs = new ClassificationSchema();
     cs.setDos(dobjs);
-    cs.export(outputFile);
+    ControllerUtils.exportClassificationScheme(cs, outputFile);
     ConfigurationManager.setAppConfig(Constants.CONF_K_APP_LAST_CLASS_SCHEME, outputFile, true);
   }
 
@@ -133,7 +133,7 @@ public class Controller {
     return ControllerUtils.indentXML(content);
   }
 
-  public static DescObjMetadata updateTemplate(DescObjMetadata dom) {
+  public static DescriptiveMetadata updateTemplate(DescriptiveMetadata dom) {
     return ControllerUtils.updateTemplate(dom);
   }
 

@@ -37,7 +37,7 @@ public class Footer extends VBox {
    */
   private Footer() {
     super();
-    getStyleClass().add("footer");
+    getStyleClass().add(Constants.CSS_FOOTER);
 
     Separator separator = new Separator();
 

@@ -1,7 +1,9 @@
 package org.roda.rodain.core;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -34,12 +36,17 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import org.roda.rodain.core.schema.DescObjMetadata;
-import org.roda.rodain.core.utils.validation.ResourceResolver;
+import org.roda.rodain.core.schema.ClassificationSchema;
+import org.roda.rodain.core.schema.DescriptiveMetadata;
+import org.roda.rodain.core.utils.ResourceResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -245,7 +252,7 @@ public final class ControllerUtils {
     return String.format("%.1f %sB", (double) v / (1L << (z * 10)), " KMGTPE".charAt(z));
   }
 
-  protected static DescObjMetadata updateTemplate(DescObjMetadata dm) {
+  protected static DescriptiveMetadata updateTemplate(DescriptiveMetadata dm) {
     String metaTypesRaw = ConfigurationManager.getConfig(Constants.CONF_K_METADATA_TYPES);
     if (metaTypesRaw != null) {
       String[] metaTypes = metaTypesRaw.split(Constants.MISC_COMMA);
@@ -261,6 +268,20 @@ public final class ControllerUtils {
       }
     }
     return dm;
+  }
+
+  protected static void exportClassificationScheme(ClassificationSchema classSchema, String outputFile) {
+    try {
+      OutputStream outputStream = new FileOutputStream(outputFile);
+      // create ObjectMapper instance
+      ObjectMapper objectMapper = new ObjectMapper();
+      objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+      objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+      // convert object to json string
+      objectMapper.writeValue(outputStream, classSchema);
+    } catch (IOException e) {
+      LOGGER.error("Error exporting classification scheme", e);
+    }
   }
 
 }

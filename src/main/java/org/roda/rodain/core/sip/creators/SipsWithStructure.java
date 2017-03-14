@@ -22,7 +22,7 @@ import org.roda.rodain.core.Constants.PathState;
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.core.rules.TreeNode;
 import org.roda.rodain.core.rules.filters.ContentFilter;
-import org.roda.rodain.core.schema.DescObjMetadata;
+import org.roda.rodain.core.schema.DescriptiveMetadata;
 import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.core.sip.PseudoDescriptionObject;
 import org.roda.rodain.core.sip.PseudoItem;
@@ -148,7 +148,7 @@ public class SipsWithStructure extends SipPreviewCreator {
 
       // make this node a description object
       Sip descriptionObject = new Sip(
-        new DescObjMetadata(MetadataOption.TEMPLATE, templateType, metadataType, metadataVersion));
+        new DescriptiveMetadata(MetadataOption.TEMPLATE, templateType, metadataType, metadataVersion));
       descriptionObject.setTitle(path.getFileName().toString());
       try {
         String metadataAggregationLevel = ConfigurationManager

@@ -1,5 +1,7 @@
 package org.roda.rodain.ui.schema.ui;
 
+import org.roda.rodain.core.Constants;
+
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeCell;
@@ -22,25 +24,25 @@ public class SchemaTreeCell extends TreeCell<String> {
   @Override
   public void updateItem(String item, boolean empty) {
     super.updateItem(item, empty);
-    if (getStyleClass().contains("schemaNodeEmpty"))
-      getStyleClass().remove("schemaNodeEmpty");
+    if (getStyleClass().contains(Constants.CSS_SCHEMANODEEMPTY))
+      getStyleClass().remove(Constants.CSS_SCHEMANODEEMPTY);
 
     if (empty || item == null) {
       setText(null);
       setGraphic(null);
       // To hide the hover color in the empty nodes
-      if (getStyleClass().contains("schemaNode"))
-        getStyleClass().remove("schemaNode");
-      if (getStyleClass().contains("tree-cell"))
-        getStyleClass().remove("tree-cell");
+      if (getStyleClass().contains(Constants.CSS_SCHEMANODE))
+        getStyleClass().remove(Constants.CSS_SCHEMANODE);
+      if (getStyleClass().contains(Constants.CSS_TREE_CELL))
+        getStyleClass().remove(Constants.CSS_TREE_CELL);
     } else {
-      if (!getStyleClass().contains("tree-cell"))
-        getStyleClass().add("tree-cell");
+      if (!getStyleClass().contains(Constants.CSS_TREE_CELL))
+        getStyleClass().add(Constants.CSS_TREE_CELL);
 
       HBox hbox = new HBox();
       hbox.setAlignment(Pos.CENTER_LEFT);
       Label lab = new Label(item);
-      lab.getStyleClass().add("cellText");
+      lab.getStyleClass().add(Constants.CSS_CELLTEXT);
       ImageView icon = null;
 
       // Get the correct item
@@ -50,8 +52,8 @@ public class SchemaTreeCell extends TreeCell<String> {
 
       boolean addHbox = false;
       if (treeItem instanceof SchemaNode) {
-        if (!getStyleClass().contains("schemaNode"))
-          getStyleClass().add("schemaNode");
+        if (!getStyleClass().contains(Constants.CSS_SCHEMANODE))
+          getStyleClass().add(Constants.CSS_SCHEMANODE);
         SchemaNode itemNode = (SchemaNode) treeItem;
         icon = new ImageView(itemNode.getIcon());
         updateDObj(item);

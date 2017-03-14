@@ -15,7 +15,7 @@ import org.roda.rodain.core.Constants;
 import org.roda.rodain.core.Constants.PathState;
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.core.rules.TreeNode;
-import org.roda.rodain.core.schema.DescObjMetadata;
+import org.roda.rodain.core.schema.DescriptiveMetadata;
 import org.roda.rodain.core.schema.Sip;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,12 +41,12 @@ public class SipPreview extends Sip implements Observer {
    * @param metadata
    *          The metadata of the SIP
    */
-  public SipPreview(String name, Set<SipRepresentation> representations, DescObjMetadata metadata) {
-    super(DescObjMetadata.buildDefaultDescObjMetadata());
+  public SipPreview(String name, Set<SipRepresentation> representations, DescriptiveMetadata metadata) {
+    super(DescriptiveMetadata.buildDefaultDescObjMetadata());
     this.representations = representations;
     documentation = new HashSet<>();
     setTitle(name);
-    List<DescObjMetadata> tempList = new ArrayList<>();
+    List<DescriptiveMetadata> tempList = new ArrayList<>();
     if (metadata != null)
       tempList.add(metadata);
     setMetadata(tempList);

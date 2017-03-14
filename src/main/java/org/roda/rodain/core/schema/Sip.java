@@ -36,7 +36,7 @@ import com.github.jknack.handlebars.Template;
 public class Sip extends Observable {
   private static final Logger LOGGER = LoggerFactory.getLogger(Sip.class.getName());
   private String title, id, parentId, descriptionlevel;
-  private List<DescObjMetadata> metadata = new ArrayList<>();
+  private List<DescriptiveMetadata> metadata = new ArrayList<>();
   private Map<String, Object> additionalProperties = new TreeMap<>();
   private boolean isUpdateSIP = false;
   private String type;
@@ -47,7 +47,7 @@ public class Sip extends Observable {
     this.type = IPContentType.getMIXED().asString();
   }
 
-  public Sip(DescObjMetadata template) {
+  public Sip(DescriptiveMetadata template) {
     this();
     metadata.add(template);
   }
@@ -128,7 +128,7 @@ public class Sip extends Observable {
     this.descriptionlevel = descriptionLevel;
   }
 
-  public List<DescObjMetadata> getMetadata() {
+  public List<DescriptiveMetadata> getMetadata() {
     return metadata;
   }
 
@@ -141,14 +141,14 @@ public class Sip extends Observable {
   @JsonIgnore
   public Map<String, String> getMetadataWithReplaces() {
     Map<String, String> result = new HashMap<>();
-    for (DescObjMetadata dom : metadata) {
+    for (DescriptiveMetadata dom : metadata) {
       result.put(dom.getId(), getMetadataWithReplaces(dom));
     }
     return result;
   }
 
   @JsonIgnore
-  public String getMetadataWithReplaces(DescObjMetadata dom) {
+  public String getMetadataWithReplaces(DescriptiveMetadata dom) {
     String content = dom.getContentDecoded();
     String templateContent = ConfigurationManager.getTemplateContent(dom.getTemplateType());
     if (content != null && dom.getCreatorOption() == MetadataOption.TEMPLATE) {
@@ -157,8 +157,7 @@ public class Sip extends Observable {
         Map<String, String> data = new HashMap<>();
         handlebars.registerHelper("field", (o, options) -> options.fn());
         handlebars.registerHelper("ifCond", (context, options) -> {
-          // the first parameter of ifCond is placed in the context
-          // field by the
+          // the first parameter of ifCond is placed in the context field by the
           // parser
           String condition = (context == null) ? Constants.MISC_OR_OP : context.toString();
           List<Object> values = Arrays.asList(options.params);
@@ -223,7 +222,7 @@ public class Sip extends Observable {
   }
 
   @JsonIgnore
-  public Set<TemplateFieldValue> getMetadataValueMap(DescObjMetadata dom) {
+  public Set<TemplateFieldValue> getMetadataValueMap(DescriptiveMetadata dom) {
     String content = ConfigurationManager.getTemplateContent(dom.getTemplateType());
     if (dom.getValues() == null) {
       dom.initializeValues();
@@ -279,7 +278,8 @@ public class Sip extends Observable {
     return isEmpty;
   }
 
-  public void updatedMetadata(DescObjMetadata dom) {
+  // FIXME 20170315 hsilva:
+  public void updatedMetadata(DescriptiveMetadata dom) {
     dom.getValues().forEach(metadataValue -> {
       String toSearch = metadataValue.getId().toLowerCase();
       switch (toSearch) {
@@ -318,7 +318,7 @@ public class Sip extends Observable {
    * @param metadata
    *          The metadata list
    */
-  public void setMetadata(List<DescObjMetadata> metadata) {
+  public void setMetadata(List<DescriptiveMetadata> metadata) {
     this.metadata = metadata;
   }
 

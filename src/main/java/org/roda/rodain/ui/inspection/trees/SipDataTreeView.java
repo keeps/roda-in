@@ -1,27 +1,26 @@
 package org.roda.rodain.ui.inspection.trees;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.roda.rodain.core.Constants;
+import org.roda.rodain.ui.RodaInApplication;
+import org.roda.rodain.ui.utils.AutoscrollTreeView;
+
 import javafx.event.EventHandler;
-import javafx.scene.control.Alert;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.util.Callback;
-
-import org.roda.rodain.ui.RodaInApplication;
-import org.roda.rodain.ui.utils.AutoscrollTreeView;
-
-import java.io.File;
-import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -99,7 +98,7 @@ public class SipDataTreeView extends AutoscrollTreeView {
       if (treeItem instanceof InspectionTreeItem) {
         InspectionTreeItem item = (InspectionTreeItem) cell.getTreeItem();
         if (item != null && event.getGestureSource() != cell && event.getDragboard().hasString()) {
-          cell.getStyleClass().add("schemaNodeHovered");
+          cell.getStyleClass().add(Constants.CSS_SCHEMANODEHOVERED);
         }
       }
       event.consume();
@@ -109,7 +108,7 @@ public class SipDataTreeView extends AutoscrollTreeView {
   private void setOnDragExited(final InspectionTreeCell cell) {
     // on a Target
     cell.setOnDragExited(event -> {
-      cell.getStyleClass().remove("schemaNodeHovered");
+      cell.getStyleClass().remove(Constants.CSS_SCHEMANODEHOVERED);
       cell.updateItem(cell.getItem(), false);
       event.consume();
     });

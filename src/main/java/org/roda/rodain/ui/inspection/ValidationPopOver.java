@@ -53,7 +53,7 @@ public class ValidationPopOver extends PopOver {
     content.setAlignment(Pos.CENTER);
     HBox.setHgrow(content, Priority.ALWAYS);
     Label title = new Label(I18n.t(Constants.I18N_VALID_METADATA));
-    title.setStyle("-fx-font-size: 16px");
+    title.setStyle(Constants.CSS_FX_FONT_SIZE_16PX);
     ImageView iv = new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.CHECK, Color.GREEN, 32));
     content.getChildren().addAll(title, iv);
     return content;
@@ -72,7 +72,7 @@ public class ValidationPopOver extends PopOver {
     titleBox.setAlignment(Pos.CENTER);
     HBox.setHgrow(titleBox, Priority.ALWAYS);
     Label title = new Label(I18n.t(Constants.I18N_INVALID_METADATA));
-    title.setStyle("-fx-font-size: 16px");
+    title.setStyle(Constants.CSS_FX_FONT_SIZE_16PX);
     ImageView iv = new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.TIMES, Color.RED, 32));
     titleBox.getChildren().addAll(title, iv);
 

@@ -8,9 +8,9 @@ import org.roda.rodain.core.Constants.VisitorState;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.sip.creators.SipPreviewCreator;
 import org.roda.rodain.core.utils.TreeVisitor;
+import org.roda.rodain.core.utils.WalkFileTree;
 import org.roda.rodain.ui.RodaInApplication;
 import org.roda.rodain.ui.rules.VisitorStack;
-import org.roda.rodain.ui.utils.WalkFileTree;
 
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -60,7 +60,7 @@ public class RuleModalProcessing extends BorderPane {
     this.visitorStack = visitorStack;
     this.fileWalker = fileWalker;
 
-    getStyleClass().add("sipcreator");
+    getStyleClass().add(Constants.CSS_SIPCREATOR);
 
     createTop();
     createCenter();
@@ -72,7 +72,7 @@ public class RuleModalProcessing extends BorderPane {
   private void createTop() {
     VBox top = new VBox(5);
     top.setAlignment(Pos.CENTER);
-    top.getStyleClass().add("hbox");
+    top.getStyleClass().add(Constants.CSS_HBOX);
     top.setPadding(new Insets(10, 10, 10, 0));
 
     Label title = new Label(I18n.t(Constants.I18N_RULEMODALPROCESSING_CREATING_PREVIEW).toUpperCase());

@@ -62,8 +62,8 @@ public class Rule extends Observable implements Observer, Comparable {
   // map of SipPreview id -> SipPreview
   private Map<String, SipPreview> sips;
   // map of SipPreview id -> SipPreviewNode
-  private Map<String, SipPreviewNode> sipNodes = new ConcurrentHashMap<>();
-  private Set<SchemaNode> schemaNodes = Collections.synchronizedSet(new HashSet<>());
+  private Map<String, SipPreviewNode> sipNodes;
+  private Set<SchemaNode> schemaNodes;
   private Image itemIconBlack, itemIconWhite, dObjIconBlack, dObjIconWhite, fileIconBlack, fileIconWhite;
   private Integer id;
 
@@ -93,6 +93,10 @@ public class Rule extends Observable implements Observer, Comparable {
     filters = new HashSet<>();
     id = ruleCount;
 
+    sips = new ConcurrentHashMap<>();
+    sipNodes = new ConcurrentHashMap<>();
+    schemaNodes = Collections.synchronizedSet(new HashSet<>());
+
     createIcon();
     createFilters();
   }
@@ -116,10 +120,11 @@ public class Rule extends Observable implements Observer, Comparable {
     ContentFilter filter = new ContentFilter();
     for (SourceTreeItem sti : source) {
       // add this item to the filter if it's ignored or mapped
-      if (sti.getState() == PathState.IGNORED)
+      if (sti.getState() == PathState.IGNORED) {
         filter.addIgnored(sti.getPath());
-      else if (sti.getState() == PathState.MAPPED)
+      } else if (sti.getState() == PathState.MAPPED) {
         filter.addMapped(sti.getPath());
+      }
       // if it's a directory, get all its mapped and ignored children and add to
       // the filters
       if (sti instanceof SourceTreeDirectory) {
@@ -200,10 +205,6 @@ public class Rule extends Observable implements Observer, Comparable {
    * @see SipSingle
    */
   public TreeVisitor apply() {
-    sips = new ConcurrentHashMap<>();
-    sipNodes = new ConcurrentHashMap<>();
-    schemaNodes = Collections.synchronizedSet(new HashSet<>());
-
     TreeVisitor visitor;
     switch (assocType) {
       case SIP_PER_SELECTION:
@@ -270,10 +271,11 @@ public class Rule extends Observable implements Observer, Comparable {
           SipPreview sipPreview = visit.getNext();
           sipPreview.setParentId(parentID);
           SipPreviewNode sipNode;
-          if ("internal.itemLevel".equals(sipPreview.getDescriptionlevel()))
+          if ("internal.itemLevel".equals(sipPreview.getDescriptionlevel())) {
             sipNode = new SipPreviewNode(sipPreview, itemIconBlack, itemIconWhite);
-          else
+          } else {
             sipNode = new SipPreviewNode(sipPreview, fileIconBlack, fileIconWhite);
+          }
           sipPreview.addObserver(sipNode);
           sipPreview.addObserver(this);
           sipNodes.put(sipPreview.getId(), sipNode);
@@ -297,8 +299,9 @@ public class Rule extends Observable implements Observer, Comparable {
 
         if (sips.isEmpty() && schemaNodes.isEmpty()) {
           notifyObservers(Constants.EVENT_REMOVED_RULE);
-        } else
+        } else {
           notifyObservers(Constants.EVENT_REMOVED_SIP);
+        }
       } else {
         // Remove the SIP from this rule
         if (arg instanceof String && Constants.EVENT_REMOVE_FROM_RULE.equals(arg)) {

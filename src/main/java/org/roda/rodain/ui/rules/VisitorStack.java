@@ -9,7 +9,7 @@ import java.util.concurrent.Future;
 
 import org.roda.rodain.core.Constants.VisitorState;
 import org.roda.rodain.core.utils.TreeVisitor;
-import org.roda.rodain.ui.utils.WalkFileTree;
+import org.roda.rodain.core.utils.WalkFileTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

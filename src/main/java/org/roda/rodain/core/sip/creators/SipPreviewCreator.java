@@ -28,7 +28,7 @@ import org.roda.rodain.core.Constants.MetadataOption;
 import org.roda.rodain.core.Controller;
 import org.roda.rodain.core.rules.TreeNode;
 import org.roda.rodain.core.rules.filters.ContentFilter;
-import org.roda.rodain.core.schema.DescObjMetadata;
+import org.roda.rodain.core.schema.DescriptiveMetadata;
 import org.roda.rodain.core.sip.SipPreview;
 import org.roda.rodain.core.sip.SipRepresentation;
 import org.roda.rodain.core.utils.TreeVisitor;
@@ -260,12 +260,12 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
     node.addObserver(sipPreview);
 
     if (metadataOption == MetadataOption.TEMPLATE) {
-      sipPreview.getMetadata().add(new DescObjMetadata(metadataOption, templateType, metadataType, metadataVersion));
+      sipPreview.getMetadata().add(new DescriptiveMetadata(metadataOption, templateType, metadataType, metadataVersion));
       String level = ConfigurationManager.getMetadataConfig(templateType + Constants.CONF_K_SUFIX_FILE_LEVEL);
       sipPreview.setDescriptionlevel(level);
     } else {
       for (Path m : metaPath) {
-        DescObjMetadata dom = new DescObjMetadata(metadataOption, m, metadataType, metadataVersion, templateType);
+        DescriptiveMetadata dom = new DescriptiveMetadata(metadataOption, m, metadataType, metadataVersion, templateType);
         dom = Controller.updateTemplate(dom);
         sipPreview.getMetadata().add(dom);
       }

@@ -1,5 +1,7 @@
 package org.roda.rodain.ui.rules.ui;
 
+import org.roda.rodain.core.Constants;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -34,16 +36,16 @@ public class HBoxCell extends HBox {
     setPadding(new Insets(3, 3, 3, 3));
     setId(id);
 
-    getStyleClass().add("cell");
+    getStyleClass().add(Constants.CSS_CELL);
     setAlignment(Pos.CENTER_LEFT);
 
     VBox rightBox = new VBox(5);
     Label lTitle = new Label(title);
-    lTitle.getStyleClass().add("title");
+    lTitle.getStyleClass().add(Constants.CSS_TITLE);
     HBox.setHgrow(rightBox, Priority.ALWAYS);
 
     Label lDescription = new Label(description);
-    lDescription.getStyleClass().add("description");
+    lDescription.getStyleClass().add(Constants.CSS_DESCRIPTION);
     lDescription.setWrapText(true);
     lDescription.setMaxWidth(675);
 

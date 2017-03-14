@@ -19,7 +19,7 @@ import org.roda.rodain.core.Controller;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.Pair;
 import org.roda.rodain.core.rules.TreeNode;
-import org.roda.rodain.core.schema.DescObjMetadata;
+import org.roda.rodain.core.schema.DescriptiveMetadata;
 import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.core.sip.SipPreview;
 import org.roda.rodain.core.sip.SipRepresentation;
@@ -104,7 +104,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
       currentSipName = descriptionObject.getTitle();
       currentAction = actionCopyingMetadata;
 
-      for (DescObjMetadata descObjMetadata : descriptionObject.getMetadata()) {
+      for (DescriptiveMetadata descObjMetadata : descriptionObject.getMetadata()) {
         MetadataType metadataType = new MetadataType(MetadataType.MetadataTypeEnum.OTHER);
 
         Path schemaPath = ConfigurationManager.getSchemaPath(descObjMetadata.getTemplateType());

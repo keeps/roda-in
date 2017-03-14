@@ -108,7 +108,7 @@ public class RodaInApplication extends Application {
     }
 
     splashPane = new Pane();
-    splashPane.setStyle("-fx-background-color: transparent");
+    splashPane.setStyle(Constants.CSS_FX_BACKGROUND_COLOR_TRANSPARENT);
     splashPane.getChildren().add(splash);
     splashPane.setCache(true);
     splashPane.setCacheHint(CacheHint.SPEED);
@@ -277,7 +277,7 @@ public class RodaInApplication extends Application {
 
   private void createFrameStructure() {
     mainPane = new BorderPane();
-    mainPane.getStyleClass().add("border-pane");
+    mainPane.getStyleClass().add(Constants.CSS_BORDER_PANE);
     mainPane.setCenter(createSplitPane());
 
     // Create Footer after the center because Footer needs to bind to some

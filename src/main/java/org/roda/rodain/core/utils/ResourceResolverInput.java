@@ -1,4 +1,4 @@
-package org.roda.rodain.core.utils.validation;
+package org.roda.rodain.core.utils;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -13,13 +13,13 @@ import org.w3c.dom.ls.LSInput;
  * @author Andre Pereira apereira@keep.pt
  * @since 29-02-2016.
  */
-public class Input implements LSInput {
-  private static final Logger LOGGER = LoggerFactory.getLogger(Input.class.getName());
+public class ResourceResolverInput implements LSInput {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ResourceResolverInput.class.getName());
   private BufferedInputStream inputStream;
   private String publicId;
   private String systemId;
 
-  public Input(String publicId, String sysId, InputStream input) {
+  public ResourceResolverInput(String publicId, String sysId, InputStream input) {
     this.publicId = publicId;
     this.systemId = sysId;
     this.inputStream = new BufferedInputStream(input);

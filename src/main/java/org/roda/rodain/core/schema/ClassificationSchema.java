@@ -1,18 +1,12 @@
 package org.roda.rodain.core.schema;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -61,20 +55,6 @@ public class ClassificationSchema {
    */
   public void setAdditionalProperty(String name, Object value) {
     this.additionalProperties.put(name, value);
-  }
-
-  public void export(String fileName) {
-    try {
-      OutputStream outputStream = new FileOutputStream(fileName);
-      // create ObjectMapper instance
-      ObjectMapper objectMapper = new ObjectMapper();
-      objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-      objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-      // convert object to json string
-      objectMapper.writeValue(outputStream, this);
-    } catch (IOException e) {
-      LOGGER.error("Error exporting classification scheme", e);
-    }
   }
 
 }

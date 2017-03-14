@@ -22,11 +22,11 @@ import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.core.source.ComputeDirectorySize;
 import org.roda.rodain.core.source.representation.SourceDirectory;
+import org.roda.rodain.core.utils.WalkFileTree;
 import org.roda.rodain.ui.Footer;
 import org.roda.rodain.ui.RodaInApplication;
 import org.roda.rodain.ui.source.items.SourceTreeDirectory;
 import org.roda.rodain.ui.source.items.SourceTreeItem;
-import org.roda.rodain.ui.utils.WalkFileTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -136,10 +136,10 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
   private void createTop() {
     Label title = new Label(I18n.t(Constants.I18N_FILE_EXPLORER_PANE_TITLE).toUpperCase());
-    title.getStyleClass().add("title");
+    title.getStyleClass().add(Constants.CSS_TITLE);
 
     top = new HBox(10);
-    top.getStyleClass().add("title-box");
+    top.getStyleClass().add(Constants.CSS_TITLE_BOX);
     top.setAlignment(Pos.CENTER_LEFT);
     top.setPadding(new Insets(15, 15, 15, 15));
     top.getChildren().add(title);
@@ -230,7 +230,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     titleBox.setAlignment(Pos.CENTER);
     Label title = new Label(I18n.t(Constants.I18N_FILE_EXPLORER_PANE_HELP_TITLE));
     title.setWrapText(true);
-    title.getStyleClass().add("helpTitle");
+    title.getStyleClass().add(Constants.CSS_HELPTITLE);
     title.setTextAlignment(TextAlignment.CENTER);
     titleBox.getChildren().add(title);
 
@@ -241,7 +241,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     load.setMinHeight(65);
     load.setMinWidth(220);
     load.setMaxWidth(220);
-    load.getStyleClass().add("helpButton");
+    load.getStyleClass().add(Constants.CSS_HELPBUTTON);
     loadBox.getChildren().add(load);
 
     if (Boolean.parseBoolean(ConfigurationManager.getAppConfig(Constants.CONF_K_APP_HELP_ENABLED))) {
@@ -262,7 +262,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
     realRoots = new HashMap<>();
 
     treeView = new TreeView<>();
-    treeView.getStyleClass().add("main-tree");
+    treeView.getStyleClass().add(Constants.CSS_MAIN_TREE);
     treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     treeView.setShowRoot(false);
     treeView.setRoot(dummyRoot);

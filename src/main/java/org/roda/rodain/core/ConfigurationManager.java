@@ -191,7 +191,8 @@ public class ConfigurationManager {
       // copy the sample to the templates folder too, if it doesn't exist
       // already
       if (!Files.exists(templatesPath.resolve(fileName))) {
-        Files.copy(ClassLoader.getSystemResourceAsStream(Constants.FOLDER_TEMPLATES + "/" + fileName),
+        Files.copy(
+          ClassLoader.getSystemResourceAsStream(Constants.FOLDER_TEMPLATES + Constants.MISC_FWD_SLASH + fileName),
           templatesPath.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
       }
     }
@@ -206,7 +207,8 @@ public class ConfigurationManager {
       if (schemaFileName == null || schemaFileName.length() == 0) {
         continue;
       }
-      Files.copy(ClassLoader.getSystemResourceAsStream(Constants.FOLDER_TEMPLATES + "/" + schemaFileName),
+      Files.copy(
+        ClassLoader.getSystemResourceAsStream(Constants.FOLDER_TEMPLATES + Constants.MISC_FWD_SLASH + schemaFileName),
         schemasPath.resolve(schemaFileName), StandardCopyOption.REPLACE_EXISTING);
     }
 
@@ -289,7 +291,7 @@ public class ConfigurationManager {
         final Enumeration<JarEntry> entries = jar.entries();
         while (entries.hasMoreElements()) {
           JarEntry entry = entries.nextElement();
-          if (entry.getName().startsWith(Constants.FOLDER_HELP + "/") && !entry.isDirectory()) {
+          if (entry.getName().startsWith(Constants.FOLDER_HELP + Constants.MISC_FWD_SLASH) && !entry.isDirectory()) {
             InputStream input = jar.getInputStream(entry);
             Files.copy(input, rodainPath.resolve(entry.getName()), StandardCopyOption.REPLACE_EXISTING);
             input.close();
@@ -300,7 +302,7 @@ public class ConfigurationManager {
         LOGGER.error("Error while copying help files", e);
       }
     } else { // Run with IDE
-      final URL url = ConfigurationManager.class.getResource("/" + Constants.FOLDER_HELP);
+      final URL url = ConfigurationManager.class.getResource(Constants.MISC_FWD_SLASH + Constants.FOLDER_HELP);
       if (url != null) {
         try {
           final File apps = new File(url.toURI());
@@ -393,7 +395,7 @@ public class ConfigurationManager {
       }
     }
     String fileName = internalConfig.getString(completeKey);
-    URL temp = ClassLoader.getSystemResource(Constants.FOLDER_TEMPLATES + "/" + fileName);
+    URL temp = ClassLoader.getSystemResource(Constants.FOLDER_TEMPLATES + Constants.MISC_FWD_SLASH + fileName);
     if (temp != null)
       return Paths.get(temp.getPath());
     else
@@ -409,7 +411,7 @@ public class ConfigurationManager {
         }
       }
       String fileName = internalConfig.getString(completeKey);
-      URL temp = ClassLoader.getSystemResource(Constants.FOLDER_TEMPLATES + "/" + fileName);
+      URL temp = ClassLoader.getSystemResource(Constants.FOLDER_TEMPLATES + Constants.MISC_FWD_SLASH + fileName);
       if (temp == null) {
         return "";
       }

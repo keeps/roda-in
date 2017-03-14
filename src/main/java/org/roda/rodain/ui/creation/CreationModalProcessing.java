@@ -81,7 +81,7 @@ public class CreationModalProcessing extends BorderPane {
 
     subtitleFormat = I18n.t(Constants.I18N_CREATIONMODALPROCESSING_SUBTITLE);
 
-    getStyleClass().add("sipcreator");
+    getStyleClass().add(Constants.CSS_SIPCREATOR);
 
     createTop();
     createCenter();
@@ -93,7 +93,7 @@ public class CreationModalProcessing extends BorderPane {
   private void createTop() {
     VBox top = new VBox(5);
     top.setPadding(new Insets(10, 10, 10, 0));
-    top.getStyleClass().add("hbox");
+    top.getStyleClass().add(Constants.CSS_HBOX);
     top.setAlignment(Pos.CENTER);
 
     Label title = new Label(I18n.t(Constants.I18N_CREATIONMODALPREPARATION_CREATING_SIPS));
@@ -111,7 +111,7 @@ public class CreationModalProcessing extends BorderPane {
     etaBox = new HBox(10);
     etaLabel = new Label(I18n.t(Constants.I18N_CREATIONMODALPROCESSING_REMAINING));
     etaLabel.setMinWidth(70);
-    etaLabel.getStyleClass().add("boldText");
+    etaLabel.getStyleClass().add(Constants.CSS_BOLDTEXT);
     eta = new Label();
     etaBox.getChildren().addAll(etaLabel, eta);
 
@@ -134,7 +134,7 @@ public class CreationModalProcessing extends BorderPane {
     HBox elapsed = new HBox(10);
     elapsed.maxWidth(380);
     Label lElapsed = new Label(I18n.t(Constants.I18N_CREATIONMODALPROCESSING_ELAPSED));
-    lElapsed.getStyleClass().add("boldText");
+    lElapsed.getStyleClass().add(Constants.CSS_BOLDTEXT);
     lElapsed.setMinWidth(70);
     elapsedTime = new Label("");
     elapsed.getChildren().addAll(lElapsed, elapsedTime);
@@ -142,14 +142,14 @@ public class CreationModalProcessing extends BorderPane {
     HBox sip = new HBox(10);
     sip.maxWidth(380);
     Label lName = new Label(I18n.t(Constants.I18N_CREATIONMODALPROCESSING_CURRENT_SIP));
-    lName.getStyleClass().add("boldText");
+    lName.getStyleClass().add(Constants.CSS_BOLDTEXT);
     lName.setMinWidth(70);
     sipName = new Label("");
     sip.getChildren().addAll(lName, sipName);
 
     HBox action = new HBox(10);
     Label lAction = new Label(I18n.t(Constants.I18N_CREATIONMODALPROCESSING_ACTION));
-    lAction.getStyleClass().add("boldText");
+    lAction.getStyleClass().add(Constants.CSS_BOLDTEXT);
     lAction.setMinWidth(70);
     sipAction = new Label("");
     action.getChildren().addAll(lAction, sipAction);
@@ -278,14 +278,15 @@ public class CreationModalProcessing extends BorderPane {
    */
   public static void showError(Sip descriptionObject, Exception ex) {
     Platform.runLater(() -> {
-      if(displayErrorMessage) {
+      if (displayErrorMessage) {
         addErrorMessage();
 
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.initStyle(StageStyle.UNDECORATED);
         alert.initOwner(stage);
         alert.setTitle(I18n.t(Constants.I18N_CREATIONMODALPROCESSING_ALERT_TITLE));
-        String header = String.format(I18n.t(Constants.I18N_CREATIONMODALPROCESSING_ALERT_HEADER), descriptionObject.getTitle());
+        String header = String.format(I18n.t(Constants.I18N_CREATIONMODALPROCESSING_ALERT_HEADER),
+          descriptionObject.getTitle());
         alert.setHeaderText(header);
         StringBuilder content = new StringBuilder(ex.getLocalizedMessage());
         content.append("\n");
@@ -333,11 +334,11 @@ public class CreationModalProcessing extends BorderPane {
     });
   }
 
-  private static void checkIfTooManyErrors(){
+  private static void checkIfTooManyErrors() {
     long limit = System.currentTimeMillis() - MAX_TIME_ERROR_MESSAGES;
-    boolean allAfterLimit = errorMessages.size() == MAX_COUNT_ERROR_MESSAGES &&
-        errorMessages.stream().allMatch(messageTime -> messageTime > limit);
-    if(allAfterLimit){
+    boolean allAfterLimit = errorMessages.size() == MAX_COUNT_ERROR_MESSAGES
+      && errorMessages.stream().allMatch(messageTime -> messageTime > limit);
+    if (allAfterLimit) {
       displayErrorMessage = false;
       Alert dlg = new Alert(Alert.AlertType.INFORMATION);
       dlg.initStyle(StageStyle.UNDECORATED);
@@ -351,8 +352,8 @@ public class CreationModalProcessing extends BorderPane {
     }
   }
 
-  private static void addErrorMessage(){
-    //If the stack is too big, remove elements until it's the right size.
+  private static void addErrorMessage() {
+    // If the stack is too big, remove elements until it's the right size.
     while (errorMessages.size() >= MAX_COUNT_ERROR_MESSAGES) {
       errorMessages.remove(0);
     }

@@ -54,7 +54,7 @@ public class SourceTreeCell extends TreeCell<String> {
       hbox.setAlignment(Pos.CENTER_LEFT);
       Label lab = new Label(item);
       Label optionalLabel = null;
-      lab.getStyleClass().add("cellText");
+      lab.getStyleClass().add(Constants.CSS_CELLTEXT);
       lab.setId("");
       Image icon = null;
 

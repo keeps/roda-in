@@ -24,11 +24,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 07-12-2015.
+ * @since 2017-03-14 hsilva: changed class name from DescObjMetadata to
+ *        DescriptiveMetadata
  */
 @JsonIgnoreProperties({"path", "loaded", "values"})
-public class DescObjMetadata {
-  private static final Logger LOGGER = LoggerFactory.getLogger(DescObjMetadata.class.getName());
-  private String id, content, contentEncoding, metadataType, label;
+public class DescriptiveMetadata {
+  private static final Logger LOGGER = LoggerFactory.getLogger(DescriptiveMetadata.class.getName());
+  private String id, content, contentEncoding, metadataType;
   private Map<String, Object> additionalProperties = new HashMap<>();
   private TreeSet<TemplateFieldValue> values;
   private Path path;
@@ -38,11 +40,11 @@ public class DescObjMetadata {
   private MetadataOption creatorOption;
   private String metadataVersion, templateType;
 
-  public DescObjMetadata() {
+  public DescriptiveMetadata() {
     creatorOption = MetadataOption.NEW_FILE;
   }
 
-  public DescObjMetadata(MetadataOption creatorOption, String templateType, String metadataType,
+  public DescriptiveMetadata(MetadataOption creatorOption, String templateType, String metadataType,
     String metadataVersion) {
     this.creatorOption = creatorOption;
     this.templateType = templateType;
@@ -57,7 +59,7 @@ public class DescObjMetadata {
     }
   }
 
-  public DescObjMetadata(MetadataOption creatorOption, Path path, String metadataType, String metadataVersion,
+  public DescriptiveMetadata(MetadataOption creatorOption, Path path, String metadataType, String metadataVersion,
     String templateType) {
     this.creatorOption = creatorOption;
     this.path = path;
@@ -72,8 +74,8 @@ public class DescObjMetadata {
     }
   }
 
-  public static DescObjMetadata buildDefaultDescObjMetadata() {
-    return new DescObjMetadata(MetadataOption.TEMPLATE, "ead2002", "ead", "2002");
+  public static DescriptiveMetadata buildDefaultDescObjMetadata() {
+    return new DescriptiveMetadata(MetadataOption.TEMPLATE, "ead2002", "ead", "2002");
   }
 
   @JsonIgnore
@@ -281,8 +283,8 @@ public class DescObjMetadata {
     this.additionalProperties.put(name, value);
   }
 
-  public DescObjMetadata clone() {
-    DescObjMetadata result = new DescObjMetadata();
+  public DescriptiveMetadata clone() {
+    DescriptiveMetadata result = new DescriptiveMetadata();
     result.setCreatorOption(creatorOption);
     result.setId(id);
     result.setContent(content);

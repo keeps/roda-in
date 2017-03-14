@@ -50,7 +50,7 @@ public class RuleModalRemoving extends BorderPane implements Observer {
     sips = new HashMap<>();
     sipObjects = new HashMap<>();
 
-    getStyleClass().add("sipcreator");
+    getStyleClass().add(Constants.CSS_SIPCREATOR);
 
     createTop();
     createCenter();
@@ -62,7 +62,7 @@ public class RuleModalRemoving extends BorderPane implements Observer {
     VBox top = new VBox(5);
     top.setAlignment(Pos.CENTER);
     top.setPadding(new Insets(10, 10, 10, 0));
-    top.getStyleClass().add("hbox");
+    top.getStyleClass().add(Constants.CSS_HBOX);
 
     Label title = new Label(I18n.t(Constants.I18N_RULEMODALREMOVING_TITLE).toUpperCase());
     title.setId("title");

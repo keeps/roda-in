@@ -37,7 +37,7 @@ public class LoadingPane extends BorderPane {
     super();
     this.schema = schemaNode;
     createTop();
-    getStyleClass().add("modal");
+    getStyleClass().add(Constants.CSS_MODAL);
 
     HBox centerBox = new HBox();
     centerBox.setAlignment(Pos.CENTER);
@@ -58,7 +58,7 @@ public class LoadingPane extends BorderPane {
 
     VBox box = new VBox(5);
     box.setAlignment(Pos.CENTER_LEFT);
-    box.getStyleClass().add("hbox");
+    box.getStyleClass().add(Constants.CSS_HBOX);
     box.setPadding(new Insets(10, 10, 10, 10));
     pane.getChildren().add(box);
 

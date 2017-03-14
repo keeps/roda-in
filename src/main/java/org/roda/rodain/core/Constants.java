@@ -34,6 +34,8 @@ public final class Constants {
   public static final String MISC_DOUBLE_QUOTE_W_SPACE = " \"";
   public static final String MISC_OR_OP = "||";
   public static final String MISC_AND_OP = "&&";
+  public static final String MISC_FWD_SLASH = "/";
+  public static final String MISC_METADATA_SEP = "!###!";
 
   // langs
   public static final String LANG_PT_BR = "pt-br";
@@ -116,6 +118,43 @@ public final class Constants {
   public static final String RSC_ICON_LIST_ADD = "icons/list-add.png";
   public static final String RSC_CSS_SHARED = "css/shared.css";
   public static final String RSC_CSS_MODAL = "css/modal.css";
+
+  // CSS
+  public static final String CSS_BOLDTEXT = "boldText";
+  public static final String CSS_BORDER_PANE = "border-pane";
+  public static final String CSS_CELL = "cell";
+  public static final String CSS_CELLTEXT = "cellText";
+  public static final String CSS_DARK_BUTTON = "dark-button";
+  public static final String CSS_DESCRIPTION = "description";
+  public static final String CSS_ERROR = "error";
+  public static final String CSS_EXPORT_BUTTON = "export-button";
+  public static final String CSS_FOOTER = "footer";
+  public static final String CSS_FORMLABEL = "formLabel";
+  public static final String CSS_FORMSEPARATOR = "formSeparator";
+  public static final String CSS_FORM_TEXT_AREA = "form-text-area";
+  public static final String CSS_HBOX = "hbox";
+  public static final String CSS_HELPBUTTON = "helpButton";
+  public static final String CSS_HELPTITLE = "helpTitle";
+  public static final String CSS_INDEXED_CELL = "indexed-cell";
+  public static final String CSS_INSPECTIONPART = "inspectionPart";
+  public static final String CSS_MAIN_TREE = "main-tree";
+  public static final String CSS_MODAL = "modal";
+  public static final String CSS_PREPARECREATIONSUBTITLE = "prepareCreationSubtitle";
+  public static final String CSS_RULECELL = "ruleCell";
+  public static final String CSS_SCHEMANODE = "schemaNode";
+  public static final String CSS_SCHEMANODEEMPTY = "schemaNodeEmpty";
+  public static final String CSS_SCHEMANODEHOVERED = "schemaNodeHovered";
+  public static final String CSS_SIPCREATOR = "sipcreator";
+  public static final String CSS_TITLE = "title";
+  public static final String CSS_TITLE_BOX = "title-box";
+  public static final String CSS_TOP = "top";
+  public static final String CSS_TOP_SUBTITLE = "top-subtitle";
+  public static final String CSS_TREE_CELL = "tree-cell";
+  public static final String CSS_BACKGROUNDWHITE = "backgroundWhite";
+  public static final String CSS_FX_BACKGROUND_COLOR_TRANSPARENT = "-fx-background-color: transparent";
+  public static final String CSS_FX_FONT_SIZE_16PX = "-fx-font-size: 16px";
+  public static final String CSS_FX_TEXT_FILL_BLACK_ = "-fx-text-fill: black;";
+  public static final String CSS_FX_TEXT_FILL_BLACK = "-fx-text-fill: black";
 
   // I18n
   public static final String I18N_NEW_VERSION_CONTENT = "Main.newVersion.content";
