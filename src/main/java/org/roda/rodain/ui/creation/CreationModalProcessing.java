@@ -10,7 +10,7 @@ import org.roda.rodain.core.ConfigurationManager;
 import org.roda.rodain.core.Constants;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.creation.CreateSips;
-import org.roda.rodain.core.schema.DescriptionObject;
+import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.core.utils.OpenPathInExplorer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -276,7 +276,7 @@ public class CreationModalProcessing extends BorderPane {
    * @param ex
    *          The thrown exception
    */
-  public static void showError(DescriptionObject descriptionObject, Exception ex) {
+  public static void showError(Sip descriptionObject, Exception ex) {
     Platform.runLater(() -> {
       if(displayErrorMessage) {
         addErrorMessage();

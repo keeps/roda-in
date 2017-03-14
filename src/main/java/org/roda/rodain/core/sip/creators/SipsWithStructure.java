@@ -23,7 +23,7 @@ import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.core.rules.TreeNode;
 import org.roda.rodain.core.rules.filters.ContentFilter;
 import org.roda.rodain.core.schema.DescObjMetadata;
-import org.roda.rodain.core.schema.DescriptionObject;
+import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.core.sip.PseudoDescriptionObject;
 import org.roda.rodain.core.sip.PseudoItem;
 import org.roda.rodain.core.sip.PseudoSIP;
@@ -40,7 +40,7 @@ public class SipsWithStructure extends SipPreviewCreator {
   private Deque<Folder> folders;
   private Set<PseudoItem> tree;
   private Map<Path, PseudoItem> record;
-  private Map<Path, DescriptionObject> descriptionObjects;
+  private Map<Path, Sip> descriptionObjects;
   private Map<Path, SipPreview> sipPreviewMap;
 
   /**
@@ -147,7 +147,7 @@ public class SipsWithStructure extends SipPreviewCreator {
       }
 
       // make this node a description object
-      DescriptionObject descriptionObject = new DescriptionObject(
+      Sip descriptionObject = new Sip(
         new DescObjMetadata(MetadataOption.TEMPLATE, templateType, metadataType, metadataVersion));
       descriptionObject.setTitle(path.getFileName().toString());
       try {
@@ -162,7 +162,7 @@ public class SipsWithStructure extends SipPreviewCreator {
       // Set this node as a parent of its descriptionObject children (which can
       // only be folders)
       for (Path p : subFolders) {
-        DescriptionObject dobj = descriptionObjects.get(p);
+        Sip dobj = descriptionObjects.get(p);
         if (dobj != null) {
           dobj.setParentId(descriptionObject.getId());
         }
@@ -251,7 +251,7 @@ public class SipsWithStructure extends SipPreviewCreator {
     return tree;
   }
 
-  public Map<Path, DescriptionObject> getDescriptionObjects() {
+  public Map<Path, Sip> getDescriptionObjects() {
     return descriptionObjects;
   }
 

@@ -8,7 +8,7 @@ import org.roda.rodain.core.Constants;
 import org.roda.rodain.core.Constants.SipNameStrategy;
 import org.roda.rodain.core.Constants.SipType;
 import org.roda.rodain.core.creation.CreateSips;
-import org.roda.rodain.core.schema.DescriptionObject;
+import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.ui.RodaInApplication;
 
 import javafx.event.EventHandler;
@@ -71,7 +71,7 @@ public class CreationModalStage extends Stage {
     CreationModalProcessing pane = new CreationModalProcessing(creator, this);
     setRoot(pane);
 
-    Map<DescriptionObject, List<String>> sips;
+    Map<Sip, List<String>> sips;
     if (exportAll) {
       sips = RodaInApplication.getAllDescriptionObjects();
     } else {

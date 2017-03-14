@@ -13,7 +13,7 @@ import java.util.TreeSet;
 
 import org.roda.rodain.core.ConfigurationManager;
 import org.roda.rodain.core.Constants;
-import org.roda.rodain.core.schema.DescriptionObject;
+import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.core.sip.SipPreview;
 import org.roda.rodain.ui.rules.Rule;
 import org.roda.rodain.ui.rules.ui.RuleModalController;
@@ -35,7 +35,7 @@ import javafx.scene.paint.Color;
 public class SchemaNode extends TreeItem<String> implements Observer {
   private static final Logger LOGGER = LoggerFactory.getLogger(SchemaNode.class.getName());
 
-  private DescriptionObject dob;
+  private Sip dob;
   private Map<String, Integer> rules;
   private Map<String, Rule> ruleObjects;
   private Map<String, Set<SipPreviewNode>> sips;
@@ -52,7 +52,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
    * @param dobject
    *          The DescriptionObject that defines the SchemaNode
    */
-  public SchemaNode(DescriptionObject dobject) {
+  public SchemaNode(Sip dobject) {
     super(dobject.getTitle());
     dob = dobject;
     rules = new HashMap<>();
@@ -64,7 +64,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
       updateDescriptionLevel(dob.getDescriptionlevel());
   }
 
-  public SchemaNode(DescriptionObject dobject, Image iconBlack, Image iconWhite) {
+  public SchemaNode(Sip dobject, Image iconBlack, Image iconWhite) {
     super(dobject.getTitle());
     dob = dobject;
     rules = new HashMap<>();
@@ -330,7 +330,7 @@ public class SchemaNode extends TreeItem<String> implements Observer {
   /**
    * @return The DescriptionObject that defines the SchemaNode
    */
-  public DescriptionObject getDob() {
+  public Sip getDob() {
     return dob;
   }
 
@@ -371,8 +371,8 @@ public class SchemaNode extends TreeItem<String> implements Observer {
    * 
    * @return
    */
-  public Map<DescriptionObject, List<String>> getDescriptionObjects() {
-    Map<DescriptionObject, List<String>> result = new HashMap<>();
+  public Map<Sip, List<String>> getDescriptionObjects() {
+    Map<Sip, List<String>> result = new HashMap<>();
 
     result.put(getDob(), computeAncestors());
 
@@ -400,12 +400,14 @@ public class SchemaNode extends TreeItem<String> implements Observer {
       if (currentNode.getDob().getId() != null) {
         ancestors.add(currentNode.getDob().getId());
         TreeItem parentItem = currentNode.getParent();
-        if (parentItem instanceof SchemaNode)
+        if (parentItem instanceof SchemaNode) {
           currentNode = (SchemaNode) parentItem;
-        else
+        } else {
           currentNode = null;
-      } else
+        }
+      } else {
         currentNode = null;
+      }
     }
     return ancestors;
   }

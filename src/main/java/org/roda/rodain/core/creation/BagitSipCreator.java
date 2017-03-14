@@ -20,7 +20,7 @@ import org.roda.rodain.core.Constants.SipNameStrategy;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.Pair;
 import org.roda.rodain.core.rules.TreeNode;
-import org.roda.rodain.core.schema.DescriptionObject;
+import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.core.sip.SipPreview;
 import org.roda.rodain.core.sip.SipRepresentation;
 import org.roda.rodain.ui.creation.CreationModalProcessing;
@@ -53,12 +53,12 @@ public class BagitSipCreator extends SimpleSipCreator {
    * @param previews
    *          The map with the SIPs that will be exported
    */
-  public BagitSipCreator(Path outputPath, Map<DescriptionObject, List<String>> previews, boolean createReport,
+  public BagitSipCreator(Path outputPath, Map<Sip, List<String>> previews, boolean createReport,
     String prefix, SipNameStrategy sipNameStrategy) {
     super(outputPath, previews, createReport);
     this.prefix = prefix;
     this.sipNameStrategy = sipNameStrategy;
-    for (DescriptionObject obj : previews.keySet()) {
+    for (Sip obj : previews.keySet()) {
       if (obj instanceof SipPreview) {
         SipPreview sip = (SipPreview) obj;
         for (SipRepresentation sr : sip.getRepresentations()) {
@@ -82,7 +82,7 @@ public class BagitSipCreator extends SimpleSipCreator {
 
     startTime = Instant.now();
     Map<Path, Object> sips = new HashMap<Path, Object>();
-    for (DescriptionObject preview : previews.keySet()) {
+    for (Sip preview : previews.keySet()) {
       if (canceled) {
         break;
       }
@@ -98,7 +98,7 @@ public class BagitSipCreator extends SimpleSipCreator {
     currentAction = I18n.t(Constants.I18N_DONE);
   }
 
-  private Pair createBagit(DescriptionObject descriptionObject) {
+  private Pair createBagit(Sip descriptionObject) {
     // we add a timestamp to the beginning of the SIP name to avoid same name
     // conflicts
     currentSipName = descriptionObject.getTitle();

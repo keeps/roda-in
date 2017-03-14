@@ -162,7 +162,10 @@ public class ConfigurationManager {
       JoranConfigurator configurator = new JoranConfigurator();
       configurator.setContext(context);
       context.reset();
-      configurator.doConfigure(ClassLoader.getSystemResource("logback.xml"));
+      // 20170314 hsilva: logback file was named differently from what logback
+      // usually expects in order to avoid auto-loading by logback as we want to
+      // place the log file under roda-in home
+      configurator.doConfigure(ClassLoader.getSystemResource("lllogback.xml"));
     } catch (JoranException e) {
       LOGGER.error("Error configuring logback", e);
     }

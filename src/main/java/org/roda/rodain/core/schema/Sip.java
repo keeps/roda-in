@@ -31,26 +31,25 @@ import com.github.jknack.handlebars.Template;
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 07-12-2015.
+ * @since 2017-03-14 hsilva: changed class name from DescriptionObject to Sip
  */
-public class DescriptionObject extends Observable {
-  private static final Logger LOGGER = LoggerFactory.getLogger(DescriptionObject.class.getName());
+public class Sip extends Observable {
+  private static final Logger LOGGER = LoggerFactory.getLogger(Sip.class.getName());
   private String title, id, parentId, descriptionlevel;
   private List<DescObjMetadata> metadata = new ArrayList<>();
   private Map<String, Object> additionalProperties = new TreeMap<>();
   private boolean isUpdateSIP = false;
   private String type;
 
-  public DescriptionObject() {
+  public Sip() {
     title = I18n.t(Constants.I18N_ROOT);
     id = Controller.createID();
     this.type = IPContentType.getMIXED().asString();
   }
 
-  public DescriptionObject(DescObjMetadata template) {
-    title = I18n.t(Constants.I18N_ROOT);
-    id = Controller.createID();
+  public Sip(DescObjMetadata template) {
+    this();
     metadata.add(template);
-    this.type = IPContentType.getMIXED().asString();
   }
 
   /**

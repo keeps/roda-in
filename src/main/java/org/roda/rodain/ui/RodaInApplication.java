@@ -17,7 +17,7 @@ import org.roda.rodain.core.Constants;
 import org.roda.rodain.core.Controller;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.PathCollection;
-import org.roda.rodain.core.schema.DescriptionObject;
+import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.core.utils.OpenPathInExplorer;
 import org.roda.rodain.ui.creation.CreationModalPreparation;
 import org.roda.rodain.ui.creation.CreationModalStage;
@@ -659,14 +659,14 @@ public class RodaInApplication extends Application {
    * @return The Map with the selected SIPs of all the SchemaNodes in the scheme
    *         pane
    */
-  public static Map<DescriptionObject, List<String>> getSelectedDescriptionObjects() {
+  public static Map<Sip, List<String>> getSelectedDescriptionObjects() {
     return schemePane.getSelectedDescriptionObjects();
   }
 
   /**
    * @return The Map with all the SIPs of all the SchemaNodes in the scheme pane
    */
-  public static Map<DescriptionObject, List<String>> getAllDescriptionObjects() {
+  public static Map<Sip, List<String>> getAllDescriptionObjects() {
     return schemePane.getAllDescriptionObjects();
   }
 

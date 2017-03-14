@@ -20,7 +20,7 @@ import java.util.Map;
  */
 public class ClassificationSchema {
   private static final Logger LOGGER = LoggerFactory.getLogger(ClassificationSchema.class.getName());
-  private List<DescriptionObject> dos = new ArrayList<>();
+  private List<Sip> dos = new ArrayList<>();
   private Map<String, Object> additionalProperties = new HashMap<>();
 
   /**
@@ -28,7 +28,7 @@ public class ClassificationSchema {
    *
    * @return The description objects list
    */
-  public List<DescriptionObject> getDos() {
+  public List<Sip> getDos() {
     return dos;
   }
 
@@ -38,7 +38,7 @@ public class ClassificationSchema {
    * @param dos
    *          The description objects list
    */
-  public void setDos(List<DescriptionObject> dos) {
+  public void setDos(List<Sip> dos) {
     this.dos = dos;
   }
 

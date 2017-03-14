@@ -13,7 +13,7 @@ import org.roda.rodain.core.Controller;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.Pair;
 import org.roda.rodain.core.schema.DescObjMetadata;
-import org.roda.rodain.core.schema.DescriptionObject;
+import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.ui.RodaInApplication;
 import org.roda.rodain.ui.rules.ui.HBoxCell;
 import org.roda.rodain.ui.utils.FontAwesomeImageCreator;
@@ -66,7 +66,7 @@ public class AddMetadataPane extends BorderPane {
 
   private HBoxCell cellSingleFile, cellEmptyFile;
   private Stage stage;
-  private DescriptionObject descriptionObject;
+  private Sip descriptionObject;
   private Path selectedPath;
 
   private ComboBox<Pair> comboTypesSingleFile;
@@ -83,7 +83,7 @@ public class AddMetadataPane extends BorderPane {
     this.metadataToAdd = metadataToAdd;
   }
 
-  public AddMetadataPane(Stage stage, DescriptionObject descriptionObject) {
+  public AddMetadataPane(Stage stage, Sip descriptionObject) {
     this.stage = stage;
     this.descriptionObject = descriptionObject;
 

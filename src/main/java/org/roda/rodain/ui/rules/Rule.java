@@ -20,7 +20,7 @@ import org.roda.rodain.core.Constants.RuleType;
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.core.rules.TreeNode;
 import org.roda.rodain.core.rules.filters.ContentFilter;
-import org.roda.rodain.core.schema.DescriptionObject;
+import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.core.sip.PseudoDescriptionObject;
 import org.roda.rodain.core.sip.PseudoItem;
 import org.roda.rodain.core.sip.PseudoSIP;
@@ -312,7 +312,7 @@ public class Rule extends Observable implements Observer, Comparable {
 
   private void updateSipsWithStructure(SipsWithStructure visitor) {
     Set<PseudoItem> tree = visitor.getTree();
-    Map<Path, DescriptionObject> descriptionObjectMap = visitor.getDescriptionObjects();
+    Map<Path, Sip> descriptionObjectMap = visitor.getDescriptionObjects();
     Map<Path, SipPreview> sipPreviewMap = visitor.getSipPreviewMap();
 
     for (PseudoItem item : tree) {
@@ -329,7 +329,7 @@ public class Rule extends Observable implements Observer, Comparable {
   }
 
   private TreeItem<String> rec_createNode(PseudoItem pseudoItem, Map<Path, SipPreview> sipPreviewMap,
-    Map<Path, DescriptionObject> descriptionObjectMap) {
+    Map<Path, Sip> descriptionObjectMap) {
     if (pseudoItem instanceof PseudoSIP) {
       PseudoSIP pseudoSIP = (PseudoSIP) pseudoItem;
       SipPreview sipPreview = sipPreviewMap.get(pseudoSIP.getNode().getPath());
@@ -345,7 +345,7 @@ public class Rule extends Observable implements Observer, Comparable {
       return sipNode;
     } else {
       PseudoDescriptionObject pdo = (PseudoDescriptionObject) pseudoItem;
-      DescriptionObject dobj = descriptionObjectMap.get(pdo.getPath());
+      Sip dobj = descriptionObjectMap.get(pdo.getPath());
       SchemaNode schemaNode = new SchemaNode(dobj, dObjIconBlack, dObjIconWhite);
       for (PseudoItem pi : pdo.getChildren()) {
         TreeItem<String> child = rec_createNode(pi, sipPreviewMap, descriptionObjectMap);

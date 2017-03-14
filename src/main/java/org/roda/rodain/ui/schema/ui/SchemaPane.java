@@ -18,7 +18,7 @@ import org.roda.rodain.core.Controller;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.schema.ClassificationSchema;
 import org.roda.rodain.core.schema.DescObjMetadata;
-import org.roda.rodain.core.schema.DescriptionObject;
+import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.core.sip.SipPreview;
 import org.roda.rodain.ui.Footer;
 import org.roda.rodain.ui.ModalStage;
@@ -310,7 +310,7 @@ public class SchemaPane extends BorderPane {
   }
 
   private void createRootNode() {
-    DescriptionObject dobj = new DescriptionObject(DescObjMetadata.buildDefaultDescObjMetadata());
+    Sip dobj = new Sip(DescObjMetadata.buildDefaultDescObjMetadata());
     dobj.setParentId(null);
     dobj.setId(null);
     rootNode = new SchemaNode(dobj);
@@ -374,12 +374,12 @@ public class SchemaPane extends BorderPane {
     setCenter(treeBox);
     setBottom(bottom);
     rootNode.getChildren().clear();
-    List<DescriptionObject> dos = cs.getDos();
+    List<Sip> dos = cs.getDos();
     Map<String, SchemaNode> nodes = new HashMap<>();
     Set<SchemaNode> roots = new HashSet<>();
 
     try {
-      for (DescriptionObject descObj : dos) {
+      for (Sip descObj : dos) {
         // Check if the node is a root node
         if (descObj.getParentId() == null) {
           // Create a new node if it hasn't been created
@@ -392,7 +392,7 @@ public class SchemaPane extends BorderPane {
         } else {
           // Get a list with the items where the id equals the node's parent's
           // id
-          List<DescriptionObject> parents = dos.stream().filter(p -> descObj.getParentId().equals(p.getId()))
+          List<Sip> parents = dos.stream().filter(p -> descObj.getParentId().equals(p.getId()))
             .collect(Collectors.toList());
           // If the input file is well formed, there should be one item in the
           // list, no more and no less
@@ -402,7 +402,7 @@ public class SchemaPane extends BorderPane {
             LOGGER.info("Error creating the scheme tree", new MalformedSchemaException(message));
             continue;
           }
-          DescriptionObject parent = parents.get(0);
+          Sip parent = parents.get(0);
           SchemaNode parentNode;
           // If the parent node hasn't been processed yet, add it to the nodes
           // map
@@ -449,7 +449,7 @@ public class SchemaPane extends BorderPane {
 
   private void initializeTemplates(ClassificationSchema cs) {
     if (cs.getDos() != null) {
-      for (DescriptionObject d : cs.getDos()) {
+      for (Sip d : cs.getDos()) {
         if (d.getMetadata() != null) {
           for (DescObjMetadata dm : d.getMetadata()) {
             dm = Controller.updateTemplate(dm);
@@ -604,7 +604,7 @@ public class SchemaPane extends BorderPane {
     AddMetadataPane addMetadataPane = new AddMetadataPane(modalStage, null);
     modalStage.setRoot(addMetadataPane, true);
     if (addMetadataPane.getMetadataToAdd() != null) {
-      DescriptionObject dobj = new DescriptionObject(addMetadataPane.getMetadataToAdd());
+      Sip dobj = new Sip(addMetadataPane.getMetadataToAdd());
 
       dobj.setId(Controller.createID());
       dobj.setTitle(I18n.t(Constants.I18N_SCHEMAPANE_NEW_NODE));
@@ -933,11 +933,11 @@ public class SchemaPane extends BorderPane {
    *         SIPs but also the hierarchy). Each key is a description object and
    *         each value is a list of that object's ancestors IDs.
    */
-  public Map<DescriptionObject, List<String>> getAllDescriptionObjects() {
+  public Map<Sip, List<String>> getAllDescriptionObjects() {
     Set<SchemaNode> localSchemaNodes = new HashSet<>(schemaNodes);
     localSchemaNodes.add(rootNode);
     Map<SipPreview, List<String>> sipsMap = new HashMap<>();
-    Map<DescriptionObject, List<String>> descObjsMap = new HashMap<>();
+    Map<Sip, List<String>> descObjsMap = new HashMap<>();
 
     for (SchemaNode sn : localSchemaNodes) {
       sipsMap.putAll(sn.getSipPreviews());
@@ -959,9 +959,9 @@ public class SchemaPane extends BorderPane {
    *         the SIPs but also the hierarchy). Each key is a description object
    *         and each value is a list of that object's ancestors IDs.
    */
-  public Map<DescriptionObject, List<String>> getSelectedDescriptionObjects() {
+  public Map<Sip, List<String>> getSelectedDescriptionObjects() {
     Map<SipPreview, List<String>> sipsMap = new HashMap<>();
-    Map<DescriptionObject, List<String>> descObjsMap = new HashMap<>();
+    Map<Sip, List<String>> descObjsMap = new HashMap<>();
 
     ObservableList<TreeItem<String>> selected = treeView.getSelectionModel().getSelectedItems();
     if (selected != null) {

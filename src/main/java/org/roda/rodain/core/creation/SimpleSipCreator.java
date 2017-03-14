@@ -31,7 +31,7 @@ import org.roda.rodain.core.Constants.SipNameStrategy;
 import org.roda.rodain.core.Controller;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.report.InventoryReportCreator;
-import org.roda.rodain.core.schema.DescriptionObject;
+import org.roda.rodain.core.schema.Sip;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -55,7 +55,7 @@ public abstract class SimpleSipCreator extends Thread {
 
   protected final Path outputPath;
   protected final boolean createReport;
-  protected final Map<DescriptionObject, List<String>> previews;
+  protected final Map<Sip, List<String>> previews;
   protected final int sipPreviewCount;
 
   protected int createdSipsCount = 0;
@@ -75,7 +75,7 @@ public abstract class SimpleSipCreator extends Thread {
   protected boolean canceled = false;
   protected float currentSipProgress;
 
-  protected Set<DescriptionObject> unsuccessful;
+  protected Set<Sip> unsuccessful;
 
   /**
    * Creates a simple SIP exporter.
@@ -90,7 +90,7 @@ public abstract class SimpleSipCreator extends Thread {
    * @param previews
    *          The map with the SIPs that will be exported
    */
-  public SimpleSipCreator(Path outputPath, Map<DescriptionObject, List<String>> previews, boolean createReport) {
+  public SimpleSipCreator(Path outputPath, Map<Sip, List<String>> previews, boolean createReport) {
     this.outputPath = outputPath;
     this.createReport = createReport;
     this.previews = previews;
@@ -216,7 +216,7 @@ public abstract class SimpleSipCreator extends Thread {
     reportCreator.start(sips);
   }
 
-  public String createSipName(DescriptionObject sip, String prefix, SipNameStrategy sipNameStrategy) {
+  public String createSipName(Sip sip, String prefix, SipNameStrategy sipNameStrategy) {
     StringBuilder name = new StringBuilder();
     if (prefix != null && !"".equals(prefix)) {
       name.append(prefix).append(" - ");

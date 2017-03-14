@@ -19,7 +19,7 @@ import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.Pair;
 import org.roda.rodain.core.rules.TreeNode;
 import org.roda.rodain.core.schema.DescObjMetadata;
-import org.roda.rodain.core.schema.DescriptionObject;
+import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.core.sip.SipPreview;
 import org.roda.rodain.core.sip.SipRepresentation;
 import org.roda.rodain.ui.creation.CreationModalProcessing;
@@ -58,7 +58,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
    *          The map with the SIPs that will be exported
    * @param createReport
    */
-  public EarkSipCreator(Path outputPath, Map<DescriptionObject, List<String>> previews, String prefix,
+  public EarkSipCreator(Path outputPath, Map<Sip, List<String>> previews, String prefix,
     SipNameStrategy sipNameStrategy, boolean createReport) {
     super(outputPath, previews, createReport);
     this.prefix = prefix;
@@ -71,7 +71,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
   @Override
   public void run() {
     Map<Path, Object> sips = new HashMap<Path, Object>();
-    for (DescriptionObject preview : previews.keySet()) {
+    for (Sip preview : previews.keySet()) {
       if (canceled) {
         break;
       }
@@ -86,7 +86,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
     currentAction = I18n.t(Constants.I18N_DONE);
   }
 
-  private Pair createEarkSip(DescriptionObject descriptionObject) {
+  private Pair createEarkSip(Sip descriptionObject) {
     Path tempDir = Paths.get(System.getProperty("java.io.tmpdir"));
     try {
       IPContentType contentType = descriptionObject instanceof SipPreview

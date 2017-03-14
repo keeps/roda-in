@@ -13,11 +13,10 @@ import java.util.Set;
 import org.roda.rodain.core.ConfigurationManager;
 import org.roda.rodain.core.Constants;
 import org.roda.rodain.core.Constants.PathState;
-import org.roda.rodain.core.Controller;
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.core.rules.TreeNode;
 import org.roda.rodain.core.schema.DescObjMetadata;
-import org.roda.rodain.core.schema.DescriptionObject;
+import org.roda.rodain.core.schema.Sip;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +24,7 @@ import org.slf4j.LoggerFactory;
  * @author Andre Pereira apereira@keep.pt
  * @since 01-10-2015.
  */
-public class SipPreview extends DescriptionObject implements Observer {
+public class SipPreview extends Sip implements Observer {
   private static final Logger LOGGER = LoggerFactory.getLogger(SipPreview.class.getName());
   private Set<SipRepresentation> representations;
   private Set<TreeNode> documentation;
@@ -60,7 +59,6 @@ public class SipPreview extends DescriptionObject implements Observer {
         LOGGER.error(t.getMessage(), t);
       }
     }
-    setId(Controller.createID());
 
     // set paths as mapped
     for (SipRepresentation sr : representations) {

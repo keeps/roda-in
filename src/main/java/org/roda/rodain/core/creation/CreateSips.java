@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import org.roda.rodain.core.Constants.SipNameStrategy;
 import org.roda.rodain.core.Constants.SipType;
-import org.roda.rodain.core.schema.DescriptionObject;
+import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.core.sip.SipPreview;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +51,7 @@ public class CreateSips {
   /**
    * Starts the exportation process.
    */
-  public void start(Map<DescriptionObject, List<String>> sips) {
+  public void start(Map<Sip, List<String>> sips) {
     // Map<DescriptionObject, List<String>> sips;
     // if (exportAll) {
     // sips = RodaInApplication.getAllDescriptionObjects();

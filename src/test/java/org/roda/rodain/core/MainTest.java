@@ -12,7 +12,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.roda.rodain.core.schema.ClassificationSchema;
-import org.roda.rodain.core.schema.DescriptionObject;
+import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.ui.RodaInApplication;
 import org.roda.rodain.ui.creation.CreationModalPreparation;
 import org.roda.rodain.ui.inspection.InspectionPane;
@@ -140,7 +140,7 @@ public class MainTest extends ApplicationTest {
     TreeItem<String> newItem = RodaInApplication.getSchemePane().getTreeView().getSelectionModel().getSelectedItem();
     assert newItem instanceof SchemaNode;
     SchemaNode newNode = (SchemaNode) newItem;
-    DescriptionObject dobj = newNode.getDob();
+    Sip dobj = newNode.getDob();
     assert dobj != null;
 
     sleep(2000);

@@ -14,7 +14,7 @@ import org.roda.rodain.core.Constants.SipNameStrategy;
 import org.roda.rodain.core.Constants.SipType;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.Pair;
-import org.roda.rodain.core.schema.DescriptionObject;
+import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.core.sip.SipPreview;
 import org.roda.rodain.ui.RodaInApplication;
 
@@ -110,8 +110,8 @@ public class CreationModalPreparation extends BorderPane {
   private VBox createCountBox() {
     VBox countBox = new VBox(10);
     countBox.setAlignment(Pos.CENTER);
-    Set<DescriptionObject> selectedSet = RodaInApplication.getSelectedDescriptionObjects().keySet();
-    Set<DescriptionObject> allSet = RodaInApplication.getAllDescriptionObjects().keySet();
+    Set<Sip> selectedSet = RodaInApplication.getSelectedDescriptionObjects().keySet();
+    Set<Sip> allSet = RodaInApplication.getAllDescriptionObjects().keySet();
     selectedSIP = selectedSet.stream().filter(p -> p instanceof SipPreview).count();
     selectedItems = selectedSet.size() - selectedSIP;
     allSIP = allSet.stream().filter(p -> p instanceof SipPreview).count();

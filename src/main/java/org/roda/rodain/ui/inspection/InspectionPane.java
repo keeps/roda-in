@@ -35,7 +35,7 @@ import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.core.rules.TreeNode;
 import org.roda.rodain.core.rules.filters.ContentFilter;
 import org.roda.rodain.core.schema.DescObjMetadata;
-import org.roda.rodain.core.schema.DescriptionObject;
+import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.core.sip.SipPreview;
 import org.roda.rodain.core.sip.SipRepresentation;
 import org.roda.rodain.core.template.TemplateFieldValue;
@@ -118,7 +118,7 @@ public class InspectionPane extends BorderPane {
 
   private SipPreviewNode currentSIPNode;
   private SchemaNode currentSchema;
-  private DescriptionObject currentDescOb;
+  private Sip currentDescOb;
   private List<TreeItem<String>> selectedItems;
   private Label paneTitle, topTypeLabel;
 
@@ -1270,7 +1270,7 @@ public class InspectionPane extends BorderPane {
     List<DescObjMetadata> metadataList = currentDescOb.getMetadata();
     if (!metadataList.isEmpty()) {
       selectedItems.forEach(item -> {
-        DescriptionObject itemDO = null;
+        Sip itemDO = null;
         if (item instanceof SchemaNode)
           itemDO = ((SchemaNode) item).getDob();
         if (item instanceof SipPreviewNode)
@@ -1286,14 +1286,14 @@ public class InspectionPane extends BorderPane {
     }
   }
 
-  private void applyIPTypeToDescriptionObject(DescriptionObject itemDO, IPContentType setContentType) {
+  private void applyIPTypeToDescriptionObject(Sip itemDO, IPContentType setContentType) {
     IPContentType mixedMergeIPType = new IPContentType("{{mixed}}");
     if (!setContentType.asString().equalsIgnoreCase(mixedMergeIPType.asString())) {
       itemDO.setContentType(setContentType);
     }
   }
 
-  private void applyMetadataFileToDescriptionObject(DescObjMetadata metadataObj, DescriptionObject descObj,
+  private void applyMetadataFileToDescriptionObject(DescObjMetadata metadataObj, Sip descObj,
     TreeItem<String> treeItem) {
     if (metadataObj.getCreatorOption() != MetadataOption.TEMPLATE) {
       // remove the metadata files with the same ID as the new one
@@ -1751,7 +1751,7 @@ public class InspectionPane extends BorderPane {
       if (!common)
         continue;
 
-      DescriptionObject dob;
+      Sip dob;
       if (ti instanceof SipPreviewNode)
         dob = ((SipPreviewNode) ti).getSip();
       else if (ti instanceof SchemaNode)
@@ -1823,7 +1823,7 @@ public class InspectionPane extends BorderPane {
         }
       }
     }
-    currentDescOb = new DescriptionObject(
+    currentDescOb = new Sip(
       new DescObjMetadata(MetadataOption.TEMPLATE, commonTemplate, commonMetadataType, commonVersion));
 
     topTypeLabel = new Label();
@@ -1898,7 +1898,7 @@ public class InspectionPane extends BorderPane {
     setBottom(exportBox);
   }
 
-  private HBox createTypeComboBox(DescriptionObject descOb) {
+  private HBox createTypeComboBox(Sip descOb) {
     HBox result = new HBox(10);
     result.setAlignment(Pos.CENTER_LEFT);
 
@@ -2207,7 +2207,7 @@ public class InspectionPane extends BorderPane {
     return new ArrayList<>(sipFiles.getSelectionModel().getSelectedItems());
   }
 
-  public void updateMetadataList(DescriptionObject descriptionObject) {
+  public void updateMetadataList(Sip descriptionObject) {
     if (descriptionObject == currentDescOb) {
       updateMetadataCombo(true);
     }

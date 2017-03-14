@@ -14,7 +14,7 @@ import java.util.Set;
 import org.apache.commons.configuration.ConfigurationException;
 import org.roda.rodain.core.schema.ClassificationSchema;
 import org.roda.rodain.core.schema.DescObjMetadata;
-import org.roda.rodain.core.schema.DescriptionObject;
+import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.ui.schema.ui.SchemaNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +72,7 @@ public class Controller {
   }
 
   public static void exportClassificationScheme(Set<SchemaNode> nodes, String outputFile) {
-    List<DescriptionObject> dobjs = new ArrayList<>();
+    List<Sip> dobjs = new ArrayList<>();
     for (SchemaNode sn : nodes) {
       dobjs.add(sn.getDob());
     }
