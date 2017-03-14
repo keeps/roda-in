@@ -238,6 +238,7 @@ public abstract class SimpleSipCreator extends Thread {
         break;
     }
 
-    return name.toString();
+    return Controller.urlEncode(name.toString());
   }
+
 }

@@ -15,6 +15,7 @@ import org.roda.rodain.core.ConfigurationManager;
 import org.roda.rodain.core.Constants;
 import org.roda.rodain.core.Constants.MetadataOption;
 import org.roda.rodain.core.Constants.SipNameStrategy;
+import org.roda.rodain.core.Controller;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.Pair;
 import org.roda.rodain.core.rules.TreeNode;
@@ -91,7 +92,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
     try {
       IPContentType contentType = descriptionObject instanceof SipPreview
         ? ((SipPreview) descriptionObject).getContentType() : IPContentType.getMIXED();
-      SIP earkSip = new EARKSIP(descriptionObject.getId(), contentType, agentName);
+      SIP earkSip = new EARKSIP(Controller.urlEncode(descriptionObject.getId()), contentType, agentName);
       earkSip.addObserver(this);
       earkSip.setAncestors(previews.get(descriptionObject));
       if (descriptionObject.isUpdateSIP()) {

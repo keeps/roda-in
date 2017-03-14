@@ -3,7 +3,9 @@ package org.roda.rodain.core;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Date;
@@ -144,6 +146,15 @@ public class Controller {
    */
   public static String formatSize(long size) {
     return ControllerUtils.formatSize(size);
+  }
+
+  public static String urlEncode(String string) {
+    try {
+      return URLEncoder.encode(string, Constants.RODAIN_DEFAULT_ENCODING);
+    } catch (UnsupportedEncodingException e) {
+      LOGGER.error("Unable to URL Encode the string with the value '{}'", string, e);
+      return string;
+    }
   }
 
 }
