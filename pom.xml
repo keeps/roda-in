@@ -88,7 +88,7 @@
 							<jar>target/rodain-app-${project.version}.jar</jar>
 							<errTitle>Error opening RODA-in</errTitle>
 							<classPath>
-								<mainClass>org.roda.rodain.core.Main</mainClass>
+								<mainClass>org.roda.rodain.Main</mainClass>
 							</classPath>
 							<icon>src/main/resources/roda2-logo.ico</icon>
 							<jre>
