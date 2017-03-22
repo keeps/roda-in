@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javafx.scene.control.ContentDisplay;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.PopOver;
 import org.fxmisc.richtext.CodeArea;
@@ -147,7 +148,6 @@ public class InspectionPane extends BorderPane {
   private Task<Void> contentTask, docsTask, metadataTask;
   private Button ignore;
   private ToggleButton toggleDocumentation;
-  private Label toggleDocumentationLabel;
   // Rules
   private BorderPane rules;
   private ListView<RuleCell> ruleList;
@@ -1062,11 +1062,9 @@ public class InspectionPane extends BorderPane {
     docsRoot = new SipContentDirectory(new TreeNode(Paths.get("")), null);
     sipDocumentation.setRoot(docsRoot);
 
-    toggleDocumentationLabel = new Label(I18n.t(Constants.I18N_DOCUMENTATION));
-    toggleDocumentationLabel.getStyleClass().add(Constants.CSS_TITLE);
-
     toggleDocumentation = new ToggleButton();
-    toggleDocumentation.getStyleClass().add(Constants.CSS_DARK_BUTTON);
+    toggleDocumentation.getStyleClass().addAll(Constants.CSS_DARK_BUTTON, Constants.CSS_BOLDTEXT);
+    toggleDocumentation.setText(I18n.t(Constants.I18N_DOCUMENTATION));
     toggleDocumentation.setTooltip(new Tooltip(I18n.t(Constants.I18N_DOCUMENTATION)));
     Platform.runLater(() -> {
       Image selected = FontAwesomeImageCreator.generate(FontAwesomeImageCreator.OPEN_FOLDER, Color.WHITE);
@@ -1076,16 +1074,17 @@ public class InspectionPane extends BorderPane {
       toggleImage.imageProperty()
         .bind(Bindings.when(toggleDocumentation.selectedProperty()).then(selected).otherwise(unselected));
     });
+    toggleDocumentation.setGraphicTextGap(10);
+    toggleDocumentation.setContentDisplay(ContentDisplay.RIGHT);
     title.textProperty().bind(Bindings.when(toggleDocumentation.selectedProperty())
       .then(I18n.t(Constants.I18N_DOCUMENTATION).toUpperCase()).otherwise(I18n.t(Constants.I18N_DATA).toUpperCase()));
-    toggleDocumentationLabel.textProperty().bind(Bindings.when(toggleDocumentation.selectedProperty())
-      .then(I18n.t(Constants.I18N_DATA).toUpperCase()).otherwise(I18n.t(Constants.I18N_DOCUMENTATION).toUpperCase()));
 
     toggleDocumentation.selectedProperty().addListener((observable, oldValue, newValue) -> {
       dataBox.getChildren().clear();
       // newValue == true means that the documentation will be displayed
       if (newValue) {
         toggleDocumentation.setTooltip(new Tooltip(I18n.t(Constants.I18N_DATA)));
+        toggleDocumentation.setText(I18n.t(Constants.I18N_DATA));
         if (docsRoot.getChildren().isEmpty()) {
           dataBox.getChildren().add(documentationHelp);
           content.setBottom(new HBox());
@@ -1095,6 +1094,7 @@ public class InspectionPane extends BorderPane {
         }
       } else { // from the documentation to the representations
         toggleDocumentation.setTooltip(new Tooltip(I18n.t(Constants.I18N_DOCUMENTATION)));
+        toggleDocumentation.setText(I18n.t(Constants.I18N_DOCUMENTATION));
         dataBox.getChildren().clear();
         dataBox.getChildren().add(sipFiles);
         content.setCenter(dataBox);
@@ -1106,7 +1106,7 @@ public class InspectionPane extends BorderPane {
     if (Boolean.parseBoolean(ConfigurationManager.getAppConfig(Constants.CONF_K_APP_HELP_ENABLED))) {
       Tooltip.install(top, new Tooltip(I18n.help("tooltip.inspectionPanel.data")));
     }
-    top.getChildren().addAll(space, representationTypeLabel, editRepresentationTypeButton, toggleDocumentationLabel,
+    top.getChildren().addAll(space, representationTypeLabel, editRepresentationTypeButton,
       toggleDocumentation);
   }
 

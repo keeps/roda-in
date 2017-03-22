@@ -72,10 +72,10 @@
 .dark-button {
     -fx-background-color: -fx-alt-dark;
     -fx-cursor: hand;
+    -fx-text-fill: white;
 }
 .dark-button:hover {
     -fx-background-color: -fx-alt-light;
-    -fx-text-fill: -fx-alt-dark !important;
 }
 
 .dark-button:pressed {
