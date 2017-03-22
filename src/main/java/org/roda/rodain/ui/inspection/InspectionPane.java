@@ -26,12 +26,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.roda.rodain.core.ConfigurationManager;
 import org.roda.rodain.core.Constants;
-import org.roda.rodain.core.Constants.MetadataOption;
-import org.roda.rodain.core.Constants.PathState;
 import org.roda.rodain.core.Controller;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.Pair;
 import org.roda.rodain.core.PathCollection;
+import org.roda.rodain.core.Constants.MetadataOption;
+import org.roda.rodain.core.Constants.PathState;
 import org.roda.rodain.core.rules.TreeNode;
 import org.roda.rodain.core.rules.filters.ContentFilter;
 import org.roda.rodain.core.schema.DescriptiveMetadata;
@@ -147,6 +147,7 @@ public class InspectionPane extends BorderPane {
   private Task<Void> contentTask, docsTask, metadataTask;
   private Button ignore;
   private ToggleButton toggleDocumentation;
+  private Label toggleDocumentationLabel;
   // Rules
   private BorderPane rules;
   private ListView<RuleCell> ruleList;
@@ -1060,6 +1061,10 @@ public class InspectionPane extends BorderPane {
     sipDocumentation = new SipDocumentationTreeView();
     docsRoot = new SipContentDirectory(new TreeNode(Paths.get("")), null);
     sipDocumentation.setRoot(docsRoot);
+
+    toggleDocumentationLabel = new Label(I18n.t(Constants.I18N_DOCUMENTATION));
+    toggleDocumentationLabel.getStyleClass().add(Constants.CSS_TITLE);
+
     toggleDocumentation = new ToggleButton();
     toggleDocumentation.getStyleClass().add(Constants.CSS_DARK_BUTTON);
     toggleDocumentation.setTooltip(new Tooltip(I18n.t(Constants.I18N_DOCUMENTATION)));
@@ -1073,6 +1078,8 @@ public class InspectionPane extends BorderPane {
     });
     title.textProperty().bind(Bindings.when(toggleDocumentation.selectedProperty())
       .then(I18n.t(Constants.I18N_DOCUMENTATION).toUpperCase()).otherwise(I18n.t(Constants.I18N_DATA).toUpperCase()));
+    toggleDocumentationLabel.textProperty().bind(Bindings.when(toggleDocumentation.selectedProperty())
+      .then(I18n.t(Constants.I18N_DATA).toUpperCase()).otherwise(I18n.t(Constants.I18N_DOCUMENTATION).toUpperCase()));
 
     toggleDocumentation.selectedProperty().addListener((observable, oldValue, newValue) -> {
       dataBox.getChildren().clear();
@@ -1099,7 +1106,8 @@ public class InspectionPane extends BorderPane {
     if (Boolean.parseBoolean(ConfigurationManager.getAppConfig(Constants.CONF_K_APP_HELP_ENABLED))) {
       Tooltip.install(top, new Tooltip(I18n.help("tooltip.inspectionPanel.data")));
     }
-    top.getChildren().addAll(space, representationTypeLabel, editRepresentationTypeButton, toggleDocumentation);
+    top.getChildren().addAll(space, representationTypeLabel, editRepresentationTypeButton, toggleDocumentationLabel,
+      toggleDocumentation);
   }
 
   private void createLoadingPanes() {
