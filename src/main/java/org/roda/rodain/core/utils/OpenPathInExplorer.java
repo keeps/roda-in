@@ -3,6 +3,7 @@ package org.roda.rodain.core.utils;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import org.roda.rodain.core.Controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +13,6 @@ import org.slf4j.LoggerFactory;
  */
 public class OpenPathInExplorer {
   private static final Logger LOGGER = LoggerFactory.getLogger(OpenPathInExplorer.class.getName());
-  private static String OS = System.getProperty("os.name").toLowerCase();
 
   /**
    * Opens the file of the parametrized path.
@@ -33,11 +33,11 @@ public class OpenPathInExplorer {
    */
   public static void open(String file) {
     // Different commands for different operating systems
-    if (isWindows()) {
+    if (Controller.systemIsWindows()) {
       executeCommand("explorer", file);
-    } else if (isMac()) {
+    } else if (Controller.systemIsMac()) {
       executeCommand("open", file);
-    } else if (isUnix()) {
+    } else if (Controller.systemIsUnix()) {
       boolean result = executeCommand("xdg-open", file);
       if (!result) {
         executeCommand("gnome-open", file);
@@ -54,17 +54,5 @@ public class OpenPathInExplorer {
       return false;
     }
     return true;
-  }
-
-  private static boolean isWindows() {
-    return OS.contains("win");
-  }
-
-  private static boolean isMac() {
-    return OS.contains("mac");
-  }
-
-  private static boolean isUnix() {
-    return OS.contains("nix") || OS.contains("nux") || OS.contains("aix");
   }
 }

@@ -92,7 +92,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
     try {
       IPContentType contentType = descriptionObject instanceof SipPreview
         ? ((SipPreview) descriptionObject).getContentType() : IPContentType.getMIXED();
-      SIP earkSip = new EARKSIP(Controller.urlEncode(descriptionObject.getId()), contentType, agentName);
+      SIP earkSip = new EARKSIP(Controller.encodeId(descriptionObject.getId()), contentType, agentName);
       earkSip.addObserver(this);
       earkSip.setAncestors(previews.get(descriptionObject));
       if (descriptionObject.isUpdateSIP()) {

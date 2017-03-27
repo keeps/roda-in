@@ -33,6 +33,7 @@ import javax.xml.validation.Validator;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -282,6 +283,10 @@ public final class ControllerUtils {
     } catch (IOException e) {
       LOGGER.error("Error exporting classification scheme", e);
     }
+  }
+
+  public static void deleteQuietly(Path path) {
+    FileUtils.deleteQuietly(path.toFile());
   }
 
 }

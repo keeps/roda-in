@@ -3,9 +3,7 @@ package org.roda.rodain.core;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class Controller {
   private static final Logger LOGGER = LoggerFactory.getLogger(Controller.class.getName());
+  private static final String SYSTEM_OS = System.getProperty("os.name").toLowerCase();
 
   public Controller() {
     // do nothing
@@ -148,13 +147,35 @@ public class Controller {
     return ControllerUtils.formatSize(size);
   }
 
-  public static String urlEncode(String string) {
-    try {
-      return URLEncoder.encode(string, Constants.RODAIN_DEFAULT_ENCODING);
-    } catch (UnsupportedEncodingException e) {
-      LOGGER.error("Unable to URL Encode the string with the value '{}'", string, e);
-      return string;
-    }
+  /**
+   * <p>
+   * Encodes ID chars that are dangerous to file systems or jar files entries.
+   * We will URLEncode, but just some chars that we think are dangerous.
+   * </p>
+   * 
+   * <p>
+   * We will start by replacing all "%" => "%25", and then all the others
+   * (forward slashes, etc.).
+   * </p>
+   * 
+   * @param unsafeId
+   *          non-null string to be encoded for safe use in file systems or jar
+   *          files
+   * 
+   */
+  public static String encodeId(String unsafeId) {
+    return unsafeId.replaceAll("%", "%25").replaceAll("/", "%2F").replaceAll("\\\\", "%5C");
   }
 
+  public static boolean systemIsWindows() {
+    return SYSTEM_OS.contains("win");
+  }
+
+  public static boolean systemIsMac() {
+    return SYSTEM_OS.contains("mac");
+  }
+
+  public static boolean systemIsUnix() {
+    return SYSTEM_OS.contains("nix") || SYSTEM_OS.contains("nux") || SYSTEM_OS.contains("aix");
+  }
 }
