@@ -292,6 +292,8 @@ public class CreationModalPreparation extends BorderPane {
         SipType type;
         if (SipType.BAGIT.toString().equals(selectedType)) {
           type = SipType.BAGIT;
+        } else if (SipType.HUNGARIAN.toString().equals(selectedType)) {
+          type = SipType.HUNGARIAN;
         } else {
           type = SipType.EARK;
         }

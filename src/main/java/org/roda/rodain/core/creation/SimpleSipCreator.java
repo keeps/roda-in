@@ -47,10 +47,10 @@ import org.xml.sax.InputSource;
 public abstract class SimpleSipCreator extends Thread {
   private static final Logger LOGGER = LoggerFactory.getLogger(SimpleSipCreator.class.getName());
 
-  protected final static String actionCreatingFolders = I18n.t(Constants.I18N_SIMPLE_SIP_CREATOR_CREATING_STRUCTURE);
-  protected final static String actionCopyingData = I18n.t(Constants.I18N_SIMPLE_SIP_CREATOR_COPYING_DATA);
-  protected final static String actionCopyingMetadata = I18n.t(Constants.I18N_SIMPLE_SIP_CREATOR_COPYING_METADATA);
-  protected final static String actionFinalizingSip = I18n.t(Constants.I18N_SIMPLE_SIP_CREATOR_FINALIZING_SIP);
+  protected static final String actionCreatingFolders = I18n.t(Constants.I18N_SIMPLE_SIP_CREATOR_CREATING_STRUCTURE);
+  protected static final String actionCopyingData = I18n.t(Constants.I18N_SIMPLE_SIP_CREATOR_COPYING_DATA);
+  protected static final String actionCopyingMetadata = I18n.t(Constants.I18N_SIMPLE_SIP_CREATOR_COPYING_METADATA);
+  protected static final String actionFinalizingSip = I18n.t(Constants.I18N_SIMPLE_SIP_CREATOR_FINALIZING_SIP);
   protected String agentName = Constants.SIP_DEFAULT_AGENT_NAME;
 
   protected final Path outputPath;

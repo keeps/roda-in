@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
-import org.roda.rodain.core.ConfigurationManager;
 import org.roda.rodain.core.Constants;
 import org.roda.rodain.core.Constants.MetadataOption;
 import org.roda.rodain.core.Constants.SipNameStrategy;
@@ -27,21 +26,18 @@ import org.roda.rodain.ui.creation.CreationModalProcessing;
 import org.roda_project.commons_ip.model.IPContentType;
 import org.roda_project.commons_ip.model.IPDescriptiveMetadata;
 import org.roda_project.commons_ip.model.IPFile;
+import org.roda_project.commons_ip.model.IPHeader;
 import org.roda_project.commons_ip.model.IPRepresentation;
 import org.roda_project.commons_ip.model.MetadataType;
 import org.roda_project.commons_ip.model.SIP;
 import org.roda_project.commons_ip.model.SIPObserver;
-import org.roda_project.commons_ip.model.impl.eark.EARKSIP;
+import org.roda_project.commons_ip.model.impl.hungarian.HungarianSIP;
 import org.roda_project.commons_ip.utils.IPEnums.IPStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * @author Andre Pereira apereira@keep.pt
- * @since 19/11/2015.
- */
-public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
-  private static final Logger LOGGER = LoggerFactory.getLogger(EarkSipCreator.class.getName());
+public class HungarianSipCreator extends SimpleSipCreator implements SIPObserver {
+  private static final Logger LOGGER = LoggerFactory.getLogger(HungarianSipCreator.class.getName());
   private int countFilesOfZip;
   private int currentSIPadded = 0;
   private int currentSIPsize = 0;
@@ -51,7 +47,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
   private SipNameStrategy sipNameStrategy;
 
   /**
-   * Creates a new EARK SIP exporter.
+   * Creates a new Hungarian SIP exporter.
    *
    * @param outputPath
    *          The path to the output folder of the SIP exportation
@@ -59,7 +55,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
    *          The map with the SIPs that will be exported
    * @param createReport
    */
-  public EarkSipCreator(Path outputPath, Map<Sip, List<String>> previews, String prefix,
+  public HungarianSipCreator(Path outputPath, Map<Sip, List<String>> previews, String prefix,
     SipNameStrategy sipNameStrategy, boolean createReport) {
     super(outputPath, previews, createReport);
     this.prefix = prefix;
@@ -67,7 +63,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
   }
 
   /**
-   * Attempts to create an EARK SIP of each SipPreview
+   * Attempts to create an Hungarian SIP of each SipPreview
    */
   @Override
   public void run() {
@@ -76,29 +72,32 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
       if (canceled) {
         break;
       }
-      Pair pathSIP = createEarkSip(preview);
+
+      Pair pathSIP = createHungarianSip(preview);
       if (pathSIP != null) {
         sips.put((Path) pathSIP.getKey(), (SIP) pathSIP.getValue());
       }
     }
+
     if (createReport) {
       createReport(sips);
     }
+
     currentAction = I18n.t(Constants.I18N_DONE);
   }
 
-  private Pair createEarkSip(Sip descriptionObject) {
+  private Pair createHungarianSip(Sip descriptionObject) {
     Path tempDir = Paths.get(System.getProperty("java.io.tmpdir"));
     try {
       IPContentType contentType = descriptionObject instanceof SipPreview
         ? ((SipPreview) descriptionObject).getContentType() : IPContentType.getMIXED();
-      SIP earkSip = new EARKSIP(Controller.encodeId(descriptionObject.getId()), contentType, agentName);
-      earkSip.addObserver(this);
-      earkSip.setAncestors(previews.get(descriptionObject));
+
+      SIP hungarianSip = new HungarianSIP(Controller.urlEncode(descriptionObject.getId()), contentType, agentName);
+      hungarianSip.addObserver(this);
       if (descriptionObject.isUpdateSIP()) {
-        earkSip.setStatus(IPStatus.UPDATE);
+        hungarianSip.setStatus(IPStatus.UPDATE);
       } else {
-        earkSip.setStatus(IPStatus.NEW);
+        hungarianSip.setStatus(IPStatus.NEW);
       }
 
       currentSipProgress = 0;
@@ -107,11 +106,6 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
 
       for (DescriptiveMetadata descObjMetadata : descriptionObject.getMetadata()) {
         MetadataType metadataType = new MetadataType(MetadataType.MetadataTypeEnum.OTHER);
-
-        Path schemaPath = ConfigurationManager.getSchemaPath(descObjMetadata.getTemplateType());
-        if (schemaPath != null) {
-          earkSip.addSchema(new IPFile(schemaPath));
-        }
 
         // Check if one of the values from the enum can be used
         for (MetadataType.MetadataTypeEnum val : MetadataType.MetadataTypeEnum.values()) {
@@ -142,7 +136,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
         IPDescriptiveMetadata metadata = new IPDescriptiveMetadata(descObjMetadata.getId(), metadataFile, metadataType,
           descObjMetadata.getMetadataVersion());
 
-        earkSip.addDescriptiveMetadata(metadata);
+        hungarianSip.addDescriptiveMetadata(metadata);
       }
 
       currentAction = actionCopyingData;
@@ -166,21 +160,25 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
             addFileToRepresentation(tn, new ArrayList<>(), rep);
           }
 
-          earkSip.addRepresentation(rep);
+          hungarianSip.addRepresentation(rep);
         }
 
         currentAction = I18n.t(Constants.I18N_SIMPLE_SIP_CREATOR_DOCUMENTATION);
         Set<TreeNode> docs = sip.getDocumentation();
         for (TreeNode tn : docs) {
-          addDocToSip(tn, new ArrayList<>(), earkSip);
+          addDocToSip(tn, new ArrayList<>(), hungarianSip);
         }
       }
 
       currentAction = I18n.t(Constants.I18N_SIMPLE_SIP_CREATOR_INIT_ZIP);
-      Path sipPath = earkSip.build(outputPath, createSipName(descriptionObject, prefix, sipNameStrategy));
+
+      // FIXME get IP header
+      IPHeader header = new IPHeader();
+      hungarianSip.setHeader(header);
+      Path sipPath = hungarianSip.build(outputPath, createSipName(descriptionObject, prefix, sipNameStrategy));
 
       createdSipsCount++;
-      return new Pair(sipPath, earkSip);
+      return new Pair(sipPath, hungarianSip);
     } catch (InterruptedException e) {
       canceled = true;
     } catch (IOException e) {
@@ -201,6 +199,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
       // add this directory to the path list
       List<String> newRelativePath = new ArrayList<>(relativePath);
       newRelativePath.add(tn.getPath().getFileName().toString());
+
       // recursive call to all the node's children
       for (TreeNode node : tn.getChildren().values()) {
         addFileToRepresentation(node, newRelativePath, rep);
@@ -213,19 +212,19 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
     }
   }
 
-  private void addDocToSip(TreeNode tn, List<String> relativePath, SIP earkSip) {
+  private void addDocToSip(TreeNode tn, List<String> relativePath, SIP hungarianSip) {
     if (Files.isDirectory(tn.getPath())) {
       // add this directory to the path list
       List<String> newRelativePath = new ArrayList<>(relativePath);
       newRelativePath.add(tn.getPath().getFileName().toString());
       // recursive call to all the node's children
       for (TreeNode node : tn.getChildren().values()) {
-        addDocToSip(node, newRelativePath, earkSip);
+        addDocToSip(node, newRelativePath, hungarianSip);
       }
     } else {
       // if it's a file, add it to the SIP
       IPFile fileDoc = new IPFile(tn.getPath(), relativePath);
-      earkSip.addDocumentation(fileDoc);
+      hungarianSip.addDocumentation(fileDoc);
     }
   }
 

@@ -59,11 +59,13 @@ public class CreateSips {
     sipsCount = sips.size();
     if (type == SipType.BAGIT) {
       creator = new BagitSipCreator(outputPath, sips, createReport, prefix, sipNameStrategy);
-      creator.start();
+    } else if (type == SipType.HUNGARIAN) {
+      creator = new HungarianSipCreator(outputPath, sips, prefix, sipNameStrategy, createReport);
     } else {
       creator = new EarkSipCreator(outputPath, sips, prefix, sipNameStrategy, createReport);
-      creator.start();
     }
+
+    creator.start();
   }
 
   /**

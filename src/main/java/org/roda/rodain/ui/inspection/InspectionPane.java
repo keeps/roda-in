@@ -1249,7 +1249,7 @@ public class InspectionPane extends BorderPane {
     multSelectedSaveBox.getStyleClass();
     multSelectedSaveBox.setStyle(Constants.CSS_FX_TEXT_FILL_BLACK);
     Label confirmationLabel = new Label(I18n.t(Constants.I18N_INSPECTIONPANE_MULTIPLE_SELECTED_CONFIRM));
-    confirmationLabel.setStyle(Constants.CSS_FX_TEXT_FILL_BLACK_);
+    confirmationLabel.setStyle(Constants.CSS_FX_TEXT_FILL_BLACK);
     Button save = new Button(I18n.t(Constants.I18N_APPLY));
     save.setOnAction(event -> {
       applyMetadatasToMultipleItems();

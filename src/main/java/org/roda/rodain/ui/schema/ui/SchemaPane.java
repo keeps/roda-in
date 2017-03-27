@@ -721,8 +721,7 @@ public class SchemaPane extends BorderPane {
       String s = "";
       if (item instanceof SchemaNode) {
         s = "scheme node - " + ((SchemaNode) item).getDob().getId();
-      }
-      if (item instanceof SipPreviewNode) {
+      } else if (item instanceof SipPreviewNode) {
         s = "sip preview - " + ((SipPreviewNode) item).getSip().getId();
       }
       content.putString(s);
@@ -978,8 +977,8 @@ public class SchemaPane extends BorderPane {
         }
       }
     }
-    if (sipsMap.isEmpty() && descObjsMap.isEmpty()) {// add all the SIPs to the
-                                                     // result map
+    if (sipsMap.isEmpty() && descObjsMap.isEmpty()) {
+      // add all the SIPs to the result map
       descObjsMap = getAllDescriptionObjects();
     } else {
       // filter out the SIPs marked as "removed"

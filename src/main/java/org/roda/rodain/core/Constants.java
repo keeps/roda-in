@@ -153,7 +153,6 @@ public final class Constants {
   public static final String CSS_BACKGROUNDWHITE = "backgroundWhite";
   public static final String CSS_FX_BACKGROUND_COLOR_TRANSPARENT = "-fx-background-color: transparent";
   public static final String CSS_FX_FONT_SIZE_16PX = "-fx-font-size: 16px";
-  public static final String CSS_FX_TEXT_FILL_BLACK_ = "-fx-text-fill: black;";
   public static final String CSS_FX_TEXT_FILL_BLACK = "-fx-text-fill: black";
 
   // I18n
@@ -367,7 +366,7 @@ public final class Constants {
    */
   // sip type
   public enum SipType {
-    EARK("E-ARK"), BAGIT("BagIt");
+    EARK("E-ARK"), BAGIT("BagIt"), HUNGARIAN("Hungarian");
     private final String text;
 
     private SipType(final String text) {
@@ -421,7 +420,15 @@ public final class Constants {
     VISITOR_DONE, VISITOR_QUEUED, VISITOR_NOTSUBMITTED, VISITOR_RUNNING, VISITOR_CANCELLED
   }
 
-  private Constants() {
+  // bagit
+  public static final String BAGIT_ID = "id";
+  public static final String BAGIT_PARENT = "parent";
+  public static final String BAGIT_TITLE = "title";
+  public static final String BAGIT_LEVEL = "level";
+  public static final String BAGIT_ITEM_LEVEL = "item";
+  public static final String BAGIT_DATA_FOLDER = "data";
 
+  private Constants() {
+    // do nothing
   }
 }
