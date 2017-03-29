@@ -420,14 +420,6 @@ public final class Constants {
     VISITOR_DONE, VISITOR_QUEUED, VISITOR_NOTSUBMITTED, VISITOR_RUNNING, VISITOR_CANCELLED
   }
 
-  // bagit
-  public static final String BAGIT_ID = "id";
-  public static final String BAGIT_PARENT = "parent";
-  public static final String BAGIT_TITLE = "title";
-  public static final String BAGIT_LEVEL = "level";
-  public static final String BAGIT_ITEM_LEVEL = "item";
-  public static final String BAGIT_DATA_FOLDER = "data";
-
   private Constants() {
     // do nothing
   }

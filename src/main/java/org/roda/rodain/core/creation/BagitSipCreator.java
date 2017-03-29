@@ -1,23 +1,15 @@
 package org.roda.rodain.core.creation;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.roda.rodain.core.Constants;
 import org.roda.rodain.core.Constants.SipNameStrategy;
 import org.roda.rodain.core.Controller;
@@ -28,6 +20,7 @@ import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.core.sip.SipPreview;
 import org.roda.rodain.core.sip.SipRepresentation;
 import org.roda.rodain.ui.creation.CreationModalProcessing;
+import org.roda_project.commons_ip.model.IPConstants;
 import org.roda_project.commons_ip.model.IPContentType;
 import org.roda_project.commons_ip.model.IPRepresentation;
 import org.roda_project.commons_ip.model.SIP;
@@ -50,8 +43,6 @@ public class BagitSipCreator extends SimpleSipCreator implements SIPObserver {
   private int currentSIPadded = 0;
   private int repProcessingSize;
 
-  private Instant startTime;
-
   private String prefix;
   private SipNameStrategy sipNameStrategy;
 
@@ -68,20 +59,6 @@ public class BagitSipCreator extends SimpleSipCreator implements SIPObserver {
     super(outputPath, previews, createReport);
     this.prefix = prefix;
     this.sipNameStrategy = sipNameStrategy;
-    for (Sip obj : previews.keySet()) {
-      if (obj instanceof SipPreview) {
-        SipPreview sip = (SipPreview) obj;
-        for (SipRepresentation sr : sip.getRepresentations()) {
-          for (TreeNode tn : sr.getFiles()) {
-            try {
-              allSipsSize += nodeSize(tn);
-            } catch (IOException e) {
-              LOGGER.error("Can't access file '{}'", tn.getPath(), e);
-            }
-          }
-        }
-      }
-    }
   }
 
   /**
@@ -89,8 +66,6 @@ public class BagitSipCreator extends SimpleSipCreator implements SIPObserver {
    */
   @Override
   public void run() {
-
-    startTime = Instant.now();
     Map<Path, Object> sips = new HashMap<>();
     for (Sip preview : previews.keySet()) {
       if (canceled) {
@@ -101,6 +76,7 @@ public class BagitSipCreator extends SimpleSipCreator implements SIPObserver {
         sips.put((Path) pathBag.getKey(), (SIP) pathBag.getValue());
       }
     }
+
     if (createReport) {
       createReport(sips);
     }
@@ -122,18 +98,6 @@ public class BagitSipCreator extends SimpleSipCreator implements SIPObserver {
     bagit.addObserver(this);
     bagit.setStatus(IPStatus.NEW);
 
-    String sipName = createSipName(descriptionObject, prefix, sipNameStrategy);
-
-    Path namePath;
-    if (StringUtils.isNotBlank(sipName)) {
-      namePath = outputPath.resolve(sipName);
-    } else {
-      namePath = outputPath.resolve(descriptionObject.getId());
-    }
-
-    Path data = namePath.resolve(Constants.BAGIT_DATA_FOLDER);
-    new File(data.toString()).mkdirs();
-
     try {
       currentAction = actionCopyingData;
       if (descriptionObject instanceof SipPreview) {
@@ -153,29 +117,28 @@ public class BagitSipCreator extends SimpleSipCreator implements SIPObserver {
 
           for (TreeNode tn : files) {
             addFileToRepresentation(tn, new ArrayList<>(), rep);
-            createFiles(tn, data);
           }
 
           bagit.addRepresentation(rep);
         }
       }
 
-      Map<String, String> metadataList = new HashMap<>();
-      metadataList.put(Constants.BAGIT_ID, descriptionObject.getId());
-      metadataList.put(Constants.BAGIT_PARENT, descriptionObject.getParentId());
-      metadataList.put(Constants.BAGIT_TITLE, descriptionObject.getTitle());
-      metadataList.put(Constants.BAGIT_LEVEL, Constants.BAGIT_ITEM_LEVEL);
+      bagit.setAncestors(Arrays.asList(descriptionObject.getParentId()));
+      Map<String, String> metadataMap = new HashMap<>();
+      metadataMap.put(IPConstants.BAGIT_ID, descriptionObject.getId());
+      metadataMap.put(IPConstants.BAGIT_TITLE, descriptionObject.getTitle());
+      metadataMap.put(IPConstants.BAGIT_LEVEL, IPConstants.BAGIT_ITEM_LEVEL);
 
       Map<String, String> list = descriptionObject.getMetadataWithReplaces();
       if (!list.isEmpty()) {
-        list.forEach((id, content) -> metadataList.put(Constants.CONF_K_PREFIX_METADATA + id, content));
+        list.forEach((id, content) -> metadataMap.put(Constants.CONF_K_PREFIX_METADATA + id, content));
       }
 
       Path metadataPath = tempDir.resolve(Utils.generateRandomAndPrefixedUUID());
-      bagit.addDescriptiveMetadata(BagitUtils.createBagitMetadata(metadataList, metadataPath));
-      Path name = bagit.build(outputPath, sipName);
+      bagit.addDescriptiveMetadata(BagitUtils.createBagitMetadata(metadataMap, bagit.getAncestors(), metadataPath));
 
       currentAction = actionFinalizingSip;
+      Path name = bagit.build(outputPath, createSipName(descriptionObject, prefix, sipNameStrategy));
       createdSipsCount++;
       return new Pair(name, bagit);
     } catch (Exception e) {
@@ -200,135 +163,6 @@ public class BagitSipCreator extends SimpleSipCreator implements SIPObserver {
       rep.addFile(tn.getPath(), relativePath);
       currentSIPadded++;
       currentAction = String.format("%s (%d/%d)", actionCopyingData, currentSIPadded, currentSIPsize);
-    }
-  }
-
-  /**
-   * Estimates the remaining time needed to finish exporting the SIPs.
-   *
-   * <p>
-   * The estimate time is the sum of the data copy time and the other processes
-   * time. To estimate the data copy time, we first find the average copy speed
-   * and then divide the remaining data size by that speed.
-   * </p>
-   *
-   * <p>
-   * The other processes (metadata copy and finalizing) are estimated together,
-   * and can be obtained by subtracting the data copy time from the elapsed
-   * time. By dividing that result by the number of already exported SIPs, we
-   * get the average time these processes took.
-   * </p>
-   *
-   * @return The estimate in milliseconds
-   */
-  @Override
-  public double getTimeRemainingEstimate() {
-    // prevent divide by zero
-    if (transferedTime == 0)
-      return -1;
-    // estimate the remaining data copy time for the current SIP
-    float allSpeed = transferedSize / transferedTime;
-    long allSizeLeft = allSipsSize - transferedSize;
-    long sizeLeft = sipSize - sipTransferedSize;
-    float sipRemaining = sizeLeft / allSpeed;
-
-    // 80% is the progress of the data copy of current SIP
-    // the other 20% are for the SIP finalization
-    // divide the result by the number of SIPs because this should be the
-    // progress of 1 SIP
-    currentSipProgress = (sipTransferedSize / (float) sipSize) * 0.8f;
-    currentSipProgress /= sipPreviewCount;
-
-    // estimate the time remaining for the other SIPs, except the data copy time
-    long timeSinceStart = Duration.between(startTime, Instant.now()).toMillis();
-    long allOtherTime = timeSinceStart - transferedTime;
-    int createdSips = getCreatedSipsCount();
-    float eachOtherTime;
-    if (createdSips != 0) {
-      eachOtherTime = allOtherTime / createdSips;
-    } else { // if the finishing time is very small, set it to 70% of the
-      // estimated time
-      eachOtherTime = (sipSize / allSpeed) * 0.7f;
-    }
-
-    // time = data copy estimate + other SIP's estimate (without copy time)
-    int remaining = sipPreviewCount - createdSips;
-    float dataTime = sipRemaining + (allSizeLeft / allSpeed);
-    long sipTime = Duration.between(sipStartInstant, Instant.now()).toMillis();
-    float sipOtherTime = sipTime - sipTransferedTime;
-    float otherTime = (eachOtherTime * remaining) - sipOtherTime;
-
-    return dataTime + otherTime;
-  }
-
-  private long nodeSize(TreeNode node) throws IOException {
-    Path nodePath = node.getPath();
-    long result = 0;
-    if (Files.isDirectory(nodePath)) {
-      for (TreeNode tn : node.getChildren().values()) {
-        result += nodeSize(tn);
-      }
-    } else {
-      result += Files.size(nodePath);
-    }
-    return result;
-  }
-
-  private void createFiles(TreeNode node, Path dest) throws IOException {
-    sipSize = nodeSize(node);
-    sipTransferedSize = 0;
-    sipTransferedTime = 0;
-    sipStartInstant = Instant.now();
-    recCreateFiles(node, dest);
-  }
-
-  private void recCreateFiles(TreeNode node, Path dest) throws IOException {
-    Path nodePath = node.getPath();
-    if (Files.isDirectory(nodePath)) {
-      Path directory = dest.resolve(nodePath.getFileName().toString());
-      new File(directory.toString()).mkdir();
-      for (TreeNode tn : node.getChildren().values()) {
-        recCreateFiles(tn, directory);
-      }
-    } else {
-      Path destination = dest.resolve(nodePath.getFileName().toString());
-      copyFile(nodePath, destination);
-    }
-  }
-
-  private void copyFile(Path path, Path dest) {
-    final int progressCheckpoint = 1000;
-    long bytesCopied = 0;
-    long previousLength = 0;
-    File destFile = dest.toFile();
-
-    try {
-      long totalBytes = Files.size(path);
-      try (InputStream in = new FileInputStream(path.toFile()); OutputStream out = new FileOutputStream(destFile)) {
-        byte[] buf = new byte[1024];
-        int counter = 0;
-        int len;
-        lastInstant = Instant.now();
-
-        while ((len = in.read(buf)) > 0) {
-          out.write(buf, 0, len);
-          counter += len;
-          bytesCopied += (destFile.length() - previousLength);
-          previousLength = destFile.length();
-          if (counter > progressCheckpoint || bytesCopied == totalBytes) {
-            sipTransferedSize += counter;
-            transferedSize += counter;
-            Instant now = Instant.now();
-            Duration dur = Duration.between(lastInstant, now);
-            transferedTime += dur.toMillis();
-            sipTransferedTime += dur.toMillis();
-            lastInstant = now;
-            counter = 0;
-          }
-        }
-      }
-    } catch (IOException e) {
-      LOGGER.error("Error writing(copying) file. Source: {}; Destination: {}", path, dest, e);
     }
   }
 
