@@ -137,7 +137,6 @@ public class BagitSipCreator extends SimpleSipCreator implements SIPObserver {
       Path metadataPath = tempDir.resolve(Utils.generateRandomAndPrefixedUUID());
       bagit.addDescriptiveMetadata(BagitUtils.createBagitMetadata(metadataMap, bagit.getAncestors(), metadataPath));
 
-      currentAction = actionFinalizingSip;
       Path name = bagit.build(outputPath, createSipName(descriptionObject, prefix, sipNameStrategy));
       createdSipsCount++;
       return new Pair(name, bagit);

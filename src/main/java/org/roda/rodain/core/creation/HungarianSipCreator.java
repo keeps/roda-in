@@ -133,6 +133,7 @@ public class HungarianSipCreator extends SimpleSipCreator implements SIPObserver
         }
 
         IPFile metadataFile = new IPFile(metadataPath);
+        metadataFile.setRelatedTags(descObjMetadata.getRelatedTags());
         IPDescriptiveMetadata metadata = new IPDescriptiveMetadata(descObjMetadata.getId(), metadataFile, metadataType,
           descObjMetadata.getMetadataVersion());
 
@@ -186,7 +187,7 @@ public class HungarianSipCreator extends SimpleSipCreator implements SIPObserver
       unsuccessful.add(descriptionObject);
       CreationModalProcessing.showError(descriptionObject, e);
     } catch (Exception e) {
-      LOGGER.error("Error exporting E-ARK SIP", e);
+      LOGGER.error("Error exporting Hungarian SIP", e);
       unsuccessful.add(descriptionObject);
       CreationModalProcessing.showError(descriptionObject, e);
     }

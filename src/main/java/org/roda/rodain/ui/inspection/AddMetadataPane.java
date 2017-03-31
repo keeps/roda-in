@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.roda.rodain.core.ConfigurationManager;
@@ -389,9 +390,12 @@ public class AddMetadataPane extends BorderPane {
       String templateVersion = (String) metaType.getKey();
       String metadataVersion = ConfigurationManager.getMetadataConfig(templateVersion + Constants.CONF_K_SUFIX_VERSION);
       String metadataType = ConfigurationManager.getMetadataConfig(templateVersion + Constants.CONF_K_SUFIX_TYPE);
+      String metadataTags = ConfigurationManager.getMetadataConfig(templateVersion + Constants.CONF_K_SUFFIX_TAGS);
+      List<String> tagList = Arrays.asList(metadataTags.split(","));
       metadataToAdd.setMetadataType(metadataType);
       metadataToAdd.setMetadataVersion(metadataVersion);
       metadataToAdd.setTemplateType(templateVersion);
+      metadataToAdd.setRelatedTags(tagList);
     }
   }
 

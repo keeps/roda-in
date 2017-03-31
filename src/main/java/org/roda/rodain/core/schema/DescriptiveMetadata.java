@@ -2,7 +2,9 @@ package org.roda.rodain.core.schema;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -31,6 +33,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class DescriptiveMetadata {
   private static final Logger LOGGER = LoggerFactory.getLogger(DescriptiveMetadata.class.getName());
   private String id, content, contentEncoding, metadataType;
+  private List<String> relatedTags = new ArrayList<>();
   private Map<String, Object> additionalProperties = new HashMap<>();
   private TreeSet<TemplateFieldValue> values;
   private Path path;
@@ -283,6 +286,15 @@ public class DescriptiveMetadata {
     this.additionalProperties.put(name, value);
   }
 
+  public List<String> getRelatedTags() {
+    return relatedTags;
+  }
+
+  public void setRelatedTags(List<String> relatedTags) {
+    this.relatedTags = relatedTags;
+  }
+
+  @Override
   public DescriptiveMetadata clone() {
     DescriptiveMetadata result = new DescriptiveMetadata();
     result.setCreatorOption(creatorOption);
@@ -294,6 +306,7 @@ public class DescriptiveMetadata {
     result.setMetadataVersion(metadataVersion);
     result.setMetadataType(metadataType);
     result.setTemplateType(templateType);
+    result.setRelatedTags(relatedTags);
     return result;
   }
 
@@ -302,7 +315,7 @@ public class DescriptiveMetadata {
     return "DescObjMetadata [id=" + id + ", content=" + content + ", contentEncoding=" + contentEncoding
       + ", metadataType=" + metadataType + ", additionalProperties=" + additionalProperties + ", values=" + values
       + ", path=" + path + ", loaded=" + loaded + ", creatorOption=" + creatorOption + ", metadataVersion="
-      + metadataVersion + ", templateType=" + templateType + "]";
+      + metadataVersion + ", templateType=" + templateType + ", relatedTags=" + relatedTags + "]";
   }
 
   public void initializeValues() {
