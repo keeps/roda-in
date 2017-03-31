@@ -92,7 +92,7 @@ public class HungarianSipCreator extends SimpleSipCreator implements SIPObserver
       IPContentType contentType = descriptionObject instanceof SipPreview
         ? ((SipPreview) descriptionObject).getContentType() : IPContentType.getMIXED();
 
-      SIP hungarianSip = new HungarianSIP(Controller.urlEncode(descriptionObject.getId()), contentType, agentName);
+      SIP hungarianSip = new HungarianSIP(Controller.encodeId(descriptionObject.getId()), contentType, agentName);
       hungarianSip.addObserver(this);
       if (descriptionObject.isUpdateSIP()) {
         hungarianSip.setStatus(IPStatus.UPDATE);

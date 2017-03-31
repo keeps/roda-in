@@ -94,7 +94,7 @@ public class BagitSipCreator extends SimpleSipCreator implements SIPObserver {
     IPContentType contentType = descriptionObject instanceof SipPreview
       ? ((SipPreview) descriptionObject).getContentType() : IPContentType.getMIXED();
 
-    SIP bagit = new BagitSIP(Controller.urlEncode(descriptionObject.getId()), contentType, agentName);
+    SIP bagit = new BagitSIP(Controller.encodeId(descriptionObject.getId()), contentType, agentName);
     bagit.addObserver(this);
     bagit.setStatus(IPStatus.NEW);
 
