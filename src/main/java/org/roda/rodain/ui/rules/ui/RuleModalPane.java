@@ -134,7 +134,6 @@ public class RuleModalPane extends BorderPane {
   private void createCenter() {
     createCenterAssociation();
     createCenterMetadata();
-
     setCenter(boxAssociation);
   }
 
@@ -330,10 +329,10 @@ public class RuleModalPane extends BorderPane {
       metaList.getSelectionModel().clearSelection();
       metaList.getSelectionModel().select(cellSingleFile);
     });
-    HBox space = new HBox();
-    HBox.setHgrow(space, Priority.ALWAYS);
 
-    box.getChildren().addAll(chooseFile, space, typeLabel, comboTypesSingleFile);
+    HBox spaceBox = new HBox();
+    HBox.setHgrow(spaceBox, Priority.ALWAYS);
+    box.getChildren().addAll(chooseFile, spaceBox, typeLabel, comboTypesSingleFile);
     return box;
   }
 
@@ -355,10 +354,10 @@ public class RuleModalPane extends BorderPane {
       metaList.getSelectionModel().clearSelection();
       metaList.getSelectionModel().select(cellSameFolder);
     });
-    HBox space = new HBox();
-    HBox.setHgrow(space, Priority.ALWAYS);
 
-    box.getChildren().addAll(lab, sameFolderTxtField, space, typeLabel, comboTypesSameDir);
+    HBox spaceBox = new HBox();
+    HBox.setHgrow(spaceBox, Priority.ALWAYS);
+    box.getChildren().addAll(lab, sameFolderTxtField, spaceBox, typeLabel, comboTypesSameDir);
     return box;
   }
 
@@ -387,10 +386,10 @@ public class RuleModalPane extends BorderPane {
       metaList.getSelectionModel().clearSelection();
       metaList.getSelectionModel().select(cellDiffFolder);
     });
-    HBox space = new HBox();
-    HBox.setHgrow(space, Priority.ALWAYS);
 
-    box.getChildren().addAll(chooseDir, space, typeLabel, comboTypesDiffFolder);
+    HBox spaceBox = new HBox();
+    HBox.setHgrow(spaceBox, Priority.ALWAYS);
+    box.getChildren().addAll(chooseDir, spaceBox, typeLabel, comboTypesDiffFolder);
     return box;
   }
 
@@ -419,10 +418,9 @@ public class RuleModalPane extends BorderPane {
       Pair newPair = new Pair(key, value);
       templateTypes.getItems().add(newPair);
     }
+
     templateTypes.getSelectionModel().selectFirst();
-
     box.getChildren().add(templateTypes);
-
     return box;
   }
 
@@ -595,8 +593,10 @@ public class RuleModalPane extends BorderPane {
     Pair selected = templateTypes.getSelectionModel().getSelectedItem();
     if (selected == null) {
       btContinue.setDisable(true);
+      return null;
+    } else {
+      return (String) selected.getKey();
     }
-    return (String) selected.getKey();
   }
 
   public String getMetadataTypeSingleFile() {

@@ -181,6 +181,7 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
    */
   @Override
   public void preVisitDirectory(Path path, BasicFileAttributes attrs) {
+    // do nothing
   }
 
   /**
@@ -192,6 +193,7 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
    */
   @Override
   public void postVisitDirectory(Path path) {
+    // do nothing
   }
 
   /**
@@ -205,6 +207,7 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
    */
   @Override
   public void visitFile(Path path, BasicFileAttributes attrs) {
+    // do nothing
   }
 
   /**
@@ -216,6 +219,7 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
    */
   @Override
   public void visitFileFailed(Path path) {
+    // do nothing
   }
 
   /**
@@ -246,11 +250,13 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
         }
       }
     }
+
     if (onlyFiles) {
       filesSet.addAll(node.getChildren().values());
     } else {
       filesSet.add(node);
     }
+
     // create a new Sip
     SipRepresentation rep = new SipRepresentation(Constants.SIP_REP_FIRST);
     rep.setFiles(filesSet);
@@ -260,14 +266,17 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
     node.addObserver(sipPreview);
 
     if (metadataOption == MetadataOption.TEMPLATE) {
-      sipPreview.getMetadata().add(new DescriptiveMetadata(metadataOption, templateType, metadataType, metadataVersion));
+      DescriptiveMetadata dom = new DescriptiveMetadata(metadataOption, templateType, metadataType, metadataVersion);
+      sipPreview.getMetadata().add(dom);
       String level = ConfigurationManager.getMetadataConfig(templateType + Constants.CONF_K_SUFIX_FILE_LEVEL);
       sipPreview.setDescriptionlevel(level);
     } else {
       for (Path m : metaPath) {
-        DescriptiveMetadata dom = new DescriptiveMetadata(metadataOption, m, metadataType, metadataVersion, templateType);
+        DescriptiveMetadata dom = new DescriptiveMetadata(metadataOption, m, metadataType, metadataVersion,
+          templateType);
         dom = Controller.updateTemplate(dom);
         sipPreview.getMetadata().add(dom);
+        sipPreview.updatedMetadata(dom);
       }
     }
 

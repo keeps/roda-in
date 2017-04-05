@@ -119,14 +119,17 @@ public class RuleModalController {
           break;
         case TEMPLATE:
           String template = pane.getTemplate();
-          String[] splitted = template.split(Constants.MISC_METADATA_SEP);
-          templateType = splitted[0];
-          metadataType = splitted[1];
-          metadataVersion = splitted.length == 3 ? splitted[2] : null;
+          if (template != null) {
+            String[] splitted = template.split(Constants.MISC_METADATA_SEP);
+            templateType = splitted[0];
+            metadataType = splitted[1];
+            metadataVersion = splitted.length == 3 ? splitted[2] : null;
+          }
           break;
         default:
           break;
       }
+
       if (metadataType != null && metadataVersion == null) {
         metadataVersion = ConfigurationManager.getMetadataConfig(templateType + Constants.CONF_K_SUFIX_VERSION);
       }
@@ -145,7 +148,6 @@ public class RuleModalController {
       }
 
       WalkFileTree fileWalker = visitors.add(sourcePaths, visitor);
-
       schema.addRule(rule);
 
       Platform.runLater(() -> {

@@ -276,6 +276,7 @@ public class Rule extends Observable implements Observer, Comparable {
           } else {
             sipNode = new SipPreviewNode(sipPreview, fileIconBlack, fileIconWhite);
           }
+
           sipPreview.addObserver(sipNode);
           sipPreview.addObserver(this);
           sipNodes.put(sipPreview.getId(), sipNode);
@@ -319,7 +320,7 @@ public class Rule extends Observable implements Observer, Comparable {
     Map<Path, SipPreview> sipPreviewMap = visitor.getSipPreviewMap();
 
     for (PseudoItem item : tree) {
-      TreeItem<String> treeItem = rec_createNode(item, sipPreviewMap, descriptionObjectMap);
+      TreeItem<String> treeItem = recCreateNode(item, sipPreviewMap, descriptionObjectMap);
       if (treeItem instanceof SipPreviewNode) {
         SipPreviewNode sipPreviewNode = (SipPreviewNode) treeItem;
         sipNodes.put(sipPreviewNode.getSip().getId(), sipPreviewNode);
@@ -331,7 +332,7 @@ public class Rule extends Observable implements Observer, Comparable {
     }
   }
 
-  private TreeItem<String> rec_createNode(PseudoItem pseudoItem, Map<Path, SipPreview> sipPreviewMap,
+  private TreeItem<String> recCreateNode(PseudoItem pseudoItem, Map<Path, SipPreview> sipPreviewMap,
     Map<Path, Sip> descriptionObjectMap) {
     if (pseudoItem instanceof PseudoSIP) {
       PseudoSIP pseudoSIP = (PseudoSIP) pseudoItem;
@@ -339,10 +340,11 @@ public class Rule extends Observable implements Observer, Comparable {
       sipPreview.setParentId(parentID);
       sips.put(sipPreview.getId(), sipPreview);
       SipPreviewNode sipNode;
-      if ("internal.itemLevel".equals(sipPreview.getDescriptionlevel()))
+      if ("internal.itemLevel".equals(sipPreview.getDescriptionlevel())) {
         sipNode = new SipPreviewNode(sipPreview, itemIconBlack, itemIconWhite);
-      else
+      } else {
         sipNode = new SipPreviewNode(sipPreview, fileIconBlack, fileIconWhite);
+      }
       sipPreview.addObserver(sipNode);
       sipPreview.addObserver(this);
       return sipNode;
@@ -351,7 +353,7 @@ public class Rule extends Observable implements Observer, Comparable {
       Sip dobj = descriptionObjectMap.get(pdo.getPath());
       SchemaNode schemaNode = new SchemaNode(dobj, dObjIconBlack, dObjIconWhite);
       for (PseudoItem pi : pdo.getChildren()) {
-        TreeItem<String> child = rec_createNode(pi, sipPreviewMap, descriptionObjectMap);
+        TreeItem<String> child = recCreateNode(pi, sipPreviewMap, descriptionObjectMap);
         schemaNode.addChild(id.toString(), child);
         schemaNode.getChildren().add(child);
       }

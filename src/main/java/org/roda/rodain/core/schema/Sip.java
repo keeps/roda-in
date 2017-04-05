@@ -278,7 +278,6 @@ public class Sip extends Observable {
     return isEmpty;
   }
 
-  // FIXME 20170315 hsilva:
   public void updatedMetadata(DescriptiveMetadata dom) {
     dom.getValues().forEach(metadataValue -> {
       String toSearch = metadataValue.getId().toLowerCase();

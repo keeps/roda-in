@@ -32,8 +32,9 @@ public class TemplateFieldValue implements Comparable {
     this.id = id;
     if (options == null || options.isEmpty()) {
       this.options = new HashMap<>();
-    } else
+    } else {
       this.options = options;
+    }
 
     if (!this.options.containsKey("label")) {
       // We don't need a label if the field is hidden

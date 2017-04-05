@@ -296,6 +296,7 @@ public class InspectionPane extends BorderPane {
         }
         metadataLabel += " )";
       }
+
       if (oldValue != null && !"".equals(oldValue) && topButtons != null && topButtons.contains(toggleForm)
         && !textBoxCancelledChange) {
         String changeContent = I18n.t(Constants.I18N_INSPECTIONPANE_CHANGE_TEMPLATE_CONTENT);
@@ -322,6 +323,7 @@ public class InspectionPane extends BorderPane {
         textBoxCancelledChange = false;
       }
     });
+
     // set the tab size to 2 spaces
     metaText.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
       if (event.getCode() == KeyCode.TAB) {
@@ -430,10 +432,12 @@ public class InspectionPane extends BorderPane {
       }
       updateMetadataTop();
     });
+
     metadataCombo.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
       if (newValue != null) {
-        if (oldValue != null)
+        if (oldValue != null) {
           saveMetadataPrivate((DescriptiveMetadata) oldValue.getKey());
+        }
         // we need this to prevent the alert from being shown
         textBoxCancelledChange = true;
         updateSelectedMetadata((DescriptiveMetadata) newValue.getKey());
@@ -446,6 +450,7 @@ public class InspectionPane extends BorderPane {
     if (Boolean.parseBoolean(ConfigurationManager.getAppConfig(Constants.CONF_K_APP_HELP_ENABLED))) {
       Tooltip.install(metadataTopBox, new Tooltip(I18n.help("tooltip.inspectionPanel.metadata")));
     }
+
     metadataTopBox.getChildren().add(space);
     updateMetadataTop();
   }
@@ -533,6 +538,7 @@ public class InspectionPane extends BorderPane {
         return result;
       }
     };
+
     validationTask.setOnSucceeded(Void -> popOver.updateContent(validationTask.getValue(), message.toString()));
     new Thread(validationTask).start();
   }
@@ -573,8 +579,8 @@ public class InspectionPane extends BorderPane {
       String templateLabelI18N = (String) metadataValue.get("labeli18n");
 
       JSONObject jsonTemplateLabel = new JSONObject(templateLabel);
-      Label label = null;
-      String labelText = null;
+      Label label;
+      String labelText;
 
       if (templateLabelI18N != null && I18n.t(templateLabelI18N) != null) {
         labelText = I18n.t(templateLabelI18N);
@@ -585,7 +591,7 @@ public class InspectionPane extends BorderPane {
       } else {
         labelText = "N/A";
       }
-      if (getBooleanOption(metadataValue.get(("mandatory")))) {
+      if (getBooleanOption(metadataValue.get("mandatory"))) {
         labelText += " *";
       }
       label = new Label(labelText);
@@ -652,7 +658,7 @@ public class InspectionPane extends BorderPane {
     HBox.setHgrow(textField, Priority.ALWAYS);
     textField.setUserData(metadataValue);
     textField.textProperty().addListener((observable2, oldValue2, newValue2) -> metadataValue.set("value", newValue2));
-    if (metadataValue.getId().equals("title")) {
+    if ("title".equals(metadataValue.getId())) {
       textField.setId("descObjTitle");
     }
     addListenersToUpdateUI(metadataValue, textField.textProperty());
@@ -673,7 +679,6 @@ public class InspectionPane extends BorderPane {
 
   private ComboBox<Pair> createFormCombo(TemplateFieldValue metadataValue, Locale l) {
     ObservableList<Pair> comboList = FXCollections.observableArrayList();
-    int selectedIndex = 0;
     String options = (String) metadataValue.get("options");
     JSONArray optionsArray = null;
     if (options != null) {
@@ -687,7 +692,7 @@ public class InspectionPane extends BorderPane {
     }
 
     comboList.add(new Pair("", ""));
-    Map<String, Pair> optionsMap = new HashMap<String, Pair>();
+    Map<String, Pair> optionsMap = new HashMap<>();
     if (optionsLabels != null) {
       JSONObject jsonOptionsLabel = new JSONObject(optionsLabels);
       if (optionsArray != null) {
@@ -699,7 +704,7 @@ public class InspectionPane extends BorderPane {
           } else if (jsonOptionsLabel.keySet().contains(option)) {
             // MAP
             JSONObject labelOption = jsonOptionsLabel.getJSONObject(option);
-            Pair pair = null;
+            Pair pair;
             if (labelOption.keySet().contains(l.toString())) {
               pair = new Pair(option, labelOption.getString(l.toString()));
             } else if (labelOption.keySet().contains(l.getLanguage())) {
@@ -717,11 +722,13 @@ public class InspectionPane extends BorderPane {
         }
       }
     } else {
-      for (int pos = 0; pos < optionsArray.length(); pos++) {
-        String option = optionsArray.get(pos).toString();
-        Pair pair = new Pair(option, option);
-        optionsMap.put(option, pair);
-        comboList.add(pair);
+      if (optionsArray != null) {
+        for (int pos = 0; pos < optionsArray.length(); pos++) {
+          String option = optionsArray.get(pos).toString();
+          Pair pair = new Pair(option, option);
+          optionsMap.put(option, pair);
+          comboList.add(pair);
+        }
       }
     }
     ComboBox<Pair> comboBox = new ComboBox<>(comboList);
@@ -735,7 +742,7 @@ public class InspectionPane extends BorderPane {
         String currentValue = (String) metadataValue.get("value");
         if (currentValue != null && optionsMap.containsKey(currentValue)) {
           comboBox.getSelectionModel().select(optionsMap.get(currentValue));
-        } else if (!currentValue.trim().equalsIgnoreCase("")) {
+        } else if (!"".equals(currentValue.trim())) {
           Pair other = new Pair(currentValue, currentValue);
           comboBox.getItems().add(other);
           comboBox.getSelectionModel().select(other);
@@ -749,12 +756,11 @@ public class InspectionPane extends BorderPane {
     }
 
     addListenersToUpdateUI(metadataValue, comboBox.valueProperty());
-
     return comboBox;
   }
 
   private void addListenersToUpdateUI(TemplateFieldValue metadataValue, Property property) {
-    if (metadataValue.getId().equals("title")) {
+    if ("title".equals(metadataValue.getId())) {
       paneTitle.textProperty().bind(property);
       if (currentSIPNode != null) {
         property.bindBidirectional(currentSIPNode.valueProperty());
@@ -764,7 +770,8 @@ public class InspectionPane extends BorderPane {
         }
       }
     }
-    if (metadataValue.getId().equals("level")) {
+
+    if ("level".equals(metadataValue.getId())) {
       property.addListener((observable, oldValue, newValue) -> {
         TreeItem<String> itemToForceUpdate = null;
         // Update the icons of the description level
@@ -782,8 +789,8 @@ public class InspectionPane extends BorderPane {
             currentSchema.updateDescriptionLevel((String) ((Pair) newValue).getKey());
           }
           itemToForceUpdate = currentSchema;
-
         }
+
         // Force update
         if (itemToForceUpdate != null) {
           String value = itemToForceUpdate.getValue();
@@ -848,7 +855,7 @@ public class InspectionPane extends BorderPane {
       }
     }
     // error, there is no SIP or SchemaNode selected
-    return null;
+    return new HashSet<>();
   }
 
   private void saveMetadataPrivate(DescriptiveMetadata selectedDescObjMetadata) {
@@ -859,15 +866,16 @@ public class InspectionPane extends BorderPane {
     }
     // only update if there's been modifications or there's no old
     // metadata and the new isn't empty
-    boolean update = true;
+    boolean update = false;
     if (selectedDescObjMetadata.getCreatorOption() == MetadataOption.TEMPLATE) {
-      currentDescOb.updatedMetadata(selectedDescObjMetadata);
+      if (currentDescOb != null) {
+        currentDescOb.updatedMetadata(selectedDescObjMetadata);
+      }
     } else {
       if (newMetadata != null) {
-        if (oldMetadata == null)
+        if (oldMetadata == null || !oldMetadata.equals(newMetadata)) {
           update = true;
-        else if (!oldMetadata.equals(newMetadata))
-          update = true;
+        }
       }
     }
 
@@ -896,10 +904,11 @@ public class InspectionPane extends BorderPane {
       return;
     Pair selectedObject = metadataCombo.getSelectionModel().getSelectedItem();
     DescriptiveMetadata selectedDescObjMetadata;
-    if (selectedObject != null && selectedObject.getKey() instanceof DescriptiveMetadata)
-      selectedDescObjMetadata = (DescriptiveMetadata) selectedObject.getKey();
-    else
+    if (selectedObject == null || !(selectedObject.getKey() instanceof DescriptiveMetadata)) {
       return;
+    }
+
+    selectedDescObjMetadata = (DescriptiveMetadata) selectedObject.getKey();
     if (metadata.getChildren().contains(metadataFormWrapper)) {
       if (currentDescOb != null) {
         currentDescOb.updatedMetadata(selectedDescObjMetadata);
@@ -1109,8 +1118,9 @@ public class InspectionPane extends BorderPane {
     metadataLoadingPane.setAlignment(Pos.CENTER);
     VBox.setVgrow(metadataLoadingPane, Priority.ALWAYS);
     try {
-      if (loadingGif == null)
+      if (loadingGif == null) {
         loadingGif = new Image(ClassLoader.getSystemResource(Constants.RSC_LOADING_GIF).openStream());
+      }
       loadingPane.getChildren().add(new ImageView(loadingGif));
       metadataLoadingPane.getChildren().add(new ImageView(loadingGif));
     } catch (IOException e) {
@@ -1639,6 +1649,7 @@ public class InspectionPane extends BorderPane {
     topBox.getChildren().add(representationTypeBox);
 
     topSubtitle.getChildren().addAll(space, top);
+
     updateMetadataCombo(false);
 
     /* Center */
@@ -1891,6 +1902,7 @@ public class InspectionPane extends BorderPane {
     center.getChildren().clear();
     metadata.getChildren().clear();
     metadata.getChildren().addAll(metadataTopBox);
+
     updateMetadataCombo(false);
 
     center.getChildren().addAll(metadata, multSelectedBottom);
@@ -1976,7 +1988,7 @@ public class InspectionPane extends BorderPane {
       topSubtitle.getChildren().add(paneTitle);
   }
 
-  private void updateMetadataCombo(boolean selectLast) {
+  public void updateMetadataCombo(boolean selectLast) {
     metadataCombo.getSelectionModel().clearSelection();
     metadataCombo.getItems().clear();
     List<DescriptiveMetadata> metadataList = currentDescOb.getMetadata();
