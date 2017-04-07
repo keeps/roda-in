@@ -850,8 +850,9 @@ public class InspectionPane extends BorderPane {
       Pair selectedPair = metadataCombo.getSelectionModel().getSelectedItem();
       if (selectedPair != null) {
         DescriptiveMetadata dom = (DescriptiveMetadata) selectedPair.getKey();
-        if (dom != null)
+        if (dom != null) {
           return currentDescOb.getMetadataValueMap(dom);
+        }
       }
     }
     // error, there is no SIP or SchemaNode selected
@@ -1157,8 +1158,24 @@ public class InspectionPane extends BorderPane {
 
     Button addRepresentation = new Button(I18n.t(Constants.I18N_INSPECTIONPANE_ADD_REPRESENTATION));
     addRepresentation.setOnAction(event -> {
-      int repCount = currentSIPNode.getSip().getRepresentations().size() + 1;
-      SipRepresentation sipRep = new SipRepresentation(Constants.SIP_REP_PREFIX + repCount);
+      int repCount = currentSIPNode.getSip().getRepresentations().size();
+      String representationName;
+      boolean representationExists = false;
+
+      do {
+        repCount++;
+        representationName = Constants.SIP_REP_PREFIX + repCount;
+
+        if (currentDescOb != null && currentDescOb instanceof SipPreview) {
+          for (SipRepresentation sipRepresentation : ((SipPreview) currentDescOb).getRepresentations()) {
+            if (representationName.equals(sipRepresentation.getName())) {
+              representationExists = true;
+            }
+          }
+        }
+      } while (representationExists);
+
+      SipRepresentation sipRep = new SipRepresentation(representationName);
       currentSIPNode.getSip().addRepresentation(sipRep);
       SipContentRepresentation sipContentRep = new SipContentRepresentation(sipRep);
       sipRoot.getChildren().add(sipContentRep);
@@ -1281,10 +1298,12 @@ public class InspectionPane extends BorderPane {
     if (!metadataList.isEmpty()) {
       selectedItems.forEach(item -> {
         Sip itemDO = null;
-        if (item instanceof SchemaNode)
+        if (item instanceof SchemaNode) {
           itemDO = ((SchemaNode) item).getDob();
-        if (item instanceof SipPreviewNode)
+        } else if (item instanceof SipPreviewNode) {
           itemDO = ((SipPreviewNode) item).getSip();
+        }
+
         if (itemDO != null) {
           applyIPTypeToDescriptionObject(itemDO,
             (IPContentType) contentType.getSelectionModel().getSelectedItem().getKey());
@@ -1325,17 +1344,14 @@ public class InspectionPane extends BorderPane {
           for (TemplateFieldValue metadataObjValue : metadataObjValues) {
             for (TemplateFieldValue descObjMetadataValue : descObjMetadataValues) {
               if (metadataObjValue.getId().equals(descObjMetadataValue.getId())) {
-                // ignore the new value when it's
-                // {{auto-generate}} or {{mixed}}
+                // ignore the new value when it's {{auto-generate}} or {{mixed}}
                 if (metadataObjValue.get("value") == null || (!metadataObjValue.get("value").equals("{{auto-generate}}")
                   && !metadataObjValue.get("value").equals("{{mixed}}"))) {
                   descObjMetadataValue.set("value", metadataObjValue.get("value"));
                   descObjMetadataValue.set("auto-generate", null);
 
-                  // we need to set the value of the tree item
-                  // here, otherwise
-                  // the "title" option will be overriden by
-                  // the UI
+                  // we need to set the value of the tree item here, otherwise
+                  // the "title" option will be overriden by the UI
                   if (metadataObjValue.getId().equals("title"))
                     treeItem.setValue((String) metadataObjValue.get("value"));
                 }

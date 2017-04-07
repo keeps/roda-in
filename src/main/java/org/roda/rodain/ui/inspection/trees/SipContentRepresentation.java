@@ -1,17 +1,17 @@
 package org.roda.rodain.ui.inspection.trees;
 
-import javafx.application.Platform;
-import javafx.scene.control.TreeItem;
-import javafx.scene.image.ImageView;
-import javafx.scene.paint.Color;
-
-import org.roda.rodain.core.sip.SipRepresentation;
-import org.roda.rodain.ui.utils.FontAwesomeImageCreator;
-
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+
+import org.roda.rodain.core.sip.SipRepresentation;
+import org.roda.rodain.ui.utils.FontAwesomeImageCreator;
+
+import javafx.application.Platform;
+import javafx.scene.control.TreeItem;
+import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -30,6 +30,7 @@ public class SipContentRepresentation extends TreeItem<Object> implements Inspec
   public SipContentRepresentation(SipRepresentation representation) {
     this.representation = representation;
     this.setValue(representation.getName());
+
     Platform.runLater(
       () -> setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.SQUARE, Color.DIMGREY))));
   }
@@ -91,5 +92,6 @@ public class SipContentRepresentation extends TreeItem<Object> implements Inspec
    */
   @Override
   public void setParentDir(TreeItem t) {
+    // do nothing
   }
 }

@@ -39,7 +39,7 @@ public class RuleModalController {
   private static VisitorStack visitors = new VisitorStack();
 
   private RuleModalController() {
-
+    // do nothing
   }
 
   /**

@@ -7,10 +7,14 @@ import java.util.List;
 import java.util.Set;
 
 import org.roda.rodain.core.Constants;
+import org.roda.rodain.core.I18n;
 import org.roda.rodain.ui.RodaInApplication;
 import org.roda.rodain.ui.utils.AutoscrollTreeView;
 
+import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
@@ -18,6 +22,7 @@ import javafx.scene.control.TreeView;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.util.Callback;
@@ -28,31 +33,62 @@ import javafx.util.Callback;
  */
 public class SipDataTreeView extends AutoscrollTreeView {
 
+  private static ContextMenu contextMenu = new ContextMenu();
+  private static MenuItem rename = new MenuItem(I18n.t(Constants.I18N_RENAME));
+  private static TreeItem representationItem;
+
   public SipDataTreeView() {
     setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
       @Override
       public TreeCell<String> call(TreeView<String> p) {
         InspectionTreeCell cell = new InspectionTreeCell();
         setDragnDropEvent(cell);
+        setRightClickRepresentationEvent(cell);
         return cell;
       }
     });
     getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-    
+
     EventHandler<MouseEvent> mouseEventHandle = (MouseEvent event) -> {
-      if(getSelectionModel().getSelectedItem()!=null && getSelectionModel().getSelectedItem().getClass()==SipContentRepresentation.class){
-        SipContentRepresentation scr = (SipContentRepresentation)getSelectionModel().getSelectedItem();
+      if (getSelectionModel().getSelectedItem() != null
+        && getSelectionModel().getSelectedItem().getClass() == SipContentRepresentation.class) {
+        SipContentRepresentation scr = (SipContentRepresentation) getSelectionModel().getSelectedItem();
         RodaInApplication.getInspectionPane().setCurrentRepresentation(scr);
         RodaInApplication.getInspectionPane().showEditRepresentationTypeButton(scr);
-      }else{
+      } else {
         RodaInApplication.getInspectionPane().setCurrentRepresentation(null);
         RodaInApplication.getInspectionPane().hideEditRepresentationTypeButton();
       }
     };
 
     setOnMouseClicked(mouseEventHandle);
-
     setShowRoot(false);
+  }
+
+  public static TreeItem getRepresentationItem() {
+    return representationItem;
+  }
+
+  private void setRightClickRepresentationEvent(InspectionTreeCell cell) {
+    cell.setOnMouseClicked(e -> {
+      final TreeItem item = cell.getTreeItem();
+      if (item != null && item instanceof SipContentRepresentation) {
+        if (MouseButton.SECONDARY.equals(e.getButton())) {
+          rename.setOnAction(new EventHandler() {
+            @Override
+            public void handle(Event event) {
+              SipDataTreeView.representationItem = item;
+              SipContentRepresentation representation = (SipContentRepresentation) item;
+              RodaInApplication.renameRepresentation(representation.getRepresentation());
+            }
+          });
+
+          contextMenu.getItems().clear();
+          contextMenu.getItems().add(rename);
+          contextMenu.show(item.getGraphic(), e.getScreenX(), e.getScreenY());
+        }
+      }
+    });
   }
 
   private void setDragnDropEvent(InspectionTreeCell cell) {

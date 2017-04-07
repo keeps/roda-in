@@ -18,9 +18,12 @@ import org.roda.rodain.core.Controller;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.core.schema.Sip;
+import org.roda.rodain.core.sip.SipRepresentation;
 import org.roda.rodain.core.utils.OpenPathInExplorer;
 import org.roda.rodain.ui.creation.CreationModalPreparation;
 import org.roda.rodain.ui.creation.CreationModalStage;
+import org.roda.rodain.ui.creation.RenameModal;
+import org.roda.rodain.ui.creation.RenameModalStage;
 import org.roda.rodain.ui.inspection.InspectionPane;
 import org.roda.rodain.ui.rules.VisitorStack;
 import org.roda.rodain.ui.schema.ui.SchemaPane;
@@ -680,5 +683,14 @@ public class RodaInApplication extends Application {
     CreationModalStage creationStage = new CreationModalStage(stage);
     CreationModalPreparation pane = new CreationModalPreparation(creationStage);
     creationStage.setRoot(pane);
+  }
+
+  /**
+   * Shows a pane to start the export process of the created SIPs.
+   */
+  public static void renameRepresentation(SipRepresentation representation) {
+    RenameModalStage modalStage = new RenameModalStage(stage);
+    RenameModal pane = new RenameModal(representation.getName(), modalStage);
+    modalStage.setRoot(pane);
   }
 }

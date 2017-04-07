@@ -310,8 +310,9 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
 
   private Set<Path> searchMetadata(Path sipPath) {
     File dir = sipPath.toFile();
-    if (!dir.isDirectory())
+    if (!dir.isDirectory()) {
       dir = sipPath.getParent().toFile();
+    }
 
     PathMatcher matcher = FileSystems.getDefault().getPathMatcher(Constants.MISC_GLOB + templateType);
     File[] foundFiles = dir.listFiles((dir1, name) -> matcher.matches(Paths.get(name)));
@@ -335,7 +336,6 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
       for (Path p : paths) {
         if (!p.getFileName().toString().equals(fileNameWithExtension))
           result.add(p);
-
       }
     }
     return result;

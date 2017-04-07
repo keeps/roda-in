@@ -361,6 +361,9 @@ public final class Constants {
   public static final String I18N_TYPE = "type";
   public static final String I18N_VALID_METADATA = "validMetadata";
   public static final String I18N_VERSION = "version";
+  public static final String I18N_RENAME_REPRESENTATION = "RenameModalProcessing.renameRepresentation";
+  public static final String I18N_RENAME = "rename";
+  public static final String RENAME_REPRESENTATION_ALREADY_EXISTS = "RenameModalProcessing.renameAlreadyExists";
 
   /*
    * ENUMs
