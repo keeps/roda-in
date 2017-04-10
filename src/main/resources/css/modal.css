@@ -119,3 +119,58 @@
 .help-menu{
     -fx-background-color: rgba(239, 239, 239, 0.91);
 }
+
+/* METS Form */
+.mets-header-section {
+    -fx-background-color: -fx-medium;
+
+    /*-fx-border-color: black;*/
+    /*-fx-border-radius: 2px;*/
+    /*-fx-border-width: 1px;*/
+
+    -fx-background-radius: 2px;
+    -fx-background-insets: 0;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.5), 3, 0.0, 0, 2);
+}
+
+.mets-header-section-title {
+    -fx-font-size: large;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.mets-header-group {
+    -fx-padding: 10 10 10 10;
+    /*-fx-border-width: 0 0 1 0;*/
+    /*-fx-border-color: transparent transparent -fx-alt-light transparent;*/
+}
+
+.mets-header-group-last {
+    -fx-padding: 10 10 5 10;
+    -fx-border-width: 0;
+    -fx-border-color: transparent;
+}
+
+/* an item that has more items in the same group */
+.mets-item-with-siblings {
+    -fx-padding: 5 0 5 0;
+}
+
+/* an item that is the only item in the group */
+.mets-item-without-siblings {
+    -fx-padding: 0;
+}
+
+.mets-item-multiple-fields {
+    -fx-border-width: 0 0 0 3;
+    -fx-padding: 0 0 0 100;
+    -fx-border-color: transparent transparent transparent -fx-light;
+}
+
+.mets-item-with-siblings.mets-item-multiple-fields{
+    -fx-padding: 5 0 5 10;
+}
+
+.mets-item-without-siblings.mets-item-multiple-fields{
+    -fx-padding: 0 0 0 10;
+}

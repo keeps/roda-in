@@ -11,17 +11,18 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.roda.rodain.core.ConfigurationManager;
 import org.roda.rodain.core.Constants;
-import org.roda.rodain.core.Constants.MetadataOption;
-import org.roda.rodain.core.Constants.SipNameStrategy;
 import org.roda.rodain.core.Controller;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.Pair;
+import org.roda.rodain.core.Constants.MetadataOption;
 import org.roda.rodain.core.rules.TreeNode;
 import org.roda.rodain.core.schema.DescriptiveMetadata;
 import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.core.sip.SipPreview;
 import org.roda.rodain.core.sip.SipRepresentation;
+import org.roda.rodain.core.sip.naming.SIPNameBuilder;
 import org.roda.rodain.ui.creation.CreationModalProcessing;
 import org.roda_project.commons_ip.model.IPContentType;
 import org.roda_project.commons_ip.model.IPDescriptiveMetadata;
@@ -43,8 +44,8 @@ public class HungarianSipCreator extends SimpleSipCreator implements SIPObserver
   private int currentSIPsize = 0;
   private int repProcessingSize;
 
-  private String prefix;
-  private SipNameStrategy sipNameStrategy;
+  private SIPNameBuilder sipNameBuilder;
+  private final IPHeader ipHeader;
 
   /**
    * Creates a new Hungarian SIP exporter.
@@ -55,11 +56,11 @@ public class HungarianSipCreator extends SimpleSipCreator implements SIPObserver
    *          The map with the SIPs that will be exported
    * @param createReport
    */
-  public HungarianSipCreator(Path outputPath, Map<Sip, List<String>> previews, String prefix,
-    SipNameStrategy sipNameStrategy, boolean createReport) {
+  public HungarianSipCreator(Path outputPath, Map<Sip, List<String>> previews, SIPNameBuilder sipNameBuilder,
+    boolean createReport, IPHeader ipHeader) {
     super(outputPath, previews, createReport);
-    this.prefix = prefix;
-    this.sipNameStrategy = sipNameStrategy;
+    this.sipNameBuilder = sipNameBuilder;
+    this.ipHeader = ipHeader;
   }
 
   /**
@@ -94,6 +95,7 @@ public class HungarianSipCreator extends SimpleSipCreator implements SIPObserver
 
       SIP hungarianSip = new HungarianSIP(Controller.encodeId(descriptionObject.getId()), contentType, agentName);
       hungarianSip.addObserver(this);
+      hungarianSip.setAncestors(previews.get(descriptionObject));
       if (descriptionObject.isUpdateSIP()) {
         hungarianSip.setStatus(IPStatus.UPDATE);
       } else {
@@ -106,6 +108,11 @@ public class HungarianSipCreator extends SimpleSipCreator implements SIPObserver
 
       for (DescriptiveMetadata descObjMetadata : descriptionObject.getMetadata()) {
         MetadataType metadataType = new MetadataType(MetadataType.MetadataTypeEnum.OTHER);
+
+        Path schemaPath = ConfigurationManager.getSchemaPath(descObjMetadata.getTemplateType());
+        if (schemaPath != null) {
+          hungarianSip.addSchema(new IPFile(schemaPath));
+        }
 
         // Check if one of the values from the enum can be used
         for (MetadataType.MetadataTypeEnum val : MetadataType.MetadataTypeEnum.values()) {
@@ -133,7 +140,6 @@ public class HungarianSipCreator extends SimpleSipCreator implements SIPObserver
         }
 
         IPFile metadataFile = new IPFile(metadataPath);
-        metadataFile.setRelatedTags(descObjMetadata.getRelatedTags());
         IPDescriptiveMetadata metadata = new IPDescriptiveMetadata(descObjMetadata.getId(), metadataFile, metadataType,
           descObjMetadata.getMetadataVersion());
 
@@ -150,12 +156,10 @@ public class HungarianSipCreator extends SimpleSipCreator implements SIPObserver
           Set<TreeNode> files = sr.getFiles();
           currentSIPadded = 0;
           currentSIPsize = 0;
-
           // count files
           for (TreeNode tn : files) {
             currentSIPsize += tn.getFullTreePaths().size();
           }
-
           // add files to representation
           for (TreeNode tn : files) {
             addFileToRepresentation(tn, new ArrayList<>(), rep);
@@ -167,16 +171,14 @@ public class HungarianSipCreator extends SimpleSipCreator implements SIPObserver
         currentAction = I18n.t(Constants.I18N_SIMPLE_SIP_CREATOR_DOCUMENTATION);
         Set<TreeNode> docs = sip.getDocumentation();
         for (TreeNode tn : docs) {
-          addDocToSip(tn, new ArrayList<>(), hungarianSip);
+          addDocToZip(tn, new ArrayList<>(), hungarianSip);
         }
       }
 
       currentAction = I18n.t(Constants.I18N_SIMPLE_SIP_CREATOR_INIT_ZIP);
 
-      // FIXME get IP header
-      IPHeader header = new IPHeader();
-      hungarianSip.setHeader(header);
-      Path sipPath = hungarianSip.build(outputPath, createSipName(descriptionObject, prefix, sipNameStrategy));
+      hungarianSip.setHeader(ipHeader);
+      Path sipPath = hungarianSip.build(outputPath, createSipName(descriptionObject, sipNameBuilder));
 
       createdSipsCount++;
       return new Pair(sipPath, hungarianSip);
@@ -187,7 +189,7 @@ public class HungarianSipCreator extends SimpleSipCreator implements SIPObserver
       unsuccessful.add(descriptionObject);
       CreationModalProcessing.showError(descriptionObject, e);
     } catch (Exception e) {
-      LOGGER.error("Error exporting Hungarian SIP", e);
+      LOGGER.error("Error exporting E-ARK SIP", e);
       unsuccessful.add(descriptionObject);
       CreationModalProcessing.showError(descriptionObject, e);
     }
@@ -213,14 +215,14 @@ public class HungarianSipCreator extends SimpleSipCreator implements SIPObserver
     }
   }
 
-  private void addDocToSip(TreeNode tn, List<String> relativePath, SIP hungarianSip) {
+  private void addDocToZip(TreeNode tn, List<String> relativePath, SIP hungarianSip) {
     if (Files.isDirectory(tn.getPath())) {
       // add this directory to the path list
       List<String> newRelativePath = new ArrayList<>(relativePath);
       newRelativePath.add(tn.getPath().getFileName().toString());
       // recursive call to all the node's children
       for (TreeNode node : tn.getChildren().values()) {
-        addDocToSip(node, newRelativePath, hungarianSip);
+        addDocToZip(node, newRelativePath, hungarianSip);
       }
     } else {
       // if it's a file, add it to the SIP

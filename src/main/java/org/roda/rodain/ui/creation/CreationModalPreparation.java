@@ -4,9 +4,13 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.ToggleSwitch;
 import org.roda.rodain.core.ConfigurationManager;
 import org.roda.rodain.core.Constants;
@@ -16,8 +20,17 @@ import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.Pair;
 import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.core.sip.SipPreview;
+import org.roda.rodain.core.sip.naming.SIPNameBuilder;
+import org.roda.rodain.core.sip.naming.SIPNameBuilderBagit;
+import org.roda.rodain.core.sip.naming.SIPNameBuilderEARK;
+import org.roda.rodain.core.sip.naming.SIPNameBuilderHungarian;
 import org.roda.rodain.ui.RodaInApplication;
+import org.roda_project.commons_ip.model.IPHeader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -28,7 +41,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 
@@ -37,24 +50,36 @@ import javafx.stage.DirectoryChooser;
  * @since 19/11/2015.
  */
 public class CreationModalPreparation extends BorderPane {
+  private static final Logger LOGGER = LoggerFactory.getLogger(CreationModalPreparation.class.getName());
+
   private final int DEFAULT_WIDTH = 120;
 
-  private static final List<String> SIP_TYPES = new ArrayList<>();
+  private static final List<Pair> SIP_TYPES = new ArrayList<>();
   static {
     for (SipType type : SipType.values()) {
-      SIP_TYPES.add(type.toString());
+      SIP_TYPES.add(new Pair(type, type.toString()));
+    }
+  }
+
+  private static final ObservableList<Pair> SIP_NAME_STRATEGY_COMBO_BOX_ITEMS = FXCollections.observableArrayList();
+  static {
+    for (SipNameStrategy sipNameStrategy : SipNameStrategy.values()) {
+      SIP_NAME_STRATEGY_COMBO_BOX_ITEMS.add(new Pair(sipNameStrategy, I18n.t("sipNameStrategy." + sipNameStrategy)));
     }
   }
 
   private CreationModalStage stage;
 
   private static Path outputFolder;
-  private ComboBox<String> sipTypes;
-  private ComboBox<Pair> nameTypes;
+  private ComboBox<Pair> sipTypes;
+  private SIPNameStrategyComboBox sipNameStrategyComboBox;
   private static Button start;
   private long selectedSIP, selectedItems, allSIP, allItems;
   private ToggleSwitch sipExportSwitch, itemExportSwitch, reportCreationSwitch;
-  private TextField prefixField;
+
+  private TextField sipNameStrategyPrefix;
+  private TextField sipNameStrategyTransferring;
+  private TextField sipNameStrategySerial;
 
   private String sSelectedSIP, sSelectedItems, sZeroItems, sAllSIP, sAllItems;
 
@@ -77,6 +102,8 @@ public class CreationModalPreparation extends BorderPane {
     createTop();
     createCenter();
     createBottom();
+
+    stage.sizeToScene();
   }
 
   private void createTop() {
@@ -101,7 +128,10 @@ public class CreationModalPreparation extends BorderPane {
     VBox reportBox = createReportBox();
     HBox outputFolderBox = createOutputFolder();
     HBox sipTypesBox = createSipTypes();
-    HBox prefixBox = createNameBox();
+    HBox prefixBox = createSipNameStrategyBoxAndDropdown();
+
+    sipTypes.getSelectionModel().clearSelection();
+    sipTypes.getSelectionModel().selectFirst();
 
     center.getChildren().addAll(countBox, reportBox, outputFolderBox, sipTypesBox, prefixBox);
     setCenter(center);
@@ -187,8 +217,6 @@ public class CreationModalPreparation extends BorderPane {
   private HBox createOutputFolder() {
     HBox outputFolderBox = new HBox(5);
     outputFolderBox.setAlignment(Pos.CENTER_LEFT);
-    HBox space = new HBox();
-    HBox.setHgrow(space, Priority.ALWAYS);
 
     Label outputFolderLabel = new Label(I18n.t(Constants.I18N_CREATIONMODALPREPARATION_OUTPUT_DIRECTORY));
     Button chooseFile = new Button(I18n.t(Constants.I18N_CREATIONMODALPREPARATION_CHOOSE));
@@ -208,31 +236,101 @@ public class CreationModalPreparation extends BorderPane {
       }
     });
 
-    outputFolderBox.getChildren().addAll(outputFolderLabel, space, chooseFile);
+    outputFolderBox.getChildren().addAll(outputFolderLabel, HorizontalSpace.create(), chooseFile);
     return outputFolderBox;
   }
 
-  private HBox createNameBox() {
+  private HBox createSipNameStrategyBoxAndDropdown() {
     HBox prefixBox = new HBox(5);
-    prefixBox.setAlignment(Pos.CENTER_LEFT);
-    HBox space = new HBox();
-    HBox.setHgrow(space, Priority.ALWAYS);
+    prefixBox.setAlignment(Pos.TOP_LEFT);
 
-    Label prefixLabel = new Label(I18n.t(Constants.I18N_CREATIONMODALPREPARATION_PREFIX));
-    prefixField = new TextField();
-    prefixField.setMinWidth(DEFAULT_WIDTH);
-    prefixField.setMaxWidth(DEFAULT_WIDTH);
-    prefixField.setText(ConfigurationManager.getConfig(Constants.CONF_K_EXPORT_LAST_PREFIX));
+    Map<SipNameStrategy, Pane> sipNameStrategyPanes = new HashMap<>();
+    HBox prefixOnlySipNameStrategyBox = createPrefixOnlySipNameStrategyBox();
+    VBox hungarianSipNameStrategyBox = createHungarianSipNameStrategyBox();
+    hungarianSipNameStrategyBox.setVisible(false);
+    sipNameStrategyPanes.put(SipNameStrategy.ID, prefixOnlySipNameStrategyBox);
+    sipNameStrategyPanes.put(SipNameStrategy.TITLE_DATE, prefixOnlySipNameStrategyBox);
+    sipNameStrategyPanes.put(SipNameStrategy.TITLE_ID, prefixOnlySipNameStrategyBox);
+    sipNameStrategyPanes.put(SipNameStrategy.DATE_TRANSFERRING_SERIALNUMBER, hungarianSipNameStrategyBox);
 
-    nameTypes = new ComboBox<>();
-    nameTypes.setMinWidth(DEFAULT_WIDTH);
-    for (SipNameStrategy sipNameStrategy : SipNameStrategy.values()) {
-      nameTypes.getItems().add(new Pair(sipNameStrategy, I18n.t("sipNameStrategy." + sipNameStrategy)));
+    Set<SipNameStrategy> preEnabledItems = Collections.emptySet();
+    if (sipTypes.getValue() != null) {
+      SipType selectedSipType = (SipType) sipTypes.getValue().getKey();
+      preEnabledItems = selectedSipType.getSipNameStrategies();
     }
-    nameTypes.getSelectionModel().selectFirst();
+    sipNameStrategyComboBox = new SIPNameStrategyComboBox(preEnabledItems);
+    sipNameStrategyComboBox.setMinWidth(DEFAULT_WIDTH);
 
-    prefixBox.getChildren().addAll(prefixLabel, space, prefixField, nameTypes);
+    sipNameStrategyComboBox.setItems(SIP_NAME_STRATEGY_COMBO_BOX_ITEMS);
+
+    sipNameStrategyComboBox.getSelectionModel().selectFirst();
+
+    sipNameStrategyComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+      if (newValue != null) {
+        if (newValue.getKey().equals(SipNameStrategy.DATE_TRANSFERRING_SERIALNUMBER)) {
+          hungarianSipNameStrategyBox.setVisible(true);
+          prefixOnlySipNameStrategyBox.setVisible(false);
+        } else {
+          hungarianSipNameStrategyBox.setVisible(false);
+          prefixOnlySipNameStrategyBox.setVisible(true);
+        }
+        stage.sizeToScene();
+      }
+    });
+
+    prefixBox.getChildren().addAll(prefixOnlySipNameStrategyBox, hungarianSipNameStrategyBox, HorizontalSpace.create(),
+      sipNameStrategyComboBox);
     return prefixBox;
+  }
+
+  private HBox createPrefixOnlySipNameStrategyBox() {
+    HBox labelAndField = new HBox(5);
+    labelAndField.setAlignment(Pos.CENTER_LEFT);
+    Label prefixLabel = new Label(I18n.t(Constants.I18N_CREATIONMODALPREPARATION_PREFIX));
+    sipNameStrategyPrefix = new TextField();
+    sipNameStrategyPrefix.setMinWidth(DEFAULT_WIDTH);
+    sipNameStrategyPrefix.setMaxWidth(DEFAULT_WIDTH);
+    sipNameStrategyPrefix.setText(ConfigurationManager.getAppConfig(Constants.CONF_K_EXPORT_LAST_PREFIX));
+
+    labelAndField.getChildren().addAll(prefixLabel, HorizontalSpace.create(), sipNameStrategyPrefix);
+    labelAndField.managedProperty().bind(labelAndField.visibleProperty());
+    return labelAndField;
+  }
+
+  private VBox createHungarianSipNameStrategyBox() {
+    VBox form = new VBox(5);
+    form.setAlignment(Pos.TOP_LEFT);
+
+    // transferring
+    HBox transferringLabelAndField = new HBox(5);
+    transferringLabelAndField.setAlignment(Pos.CENTER_LEFT);
+    Label transferringLabel = new Label(I18n.t(Constants.I18N_CREATIONMODALPREPARATION_TRANSFERRING));
+    sipNameStrategyTransferring = new TextField();
+    sipNameStrategyTransferring.setMinWidth(DEFAULT_WIDTH);
+    sipNameStrategyTransferring.setMaxWidth(DEFAULT_WIDTH);
+    sipNameStrategyTransferring.setText(ConfigurationManager.getAppConfig(Constants.CONF_K_EXPORT_LAST_TRANSFERRING));
+    transferringLabelAndField.getChildren().addAll(transferringLabel, HorizontalSpace.create(),
+      sipNameStrategyTransferring);
+
+    // serial number
+    HBox serialLabelAndField = new HBox(5);
+    serialLabelAndField.setAlignment(Pos.CENTER_LEFT);
+    Label serialLabel = new Label(I18n.t(Constants.I18N_CREATIONMODALPREPARATION_SERIAL));
+    sipNameStrategySerial = new TextField();
+    sipNameStrategySerial.setMinWidth(DEFAULT_WIDTH);
+    sipNameStrategySerial.setMaxWidth(DEFAULT_WIDTH);
+
+    String serial = ConfigurationManager.getAppConfig(Constants.CONF_K_EXPORT_LAST_SERIAL);
+    if (StringUtils.isBlank(serial)) {
+      serial = Constants.MISC_DEFAULT_HUNGARIAN_SIP_SERIAL;
+    }
+    sipNameStrategySerial.setText(serial);
+
+    serialLabelAndField.getChildren().addAll(serialLabel, HorizontalSpace.create(), sipNameStrategySerial);
+
+    form.getChildren().addAll(transferringLabelAndField, serialLabelAndField);
+    form.managedProperty().bind(form.visibleProperty());
+    return form;
   }
 
   /**
@@ -251,8 +349,6 @@ public class CreationModalPreparation extends BorderPane {
   private HBox createSipTypes() {
     HBox sipTypesBox = new HBox(5);
     sipTypesBox.setAlignment(Pos.CENTER_LEFT);
-    HBox space = new HBox();
-    HBox.setHgrow(space, Priority.ALWAYS);
 
     Label sipTypesLabel = new Label(I18n.t(Constants.I18N_CREATIONMODALPREPARATION_SIP_FORMAT));
 
@@ -260,9 +356,27 @@ public class CreationModalPreparation extends BorderPane {
     sipTypes.setMinWidth(DEFAULT_WIDTH);
     sipTypes.setId("sipTypes");
     sipTypes.getItems().addAll(SIP_TYPES);
-    sipTypes.getSelectionModel().select(SipType.EARK.toString());
+    sipTypes.getSelectionModel().selectFirst();
 
-    sipTypesBox.getChildren().addAll(sipTypesLabel, space, sipTypes);
+    sipTypes.valueProperty().addListener((observable, oldValue, newValue) -> {
+      if (newValue != null) {
+        // sip name strategies combo box update
+        SipType type = (SipType) newValue.getKey();
+        Set<SipNameStrategy> enabledStrategies = type.getSipNameStrategies();
+        sipNameStrategyComboBox.setEnabledItems(enabledStrategies);
+
+        // update start button to display the text "start" or "continue"
+        if (start != null) {
+          if (type.requiresMETSHeaderInfo()) {
+            start.setText(I18n.t(Constants.I18N_CONTINUE));
+          } else {
+            start.setText(I18n.t(Constants.I18N_START));
+          }
+        }
+      }
+    });
+
+    sipTypesBox.getChildren().addAll(sipTypesLabel, HorizontalSpace.create(), sipTypes);
     return sipTypesBox;
   }
 
@@ -271,43 +385,67 @@ public class CreationModalPreparation extends BorderPane {
     bottom.setPadding(new Insets(0, 10, 10, 10));
     bottom.setAlignment(Pos.CENTER_LEFT);
 
-    HBox space = new HBox();
-    HBox.setHgrow(space, Priority.ALWAYS);
-
     Button cancel = new Button(I18n.t(Constants.I18N_CANCEL));
-    cancel.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent actionEvent) {
-        stage.close();
-      }
-    });
+    cancel.setOnAction(actionEvent -> stage.close());
 
-    start = new Button(I18n.t(Constants.I18N_START));
+    start = new Button();
+    if (sipTypes.getValue() != null && ((SipType) sipTypes.getValue().getKey()).requiresMETSHeaderInfo()) {
+      start.setText(I18n.t(Constants.I18N_CONTINUE));
+    } else {
+      start.setText(I18n.t(Constants.I18N_START));
+    }
+
     start.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent actionEvent) {
-        if (outputFolder == null)
-          return;
-        String selectedType = sipTypes.getSelectionModel().getSelectedItem();
-        SipType type;
-        if (SipType.BAGIT.toString().equals(selectedType)) {
-          type = SipType.BAGIT;
-        } else if (SipType.HUNGARIAN.toString().equals(selectedType)) {
-          type = SipType.HUNGARIAN;
-        } else {
-          type = SipType.EARK;
+        // set defaults
+        SipType sipType = (SipType) sipTypes.getValue().getKey();
+        SipNameStrategy sipNameStrategy = (SipNameStrategy) sipNameStrategyComboBox.getValue().getKey();
+        SIPNameBuilder sipNameBuilder = null;
+
+        // get values from text fields
+        if (sipType.equals(SipType.HUNGARIAN)) {
+          String serial = sipNameStrategySerial.getText();
+          String nextSerial;
+          try {
+            nextSerial = String.format(Constants.SIP_NAME_STRATEGY_SERIAL_FORMAT_NUMBER,
+              Integer.valueOf(serial) + CreationModalPreparation.this.selectedSIP);
+          } catch (NumberFormatException e) {
+            serial = ConfigurationManager.getAppConfig(Constants.CONF_K_EXPORT_LAST_SERIAL);
+            if (StringUtils.isBlank(serial)) {
+              serial = Constants.MISC_DEFAULT_HUNGARIAN_SIP_SERIAL;
+            }
+            nextSerial = String.format(Constants.SIP_NAME_STRATEGY_SERIAL_FORMAT_NUMBER,
+              Integer.valueOf(serial) + CreationModalPreparation.this.selectedSIP);
+          }
+          sipNameBuilder = new SIPNameBuilderHungarian(sipNameStrategyTransferring.getText(), serial, sipNameStrategy);
+
+          // persist in config file
+          ConfigurationManager.setAppConfig(Constants.CONF_K_EXPORT_LAST_TRANSFERRING,
+            sipNameStrategyTransferring.getText(), true);
+
+          ConfigurationManager.setAppConfig(Constants.CONF_K_EXPORT_LAST_SERIAL, nextSerial, true);
+        } else if (sipType.equals(SipType.EARK)) {
+          sipNameBuilder = new SIPNameBuilderEARK(sipNameStrategyPrefix.getText(), sipNameStrategy);
+          ConfigurationManager.setAppConfig(Constants.CONF_K_EXPORT_LAST_PREFIX, sipNameStrategyPrefix.getText(), true);
+        } else if (sipType.equals(SipType.BAGIT)) {
+          sipNameBuilder = new SIPNameBuilderBagit(sipNameStrategyPrefix.getText(), sipNameStrategy);
+          ConfigurationManager.setAppConfig(Constants.CONF_K_EXPORT_LAST_PREFIX, sipNameStrategyPrefix.getText(), true);
         }
 
-        ConfigurationManager.setConfig(Constants.CONF_K_EXPORT_LAST_PREFIX, prefixField.getText(), true);
-        stage.startCreation(outputFolder, type, sipExportSwitch.isSelected(), itemExportSwitch.isSelected(),
-          prefixField.getText(), (SipNameStrategy) nameTypes.getSelectionModel().getSelectedItem().getKey(),
-          reportCreationSwitch.isSelected());
+        if (sipType.requiresMETSHeaderInfo()) {
+          stage.showMETSHeaderModal(CreationModalPreparation.this, outputFolder, sipExportSwitch.isSelected(),
+            itemExportSwitch.isSelected(), sipType, sipNameBuilder, reportCreationSwitch.isSelected());
+        } else {
+          stage.startCreation(outputFolder, sipExportSwitch.isSelected(), itemExportSwitch.isSelected(), sipNameBuilder,
+            reportCreationSwitch.isSelected(), new IPHeader());
+        }
       }
     });
 
     start.setDisable(true);
 
-    bottom.getChildren().addAll(cancel, space, start);
+    bottom.getChildren().addAll(cancel, HorizontalSpace.create(), start);
     setBottom(bottom);
   }
 

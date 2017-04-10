@@ -259,7 +259,7 @@ public class RuleModalPane extends BorderPane {
     if (metaTypesRaw != null) {
       String[] metaTypes = metaTypesRaw.split(Constants.MISC_COMMA);
       for (String type : metaTypes) {
-        String title = ConfigurationManager.getMetadataConfig(type + Constants.CONF_K_SUFIX_TITLE);
+        String title = ConfigurationManager.getMetadataConfig(type + Constants.CONF_K_SUFFIX_TITLE);
         if (title == null || type == null)
           continue;
         typesList.add(new Pair(type, title));
@@ -402,9 +402,9 @@ public class RuleModalPane extends BorderPane {
     String[] templates = templatesRaw.split(Constants.MISC_COMMA);
     for (String templ : templates) {
       String trimmed = templ.trim();
-      String title = ConfigurationManager.getMetadataConfig(trimmed + Constants.CONF_K_SUFIX_TITLE);
-      String type = ConfigurationManager.getMetadataConfig(trimmed + Constants.CONF_K_SUFIX_TYPE);
-      String version = ConfigurationManager.getMetadataConfig(trimmed + Constants.CONF_K_SUFIX_VERSION);
+      String title = ConfigurationManager.getMetadataConfig(trimmed + Constants.CONF_K_SUFFIX_TITLE);
+      String type = ConfigurationManager.getMetadataConfig(trimmed + Constants.CONF_K_SUFFIX_TYPE);
+      String version = ConfigurationManager.getMetadataConfig(trimmed + Constants.CONF_K_SUFFIX_VERSION);
       if (title == null)
         continue;
       String key = trimmed;

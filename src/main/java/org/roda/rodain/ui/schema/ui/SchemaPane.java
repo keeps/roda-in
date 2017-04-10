@@ -610,7 +610,7 @@ public class SchemaPane extends BorderPane {
       dobj.setTitle(I18n.t(Constants.I18N_SCHEMAPANE_NEW_NODE));
       try {
         String metadataAggregationLevel = ConfigurationManager
-          .getMetadataConfig(dobj.getMetadata().get(0).getTemplateType() + Constants.CONF_K_SUFIX_AGGREG_LEVEL);
+          .getMetadataConfig(dobj.getMetadata().get(0).getTemplateType() + Constants.CONF_K_SUFFIX_AGGREG_LEVEL);
         dobj.setDescriptionlevel(metadataAggregationLevel);
       } catch (Throwable t) {
         LOGGER.error(t.getMessage(), t);
@@ -627,7 +627,7 @@ public class SchemaPane extends BorderPane {
       } else {
         try {
           String metadataTopLevel = ConfigurationManager
-            .getMetadataConfig(dobj.getMetadata().get(0).getTemplateType() + Constants.CONF_K_SUFIX_TOP_LEVEL);
+            .getMetadataConfig(dobj.getMetadata().get(0).getTemplateType() + Constants.CONF_K_SUFFIX_TOP_LEVEL);
           newNode.updateDescriptionLevel(metadataTopLevel);
         } catch (Throwable t) {
           LOGGER.error(t.getMessage(), t);

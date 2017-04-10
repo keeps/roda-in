@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.roda.rodain.core.Constants;
-import org.roda.rodain.core.Constants.SipNameStrategy;
-import org.roda.rodain.core.Constants.SipType;
 import org.roda.rodain.core.creation.CreateSips;
 import org.roda.rodain.core.schema.Sip;
+import org.roda.rodain.core.sip.naming.SIPNameBuilder;
 import org.roda.rodain.ui.RodaInApplication;
 import org.roda.rodain.ui.utils.UnsafeDouble;
+import org.roda_project.commons_ip.model.IPHeader;
 
 import javafx.event.EventHandler;
 import javafx.scene.Parent;
@@ -49,10 +49,20 @@ public class CreationModalStage extends Stage {
 
     setResizable(true);
 
-    Scene scene = new Scene(new HBox(), 400, PREPARATION_HEIGHT);
+    Scene scene = new Scene(new HBox());
     scene.getStylesheets().add(ClassLoader.getSystemResource(Constants.RSC_CSS_MODAL).toExternalForm());
     scene.getStylesheets().add(ClassLoader.getSystemResource(Constants.RSC_CSS_SHARED).toExternalForm());
     setScene(scene);
+  }
+
+  /**
+   * Changes the scene to CreationModalMETSHeader.
+   */
+  public void showMETSHeaderModal(CreationModalPreparation previousPanel, Path outputFolder, boolean exportAll,
+    boolean exportItems, Constants.SipType sipType, SIPNameBuilder sipNameBuilder, boolean createReport) {
+    CreationModalMETSHeader pane = new CreationModalMETSHeader(this, previousPanel, outputFolder, exportAll,
+      exportItems, sipType, sipNameBuilder, createReport);
+    setRoot(pane);
   }
 
   /**
@@ -61,13 +71,12 @@ public class CreationModalStage extends Stage {
    *
    * @param outputFolder
    *          The output folder for the SIP exportation
-   * @param type
-   *          The format of the SIPs
    */
-  public void startCreation(Path outputFolder, SipType type, boolean exportAll, boolean exportItems, String prefix,
-    SipNameStrategy sipNameStrategy, boolean createReport) {
+  public void startCreation(Path outputFolder, boolean exportAll, boolean exportItems, SIPNameBuilder sipNameBuilder,
+    boolean createReport, IPHeader METSHeader) {
     setHeight(PROCESSING_HEIGHT);
-    CreateSips creator = new CreateSips(outputFolder, type, exportItems, prefix, sipNameStrategy, createReport);
+    CreateSips creator = new CreateSips(outputFolder, sipNameBuilder.getSIPType(), exportItems, sipNameBuilder,
+      createReport, METSHeader);
     CreationModalProcessing pane = new CreationModalProcessing(creator, this);
     setRoot(pane);
 

@@ -53,7 +53,7 @@ public class SipPreview extends Sip implements Observer {
     if (metadata != null) {
       try {
         String metadataItemLevel = ConfigurationManager
-          .getMetadataConfig(metadata.getTemplateType() + Constants.CONF_K_SUFIX_ITEM_LEVEL);
+          .getMetadataConfig(metadata.getTemplateType() + Constants.CONF_K_SUFFIX_ITEM_LEVEL);
         setDescriptionlevel(metadataItemLevel);
       } catch (Throwable t) {
         LOGGER.error(t.getMessage(), t);

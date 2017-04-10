@@ -268,7 +268,7 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
     if (metadataOption == MetadataOption.TEMPLATE) {
       DescriptiveMetadata dom = new DescriptiveMetadata(metadataOption, templateType, metadataType, metadataVersion);
       sipPreview.getMetadata().add(dom);
-      String level = ConfigurationManager.getMetadataConfig(templateType + Constants.CONF_K_SUFIX_FILE_LEVEL);
+      String level = ConfigurationManager.getMetadataConfig(templateType + Constants.CONF_K_SUFFIX_FILE_LEVEL);
       sipPreview.setDescriptionlevel(level);
     } else {
       for (Path m : metaPath) {
@@ -280,7 +280,7 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
       }
     }
 
-    String fileLevelItem = ConfigurationManager.getMetadataConfig(templateType + Constants.CONF_K_SUFIX_FILE_LEVEL);
+    String fileLevelItem = ConfigurationManager.getMetadataConfig(templateType + Constants.CONF_K_SUFFIX_FILE_LEVEL);
     sipPreview.setDescriptionlevel(fileLevelItem);
 
     sips.add(sipPreview);

@@ -146,7 +146,7 @@ public class AddMetadataPane extends BorderPane {
     if (metaTypesRaw != null) {
       String[] metaTypes = metaTypesRaw.split(Constants.MISC_COMMA);
       for (String type : metaTypes) {
-        String title = ConfigurationManager.getMetadataConfig(type + Constants.CONF_K_SUFIX_TITLE);
+        String title = ConfigurationManager.getMetadataConfig(type + Constants.CONF_K_SUFFIX_TITLE);
         if (title == null || type == null) {
           continue;
         }
@@ -250,9 +250,9 @@ public class AddMetadataPane extends BorderPane {
     for (String templ : templates) {
       String trimmed = templ.trim();
 
-      String title = ConfigurationManager.getMetadataConfig(trimmed + Constants.CONF_K_SUFIX_TITLE);
-      String type = ConfigurationManager.getMetadataConfig(trimmed + Constants.CONF_K_SUFIX_TYPE);
-      String version = ConfigurationManager.getMetadataConfig(trimmed + Constants.CONF_K_SUFIX_VERSION);
+      String title = ConfigurationManager.getMetadataConfig(trimmed + Constants.CONF_K_SUFFIX_TITLE);
+      String type = ConfigurationManager.getMetadataConfig(trimmed + Constants.CONF_K_SUFFIX_TYPE);
+      String version = ConfigurationManager.getMetadataConfig(trimmed + Constants.CONF_K_SUFFIX_VERSION);
       if (title == null) {
         continue;
       }
@@ -388,8 +388,8 @@ public class AddMetadataPane extends BorderPane {
   private void addTypeAndVersionToMetadata(Pair metaType, DescriptiveMetadata metadataToAdd) {
     if (metaType != null) {
       String templateVersion = (String) metaType.getKey();
-      String metadataVersion = ConfigurationManager.getMetadataConfig(templateVersion + Constants.CONF_K_SUFIX_VERSION);
-      String metadataType = ConfigurationManager.getMetadataConfig(templateVersion + Constants.CONF_K_SUFIX_TYPE);
+      String metadataVersion = ConfigurationManager.getMetadataConfig(templateVersion + Constants.CONF_K_SUFFIX_VERSION);
+      String metadataType = ConfigurationManager.getMetadataConfig(templateVersion + Constants.CONF_K_SUFFIX_TYPE);
       String metadataTags = ConfigurationManager.getMetadataConfig(templateVersion + Constants.CONF_K_SUFFIX_TAGS);
       List<String> tagList = Arrays.asList(metadataTags.split(","));
       metadataToAdd.setMetadataType(metadataType);

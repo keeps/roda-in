@@ -1,5 +1,8 @@
 package org.roda.rodain.core;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 /**
@@ -17,10 +20,13 @@ public final class Constants {
   public static final String RODAIN_ENV_VARIABLE = "RODAIN_ENV";
   public static final String RODAIN_ENV_TESTING = "testing";
   public static final String RODAIN_CONFIG_FOLDER = "roda-in";
+  public static final String RODAIN_SERIALIZE_FILE_PREFIX = "serial_";
+  public static final String RODAIN_SERIALIZE_FILE_METS_HEADER_SUFFIX = "_metsheader.bin";
   public static final String RODAIN_GITHUB_LATEST_VERSION_LINK = "https://github.com/keeps/roda-in/releases";
   public static final String RODAIN_GITHUB_LATEST_VERSION_API_LINK = "https://api.github.com/repos/keeps/roda-in/releases/latest";
   public static final String RODAIN_GUI_TITLE = "RODA-In";
   public static final String RODAIN_DEFAULT_ENCODING = "UTF-8";
+  public static final String RODAIN_DEFAULT_CONFIG_ENCODING = RODAIN_DEFAULT_ENCODING;
   public static final String ENCODING_BASE64 = "Base64";
   public static final String MISC_TRUE = "true";
   public static final String MISC_FALSE = "false";
@@ -36,6 +42,7 @@ public final class Constants {
   public static final String MISC_AND_OP = "&&";
   public static final String MISC_FWD_SLASH = "/";
   public static final String MISC_METADATA_SEP = "!###!";
+  public static final String MISC_DEFAULT_HUNGARIAN_SIP_SERIAL = "001";
 
   // langs
   public static final String LANG_PT_BR = "pt-br";
@@ -52,6 +59,7 @@ public final class Constants {
   public static final String SIP_REP_PREFIX = "rep";
   public static final String SIP_DEFAULT_AGENT_NAME = "RODA-in";
   public static final String SIP_AGENT_NAME_FORMAT = "RODA-in %s";
+  public static final String SIP_NAME_STRATEGY_SERIAL_FORMAT_NUMBER = "%03d";
 
   // folders
   public static final String FOLDER_SCHEMAS = "schemas";
@@ -62,17 +70,17 @@ public final class Constants {
 
   // configs keys prefixes & sufixes
   public static final String CONF_K_PREFIX_METADATA = "metadata.";
-  public static final String CONF_K_SUFIX_SCHEMA = ".schema";
-  public static final String CONF_K_SUFIX_TEMPLATE = ".template";
-  public static final String CONF_K_SUFIX_TITLE = ".title";
-  public static final String CONF_K_SUFIX_TYPE = ".type";
-  public static final String CONF_K_SUFIX_VERSION = ".version";
-  public static final String CONF_K_SUFIX_AGGREG_LEVEL = ".aggregationLevel";
-  public static final String CONF_K_SUFIX_TOP_LEVEL = ".topLevel";
-  public static final String CONF_K_SUFIX_ITEM_LEVEL = ".itemLevel";
-  public static final String CONF_K_SUFIX_FILE_LEVEL = ".fileLevel";
+  public static final String CONF_K_SUFFIX_SCHEMA = ".schema";
+  public static final String CONF_K_SUFFIX_TEMPLATE = ".template";
+  public static final String CONF_K_SUFFIX_TITLE = ".title";
+  public static final String CONF_K_SUFFIX_TYPE = ".type";
+  public static final String CONF_K_SUFFIX_VERSION = ".version";
+  public static final String CONF_K_SUFFIX_AGGREG_LEVEL = ".aggregationLevel";
+  public static final String CONF_K_SUFFIX_TOP_LEVEL = ".topLevel";
+  public static final String CONF_K_SUFFIX_ITEM_LEVEL = ".itemLevel";
+  public static final String CONF_K_SUFFIX_FILE_LEVEL = ".fileLevel";
   public static final String CONF_K_SUFFIX_TAGS = ".tags";
-  public static final String CONF_K_SUFIX_LEVELS_ICON = "levels.icon.";
+  public static final String CONF_K_SUFFIX_LEVELS_ICON = "levels.icon.";
   // configs keys
   public static final String CONF_K_IGNORED_FILES = "app.ignoredFiles";
   public static final String CONF_K_METADATA_TEMPLATES = "metadata.templates";
@@ -82,7 +90,38 @@ public final class Constants {
   public static final String CONF_K_LEVELS_ICON_FILE = "levels.icon.internal.fileLevel";
   public static final String CONF_K_LEVELS_ICON_AGGREGATION = "levels.icon.internal.aggregationLevel";
   public static final String CONF_K_EXPORT_LAST_PREFIX = "export.last_prefix";
+  public static final String CONF_K_EXPORT_LAST_TRANSFERRING = "export.last_transferring";
+  public static final String CONF_K_EXPORT_LAST_SERIAL = "export.last_serial";
   public static final String CONF_K_ID_PREFIX = "idPrefix";
+  // METS Header fields
+  public static final String CONF_K_METS_HEADER_FIELDS_PREFIX = "metsheader.";
+  public static final String CONF_K_METS_HEADER_FIELDS_SUFFIX = ".fields";
+  public static final String CONF_K_METS_HEADER_FIELD_SEPARATOR = ".field.";
+  public static final String CONF_K_METS_HEADER_FIELD_TYPE = ".type";
+  public static final String CONF_K_METS_HEADER_FIELD_AMOUNT_MAX = ".amount.max";
+  public static final String CONF_K_METS_HEADER_FIELD_AMOUNT_MIN = ".amount.min";
+  public static final String CONF_K_METS_HEADER_FIELD_LABEL = ".label";
+  public static final String CONF_K_METS_HEADER_FIELD_DESCRIPTION = ".description";
+  public static final String CONF_K_METS_HEADER_FIELD_COMBO_VALUES = ".combo";
+  public static final String CONF_K_METS_HEADER_FIELD_ATTRIBUTE_OTHERTYPE_VALUE = ".attr.othertype.value";
+  public static final String CONF_K_METS_HEADER_FIELD_ATTRIBUTE_OTHERTYPE_LABEL = ".attr.othertype.label";
+  public static final String CONF_K_METS_HEADER_FIELD_ATTRIBUTE_OTHERTYPE_DESCRIPTION = ".attr.othertype.description";
+  public static final String CONF_K_METS_HEADER_FIELD_ATTRIBUTE_ROLE_VALUE = ".attr.role.value";
+  public static final String CONF_K_METS_HEADER_FIELD_ATTRIBUTE_ROLE_LABEL = ".attr.role.label";
+  public static final String CONF_K_METS_HEADER_FIELD_ATTRIBUTE_ROLE_DESCRIPTION = ".attr.role.description";
+  public static final String CONF_K_METS_HEADER_FIELD_ATTRIBUTE_TYPE_VALUE = ".attr.type.value";
+  public static final String CONF_K_METS_HEADER_FIELD_ATTRIBUTE_TYPE_LABEL = ".attr.type.label";
+  public static final String CONF_K_METS_HEADER_FIELD_ATTRIBUTE_TYPE_DESCRIPTION = ".attr.type.description";
+  public static final String CONF_K_METS_HEADER_FIELD_ATTRIBUTE_NAME_LABEL = ".attr.name.label";
+  public static final String CONF_K_METS_HEADER_FIELD_ATTRIBUTE_NAME_DESCRIPTION = ".attr.name.description";
+  public static final String CONF_K_METS_HEADER_FIELD_ATTRIBUTE_NOTE_LABEL = ".attr.note.label";
+  public static final String CONF_K_METS_HEADER_FIELD_ATTRIBUTE_NOTE_DESCRIPTION = ".attr.note.description";
+  public static final String CONF_K_METS_HEADER_FIELD_ATTRIBUTE_NOTE_MANDATORY = ".attr.note.mandatory";
+  public static final String CONF_V_METS_HEADER_FIELD_TYPE_AGENT = "agent";
+  public static final String CONF_V_METS_HEADER_FIELD_TYPE_ALTRECORDID = "altrecordid";
+  public static final String CONF_V_METS_HEADER_FIELD_TYPE_RECORDSTATUS = "recordstatus";
+  public static final String CONF_V_METS_HEADER_FIELD_AMOUNT_MAX_INFINITE = "N";
+
   // app configs keys
   public static final String CONF_K_APP_LAST_CLASS_SCHEME = "lastClassificationScheme";
   public static final String CONF_K_APP_HELP_ENABLED = "app.helpEnabled";
@@ -106,6 +145,7 @@ public final class Constants {
   public static final String DATE_FORMAT_2 = "dd.MM.yyyy '@' HH:mm:ss z";
   public static final String DATE_FORMAT_3 = "yyyy-MM-dd'T'HH:mm:ss'Z'";
   public static final String DATE_FORMAT_4 = "yyyy-MM-dd";
+  public static final String DATE_FORMAT_5 = "yyyyMMdd";
 
   // resources
   public static final String RSC_SPLASH_SCREEN_IMAGE = "roda-in-splash.png";
@@ -127,6 +167,7 @@ public final class Constants {
   public static final String CSS_CELLTEXT = "cellText";
   public static final String CSS_DARK_BUTTON = "dark-button";
   public static final String CSS_DESCRIPTION = "description";
+  public static final String CSS_EDGE_TO_EDGE = "edge-to-edge";
   public static final String CSS_ERROR = "error";
   public static final String CSS_EXPORT_BUTTON = "export-button";
   public static final String CSS_FOOTER = "footer";
@@ -139,6 +180,13 @@ public final class Constants {
   public static final String CSS_INDEXED_CELL = "indexed-cell";
   public static final String CSS_INSPECTIONPART = "inspectionPart";
   public static final String CSS_MAIN_TREE = "main-tree";
+  public static final String CSS_METS_HEADER_GROUP_LAST = "mets-header-group-last";
+  public static final String CSS_METS_HEADER_GROUP = "mets-header-group";
+  public static final String CSS_METS_HEADER_ITEM_WITHOUT_SIBLINGS = "mets-item-without-siblings";
+  public static final String CSS_METS_HEADER_ITEM_WITH_SIBLINGS = "mets-item-with-siblings";
+  public static final String CSS_METS_HEADER_ITEM_WITH_MULTIPLE_FIELDS = "mets-item-multiple-fields";
+  public static final String CSS_METS_HEADER_SECTION_TITLE = "mets-header-section-title";
+  public static final String CSS_METS_HEADER_SECTION = "mets-header-section";
   public static final String CSS_MODAL = "modal";
   public static final String CSS_PREPARECREATIONSUBTITLE = "prepareCreationSubtitle";
   public static final String CSS_RULECELL = "ruleCell";
@@ -166,6 +214,10 @@ public final class Constants {
   public static final String I18N_ASSOCIATION_SIP_SELECTION_TITLE = "association.sipSelection.title";
   public static final String I18N_ASSOCIATION_SIP_WITH_STRUCTURE_DESCRIPTION = "association.sipWithStructure.description";
   public static final String I18N_ASSOCIATION_SIP_WITH_STRUCTURE_TITLE = "association.sipWithStructure.title";
+  public static final String I18N_CREATIONMODALMETSHEADER_HEADER = "CreationModalMETSHeader.METSHeader";
+  public static final String I18N_CREATIONMODALMETSHEADER_SECTION_STATUS = "CreationModalMETSHeader.section.status";
+  public static final String I18N_CREATIONMODALMETSHEADER_SECTION_AGENTS = "CreationModalMETSHeader.section.agents";
+  public static final String I18N_CREATIONMODALMETSHEADER_SECTION_ALTRECORDS = "CreationModalMETSHeader.section.altrecords";
   public static final String I18N_CREATIONMODALPREPARATION_CHOOSE = "CreationModalPreparation.choose";
   public static final String I18N_CREATIONMODALPREPARATION_CREATE_REPORT = "CreationModalPreparation.createReport";
   public static final String I18N_CREATIONMODALPREPARATION_CREATING_SIPS = "CreationModalPreparation.creatingSips";
@@ -173,6 +225,8 @@ public final class Constants {
   public static final String I18N_CREATIONMODALPREPARATION_INCLUDE_HIERARCHY = "CreationModalPreparation.includeHierarchy";
   public static final String I18N_CREATIONMODALPREPARATION_OUTPUT_DIRECTORY = "CreationModalPreparation.outputDirectory";
   public static final String I18N_CREATIONMODALPREPARATION_PREFIX = "CreationModalPreparation.prefix";
+  public static final String I18N_CREATIONMODALPREPARATION_TRANSFERRING = "CreationModalPreparation.transferring";
+  public static final String I18N_CREATIONMODALPREPARATION_SERIAL = "CreationModalPreparation.serial";
   public static final String I18N_CREATIONMODALPREPARATION_SIP_FORMAT = "CreationModalPreparation.sipFormat";
   public static final String I18N_CREATIONMODALPROCESSING_ACTION = "CreationModalProcessing.action";
   public static final String I18N_CREATIONMODALPROCESSING_ALERT_HEADER = "CreationModalProcessing.alert.header";
@@ -370,11 +424,28 @@ public final class Constants {
    */
   // sip type
   public enum SipType {
-    EARK("E-ARK"), BAGIT("BagIt"), HUNGARIAN("Hungarian");
+    EARK("E-ARK", true, SipNameStrategy.ID, SipNameStrategy.TITLE_ID, SipNameStrategy.TITLE_DATE),
+    BAGIT("BagIt", false, SipNameStrategy.ID, SipNameStrategy.TITLE_ID, SipNameStrategy.TITLE_DATE),
+    HUNGARIAN("Hungarian SIP 4", true, SipNameStrategy.DATE_TRANSFERRING_SERIALNUMBER);
     private final String text;
+    private Set<SipNameStrategy> sipNameStrategies;
+    private boolean requiresMETSHeaderInfo;
 
-    private SipType(final String text) {
+    private SipType(final String text, boolean requiresMETSHeaderInfo, SipNameStrategy... sipNameStrategies) {
       this.text = text;
+      this.requiresMETSHeaderInfo = requiresMETSHeaderInfo;
+      this.sipNameStrategies = new LinkedHashSet<>();
+      for (SipNameStrategy sipNameStrategy : sipNameStrategies) {
+        this.sipNameStrategies.add(sipNameStrategy);
+      }
+    }
+
+    public boolean requiresMETSHeaderInfo() {
+      return this.requiresMETSHeaderInfo;
+    }
+
+    public Set<SipNameStrategy> getSipNameStrategies() {
+      return this.sipNameStrategies;
     }
 
     @Override
@@ -385,7 +456,7 @@ public final class Constants {
 
   // sip name strategy
   public enum SipNameStrategy {
-    ID, TITLE_ID, TITLE_DATE
+    ID, TITLE_ID, TITLE_DATE, DATE_TRANSFERRING_SERIALNUMBER
   }
 
   // path state

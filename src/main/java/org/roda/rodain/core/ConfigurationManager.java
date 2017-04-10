@@ -6,12 +6,15 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
@@ -27,6 +30,7 @@ import javax.swing.filechooser.FileSystemView;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.roda.rodain.core.rules.filters.IgnoredFilter;
 import org.roda.rodain.core.utils.FolderBasedUTF8Control;
@@ -186,7 +190,7 @@ public class ConfigurationManager {
     String templatesRaw = getConfig(Constants.CONF_K_METADATA_TEMPLATES);
     String[] templates = templatesRaw.split(Constants.MISC_COMMA);
     for (String templ : templates) {
-      String templateName = Constants.CONF_K_PREFIX_METADATA + templ.trim() + Constants.CONF_K_SUFIX_TEMPLATE;
+      String templateName = Constants.CONF_K_PREFIX_METADATA + templ.trim() + Constants.CONF_K_SUFFIX_TEMPLATE;
       String fileName = internalConfig.getString(templateName);
       // copy the sample to the templates folder too, if it doesn't exist
       // already
@@ -202,7 +206,7 @@ public class ConfigurationManager {
     String typesRaw = getConfig(Constants.CONF_K_METADATA_TYPES);
     String[] types = typesRaw.split(Constants.MISC_COMMA);
     for (String type : types) {
-      String schemaName = Constants.CONF_K_PREFIX_METADATA + type.trim() + Constants.CONF_K_SUFIX_SCHEMA;
+      String schemaName = Constants.CONF_K_PREFIX_METADATA + type.trim() + Constants.CONF_K_SUFFIX_SCHEMA;
       String schemaFileName = internalConfig.getString(schemaName);
       if (schemaFileName == null || schemaFileName.length() == 0) {
         continue;
@@ -236,15 +240,18 @@ public class ConfigurationManager {
 
   private static void loadConfigs() throws ConfigurationException, FileNotFoundException {
     externalConfig = new PropertiesConfiguration();
-    externalConfig.load(new FileInputStream(externalConfigPath.toFile()));
+    externalConfig.load(new FileInputStream(externalConfigPath.toFile()), Constants.RODAIN_DEFAULT_CONFIG_ENCODING);
     externalAppConfig = new PropertiesConfiguration();
-    externalAppConfig.load(new FileInputStream(externalAppConfigPath.toFile()));
+    externalAppConfig.load(new FileInputStream(externalAppConfigPath.toFile()),
+      Constants.RODAIN_DEFAULT_CONFIG_ENCODING);
 
     // keep the starting configuration to use when saving
     startExternalConfig = new PropertiesConfiguration();
-    startExternalConfig.load(new FileInputStream(externalConfigPath.toFile()));
+    startExternalConfig.load(new FileInputStream(externalConfigPath.toFile()),
+      Constants.RODAIN_DEFAULT_CONFIG_ENCODING);
     startExternalAppConfig = new PropertiesConfiguration();
-    startExternalAppConfig.load(new FileInputStream(externalAppConfigPath.toFile()));
+    startExternalAppConfig.load(new FileInputStream(externalAppConfigPath.toFile()),
+      Constants.RODAIN_DEFAULT_CONFIG_ENCODING);
   }
 
   private static void processLanguageAndOtherResources() {
@@ -357,7 +364,7 @@ public class ConfigurationManager {
    * @return The content of the template file
    */
   public static String getTemplateContent(String templateName) {
-    String completeKey = Constants.CONF_K_PREFIX_METADATA + templateName + Constants.CONF_K_SUFIX_TEMPLATE;
+    String completeKey = Constants.CONF_K_PREFIX_METADATA + templateName + Constants.CONF_K_SUFFIX_TEMPLATE;
     return getFile(completeKey);
   }
 
@@ -367,7 +374,7 @@ public class ConfigurationManager {
    * @return The content of the schema file associated to the template
    */
   public static String getSchemaFile(String templateType) {
-    String completeKey = Constants.CONF_K_PREFIX_METADATA + templateType + Constants.CONF_K_SUFIX_SCHEMA;
+    String completeKey = Constants.CONF_K_PREFIX_METADATA + templateType + Constants.CONF_K_SUFFIX_SCHEMA;
     if (externalConfig.containsKey(completeKey)) {
       Path filePath = schemasPath.resolve(externalConfig.getString(completeKey));
       if (Files.exists(filePath)) {
@@ -387,7 +394,7 @@ public class ConfigurationManager {
    * @return The path of the schema file associated to the template
    */
   public static Path getSchemaPath(String templateType) {
-    String completeKey = Constants.CONF_K_PREFIX_METADATA + templateType + Constants.CONF_K_SUFIX_SCHEMA;
+    String completeKey = Constants.CONF_K_PREFIX_METADATA + templateType + Constants.CONF_K_SUFFIX_SCHEMA;
     if (externalConfig.containsKey(completeKey)) {
       Path filePath = schemasPath.resolve(externalConfig.getString(completeKey));
       if (Files.exists(filePath)) {
@@ -449,6 +456,47 @@ public class ConfigurationManager {
    * @return The value of the property (config)
    */
   public static String getConfig(String key) {
+    Object res;
+    if (externalConfig != null && externalConfig.containsKey(key)) {
+      res = externalConfig.getProperty(key);
+    } else {
+      res = internalConfig.getProperty(key);
+    }
+    if (res == null) {
+      return null;
+    }
+    if (res instanceof String) {
+      return (String) res;
+    }
+    // if it isn't a string then it must be a list Ex: a,b,c,d
+    return String.join(Constants.MISC_COMMA, (List<String>) res);
+  }
+
+  /**
+   * @param key
+   *          The name of the property (config)
+   * @return The value of the property (config)
+   */
+  public static String[] getConfigAsStringArray(String key) {
+    String[] res;
+    if (externalConfig != null && externalConfig.containsKey(key)) {
+      res = externalConfig.getStringArray(key);
+    } else {
+      res = internalConfig.getStringArray(key);
+    }
+    if (res == null) {
+      return new String[] {};
+    } else {
+      return res;
+    }
+  }
+
+  /**
+   * @param key
+   *          The name of the property (config)
+   * @return The value of the property (config)
+   */
+  public static String getConfigArray(String key) {
     Object res;
     if (externalConfig != null && externalConfig.containsKey(key)) {
       res = externalConfig.getProperty(key);
@@ -642,5 +690,25 @@ public class ConfigurationManager {
 
   public static URL getBuildProperties() {
     return ClassLoader.getSystemResource("build.properties");
+  }
+
+  public static <T extends Serializable> T deserialize(String filename) {
+    Path serialFile = rodainPath.resolve(Constants.RODAIN_SERIALIZE_FILE_PREFIX + filename);
+    try (InputStream in = Files.newInputStream(serialFile, StandardOpenOption.READ)) {
+      return (T) SerializationUtils.deserialize(in);
+    } catch (IOException | ClassCastException e) {
+      LOGGER.error("Error deserializing from file {}", serialFile.toAbsolutePath().toString(), e);
+    }
+    return null;
+  }
+
+  public static <T extends Serializable> void serialize(T object, String filename) {
+    Path serialFile = rodainPath.resolve(Constants.RODAIN_SERIALIZE_FILE_PREFIX + filename);
+    try (OutputStream out = Files.newOutputStream(serialFile, StandardOpenOption.CREATE, StandardOpenOption.WRITE,
+      StandardOpenOption.TRUNCATE_EXISTING)) {
+      SerializationUtils.serialize(object, out);
+    } catch (IOException e) {
+      LOGGER.error("Error serializing to file {}", serialFile.toAbsolutePath().toString(), e);
+    }
   }
 }

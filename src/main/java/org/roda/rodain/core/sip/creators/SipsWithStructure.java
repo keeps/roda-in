@@ -152,7 +152,7 @@ public class SipsWithStructure extends SipPreviewCreator {
       descriptionObject.setTitle(path.getFileName().toString());
       try {
         String metadataAggregationLevel = ConfigurationManager
-          .getMetadataConfig(templateType + Constants.CONF_K_SUFIX_AGGREG_LEVEL);
+          .getMetadataConfig(templateType + Constants.CONF_K_SUFFIX_AGGREG_LEVEL);
         descriptionObject.setDescriptionlevel(metadataAggregationLevel);
       } catch (Throwable t) {
         LOGGER.error(t.getMessage(), t);

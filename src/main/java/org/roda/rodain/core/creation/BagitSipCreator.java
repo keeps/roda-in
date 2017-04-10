@@ -19,6 +19,7 @@ import org.roda.rodain.core.rules.TreeNode;
 import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.core.sip.SipPreview;
 import org.roda.rodain.core.sip.SipRepresentation;
+import org.roda.rodain.core.sip.naming.SIPNameBuilder;
 import org.roda.rodain.ui.creation.CreationModalProcessing;
 import org.roda_project.commons_ip.model.IPConstants;
 import org.roda_project.commons_ip.model.IPContentType;
@@ -43,8 +44,7 @@ public class BagitSipCreator extends SimpleSipCreator implements SIPObserver {
   private int currentSIPadded = 0;
   private int repProcessingSize;
 
-  private String prefix;
-  private SipNameStrategy sipNameStrategy;
+  private SIPNameBuilder sipNameBuilder;
 
   /**
    * Creates a new BagIt exporter.
@@ -52,13 +52,13 @@ public class BagitSipCreator extends SimpleSipCreator implements SIPObserver {
    * @param outputPath
    *          The path to the output folder of the SIP exportation
    * @param previews
-   *          The map with the SIPs that will be exported
+   * @param createReport
+   * @param sipNameBuilder
    */
-  public BagitSipCreator(Path outputPath, Map<Sip, List<String>> previews, boolean createReport, String prefix,
-    SipNameStrategy sipNameStrategy) {
+  public BagitSipCreator(Path outputPath, Map<Sip, List<String>> previews, SIPNameBuilder sipNameBuilder,
+    boolean createReport) {
     super(outputPath, previews, createReport);
-    this.prefix = prefix;
-    this.sipNameStrategy = sipNameStrategy;
+    this.sipNameBuilder = sipNameBuilder;
   }
 
   /**
@@ -137,7 +137,7 @@ public class BagitSipCreator extends SimpleSipCreator implements SIPObserver {
       Path metadataPath = tempDir.resolve(Utils.generateRandomAndPrefixedUUID());
       bagit.addDescriptiveMetadata(BagitUtils.createBagitMetadata(metadataMap, bagit.getAncestors(), metadataPath));
 
-      Path name = bagit.build(outputPath, createSipName(descriptionObject, prefix, sipNameStrategy));
+      Path name = bagit.build(outputPath, createSipName(descriptionObject, sipNameBuilder));
       createdSipsCount++;
       return new Pair(name, bagit);
     } catch (Exception e) {

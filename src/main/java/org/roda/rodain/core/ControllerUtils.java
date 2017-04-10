@@ -258,8 +258,8 @@ public final class ControllerUtils {
     if (metaTypesRaw != null) {
       String[] metaTypes = metaTypesRaw.split(Constants.MISC_COMMA);
       for (String metaType : metaTypes) {
-        String type = ConfigurationManager.getMetadataConfig(metaType + Constants.CONF_K_SUFIX_TYPE);
-        String version = ConfigurationManager.getMetadataConfig(metaType + Constants.CONF_K_SUFIX_VERSION);
+        String type = ConfigurationManager.getMetadataConfig(metaType + Constants.CONF_K_SUFFIX_TYPE);
+        String version = ConfigurationManager.getMetadataConfig(metaType + Constants.CONF_K_SUFFIX_VERSION);
         if (dm.getMetadataType() != null && dm.getMetadataType().equalsIgnoreCase(type)) {
           if (dm.getMetadataVersion() != null && dm.getMetadataVersion().equalsIgnoreCase(version)) {
             dm.setTemplateType(metaType);

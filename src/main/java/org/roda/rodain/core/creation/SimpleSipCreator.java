@@ -6,9 +6,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.file.Path;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -27,11 +25,11 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.roda.rodain.core.Constants;
-import org.roda.rodain.core.Constants.SipNameStrategy;
 import org.roda.rodain.core.Controller;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.report.InventoryReportCreator;
 import org.roda.rodain.core.schema.Sip;
+import org.roda.rodain.core.sip.naming.SIPNameBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -216,29 +214,9 @@ public abstract class SimpleSipCreator extends Thread {
     reportCreator.start(sips);
   }
 
-  public String createSipName(Sip sip, String prefix, SipNameStrategy sipNameStrategy) {
-    StringBuilder name = new StringBuilder();
-    if (prefix != null && !"".equals(prefix)) {
-      name.append(prefix).append(" - ");
-    }
-    switch (sipNameStrategy) {
-      case TITLE_ID:
-        name.append(sip.getTitle());
-        name.append(" - ");
-        name.append(sip.getId());
-        break;
-      case TITLE_DATE:
-        name.append(sip.getTitle());
-        name.append(" - ");
-        name.append(new SimpleDateFormat(Constants.DATE_FORMAT_1).format(new Date()));
-        break;
-      case ID:
-      default:
-        name.append(sip.getId());
-        break;
-    }
-
-    return Controller.encodeId(name.toString());
+  public String createSipName(Sip sip, SIPNameBuilder sipNameBuilder) {
+    String name = sipNameBuilder.build(sip);
+    return Controller.encodeId(name);
   }
 
 }

@@ -9,6 +9,8 @@ import org.roda.rodain.core.Constants.SipNameStrategy;
 import org.roda.rodain.core.Constants.SipType;
 import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.core.sip.SipPreview;
+import org.roda.rodain.core.sip.naming.SIPNameBuilder;
+import org.roda_project.commons_ip.model.IPHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,12 +24,13 @@ public class CreateSips {
   private SipType type;
   private Path outputPath;
   private SimpleSipCreator creator;
-  private String prefix;
-  private SipNameStrategy sipNameStrategy;
+  private SIPNameBuilder sipNameBuilder;
 
   private int sipsCount;
   private long startedTime;
-  private boolean exportItems, createReport;
+  private boolean exportItems;
+  private boolean createReport;
+  private IPHeader ipHeader;
 
   /**
    * Creates a new object of the SIP exporter
@@ -37,14 +40,14 @@ public class CreateSips {
    * @param type
    *          The format of the SIP output
    */
-  public CreateSips(Path outputPath, SipType type, boolean exportItems, String prefix, SipNameStrategy sipNameStrategy,
-    boolean createReport) {
+  public CreateSips(Path outputPath, SipType type, boolean exportItems, SIPNameBuilder sipNameBuilder,
+    boolean createReport, IPHeader ipHeader) {
     this.type = type;
     this.outputPath = outputPath;
-    this.prefix = prefix;
-    this.sipNameStrategy = sipNameStrategy;
+    this.sipNameBuilder = sipNameBuilder;
     this.exportItems = exportItems;
     this.createReport = createReport;
+    this.ipHeader = ipHeader;
   }
 
   /**
@@ -57,14 +60,17 @@ public class CreateSips {
     startedTime = System.currentTimeMillis();
 
     sipsCount = sips.size();
-    if (type == SipType.BAGIT) {
-      creator = new BagitSipCreator(outputPath, sips, createReport, prefix, sipNameStrategy);
-    } else if (type == SipType.HUNGARIAN) {
-      creator = new HungarianSipCreator(outputPath, sips, prefix, sipNameStrategy, createReport);
-    } else {
-      creator = new EarkSipCreator(outputPath, sips, prefix, sipNameStrategy, createReport);
+    switch (type) {
+      case BAGIT:
+        creator = new BagitSipCreator(outputPath, sips, sipNameBuilder, createReport);
+        break;
+      case EARK:
+        creator = new EarkSipCreator(outputPath, sips, sipNameBuilder, createReport, ipHeader);
+        break;
+      case HUNGARIAN:
+        creator = new HungarianSipCreator(outputPath, sips, sipNameBuilder, createReport, ipHeader);
+        break;
     }
-
     creator.start();
   }
 

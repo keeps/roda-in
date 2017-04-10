@@ -106,12 +106,12 @@ public class RuleModalController {
         case DIFF_DIRECTORY:
           metadataPath = pane.getDiffDir();
           templateType = pane.getMetadataTypeDiffFolder();
-          metadataType = ConfigurationManager.getMetadataConfig(templateType + Constants.CONF_K_SUFIX_TYPE);
+          metadataType = ConfigurationManager.getMetadataConfig(templateType + Constants.CONF_K_SUFFIX_TYPE);
           break;
         case SINGLE_FILE:
           metadataPath = pane.getFromFile();
           templateType = pane.getMetadataTypeSingleFile();
-          metadataType = ConfigurationManager.getMetadataConfig(templateType + Constants.CONF_K_SUFIX_TYPE);
+          metadataType = ConfigurationManager.getMetadataConfig(templateType + Constants.CONF_K_SUFFIX_TYPE);
           break;
         case SAME_DIRECTORY:
           templateType = pane.getSameFolderPattern();
@@ -131,7 +131,7 @@ public class RuleModalController {
       }
 
       if (metadataType != null && metadataVersion == null) {
-        metadataVersion = ConfigurationManager.getMetadataConfig(templateType + Constants.CONF_K_SUFIX_VERSION);
+        metadataVersion = ConfigurationManager.getMetadataConfig(templateType + Constants.CONF_K_SUFFIX_VERSION);
       }
 
       Rule rule = new Rule(sourceSet, assocType, metadataPath, templateType, metadataOption, metadataType,

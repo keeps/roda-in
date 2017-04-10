@@ -14,7 +14,6 @@ import org.apache.commons.io.FileUtils;
 import org.roda.rodain.core.ConfigurationManager;
 import org.roda.rodain.core.Constants;
 import org.roda.rodain.core.Constants.MetadataOption;
-import org.roda.rodain.core.Constants.SipNameStrategy;
 import org.roda.rodain.core.Controller;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.Pair;
@@ -23,10 +22,12 @@ import org.roda.rodain.core.schema.DescriptiveMetadata;
 import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.core.sip.SipPreview;
 import org.roda.rodain.core.sip.SipRepresentation;
+import org.roda.rodain.core.sip.naming.SIPNameBuilder;
 import org.roda.rodain.ui.creation.CreationModalProcessing;
 import org.roda_project.commons_ip.model.IPContentType;
 import org.roda_project.commons_ip.model.IPDescriptiveMetadata;
 import org.roda_project.commons_ip.model.IPFile;
+import org.roda_project.commons_ip.model.IPHeader;
 import org.roda_project.commons_ip.model.IPRepresentation;
 import org.roda_project.commons_ip.model.MetadataType;
 import org.roda_project.commons_ip.model.SIP;
@@ -47,8 +48,8 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
   private int currentSIPsize = 0;
   private int repProcessingSize;
 
-  private String prefix;
-  private SipNameStrategy sipNameStrategy;
+  private SIPNameBuilder sipNameBuilder;
+  private final IPHeader ipHeader;
 
   /**
    * Creates a new EARK SIP exporter.
@@ -58,12 +59,13 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
    * @param previews
    *          The map with the SIPs that will be exported
    * @param createReport
+   * @param sipNameBuilder
    */
-  public EarkSipCreator(Path outputPath, Map<Sip, List<String>> previews, String prefix,
-    SipNameStrategy sipNameStrategy, boolean createReport) {
+  public EarkSipCreator(Path outputPath, Map<Sip, List<String>> previews, SIPNameBuilder sipNameBuilder,
+    boolean createReport, IPHeader ipHeader) {
     super(outputPath, previews, createReport);
-    this.prefix = prefix;
-    this.sipNameStrategy = sipNameStrategy;
+    this.sipNameBuilder = sipNameBuilder;
+    this.ipHeader = ipHeader;
   }
 
   /**
@@ -176,8 +178,10 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver {
         }
       }
 
+      earkSip.setHeader(ipHeader);
+
       currentAction = I18n.t(Constants.I18N_SIMPLE_SIP_CREATOR_INIT_ZIP);
-      Path sipPath = earkSip.build(outputPath, createSipName(descriptionObject, prefix, sipNameStrategy));
+      Path sipPath = earkSip.build(outputPath, createSipName(descriptionObject, sipNameBuilder));
 
       createdSipsCount++;
       return new Pair(sipPath, earkSip);

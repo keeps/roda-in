@@ -69,7 +69,7 @@ public class SipPreviewNode extends TreeItem<String> implements Observer {
   public void updateDescriptionLevel(String descLevel) {
     sip.setDescriptionlevel(descLevel);
     try {
-      String unicode = ConfigurationManager.getConfig(Constants.CONF_K_SUFIX_LEVELS_ICON + descLevel);
+      String unicode = ConfigurationManager.getConfig(Constants.CONF_K_SUFFIX_LEVELS_ICON + descLevel);
       if (unicode != null) {
         Platform.runLater(() -> {
           iconBlack = FontAwesomeImageCreator.generate(unicode);
