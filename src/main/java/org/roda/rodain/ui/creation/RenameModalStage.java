@@ -1,6 +1,7 @@
 package org.roda.rodain.ui.creation;
 
 import org.roda.rodain.core.Constants;
+import org.roda.rodain.ui.utils.UnsafeDouble;
 
 import javafx.event.EventHandler;
 import javafx.scene.Parent;
@@ -14,7 +15,6 @@ import javafx.stage.StageStyle;
 
 public class RenameModalStage extends Stage {
   private static final int PREPARATION_HEIGHT = 160;
-  private static final int PROCESSING_HEIGHT = PREPARATION_HEIGHT - 60;
   private ColorAdjust colorAdjust;
   private Stage primaryStage;
 
@@ -63,7 +63,7 @@ public class RenameModalStage extends Stage {
     primaryStage.getScene().getRoot().setEffect(colorAdjust);
 
     // allow the dialog to be dragged around.
-    final Delta dragDelta = new Delta();
+    final UnsafeDouble dragDelta = new UnsafeDouble();
     // reference to be used in the handlers
     final RenameModalStage thisDialog = this;
 
@@ -84,10 +84,5 @@ public class RenameModalStage extends Stage {
     });
 
     show();
-  }
-
-  // records relative x and y co-ordinates.
-  class Delta {
-    double x, y;
   }
 }

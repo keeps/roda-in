@@ -10,6 +10,7 @@ import org.roda.rodain.core.Constants.SipType;
 import org.roda.rodain.core.creation.CreateSips;
 import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.ui.RodaInApplication;
+import org.roda.rodain.ui.utils.UnsafeDouble;
 
 import javafx.event.EventHandler;
 import javafx.scene.Parent;
@@ -102,7 +103,7 @@ public class CreationModalStage extends Stage {
     primaryStage.getScene().getRoot().setEffect(colorAdjust);
 
     // allow the dialog to be dragged around.
-    final Delta dragDelta = new Delta();
+    final UnsafeDouble dragDelta = new UnsafeDouble();
     final CreationModalStage thisDialog = this; // reference to be used in the
     // handlers
     root.setOnMousePressed(new EventHandler<MouseEvent>() {
@@ -122,10 +123,5 @@ public class CreationModalStage extends Stage {
     });
 
     show();
-  }
-
-  // records relative x and y co-ordinates.
-  class Delta {
-    double x, y;
   }
 }

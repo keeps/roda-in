@@ -686,7 +686,7 @@ public class RodaInApplication extends Application {
   }
 
   /**
-   * Shows a pane to start the export process of the created SIPs.
+   * Shows a pane to rename a representation.
    */
   public static void renameRepresentation(SipRepresentation representation) {
     RenameModalStage modalStage = new RenameModalStage(stage);

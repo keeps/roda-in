@@ -1,7 +1,5 @@
 package org.roda.rodain.ui.creation;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.Set;
 
 import org.roda.rodain.core.Constants;
@@ -30,17 +28,12 @@ import javafx.scene.paint.Color;
 
 public class RenameModal extends BorderPane {
   private static final Logger LOGGER = LoggerFactory.getLogger(RenameModal.class.getName());
-  private static final int MAX_COUNT_ERROR_MESSAGES = 5;
-  private static final long MAX_TIME_ERROR_MESSAGES = 10000;
   private static RenameModalStage stage;
   private String representationName;
 
   // center
   private TextField name;
   private Label errorLabel;
-
-  private static Deque<Long> errorMessages;
-  private static boolean displayErrorMessage;
 
   /**
    * Creates a pane to show the progress of the SIP exportation.
@@ -53,8 +46,6 @@ public class RenameModal extends BorderPane {
   public RenameModal(String representationName, RenameModalStage stage) {
     RenameModal.stage = stage;
     this.representationName = representationName;
-    errorMessages = new ArrayDeque<>();
-    displayErrorMessage = true;
 
     getStyleClass().add(Constants.CSS_SIPCREATOR);
 
@@ -93,7 +84,7 @@ public class RenameModal extends BorderPane {
       }
     });
 
-    errorLabel = new Label(I18n.t(Constants.RENAME_REPRESENTATION_ALREADY_EXISTS));
+    errorLabel = new Label(I18n.t(Constants.I18N_RENAME_REPRESENTATION_ALREADY_EXISTS));
     errorLabel.setVisible(false);
     errorLabel.setPadding(new Insets(5, 0, 0, 0));
     errorLabel.setTextFill(Color.web("#ff0033"));

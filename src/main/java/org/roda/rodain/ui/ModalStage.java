@@ -1,6 +1,7 @@
 package org.roda.rodain.ui;
 
 import org.roda.rodain.core.Constants;
+import org.roda.rodain.ui.utils.UnsafeDouble;
 
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -62,7 +63,7 @@ public class ModalStage extends Stage {
     primaryStage.getScene().getRoot().setEffect(colorAdjust);
 
     // allow the dialog to be dragged around.
-    final Delta dragDelta = new Delta();
+    final UnsafeDouble dragDelta = new UnsafeDouble();
     final ModalStage thisDialog = this; // reference to be used in the
     // handlers
     root.setOnMousePressed(event -> {
@@ -80,10 +81,5 @@ public class ModalStage extends Stage {
       show();
     }
 
-  }
-
-  // records relative x and y co-ordinates.
-  class Delta {
-    double x, y;
   }
 }
