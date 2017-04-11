@@ -12,6 +12,7 @@ import org.roda_project.commons_ip.utils.METSEnums;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
@@ -37,6 +38,7 @@ public class AgentItem extends AbstractItem {
   String predefinedType;
   String predefinedRole;
   String predefinedOtherType;
+  List<AgentGroup.NameAndNotePair> predefinedNamesAndNotes;
 
   private Button btnRemove;
 
@@ -45,11 +47,13 @@ public class AgentItem extends AbstractItem {
   private TextField tfType;
   private TextField tfRole;
   private TextField tfOtherType;
+  private ComboBox<AgentGroup.NameAndNotePair> cbNameAndNote;
 
   AgentItem(AbstractGroup parent, String i18nNameLabel, String i18nNameDescription, String i18nNoteLabel,
     String i18nNoteDescription, boolean mandatoryNote, String i18nTypeLabel, String i18nTypeDescription,
     String predefinedType, String i18nRoleLabel, String i18nRoleDescription, String predefinedRole,
-    String i18nOtherTypeLabel, String i18nOtherTypeDescription, String predefinedOtherType) {
+    String i18nOtherTypeLabel, String i18nOtherTypeDescription, String predefinedOtherType,
+    List<AgentGroup.NameAndNotePair> predefinedNamesAndNotes) {
     super(parent);
 
     this.i18nNameLabel = i18nNameLabel;
@@ -61,6 +65,7 @@ public class AgentItem extends AbstractItem {
     this.predefinedType = predefinedType;
     this.predefinedRole = predefinedRole;
     this.predefinedOtherType = predefinedOtherType;
+    this.predefinedNamesAndNotes = predefinedNamesAndNotes;
 
     this.useStyleForMultipleFields();
 
@@ -114,25 +119,40 @@ public class AgentItem extends AbstractItem {
       inputsColumn.getChildren().add(rowRole);
     }
 
-    HBox rowName = new HBox(5);
-    rowName.setAlignment(Pos.CENTER_LEFT);
-    Label labelName = new Label(i18nNameLabel);
-    labelName.setTooltip(new Tooltip(i18nNameDescription));
-    tfName = new TextField();
-    tfName.setMinWidth(DEFAULT_TEXTFIELD_WIDTH);
-    tfName.setMaxWidth(DEFAULT_TEXTFIELD_WIDTH);
-    rowName.getChildren().addAll(labelName, HorizontalSpace.create(), tfName);
+    if (!predefinedNamesAndNotes.isEmpty()) {
+      HBox rowNameAndNote = new HBox(5);
+      rowNameAndNote.setAlignment(Pos.CENTER_LEFT);
+      Label labelNameAndNote = new Label(i18nNameLabel + " (" + i18nNoteLabel + ")");
+      labelNameAndNote.setTooltip(new Tooltip(i18nNameDescription + " (" + i18nNoteDescription + ")"));
+      cbNameAndNote = new ComboBox<>();
+      cbNameAndNote.setMinWidth(DEFAULT_TEXTFIELD_WIDTH);
+      cbNameAndNote.setMaxWidth(DEFAULT_TEXTFIELD_WIDTH);
+      cbNameAndNote.getItems().addAll(predefinedNamesAndNotes);
+      cbNameAndNote.getSelectionModel().selectFirst();
+      rowNameAndNote.getChildren().addAll(labelNameAndNote, HorizontalSpace.create(), cbNameAndNote);
 
-    HBox rowNote = new HBox(5);
-    rowNote.setAlignment(Pos.CENTER_LEFT);
-    Label labelNote = new Label(i18nNoteLabel);
-    labelNote.setTooltip(new Tooltip(i18nNoteDescription));
-    tfNote = new TextField();
-    tfNote.setMinWidth(DEFAULT_TEXTFIELD_WIDTH);
-    tfNote.setMaxWidth(DEFAULT_TEXTFIELD_WIDTH);
-    rowNote.getChildren().addAll(labelNote, HorizontalSpace.create(), tfNote);
+      inputsColumn.getChildren().addAll(rowNameAndNote);
+    } else {
+      HBox rowName = new HBox(5);
+      rowName.setAlignment(Pos.CENTER_LEFT);
+      Label labelName = new Label(i18nNameLabel);
+      labelName.setTooltip(new Tooltip(i18nNameDescription));
+      tfName = new TextField();
+      tfName.setMinWidth(DEFAULT_TEXTFIELD_WIDTH);
+      tfName.setMaxWidth(DEFAULT_TEXTFIELD_WIDTH);
+      rowName.getChildren().addAll(labelName, HorizontalSpace.create(), tfName);
 
-    inputsColumn.getChildren().addAll(rowName, rowNote);
+      HBox rowNote = new HBox(5);
+      rowNote.setAlignment(Pos.CENTER_LEFT);
+      Label labelNote = new Label(i18nNoteLabel);
+      labelNote.setTooltip(new Tooltip(i18nNoteDescription));
+      tfNote = new TextField();
+      tfNote.setMinWidth(DEFAULT_TEXTFIELD_WIDTH);
+      tfNote.setMaxWidth(DEFAULT_TEXTFIELD_WIDTH);
+      rowNote.getChildren().addAll(labelNote, HorizontalSpace.create(), tfNote);
+
+      inputsColumn.getChildren().addAll(rowName, rowNote);
+    }
 
     if (!hasPredefinedType()) {
       Platform.runLater(tfType::requestFocus);
@@ -140,6 +160,8 @@ public class AgentItem extends AbstractItem {
       Platform.runLater(tfOtherType::requestFocus);
     } else if (!hasPredefinedRole()) {
       Platform.runLater(tfRole::requestFocus);
+    } else if (!predefinedNamesAndNotes.isEmpty()) {
+      Platform.runLater(cbNameAndNote::requestFocus);
     } else {
       Platform.runLater(tfName::requestFocus);
     }
@@ -156,11 +178,12 @@ public class AgentItem extends AbstractItem {
   public AgentItem(AbstractGroup parent, String i18nNameLabel, String i18nNameDescription, String i18nNoteLabel,
     String i18nNoteDescription, boolean mandatoryNote, String i18nTypeLabel, String i18nTypeDescription,
     String predefinedType, String i18nRoleLabel, String i18nRoleDescription, String predefinedRole,
-    String i18nOtherTypeLabel, String i18nOtherTypeDescription, String predefinedOtherType, IPAgent savedItem) {
+    String i18nOtherTypeLabel, String i18nOtherTypeDescription, String predefinedOtherType,
+    List<AgentGroup.NameAndNotePair> namesAndNotes, IPAgent savedItem) {
 
     this(parent, i18nNameLabel, i18nNameDescription, i18nNoteLabel, i18nNoteDescription, mandatoryNote, i18nTypeLabel,
       i18nTypeDescription, predefinedType, i18nRoleLabel, i18nRoleDescription, predefinedRole, i18nOtherTypeLabel,
-      i18nOtherTypeDescription, predefinedOtherType);
+      i18nOtherTypeDescription, predefinedOtherType, namesAndNotes);
 
     if (tfType != null) {
       tfType.setText(savedItem.getType().toString());
@@ -174,8 +197,15 @@ public class AgentItem extends AbstractItem {
       tfRole.setText(savedItem.getRole());
     }
 
-    tfName.setText(savedItem.getName());
-    tfNote.setText(savedItem.getNote());
+    if (cbNameAndNote != null) {
+      AgentGroup.NameAndNotePair nameAndNote = new AgentGroup.NameAndNotePair(savedItem.getName(), savedItem.getNote());
+      if (namesAndNotes.contains(nameAndNote)) {
+        cbNameAndNote.getSelectionModel().select(nameAndNote);
+      }
+    } else {
+      tfName.setText(savedItem.getName());
+      tfNote.setText(savedItem.getNote());
+    }
   }
 
   @Override
@@ -207,12 +237,14 @@ public class AgentItem extends AbstractItem {
       addFailureReasonsToThisList.add(i18nRoleLabel + " is a mandatory field and can not be blank");
     }
 
-    if (StringUtils.isBlank(tfName.getText())) {
-      addFailureReasonsToThisList.add(i18nNameLabel + " is a mandatory field and can not be blank");
-    }
+    if (cbNameAndNote == null) {
+      if (StringUtils.isBlank(tfName.getText())) {
+        addFailureReasonsToThisList.add(i18nNameLabel + " is a mandatory field and can not be blank");
+      }
 
-    if (mandatoryNote && StringUtils.isBlank(tfNote.getText())) {
-      addFailureReasonsToThisList.add(i18nNoteLabel + " is a mandatory field and can not be blank");
+      if (mandatoryNote && StringUtils.isBlank(tfNote.getText())) {
+        addFailureReasonsToThisList.add(i18nNoteLabel + " is a mandatory field and can not be blank");
+      }
     }
 
     return addFailureReasonsToThisList.isEmpty();
@@ -221,8 +253,14 @@ public class AgentItem extends AbstractItem {
   public IPAgent getValue() {
     IPAgent ipAgent = new IPAgent();
 
-    ipAgent.setName(tfName.getText());
-    ipAgent.setNote(tfNote.getText());
+    if (cbNameAndNote != null) {
+      AgentGroup.NameAndNotePair selectedItem = cbNameAndNote.getSelectionModel().getSelectedItem();
+      ipAgent.setName(selectedItem.getName());
+      ipAgent.setNote(selectedItem.getNote());
+    } else {
+      ipAgent.setName(tfName.getText());
+      ipAgent.setNote(tfNote.getText());
+    }
 
     if (hasPredefinedRole()) {
       ipAgent.setRole(predefinedRole);

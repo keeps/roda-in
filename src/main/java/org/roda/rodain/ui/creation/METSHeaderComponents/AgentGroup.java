@@ -1,17 +1,26 @@
 package org.roda.rodain.ui.creation.METSHeaderComponents;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.roda.rodain.core.Constants;
 import org.roda_project.commons_ip.model.IPAgent;
 import org.roda_project.commons_ip.model.IPHeader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javafx.beans.NamedArg;
+import javafx.util.Pair;
 
 /**
  * @author Bruno Ferreira <bferreira@keep.pt>
  */
 public class AgentGroup extends AbstractGroup {
+  private static final Logger LOGGER = LoggerFactory.getLogger(AgentGroup.class.getName());
+
   // i18n configurable strings
   private String i18nNameLabel;
   private String i18nNameDescription;
@@ -31,6 +40,7 @@ public class AgentGroup extends AbstractGroup {
   private String predefinedType;
   private String predefinedRole;
   private String predefinedOtherType;
+  private List<NameAndNotePair> namesAndNotes;
 
   private Iterator<IPAgent> savedItemIterator = Collections.emptyIterator();
 
@@ -87,17 +97,21 @@ public class AgentGroup extends AbstractGroup {
         boolean validPredefinedOtherType = StringUtils.isBlank(predefinedOtherType)
           || (StringUtils.isNotBlank(predefinedOtherType) && predefinedOtherType.equals(savedItem.getOtherType()));
 
-        if (validPredefinedType && validPredefinedOtherType && validPredefinedRole) {
+        boolean validNameAndNote = !namesAndNotes.isEmpty()
+          && namesAndNotes.contains(new NameAndNotePair(savedItem.getName(), savedItem.getNote()));
+
+        if (validPredefinedType && validPredefinedOtherType && validPredefinedRole && validNameAndNote) {
           return new AgentItem(this, i18nNameLabel, i18nNameDescription, i18nNoteLabel, i18nNoteDescription,
             mandatoryNote, i18nTypeLabel, i18nTypeDescription, predefinedType, i18nRoleLabel, i18nRoleDescription,
-            predefinedRole, i18nOtherTypeLabel, i18nOtherTypeDescription, predefinedOtherType, savedItem);
+            predefinedRole, i18nOtherTypeLabel, i18nOtherTypeDescription, predefinedOtherType, namesAndNotes,
+            savedItem);
         }
       }
       return null;
     } else {
       return new AgentItem(this, i18nNameLabel, i18nNameDescription, i18nNoteLabel, i18nNoteDescription, mandatoryNote,
         i18nTypeLabel, i18nTypeDescription, predefinedType, i18nRoleLabel, i18nRoleDescription, predefinedRole,
-        i18nOtherTypeLabel, i18nOtherTypeDescription, predefinedOtherType);
+        i18nOtherTypeLabel, i18nOtherTypeDescription, predefinedOtherType, namesAndNotes);
     }
   }
 
@@ -143,6 +157,22 @@ public class AgentGroup extends AbstractGroup {
 
     this.predefinedOtherType = getFieldParameterAsString(Constants.CONF_K_METS_HEADER_FIELD_ATTRIBUTE_OTHERTYPE_VALUE,
       "");
+
+    String[] names = getFieldParameterAsStringArray(Constants.CONF_K_METS_HEADER_FIELD_MULTI_FIELD_COMBO_VALUES_NAME,
+      new String[] {});
+    String[] notes = getFieldParameterAsStringArray(Constants.CONF_K_METS_HEADER_FIELD_MULTI_FIELD_COMBO_VALUES_NOTE,
+      new String[] {});
+
+    namesAndNotes = new ArrayList<>();
+    if (names.length == notes.length) {
+      for (int i = 0; i < names.length; i++) {
+        namesAndNotes.add(new NameAndNotePair(names[i], notes[i]));
+      }
+    } else {
+      LOGGER.error(
+        "For {} found {} multifield combobox names and {} multifield combobox notes. They need to have the same cardinality to be created as a combobox.",
+        getHeaderText(), names.length, notes.length);
+    }
   }
 
   public void addAgentsToHeader(IPHeader header) {
@@ -163,5 +193,24 @@ public class AgentGroup extends AbstractGroup {
       }
     }
     return savedItemIterator;
+  }
+
+  public static class NameAndNotePair extends Pair<String, String> {
+    public NameAndNotePair(@NamedArg("name") String name, @NamedArg("note") String note) {
+      super(name, note);
+    }
+
+    @Override
+    public String toString() {
+      return getName() + " (" + getNote() + ")";
+    }
+
+    public String getName() {
+      return super.getKey();
+    }
+
+    public String getNote() {
+      return super.getValue();
+    }
   }
 }

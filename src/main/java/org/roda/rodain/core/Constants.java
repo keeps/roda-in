@@ -117,6 +117,8 @@ public final class Constants {
   public static final String CONF_K_METS_HEADER_FIELD_ATTRIBUTE_NOTE_LABEL = ".attr.note.label";
   public static final String CONF_K_METS_HEADER_FIELD_ATTRIBUTE_NOTE_DESCRIPTION = ".attr.note.description";
   public static final String CONF_K_METS_HEADER_FIELD_ATTRIBUTE_NOTE_MANDATORY = ".attr.note.mandatory";
+  public static final String CONF_K_METS_HEADER_FIELD_MULTI_FIELD_COMBO_VALUES_NAME = ".multifieldcombo.attr.name";
+  public static final String CONF_K_METS_HEADER_FIELD_MULTI_FIELD_COMBO_VALUES_NOTE = ".multifieldcombo.attr.note";
   public static final String CONF_V_METS_HEADER_FIELD_TYPE_AGENT = "agent";
   public static final String CONF_V_METS_HEADER_FIELD_TYPE_ALTRECORDID = "altrecordid";
   public static final String CONF_V_METS_HEADER_FIELD_TYPE_RECORDSTATUS = "recordstatus";

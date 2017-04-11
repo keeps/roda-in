@@ -196,9 +196,6 @@ public class CreationModalMETSHeader extends BorderPane {
           }
         }
 
-        // FIXME 20170403 bferreira: remove this debug code
-        System.out.println(header.toString());
-
         if (valid) {
           ConfigurationManager.serialize(header, sipType.name() + Constants.RODAIN_SERIALIZE_FILE_METS_HEADER_SUFFIX);
           stage.startCreation(outputFolder, exportAll, exportItems, sipNameBuilder, createReport, header);
