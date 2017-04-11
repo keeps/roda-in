@@ -89,9 +89,12 @@ public final class Constants {
   public static final String CONF_K_LEVELS_ICON_ITEM = "levels.icon.internal.itemLevel";
   public static final String CONF_K_LEVELS_ICON_FILE = "levels.icon.internal.fileLevel";
   public static final String CONF_K_LEVELS_ICON_AGGREGATION = "levels.icon.internal.aggregationLevel";
-  public static final String CONF_K_EXPORT_LAST_PREFIX = "export.last_prefix";
-  public static final String CONF_K_EXPORT_LAST_TRANSFERRING = "export.last_transferring";
-  public static final String CONF_K_EXPORT_LAST_SERIAL = "export.last_serial";
+  public static final String CONF_K_EXPORT_LAST_PREFIX = "export.lastPrefix";
+  public static final String CONF_K_EXPORT_LAST_TRANSFERRING = "export.lastTransferring";
+  public static final String CONF_K_EXPORT_LAST_SERIAL = "export.lastSerial";
+  public static final String CONF_K_EXPORT_LAST_ITEM_EXPORT_SWITCH = "export.lastItemExportSwitch";
+  public static final String CONF_K_EXPORT_LAST_REPORT_CREATION_SWITCH = "export.lastReportCreationSwitch";
+  public static final String CONF_K_EXPORT_LAST_SIP_OUTPUT_FOLDER = "export.lastSipOutputFolder";
   public static final String CONF_K_ID_PREFIX = "idPrefix";
   // METS Header fields
   public static final String CONF_K_METS_HEADER_FIELDS_PREFIX = "metsheader.";

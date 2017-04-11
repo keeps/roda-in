@@ -70,7 +70,7 @@ public class CreationModalPreparation extends BorderPane {
 
   private CreationModalStage stage;
 
-  private static Path outputFolder;
+  private static Path outputFolder = null;
   private ComboBox<Pair> sipTypes;
   private SIPNameStrategyComboBox sipNameStrategyComboBox;
   private static Button start;
@@ -169,6 +169,11 @@ public class CreationModalPreparation extends BorderPane {
     itemExportSwitch = new ToggleSwitch(I18n.t(Constants.I18N_CREATIONMODALPREPARATION_INCLUDE_HIERARCHY));
     itemExportSwitch.selectedProperty().addListener((o, old, newValue) -> setSelectedLabel(countLabel));
 
+    String savedState = ConfigurationManager.getAppConfig(Constants.CONF_K_EXPORT_LAST_ITEM_EXPORT_SWITCH);
+    if (StringUtils.isNotBlank(savedState)) {
+      itemExportSwitch.setSelected(Boolean.valueOf(savedState));
+    }
+
     countBox.getChildren().addAll(countLabel, sipExportSwitch, itemExportSwitch);
     return countBox;
   }
@@ -178,6 +183,12 @@ public class CreationModalPreparation extends BorderPane {
     reportBox.setAlignment(Pos.CENTER);
     reportCreationSwitch = new ToggleSwitch(I18n.t(Constants.I18N_CREATIONMODALPREPARATION_CREATE_REPORT));
     reportCreationSwitch.setSelected(true);
+
+    String savedState = ConfigurationManager.getAppConfig(Constants.CONF_K_EXPORT_LAST_REPORT_CREATION_SWITCH);
+    if (StringUtils.isNotBlank(savedState)) {
+      reportCreationSwitch.setSelected(Boolean.valueOf(savedState));
+    }
+
     reportBox.getChildren().addAll(reportCreationSwitch);
     return reportBox;
 
@@ -228,16 +239,33 @@ public class CreationModalPreparation extends BorderPane {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle(I18n.t(Constants.I18N_DIRECTORY_CHOOSER_TITLE));
         File selectedFile = chooser.showDialog(stage);
-        if (selectedFile == null)
-          return;
-        outputFolder = selectedFile.toPath();
-        chooseFile.setText(selectedFile.toPath().getFileName().toString());
-        start.setDisable(false);
+        setOutputFolder(selectedFile, chooseFile);
       }
     });
 
+    String savedOutputFolder = ConfigurationManager.getAppConfig(Constants.CONF_K_EXPORT_LAST_SIP_OUTPUT_FOLDER);
+    if (StringUtils.isNotBlank(savedOutputFolder)) {
+      // 20170411 bferreira: using File instead of NIO because in the action
+      // handling 'File' is used and Path::exists is (according to a Java bug
+      // report) performing poorly when the file/folder does not exist.
+      File selectedFile = Paths.get(savedOutputFolder).toFile();
+      if (selectedFile.isDirectory()) {
+        setOutputFolder(selectedFile, chooseFile);
+      }
+    }
+
     outputFolderBox.getChildren().addAll(outputFolderLabel, HorizontalSpace.create(), chooseFile);
     return outputFolderBox;
+  }
+
+  private void setOutputFolder(File selectedFile, Button chooseFile) {
+    if (selectedFile != null) {
+      outputFolder = selectedFile.toPath();
+      chooseFile.setText(selectedFile.toPath().getFileName().toString());
+      if (start != null) {
+        start.setDisable(false);
+      }
+    }
   }
 
   private HBox createSipNameStrategyBoxAndDropdown() {
@@ -433,6 +461,18 @@ public class CreationModalPreparation extends BorderPane {
           ConfigurationManager.setAppConfig(Constants.CONF_K_EXPORT_LAST_PREFIX, sipNameStrategyPrefix.getText(), true);
         }
 
+        // persist switches in config file
+        ConfigurationManager.setAppConfig(Constants.CONF_K_EXPORT_LAST_ITEM_EXPORT_SWITCH,
+          String.valueOf(itemExportSwitch.isSelected()));
+        ConfigurationManager.setAppConfig(Constants.CONF_K_EXPORT_LAST_REPORT_CREATION_SWITCH,
+          String.valueOf(reportCreationSwitch.isSelected()));
+        // 20170411 bferreira: sipExportSwitch was purposely left out because
+        // there is some logic in place to select that toggle
+
+        // persist output folder in config file
+        ConfigurationManager.setAppConfig(Constants.CONF_K_EXPORT_LAST_SIP_OUTPUT_FOLDER,
+          outputFolder.toAbsolutePath().toString());
+
         if (sipType.requiresMETSHeaderInfo()) {
           stage.showMETSHeaderModal(CreationModalPreparation.this, outputFolder, sipExportSwitch.isSelected(),
             itemExportSwitch.isSelected(), sipType, sipNameBuilder, reportCreationSwitch.isSelected());
@@ -443,7 +483,7 @@ public class CreationModalPreparation extends BorderPane {
       }
     });
 
-    start.setDisable(true);
+    start.setDisable(outputFolder == null);
 
     bottom.getChildren().addAll(cancel, HorizontalSpace.create(), start);
     setBottom(bottom);
