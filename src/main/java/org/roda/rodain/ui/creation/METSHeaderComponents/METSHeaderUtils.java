@@ -27,7 +27,7 @@ public class METSHeaderUtils {
   public static String[] getFieldList(Constants.SipType sipType) {
     String fieldList = ConfigurationManager.getConfig(
       Constants.CONF_K_METS_HEADER_FIELDS_PREFIX + sipType.name() + Constants.CONF_K_METS_HEADER_FIELDS_SUFFIX);
-    if (fieldList != null) {
+    if (StringUtils.isNotBlank(fieldList)) {
       return fieldList.split(Constants.MISC_COMMA);
     } else {
       return new String[] {};

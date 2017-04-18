@@ -2,8 +2,8 @@ package org.roda.rodain.ui.creation.METSHeaderComponents;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -24,10 +24,10 @@ public class AltRecordGroup extends AbstractGroup {
   // default (pre-selected and non-modifiable) values
   private String predefinedType;
 
-  private String[] possibleValues = new String[] {};
-  private Set<String> possibleValuesSet = Collections.emptySet();
+  private String[] possibleValues;
+  private Set<String> possibleValuesSet;
 
-  private Iterator<IPAltRecordID> savedItemIterator = Collections.emptyIterator();
+  private Iterator<IPAltRecordID> savedItemIterator;
 
   public AltRecordGroup(Constants.SipType sipType, String shortId, IPHeader savedHeader) {
     super(sipType, shortId, savedHeader);
@@ -88,7 +88,7 @@ public class AltRecordGroup extends AbstractGroup {
 
     this.possibleValues = getFieldParameterAsStringArray(Constants.CONF_K_METS_HEADER_FIELD_COMBO_VALUES,
       new String[] {});
-    this.possibleValuesSet = new HashSet<>(Arrays.asList(possibleValues));
+    this.possibleValuesSet = new LinkedHashSet<>(Arrays.asList(possibleValues));
   }
 
   public void addAltRecordsToHeader(IPHeader header) {

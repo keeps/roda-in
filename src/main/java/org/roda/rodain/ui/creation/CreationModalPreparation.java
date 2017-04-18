@@ -25,6 +25,7 @@ import org.roda.rodain.core.sip.naming.SIPNameBuilderBagit;
 import org.roda.rodain.core.sip.naming.SIPNameBuilderEARK;
 import org.roda.rodain.core.sip.naming.SIPNameBuilderHungarian;
 import org.roda.rodain.ui.RodaInApplication;
+import org.roda.rodain.ui.creation.METSHeaderComponents.METSHeaderUtils;
 import org.roda_project.commons_ip.model.IPHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -395,7 +396,7 @@ public class CreationModalPreparation extends BorderPane {
 
         // update start button to display the text "start" or "continue"
         if (start != null) {
-          if (type.requiresMETSHeaderInfo()) {
+          if (type.requiresMETSHeaderInfo() && METSHeaderUtils.getFieldList(type).length > 0) {
             start.setText(I18n.t(Constants.I18N_CONTINUE));
           } else {
             start.setText(I18n.t(Constants.I18N_START));
@@ -417,7 +418,9 @@ public class CreationModalPreparation extends BorderPane {
     cancel.setOnAction(actionEvent -> stage.close());
 
     start = new Button();
-    if (sipTypes.getValue() != null && ((SipType) sipTypes.getValue().getKey()).requiresMETSHeaderInfo()) {
+    SipType sipType = (SipType) sipTypes.getValue().getKey();
+    if (sipTypes.getValue() != null && sipType.requiresMETSHeaderInfo()
+      && METSHeaderUtils.getFieldList(sipType).length > 0) {
       start.setText(I18n.t(Constants.I18N_CONTINUE));
     } else {
       start.setText(I18n.t(Constants.I18N_START));
@@ -473,7 +476,7 @@ public class CreationModalPreparation extends BorderPane {
         ConfigurationManager.setAppConfig(Constants.CONF_K_EXPORT_LAST_SIP_OUTPUT_FOLDER,
           outputFolder.toAbsolutePath().toString());
 
-        if (sipType.requiresMETSHeaderInfo()) {
+        if (sipType.requiresMETSHeaderInfo() && METSHeaderUtils.getFieldList(sipType).length > 0) {
           stage.showMETSHeaderModal(CreationModalPreparation.this, outputFolder, sipExportSwitch.isSelected(),
             itemExportSwitch.isSelected(), sipType, sipNameBuilder, reportCreationSwitch.isSelected());
         } else {

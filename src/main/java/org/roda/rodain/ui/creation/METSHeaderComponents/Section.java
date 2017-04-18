@@ -1,6 +1,9 @@
 package org.roda.rodain.ui.creation.METSHeaderComponents;
 
+import org.apache.commons.lang3.StringUtils;
+import org.roda.rodain.core.ConfigurationManager;
 import org.roda.rodain.core.Constants;
+import org.roda.rodain.core.I18n;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -14,14 +17,14 @@ public class Section extends VBox {
   private AbstractGroup lastGroupAdded = null;
 
   private Section() {
-    this("");
+    this("", "", "");
   }
 
-  public Section(String title) {
-    super(5);
+  public Section(String sipTypeName, String type, String fallbackI18N) {
+    super(0);
 
-    Label labelTitle = new Label(title);
-    labelTitle.getStyleClass().add(Constants.CSS_METS_HEADER_SECTION_TITLE);
+    Label labelTitle = new Label(getLabelText(sipTypeName, type, fallbackI18N));
+    labelTitle.getStyleClass().addAll(Constants.CSS_METS_HEADER_SECTION_TITLE, Constants.CSS_TITLE);
 
     VBox header = new VBox(0, labelTitle);
     header.getStyleClass().add(Constants.CSS_METS_HEADER_SECTION);
@@ -40,5 +43,14 @@ public class Section extends VBox {
     getChildren().add(group);
     group.styleAsLastGroup();
     lastGroupAdded = group;
+  }
+
+  private String getLabelText(String sipTypeName, String type, String fallbackI18N) {
+    String statusI18N = I18n.t(ConfigurationManager.getConfig(
+      Constants.CONF_K_METS_HEADER_FIELDS_PREFIX + sipTypeName + Constants.CONF_K_METS_HEADER_TYPES_SEPARATOR + type));
+    if (StringUtils.isBlank(statusI18N)) {
+      statusI18N = METSHeaderUtils.getTextFromI18N(fallbackI18N);
+    }
+    return statusI18N;
   }
 }

@@ -101,7 +101,6 @@ public class AgentItem extends AbstractItem {
       tfOtherType = new TextField();
       tfOtherType.setMinWidth(DEFAULT_TEXTFIELD_WIDTH);
       tfOtherType.setMaxWidth(DEFAULT_TEXTFIELD_WIDTH);
-      Platform.runLater(tfOtherType::requestFocus);
       rowOtherType.getChildren().addAll(labelOtherType, HorizontalSpace.create(), tfOtherType);
       inputsColumn.getChildren().add(rowOtherType);
     }
@@ -114,7 +113,6 @@ public class AgentItem extends AbstractItem {
       tfRole = new TextField();
       tfRole.setMinWidth(DEFAULT_TEXTFIELD_WIDTH);
       tfRole.setMaxWidth(DEFAULT_TEXTFIELD_WIDTH);
-      Platform.runLater(tfRole::requestFocus);
       rowRole.getChildren().addAll(labelRole, HorizontalSpace.create(), tfRole);
       inputsColumn.getChildren().add(rowRole);
     }
@@ -122,8 +120,8 @@ public class AgentItem extends AbstractItem {
     if (!predefinedNamesAndNotes.isEmpty()) {
       HBox rowNameAndNote = new HBox(5);
       rowNameAndNote.setAlignment(Pos.CENTER_LEFT);
-      Label labelNameAndNote = new Label(i18nNameLabel + " (" + i18nNoteLabel + ")");
-      labelNameAndNote.setTooltip(new Tooltip(i18nNameDescription + " (" + i18nNoteDescription + ")"));
+      Label labelNameAndNote = new Label(i18nNameLabel + "/" + i18nNoteLabel);
+      labelNameAndNote.setTooltip(new Tooltip(i18nNameDescription + " / " + i18nNoteDescription));
       cbNameAndNote = new ComboBox<>();
       cbNameAndNote.setMinWidth(DEFAULT_TEXTFIELD_WIDTH);
       cbNameAndNote.setMaxWidth(DEFAULT_TEXTFIELD_WIDTH);

@@ -9,8 +9,8 @@
     -fx-background-color: -fx-dark;
 }
 
-.error{
-	-fx-text-fill: red;
+.error {
+    -fx-text-fill: red;
 }
 
 #title {
@@ -116,21 +116,15 @@
 }
 
 /* Help menu */
-.help-menu{
+.help-menu {
     -fx-background-color: rgba(239, 239, 239, 0.91);
 }
 
 /* METS Form */
 .mets-header-section {
     -fx-background-color: -fx-medium;
-
-    /*-fx-border-color: black;*/
-    /*-fx-border-radius: 2px;*/
-    /*-fx-border-width: 1px;*/
-
-    -fx-background-radius: 2px;
-    -fx-background-insets: 0;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.5), 3, 0.0, 0, 2);
+    -fx-border-width: 0 0 10 0;
+    -fx-border-color: -fx-bckg;
 }
 
 .mets-header-section-title {
@@ -140,20 +134,20 @@
 }
 
 .mets-header-group {
-    -fx-padding: 10 10 10 10;
+    -fx-padding: 0 10 0 10;
     /*-fx-border-width: 0 0 1 0;*/
     /*-fx-border-color: transparent transparent -fx-alt-light transparent;*/
 }
 
 .mets-header-group-last {
-    -fx-padding: 10 10 5 10;
+    -fx-padding: 0 10 5 10;
     -fx-border-width: 0;
     -fx-border-color: transparent;
 }
 
 /* an item that has more items in the same group */
 .mets-item-with-siblings {
-    -fx-padding: 5 0 5 0;
+    -fx-padding: 0;
 }
 
 /* an item that is the only item in the group */
@@ -163,14 +157,30 @@
 
 .mets-item-multiple-fields {
     -fx-border-width: 0 0 0 3;
-    -fx-padding: 0 0 0 100;
     -fx-border-color: transparent transparent transparent -fx-light;
 }
 
-.mets-item-with-siblings.mets-item-multiple-fields{
-    -fx-padding: 5 0 5 10;
+.mets-item-with-siblings.mets-item-multiple-fields {
+    -fx-padding: 0 0 0 10;
 }
 
-.mets-item-without-siblings.mets-item-multiple-fields{
+.mets-item-without-siblings.mets-item-multiple-fields {
     -fx-padding: 0 0 0 10;
+}
+
+.mets-header-item-add-more-link, .mets-header-item-add-more-link:visited {
+    -fx-text-fill: -fx-darker;
+    -fx-underline: false;
+    -fx-padding: 5 0 5 0;
+}
+
+.mets-header-item-add-more-link:hover, .mets-header-item-add-more-link:focused, .mets-header-item-add-more-link:pressed {
+    -fx-underline: true;
+    -fx-border-style: none;
+    -fx-border-color: transparent;
+}
+
+.mets-header-item-add-more-link:disabled {
+    -fx-text-fill: inherit;
+    -fx-underline: false;
 }

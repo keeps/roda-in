@@ -100,6 +100,11 @@ public final class Constants {
   public static final String CONF_K_METS_HEADER_FIELDS_PREFIX = "metsheader.";
   public static final String CONF_K_METS_HEADER_FIELDS_SUFFIX = ".fields";
   public static final String CONF_K_METS_HEADER_FIELD_SEPARATOR = ".field.";
+  public static final String CONF_K_METS_HEADER_TYPES_SEPARATOR = ".type.";
+  public static final String CONF_K_METS_HEADER_TYPE_RECORD_STATUS = "recordstatus";
+  public static final String CONF_K_METS_HEADER_TYPE_ALTRECORD_ID = "altrecordid";
+  public static final String CONF_K_METS_HEADER_TYPE_AGENT = "agent";
+  public static final String CONF_K_METS_HEADER_FIELD_TITLE = ".title";
   public static final String CONF_K_METS_HEADER_FIELD_TYPE = ".type";
   public static final String CONF_K_METS_HEADER_FIELD_AMOUNT_MAX = ".amount.max";
   public static final String CONF_K_METS_HEADER_FIELD_AMOUNT_MIN = ".amount.min";
@@ -185,8 +190,10 @@ public final class Constants {
   public static final String CSS_INDEXED_CELL = "indexed-cell";
   public static final String CSS_INSPECTIONPART = "inspectionPart";
   public static final String CSS_MAIN_TREE = "main-tree";
+  public static final String CSS_METS_HEADER_ITEM_ADD_MORE_LINK = "mets-header-item-add-more-link";
   public static final String CSS_METS_HEADER_GROUP_LAST = "mets-header-group-last";
   public static final String CSS_METS_HEADER_GROUP = "mets-header-group";
+  public static final String CSS_METS_HEADER_ITEM_BUTTON_REMOVE = "mets-item-button-remove";
   public static final String CSS_METS_HEADER_ITEM_WITHOUT_SIBLINGS = "mets-item-without-siblings";
   public static final String CSS_METS_HEADER_ITEM_WITH_SIBLINGS = "mets-item-with-siblings";
   public static final String CSS_METS_HEADER_ITEM_WITH_MULTIPLE_FIELDS = "mets-item-multiple-fields";

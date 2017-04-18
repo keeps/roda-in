@@ -130,9 +130,12 @@ public class CreationModalMETSHeader extends BorderPane {
       }
     });
 
-    Section sectionStatus = new Section(I18n.t(Constants.I18N_CREATIONMODALMETSHEADER_SECTION_STATUS));
-    Section sectionAltRecord = new Section(I18n.t(Constants.I18N_CREATIONMODALMETSHEADER_SECTION_ALTRECORDS));
-    Section sectionAgent = new Section(I18n.t(Constants.I18N_CREATIONMODALMETSHEADER_SECTION_AGENTS));
+    Section sectionStatus = new Section(sipType.name(), Constants.CONF_K_METS_HEADER_TYPE_RECORD_STATUS,
+      Constants.I18N_CREATIONMODALMETSHEADER_SECTION_STATUS);
+    Section sectionAltRecord = new Section(sipType.name(), Constants.CONF_K_METS_HEADER_TYPE_ALTRECORD_ID,
+      Constants.I18N_CREATIONMODALMETSHEADER_SECTION_ALTRECORDS);
+    Section sectionAgent = new Section(sipType.name(), Constants.CONF_K_METS_HEADER_TYPE_AGENT,
+      Constants.I18N_CREATIONMODALMETSHEADER_SECTION_AGENTS);
 
     VBox inner = new VBox(0, sectionStatus, sectionAltRecord, sectionAgent);
     // inner.setPadding(new Insets(10, 10, 10, 10));

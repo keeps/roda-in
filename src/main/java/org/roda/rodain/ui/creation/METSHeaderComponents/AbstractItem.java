@@ -53,6 +53,7 @@ public abstract class AbstractItem extends HBox {
   protected Button getRemoveButton() {
     if (removeButton == null) {
       removeButton = new Button();
+      removeButton.getStyleClass().add(Constants.CSS_METS_HEADER_ITEM_BUTTON_REMOVE);
       removeButton.setTooltip(new Tooltip("Remove this item"));
       removeButton.setOnAction(event -> parent.removeItem(this));
       Platform.runLater(() -> {

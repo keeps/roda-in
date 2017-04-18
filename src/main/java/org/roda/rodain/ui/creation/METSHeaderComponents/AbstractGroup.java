@@ -4,20 +4,16 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.roda.rodain.core.Constants;
 import org.roda.rodain.ui.utils.FontAwesomeImageCreator;
 import org.roda_project.commons_ip.model.IPHeader;
 
-import javafx.application.Platform;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 
 /**
  * An AbstractGroup groups together and manages similar AbstractItem objects
@@ -30,8 +26,7 @@ public abstract class AbstractGroup extends VBox {
   private final static String ICON_ADD = FontAwesomeImageCreator.PLUS;
 
   private HBox addMorePanel;
-  private Label addMoreInfo;
-  private Button addMoreButton;
+  private Hyperlink addMoreInfo;
 
   private VBox errorMessagesPanel;
 
@@ -68,22 +63,15 @@ public abstract class AbstractGroup extends VBox {
 
     // create button to add more lines to the form
     addMorePanel = new HBox(5);
-    addMorePanel.setAlignment(Pos.BASELINE_RIGHT);
+    addMorePanel.setAlignment(Pos.BASELINE_LEFT);
     addMorePanel.managedProperty().bind(addMorePanel.visibleProperty());
     addMorePanel.setVisible(false);
 
-    addMoreButton = new Button();
-    addMoreButton.setTooltip(new Tooltip("Add an item"));
-    addMoreButton.setOnAction(event -> createAndAddRow());
-    Platform.runLater(() -> {
-      Image image = FontAwesomeImageCreator.generate(ICON_ADD, Color.WHITE);
-      ImageView imageView = new ImageView(image);
-      addMoreButton.setGraphic(imageView);
-    });
+    addMoreInfo = new Hyperlink();
+    addMoreInfo.getStyleClass().add(Constants.CSS_METS_HEADER_ITEM_ADD_MORE_LINK);
+    addMoreInfo.setOnAction(event -> createAndAddRow());
 
-    addMoreInfo = new Label();
-
-    addMorePanel.getChildren().addAll(addMoreInfo, addMoreButton);
+    addMorePanel.getChildren().addAll(addMoreInfo);
     this.getChildren().add(addMorePanel);
 
     updateAddMore();
@@ -93,13 +81,7 @@ public abstract class AbstractGroup extends VBox {
         createAndAddRow(true);
       }
     } else {
-      int i;
-      for (i = 0; i < getMinimum() && getMinimum() >= 0; i++) {
-        createAndAddRow();
-      }
-
-      // make sure to add at least one item per group
-      if (i == 0) {
+      for (int i = 0; i < getMinimum() && getMinimum() >= 0; i++) {
         createAndAddRow();
       }
     }
@@ -143,7 +125,6 @@ public abstract class AbstractGroup extends VBox {
     items.remove(item);
     this.getChildren().remove(item);
     updateAddMore();
-    validate();
   }
 
   public int getMinimum() {
@@ -170,7 +151,8 @@ public abstract class AbstractGroup extends VBox {
       addMorePanel.setVisible(true);
       if (totalItemsAmount() < getMaximum()) {
         addMorePanel.setDisable(false);
-        addMoreInfo.setText(null);
+        addMoreInfo.setText(String.format("%s %s", StringUtils.capitalize(getTextFromI18N(Constants.I18N_ADD)),
+          getTextFromI18N(getFieldParameterAsString(Constants.CONF_K_METS_HEADER_FIELD_TITLE, ""))));
       } else {
         addMorePanel.setDisable(true);
         addMoreInfo.setText("Maximum reached!");

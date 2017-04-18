@@ -42,7 +42,7 @@ public class AgentGroup extends AbstractGroup {
   private String predefinedOtherType;
   private List<NameAndNotePair> namesAndNotes;
 
-  private Iterator<IPAgent> savedItemIterator = Collections.emptyIterator();
+  private Iterator<IPAgent> savedItemIterator;
 
   public AgentGroup(Constants.SipType sipType, String shortId, IPHeader savedHeader) {
     super(sipType, shortId, savedHeader);
