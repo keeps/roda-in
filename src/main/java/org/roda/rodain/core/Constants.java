@@ -393,6 +393,7 @@ public final class Constants {
   public static final String I18N_ASSOCIATE = "associate";
   public static final String I18N_BACK = "back";
   public static final String I18N_CANCEL = "cancel";
+  public static final String I18N_CLEAR = "clear";
   public static final String I18N_CLOSE = "close";
   public static final String I18N_COLLAPSE = "collapse";
   public static final String I18N_CONFIRM = "confirm";

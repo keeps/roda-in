@@ -89,16 +89,15 @@ public class AgentGroup extends AbstractGroup {
         IPAgent savedItem = savedItemIterator.next();
 
         boolean validPredefinedType = StringUtils.isBlank(predefinedType)
-          || (StringUtils.isNotBlank(predefinedType) && predefinedType.equals(savedItem.getType().toString()));
+          || predefinedType.equals(savedItem.getType().toString());
 
-        boolean validPredefinedRole = StringUtils.isBlank(predefinedRole)
-          || (StringUtils.isNotBlank(predefinedRole) && predefinedRole.equals(savedItem.getRole()));
+        boolean validPredefinedRole = StringUtils.isBlank(predefinedRole) || predefinedRole.equals(savedItem.getRole());
 
         boolean validPredefinedOtherType = StringUtils.isBlank(predefinedOtherType)
-          || (StringUtils.isNotBlank(predefinedOtherType) && predefinedOtherType.equals(savedItem.getOtherType()));
+          || predefinedOtherType.equals(savedItem.getOtherType());
 
-        boolean validNameAndNote = !namesAndNotes.isEmpty()
-          && namesAndNotes.contains(new NameAndNotePair(savedItem.getName(), savedItem.getNote()));
+        boolean validNameAndNote = namesAndNotes.isEmpty()
+          || namesAndNotes.contains(new NameAndNotePair(savedItem.getName(), savedItem.getNote()));
 
         if (validPredefinedType && validPredefinedOtherType && validPredefinedRole && validNameAndNote) {
           return new AgentItem(this, i18nNameLabel, i18nNameDescription, i18nNoteLabel, i18nNoteDescription,

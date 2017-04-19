@@ -21,8 +21,6 @@ import org.slf4j.LoggerFactory;
 import com.sun.javafx.scene.control.skin.ScrollPaneSkin;
 
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -89,7 +87,7 @@ public class CreationModalMETSHeader extends BorderPane {
     getStyleClass().add(Constants.CSS_SIPCREATOR);
 
     createTop();
-    createCenter();
+    createAndAddCenter(true);
     createBottom();
 
     stage.sizeToScene();
@@ -110,7 +108,54 @@ public class CreationModalMETSHeader extends BorderPane {
     setTop(top);
   }
 
-  private void createCenter() {
+  private void createBottom() {
+    HBox bottom = new HBox();
+    bottom.setPadding(new Insets(0, 10, 10, 10));
+    bottom.setAlignment(Pos.CENTER_LEFT);
+
+    Button back = new Button(I18n.t(Constants.I18N_BACK));
+    back.setOnAction(actionEvent -> {
+      stage.setRoot(previousPanel);
+      stage.sizeToScene();
+    });
+
+    Button clear = new Button(I18n.t(Constants.I18N_CLEAR));
+    clear.setOnAction(actionEvent -> createAndAddCenter(false));
+
+    start = new Button(I18n.t(Constants.I18N_START));
+    start.setOnAction(actionEvent -> {
+      IPHeader header = new IPHeader();
+      boolean valid = true;
+
+      for (AbstractGroup fieldGroup : fieldGroups) {
+        if (!fieldGroup.validate()) {
+          valid = false;
+        } else {
+          if (fieldGroup instanceof StatusGroup) {
+            ((StatusGroup) fieldGroup).addStatusToHeader(header);
+          } else if (fieldGroup instanceof AltRecordGroup) {
+            ((AltRecordGroup) fieldGroup).addAltRecordsToHeader(header);
+          } else if (fieldGroup instanceof AgentGroup) {
+            ((AgentGroup) fieldGroup).addAgentsToHeader(header);
+          }
+        }
+      }
+
+      if (valid) {
+        ConfigurationManager.serialize(header, sipType.name() + Constants.RODAIN_SERIALIZE_FILE_METS_HEADER_SUFFIX);
+        stage.startCreation(outputFolder, exportAll, exportItems, sipNameBuilder, createReport, header);
+      }
+    });
+
+    start.setDisable(false);
+
+    bottom.getChildren().addAll(back, HorizontalSpace.create(), clear, HorizontalSpace.create(), start);
+    setBottom(bottom);
+  }
+
+  private void createAndAddCenter(boolean useSavedState) {
+    IPHeader savedHeaderInternal = useSavedState ? this.savedHeader : null;
+
     VBox center = new VBox(5);
     center.setAlignment(Pos.CENTER_LEFT);
     center.setPadding(new Insets(0, 0, 10, 0));
@@ -145,7 +190,7 @@ public class CreationModalMETSHeader extends BorderPane {
     String[] shortIds = METSHeaderUtils.getFieldList(sipType);
     AbstractGroup group = null;
     for (String fieldShortId : shortIds) {
-      group = METSHeaderUtils.getComponentForField(sipType, fieldShortId, savedHeader);
+      group = METSHeaderUtils.getComponentForField(sipType, fieldShortId, savedHeaderInternal);
       if (group instanceof StatusGroup) {
         sectionStatus.addGroup(group);
       } else if (group instanceof AltRecordGroup) {
@@ -164,51 +209,5 @@ public class CreationModalMETSHeader extends BorderPane {
 
     center.getChildren().add(scrollPane);
     setCenter(center);
-  }
-
-  private void createBottom() {
-    HBox bottom = new HBox();
-    bottom.setPadding(new Insets(0, 10, 10, 10));
-    bottom.setAlignment(Pos.CENTER_LEFT);
-
-    Button back = new Button(I18n.t(Constants.I18N_BACK));
-    back.setOnAction(actionEvent -> {
-      stage.setRoot(previousPanel);
-      stage.sizeToScene();
-    });
-
-    start = new Button(I18n.t(Constants.I18N_START));
-    start.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent actionEvent) {
-        IPHeader header = new IPHeader();
-        boolean valid = true;
-
-        for (AbstractGroup fieldGroup : fieldGroups) {
-
-          if (!fieldGroup.validate()) {
-            valid = false;
-          } else {
-            if (fieldGroup instanceof StatusGroup) {
-              ((StatusGroup) fieldGroup).addStatusToHeader(header);
-            } else if (fieldGroup instanceof AltRecordGroup) {
-              ((AltRecordGroup) fieldGroup).addAltRecordsToHeader(header);
-            } else if (fieldGroup instanceof AgentGroup) {
-              ((AgentGroup) fieldGroup).addAgentsToHeader(header);
-            }
-          }
-        }
-
-        if (valid) {
-          ConfigurationManager.serialize(header, sipType.name() + Constants.RODAIN_SERIALIZE_FILE_METS_HEADER_SUFFIX);
-          stage.startCreation(outputFolder, exportAll, exportItems, sipNameBuilder, createReport, header);
-        }
-      }
-    });
-
-    start.setDisable(false);
-
-    bottom.getChildren().addAll(back, HorizontalSpace.create(), start);
-    setBottom(bottom);
   }
 }

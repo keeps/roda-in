@@ -52,8 +52,7 @@ public class AltRecordGroup extends AbstractGroup {
       while (savedItemIterator.hasNext()) {
         IPAltRecordID savedItem = savedItemIterator.next();
 
-        boolean validPredefinedType = StringUtils.isBlank(predefinedType)
-          || (StringUtils.isNotBlank(predefinedType) && predefinedType.equals(savedItem.getType()));
+        boolean validPredefinedType = StringUtils.isBlank(predefinedType) || predefinedType.equals(savedItem.getType());
 
         boolean validValue = possibleValuesSet.isEmpty() || possibleValuesSet.contains(savedItem.getValue());
 
