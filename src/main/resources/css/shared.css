@@ -183,12 +183,13 @@
     -fx-background-color: -fx-light;
 }
 
-.combo-box .arrow {
-    -fx-background-color: white;
+.combo-box .list-view .list-cell:disabled  {
+    -fx-background-color: -fx-dark;
+    -fx-text-fill: rgba(255,255,255,0.5);
 }
 
-.combo-box-popup .list-cell:disabled  {
-    -fx-opacity: 0.4 ;
+.combo-box .arrow {
+    -fx-background-color: white;
 }
 
 /* Menu */
