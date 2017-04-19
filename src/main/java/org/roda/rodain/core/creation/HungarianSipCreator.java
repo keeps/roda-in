@@ -93,7 +93,7 @@ public class HungarianSipCreator extends SimpleSipCreator implements SIPObserver
       IPContentType contentType = descriptionObject instanceof SipPreview
         ? ((SipPreview) descriptionObject).getContentType() : IPContentType.getMIXED();
 
-      SIP hungarianSip = new HungarianSIP(Controller.encodeId(descriptionObject.getId()), contentType, agentName);
+      SIP hungarianSip = new HungarianSIP(Controller.encodeId(descriptionObject.getId()), contentType);
       hungarianSip.addObserver(this);
       hungarianSip.setAncestors(previews.get(descriptionObject));
       if (descriptionObject.isUpdateSIP()) {
@@ -178,6 +178,7 @@ public class HungarianSipCreator extends SimpleSipCreator implements SIPObserver
       currentAction = I18n.t(Constants.I18N_SIMPLE_SIP_CREATOR_INIT_ZIP);
 
       hungarianSip.setHeader(ipHeader);
+      hungarianSip.addCreatorSoftwareAgent(agentName);
       Path sipPath = hungarianSip.build(outputPath, createSipName(descriptionObject, sipNameBuilder));
 
       createdSipsCount++;
