@@ -579,11 +579,10 @@ public class RodaInApplication extends Application {
 
         final ProcessBuilder builder = new ProcessBuilder(command);
         builder.start();
-        Platform.exit();
       } else if (currentExecutable.getName().endsWith(".exe")) {
         OpenPathInExplorer.open(currentExecutable.toPath());
-        Platform.exit();
       }
+      closeApp();
     } catch (URISyntaxException e) {
       LOGGER.error("Error creating URI when restarting the application", e);
     } catch (IOException e) {
