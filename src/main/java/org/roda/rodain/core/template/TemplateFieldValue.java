@@ -20,6 +20,11 @@ public class TemplateFieldValue implements Comparable {
     this.options = new HashMap<>();
   }
 
+  public TemplateFieldValue(TemplateFieldValue other) {
+    this.id = other.id;
+    this.options = new HashMap<>(other.options);
+  }
+
   /**
    * Creates a new MetadataValue object.
    *

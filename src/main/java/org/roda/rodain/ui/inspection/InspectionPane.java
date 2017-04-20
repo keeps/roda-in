@@ -1775,7 +1775,7 @@ public class InspectionPane extends BorderPane {
     this.selectedItems = selectedItems;
     // create a temporary description object to hold the metadata
 
-    Map<String, TemplateFieldValue> commonMV = new HashMap<>();
+    Map<String, TemplateFieldValue> commonMetadataValues = new HashMap<>();
     String commonTemplate = null, commonVersion = null, commonMetadataType = null;
     IPContentType commonIPType = null;
     boolean common = true;
@@ -1801,8 +1801,7 @@ public class InspectionPane extends BorderPane {
       }
       for (DescriptiveMetadata dobm : dob.getMetadata()) {
         // Check if the creator option, template and version are the
-        // same as the
-        // previously analysed items
+        // same as the previously analysed items
         if (dobm.getCreatorOption() != MetadataOption.TEMPLATE) {
           common = false;
           continue;
@@ -1820,38 +1819,38 @@ public class InspectionPane extends BorderPane {
           && commonMetadataType != null && commonMetadataType.equalsIgnoreCase(dobm.getMetadataType());
         // Add the metadata values to the common set
         for (TemplateFieldValue mv : dob.getMetadataValueMap(dobm)) {
-          if (commonMV.containsKey(mv.getId())) {
-            if (mv.get("value") == null && commonMV.get(mv.getId()).get("value") == null)
+          if (commonMetadataValues.containsKey(mv.getId())) {
+            if (mv.get("value") == null && commonMetadataValues.get(mv.getId()).get("value") == null)
               continue;
             if (mv.get("value") instanceof String) {
               String mvValue = (String) mv.get("value");
-              if (commonMV.get(mv.getId()).get("value") instanceof String) {
-                String commonMVvalue = (String) commonMV.get(mv.getId()).get("value");
+              if (commonMetadataValues.get(mv.getId()).get("value") instanceof String) {
+                String commonMVvalue = (String) commonMetadataValues.get(mv.getId()).get("value");
                 if (mvValue == null || !mvValue.equals(commonMVvalue)) {
-                  commonMV.get(mv.getId()).set("value", "{{mixed}}");
+                  commonMetadataValues.get(mv.getId()).set("value", "{{mixed}}");
                 }
-              } else if (commonMV.get(mv.getId()).get("value") instanceof Pair) {
-                Pair commonMVvalue = (Pair) commonMV.get(mv.getId()).get("value");
+              } else if (commonMetadataValues.get(mv.getId()).get("value") instanceof Pair) {
+                Pair commonMVvalue = (Pair) commonMetadataValues.get(mv.getId()).get("value");
                 if (mvValue == null || !mvValue.equals(commonMVvalue.getKey())) {
-                  commonMV.get(mv.getId()).set("value", "{{mixed}}");
+                  commonMetadataValues.get(mv.getId()).set("value", "{{mixed}}");
                 }
               }
             } else if (mv.get("value") instanceof Pair) {
               Pair mvValue = (Pair) mv.get("value");
-              if (commonMV.get(mv.getId()).get("value") instanceof String) {
-                String commonMVvalue = (String) commonMV.get(mv.getId()).get("value");
+              if (commonMetadataValues.get(mv.getId()).get("value") instanceof String) {
+                String commonMVvalue = (String) commonMetadataValues.get(mv.getId()).get("value");
                 if (mvValue == null || !mvValue.getKey().equals(commonMVvalue)) {
-                  commonMV.get(mv.getId()).set("value", "{{mixed}}");
+                  commonMetadataValues.get(mv.getId()).set("value", "{{mixed}}");
                 }
-              } else if (commonMV.get(mv.getId()).get("value") instanceof Pair) {
-                Pair commonMVvalue = (Pair) commonMV.get(mv.getId()).get("value");
+              } else if (commonMetadataValues.get(mv.getId()).get("value") instanceof Pair) {
+                Pair commonMVvalue = (Pair) commonMetadataValues.get(mv.getId()).get("value");
                 if (mvValue == null || !mvValue.getKey().equals(commonMVvalue.getKey())) {
-                  commonMV.get(mv.getId()).set("value", "{{mixed}}");
+                  commonMetadataValues.get(mv.getId()).set("value", "{{mixed}}");
                 }
               }
             }
           } else {
-            commonMV.put(mv.getId(), mv);
+            commonMetadataValues.put(mv.getId(), new TemplateFieldValue(mv));
           }
         }
       }
@@ -1901,7 +1900,7 @@ public class InspectionPane extends BorderPane {
     if (common) {
       DescriptiveMetadata dobm = new DescriptiveMetadata(MetadataOption.TEMPLATE, commonTemplate, commonMetadataType,
         commonVersion);
-      dobm.setValues(new TreeSet<>(commonMV.values()));
+      dobm.setValues(new TreeSet<>(commonMetadataValues.values()));
       currentDescOb.getMetadata().add(dobm);
       currentDescOb.updatedMetadata(dobm);
     } else {
