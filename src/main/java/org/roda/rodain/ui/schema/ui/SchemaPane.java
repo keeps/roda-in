@@ -303,8 +303,9 @@ public class SchemaPane extends BorderPane {
               dlg.show();
             }
           }
-        } else
+        } else {
           Footer.setClassPlanStatus("");
+        }
       }
     });
   }
@@ -987,5 +988,14 @@ public class SchemaPane extends BorderPane {
       descObjsMap.putAll(sipsMap);
     }
     return descObjsMap;
+  }
+
+  public void forceUpdateSelectionIcons() {
+    // clear selection and re-select
+    List<Integer> selectedIndices = new ArrayList<>(treeView.getSelectionModel().getSelectedIndices());
+    treeView.getSelectionModel().clearSelection();
+    for (Integer selectedIndex : selectedIndices) {
+      treeView.getSelectionModel().select(selectedIndex);
+    }
   }
 }

@@ -15,6 +15,7 @@ import org.roda.rodain.core.ConfigurationManager;
 import org.roda.rodain.core.Constants;
 import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.core.sip.SipPreview;
+import org.roda.rodain.ui.RodaInApplication;
 import org.roda.rodain.ui.rules.Rule;
 import org.roda.rodain.ui.rules.ui.RuleModalController;
 import org.roda.rodain.ui.utils.FontAwesomeImageCreator;
@@ -127,6 +128,8 @@ public class SchemaNode extends TreeItem<String> implements Observer {
         getChildren().addAll(schemas);
 
         sortChildren();
+
+        RodaInApplication.getSchemePane().forceUpdateSelectionIcons();
       });
     }
   }
