@@ -20,7 +20,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 
 /**
- * The Node used as the footer of the UI to show a fileExplorerStatus message.
+ * The Node used as the footer of the UI to show info on the fileExplorer (on
+ * the left side), the classPlan (in the middle) and the memory usage (on the
+ * right).
  *
  * @author Andre Pereira apereira@keep.pt
  * @since 28-09-2015.
@@ -100,6 +102,13 @@ public class Footer extends VBox {
     Platform.runLater(() -> classPlanStatus.setText(st));
   }
 
+  /**
+   * Binds the with of the fileExplorerBox to the width of the fileExplorerPane
+   *
+   * @param fileExplorerPane
+   *          a FileExplorerPane to which the width property of the file
+   *          explorer box should be bound
+   */
   public static void addBindings(FileExplorerPane fileExplorerPane) {
     fileExplorerBox.minWidthProperty().bind(fileExplorerPane.widthProperty());
     fileExplorerBox.maxWidthProperty().bind(fileExplorerPane.widthProperty());
@@ -123,5 +132,18 @@ public class Footer extends VBox {
 
   public void cancelMemoryAutoUpdater() {
     timer.cancel();
+  }
+
+  /**
+   * Reset the footer to its initial state (showing only the memory usage)
+   * 
+   * @param newFileExplorerPane
+   *          a FileExplorerPane to which the width property of the file
+   *          explorer box should be bound
+   */
+  public static void reset(FileExplorerPane newFileExplorerPane) {
+    setFileExplorerStatus("");
+    setClassPlanStatus("");
+    addBindings(newFileExplorerPane);
   }
 }

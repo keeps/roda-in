@@ -391,6 +391,7 @@ public class RodaInApplication extends Application {
         inspectionPane = new InspectionPane(stage);
         fileExplorer = new FileExplorerPane(stage);
         schemePane = new SchemaPane(stage);
+        Footer.reset(fileExplorer);
         mainPane.setCenter(createSplitPane());
         schemePane.showHelp();
       }
