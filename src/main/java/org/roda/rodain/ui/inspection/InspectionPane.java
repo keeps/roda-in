@@ -762,45 +762,65 @@ public class InspectionPane extends BorderPane {
     return comboBox;
   }
 
-  private void addListenersToUpdateUI(TemplateFieldValue metadataValue, Property property) {
-    if ("title".equals(metadataValue.getId())) {
-      paneTitle.textProperty().bind(property);
-      if (currentSIPNode != null) {
-        property.bindBidirectional(currentSIPNode.valueProperty());
-      } else {
-        if (currentSchema != null) {
-          property.bindBidirectional(currentSchema.valueProperty());
-        }
+  private boolean isDomSynchronized() {
+    boolean domIsSynchronized = true;
+    Pair selectedPair = metadataCombo.getSelectionModel().getSelectedItem();
+    if (selectedPair != null) {
+      DescriptiveMetadata dom = (DescriptiveMetadata) selectedPair.getKey();
+      if (dom != null) {
+        String synchronize = ConfigurationManager
+          .getMetadataConfig(dom.getTemplateType() + Constants.CONF_K_SUFFIX_SYNCHRONIZED);
+
+        // 2017-04-28 bferreira: assume TRUE by default, unless 'false' is
+        // specificed (Boolean.valueOf can not be used as it has the opposite
+        // behaviour)
+        domIsSynchronized = !("false".equalsIgnoreCase(synchronize));
       }
     }
+    return domIsSynchronized;
+  }
 
-    if ("level".equals(metadataValue.getId())) {
-      property.addListener((observable, oldValue, newValue) -> {
-        TreeItem<String> itemToForceUpdate = null;
-        // Update the icons of the description level
+  private void addListenersToUpdateUI(TemplateFieldValue metadataValue, Property property) {
+    if (isDomSynchronized()) {
+      if ("title".equals(metadataValue.getId())) {
+        paneTitle.textProperty().bind(property);
         if (currentSIPNode != null) {
-          if (newValue instanceof String) {
-            currentSIPNode.updateDescriptionLevel((String) newValue);
-            itemToForceUpdate = currentSIPNode;
-          } else if (newValue instanceof Pair) {
-            currentSIPNode.updateDescriptionLevel((String) ((Pair) newValue).getKey());
+          property.bindBidirectional(currentSIPNode.valueProperty());
+        } else {
+          if (currentSchema != null) {
+            property.bindBidirectional(currentSchema.valueProperty());
           }
-        } else if (currentSchema != null) {
-          if (newValue instanceof String) {
-            currentSchema.updateDescriptionLevel((String) newValue);
-          } else if (newValue instanceof Pair) {
-            currentSchema.updateDescriptionLevel((String) ((Pair) newValue).getKey());
-          }
-          itemToForceUpdate = currentSchema;
         }
+      }
 
-        // Force update
-        if (itemToForceUpdate != null) {
-          String value = itemToForceUpdate.getValue();
-          itemToForceUpdate.setValue("");
-          itemToForceUpdate.setValue(value);
-        }
-      });
+      if ("level".equals(metadataValue.getId())) {
+        property.addListener((observable, oldValue, newValue) -> {
+          TreeItem<String> itemToForceUpdate = null;
+          // Update the icons of the description level
+          if (currentSIPNode != null) {
+            if (newValue instanceof String) {
+              currentSIPNode.updateDescriptionLevel((String) newValue);
+              itemToForceUpdate = currentSIPNode;
+            } else if (newValue instanceof Pair) {
+              currentSIPNode.updateDescriptionLevel((String) ((Pair) newValue).getKey());
+            }
+          } else if (currentSchema != null) {
+            if (newValue instanceof String) {
+              currentSchema.updateDescriptionLevel((String) newValue);
+            } else if (newValue instanceof Pair) {
+              currentSchema.updateDescriptionLevel((String) ((Pair) newValue).getKey());
+            }
+            itemToForceUpdate = currentSchema;
+          }
+
+          // Force update
+          if (itemToForceUpdate != null) {
+            String value = itemToForceUpdate.getValue();
+            itemToForceUpdate.setValue("");
+            itemToForceUpdate.setValue(value);
+          }
+        });
+      }
     }
   }
 

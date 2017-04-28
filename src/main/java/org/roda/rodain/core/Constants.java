@@ -80,6 +80,7 @@ public final class Constants {
   public static final String CONF_K_SUFFIX_ITEM_LEVEL = ".itemLevel";
   public static final String CONF_K_SUFFIX_FILE_LEVEL = ".fileLevel";
   public static final String CONF_K_SUFFIX_TAGS = ".tags";
+  public static final String CONF_K_SUFFIX_SYNCHRONIZED = ".synchronized";
   public static final String CONF_K_SUFFIX_LEVELS_ICON = "levels.icon.";
   // configs keys
   public static final String CONF_K_IGNORED_FILES = "app.ignoredFiles";

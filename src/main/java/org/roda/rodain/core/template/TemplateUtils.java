@@ -43,7 +43,6 @@ public class TemplateUtils {
       ? ConfigurationManager.getTemplateContent(dom.getTemplateType()) : null;
     if (templateContent != null) {
       fields = processTemplate(templateContent);
-      dom.setValues(fields);
       if (fields != null) {
         for (TemplateFieldValue field : fields) {
           String xpathRaw = (String) field.get("xpath");
@@ -67,7 +66,6 @@ public class TemplateUtils {
         }
       }
     }
-    dom.setValues(fields);
     return fields;
   }
 
