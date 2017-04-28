@@ -263,6 +263,7 @@ public final class ControllerUtils {
         if (dm.getMetadataType() != null && dm.getMetadataType().equalsIgnoreCase(type)) {
           if (dm.getMetadataVersion() != null && dm.getMetadataVersion().equalsIgnoreCase(version)) {
             dm.setTemplateType(metaType);
+            break;
             // dm.setCreatorOption(MetadataOptions.TEMPLATE);
           }
         }
