@@ -9,8 +9,8 @@ import java.nio.file.Paths;
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.roda.rodain.ApplicationTestBase;
 import org.roda.rodain.core.schema.ClassificationSchema;
 import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.ui.RodaInApplication;
@@ -22,7 +22,6 @@ import org.roda.rodain.ui.schema.ui.SipPreviewNode;
 import org.roda.rodain.ui.source.FileExplorerPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testfx.framework.junit.ApplicationTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -37,8 +36,7 @@ import javafx.stage.Stage;
  * @author Andre Pereira apereira@keep.pt
  * @since 17-12-2015.
  */
-@Ignore
-public class MainTest extends ApplicationTest {
+public class MainTest extends ApplicationTestBase {
   private static final Logger LOGGER = LoggerFactory.getLogger(MainTest.class.getName());
 
   private static Path testDir, output;
@@ -54,15 +52,16 @@ public class MainTest extends ApplicationTest {
     main = new RodaInApplication();
     main.start(stage);
 
-    sleep(6000);
-
-    schemaPane = RodaInApplication.getSchemePane();
-    fileExplorer = RodaInApplication.getFileExplorer();
-    inspectionPane = RodaInApplication.getInspectionPane();
+    do {
+      sleep(100);
+      schemaPane = RodaInApplication.getSchemePane();
+      fileExplorer = RodaInApplication.getFileExplorer();
+      inspectionPane = RodaInApplication.getInspectionPane();
+    } while (schemaPane == null || fileExplorer == null || inspectionPane == null);
 
     Path path = Paths.get("src/test/resources/plan_with_errors.json");
     InputStream stream = new FileInputStream(path.toFile());
-    loadClassificationSchemeFromStream(stream, schemaPane);
+    loadClassificationSchemeFromStream(stream);
   }
 
   /**
@@ -73,7 +72,7 @@ public class MainTest extends ApplicationTest {
    *          The stream with the JSON file used to create the
    *          ClassificationSchema
    */
-  private static void loadClassificationSchemeFromStream(InputStream stream, SchemaPane schemaPane) {
+  private void loadClassificationSchemeFromStream(InputStream stream) {
     try {
       schemaPane.getRootNode().getChildren().clear();
       // create ObjectMapper instance
@@ -99,43 +98,30 @@ public class MainTest extends ApplicationTest {
 
   @Test
   public void createNewClassificationPlanWithRemovals() {
-    sleep(5000);
+    String node1 = "Node1";
+    String node2 = "Node2";
+
+    // waitUntilNodeAppearsAndClick(I18n.t(Constants.I18N_SCHEMAPANE_CREATE));
+
     push(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN));
-    sleep(3000);
-    try {
-      push(KeyCode.RIGHT);
-      push(KeyCode.ENTER);
-    } catch (Exception e) {
-    }
-    sleep(5000);
-    clickOn(I18n.t("SchemaPane.add"));
-    sleep(2000);
-    clickOn(I18n.t("continue"));
-    sleep(2000);
-    clickOn(".schemaNode");
-    sleep(2000);
-    clickOn("#descObjTitle");
-    eraseText(50);
-    write("Node1");
-    sleep(1000);
+    clickOk();
 
-    TreeItem<String> item = RodaInApplication.getSchemePane().getTreeView().getSelectionModel().getSelectedItem();
-    assert "Node1".equals(item.getValue());
+    waitUntilNodeAppearsAndClick(I18n.t("SchemaPane.add"));
+    waitUntilNodeAppearsAndClick(I18n.t("continue"));
+    waitUntilNodeAppearsAndClick(".schemaNode");
+    waitUntilNodeAppearsAndClick("#descObjTitle");
 
-    clickOn(I18n.t("SchemaPane.add"));
-    sleep(500);
-    clickOn(I18n.t("continue"));
-    sleep(2000);
-    clickOn(I18n.t("SchemaPane.newNode"));
-    sleep(2000);
-    clickOn("#descObjTitle");
-    eraseText(50);
-    write("Node2");
-    sleep(1000);
+    overwriteText(node1);
 
-    doubleClickOn(".tree-view");
+    awaitCondition(() -> node1
+      .equals(RodaInApplication.getSchemePane().getTreeView().getSelectionModel().getSelectedItem().getValue()), 2);
 
-    clickOn("Node2");
+    waitUntilNodeAppearsAndClick(I18n.t("SchemaPane.add"));
+    waitUntilNodeAppearsAndClick(I18n.t("continue"));
+    waitUntilNodeAppearsAndClick(I18n.t("SchemaPane.newNode"));
+    waitUntilNodeAppearsAndClick("#descObjTitle");
+
+    overwriteText(node2);
 
     TreeItem<String> newItem = RodaInApplication.getSchemePane().getTreeView().getSelectionModel().getSelectedItem();
     assert newItem instanceof SchemaNode;
@@ -143,66 +129,67 @@ public class MainTest extends ApplicationTest {
     Sip dobj = newNode.getDob();
     assert dobj != null;
 
-    sleep(2000);
-    drag("Node2").dropTo(".tree-view");
+    waitUntilNodeAppearsAndClick(node1);
+    waitUntilNodeAppearsAndClick(node2);
+    waitUntilNodeAppears(".tree-view");
+
+    drag().dropTo(".tree-view");
 
     assert RodaInApplication.getSchemePane().getTreeView().getRoot().getChildren().size() == 2;
-    sleep(1000);
 
-    clickOn("Node2").clickOn("#removeLevel");
-    sleep(5000);
-    try {
-      clickOn("OK");
-    } catch (Exception e) {
-      push(KeyCode.RIGHT);
-      push(KeyCode.ENTER);
-    }
+    waitUntilNodeAppearsAndClick("#" + Constants.CSS_REMOVE_LEVEL);
+
+    clickOk();
     assert RodaInApplication.getSchemePane().getTreeView().getRoot().getChildren().size() == 1;
   }
 
   @Test
   public void loadAClassificationPlan() {
-    sleep(5000); // wait for the classification scheme to load
-
     Platform.runLater(() -> {
       stage.setMaximized(false);
       stage.setMaximized(true);
     });
 
-    clickOn("UCP");
+    waitUntilNodeAppearsAndClick(lookup("UCP").lookup(".cellText").query());
+
+    assert schemaPane.getTreeView().getSelectionModel().getSelectedIndex() == 7;
+
     TreeItem selected = schemaPane.getTreeView().getSelectionModel().getSelectedItem();
-    int selectedIndex = schemaPane.getTreeView().getSelectionModel().getSelectedIndex();
     assert "UCP".equals(selected.getValue());
-    assert selectedIndex == 7;
 
-    doubleClickOn(".tree-view");
-
-    doubleClickOn("UCP");
-
+    waitUntilNodeAppears(".tree-view");
+    waitUntilNodeAppearsAndDoubleClick(lookup("UCP").lookup(".cellText").query());
     assert selected.getChildren().size() == 1;
   }
 
   @Test
-  public void associateFilesAndFoldersToAnItemAndExportTheSIPs() {
+  public void associateFilesAndFoldersToAnItemAndExportTheSIPs() throws IOException {
     Platform.runLater(() -> {
       fileExplorer.setFileExplorerRoot(testDir);
       stage.setMaximized(false);
       stage.setMaximized(true);
     });
 
-    sleep(5000); // wait for the tree to be created
-    doubleClickOn("dir4");
-    sleep(2000); // wait for the node to expand
-    drag("dirB").dropTo("UCP");
-    sleep(2000); // wait for the modal to open
-    clickOn("#assoc3");
-    clickOn("#btConfirm");
-    sleep(2000); // wait for the modal to update
-    clickOn("#btConfirm");
-    sleep(6000); // wait for the SIPs creation
+    waitUntilNodeAppearsAndDoubleClick("dir4");
+    waitUntilNodeAppears("dirB");
 
-    clickOn("UCP");
-    clickOn("file1.txt");
+    waitUntilNodeAppears("UCP");
+
+    // 2017/05/05 bferreira: workaround to drop at location (instead of droping
+    // on node) because for some reason the node looses the location after
+    // dropping, and then a NullPointer is thrown
+    javafx.geometry.Point2D ucpLocation = point("UCP").query();
+    drag("dirB").dropTo(ucpLocation);
+
+    // modal should open
+    waitUntilNodeAppearsAndClick("#assoc3");
+    waitUntilNodeAppearsAndClick("#btConfirm");
+    // modal should update
+    waitUntilNodeAppearsAndClick("#btConfirm");
+    // SIP should be created
+
+    waitUntilNodeAppearsAndClick("UCP");
+    waitUntilNodeAppearsAndClick("file1.txt");
     TreeItem selected = schemaPane.getTreeView().getSelectionModel().getSelectedItem();
     assert selected instanceof SipPreviewNode;
     TreeItem parent = selected.getParent();
@@ -211,61 +198,60 @@ public class MainTest extends ApplicationTest {
 
     assert parent.getChildren().size() == 14;
 
-    clickOn("UCP");
-    sleep(1000);
+    waitUntilNodeAppearsAndClick("UCP");
 
-    clickOn("#removeRule1");
-    sleep(1000); // wait for the rule to be removed
+    waitUntilNodeAppearsAndClick("#removeRule1");
+    // rule should be removed, wait for that
+    waitUntilNodeDisappears("#removeRule1");
 
     assert parent.getChildren().size() == 1;
 
     // create 2 SIPs
-    clickOn("fileA.txt");
+    waitUntilNodeAppearsAndClick("fileA.txt");
     press(KeyCode.CONTROL);
-    clickOn("fileB.txt");
+    waitUntilNodeAppearsAndClick("fileB.txt");
     release(KeyCode.CONTROL);
 
     drag().dropTo("UCP");
-    sleep(2000); // wait for the modal to open
-    clickOn("#assoc2");
-    sleep(2000); // wait for the modal to update
-    clickOn(I18n.t("continue"));
-    sleep(2000); // wait for the modal to update
-    clickOn("#meta4");
-    clickOn(I18n.t("confirm"));
-    sleep(5000); // wait for the SIPs creation
 
-    clickOn(I18n.t("Main.file"));
-    clickOn(I18n.t("Main.exportSips"));
+    # failing to find the right "UCP" here
+
+    // modal should open
+    waitUntilNodeAppearsAndClick("#assoc2");
+    // modal should update
+    waitUntilNodeAppearsAndClick(I18n.t("continue"));
+    // modal should update
+    waitUntilNodeAppearsAndClick("#meta4");
+    waitUntilNodeAppearsAndClick(I18n.t("confirm"));
+    // SIPs should be created, wait for that
+
+    waitUntilNodeAppearsAndClick(I18n.t("Main.file"));
+    waitUntilNodeAppearsAndClick(I18n.t("Main.exportSips"));
     output = Utils.homeDir.resolve("SIPs output");
     boolean outputFolderCreated = output.toFile().mkdir();
     if (!outputFolderCreated) {
-      try {
-        FileUtils.cleanDirectory(output.toFile());
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+      FileUtils.cleanDirectory(output.toFile());
     }
     CreationModalPreparation.setOutputFolder(output.toString());
-    clickOn(I18n.t("start"));
+    waitUntilNodeAppearsAndClick(I18n.t("start"));
 
-    sleep(5000);
-    clickOn(I18n.t("close"));
+    waitUntilNodeAppearsAndClick(I18n.t("close"));
 
-    clickOn(I18n.t("Main.file"));
-    clickOn(I18n.t("Main.exportSips"));
-    clickOn("#sipTypes").clickOn("BagIt");
+    waitUntilNodeAppearsAndClick(I18n.t("Main.file"));
+    waitUntilNodeAppearsAndClick(I18n.t("Main.exportSips"));
+    waitUntilNodeAppearsAndClick("#sipTypes");
+    waitUntilNodeAppearsAndClick("BagIt");
     CreationModalPreparation.setOutputFolder(output.toString());
-    clickOn(I18n.t("start"));
-    sleep(5000);
-    clickOn(I18n.t("close"));
+    waitUntilNodeAppearsAndClick(I18n.t("start"));
+    waitUntilNodeAppearsAndClick(I18n.t("close"));
 
-    clickOn("FTP");
-    sleep(1000);
+    waitUntilNodeAppearsAndClick("FTP");
 
-    clickOn("UCP");
-    clickOn("#removeRule2");
-    sleep(1000); // wait for the rule to be removed
+    waitUntilNodeAppearsAndClick("UCP");
+    waitUntilNodeAppearsAndClick("#removeRule2");
+
+    // wait for the rule to be removed
+    waitUntilNodeDisappears("#removeRule2");
   }
 
   @Test
@@ -278,24 +264,24 @@ public class MainTest extends ApplicationTest {
     });
 
     sleep(5000); // wait for the tree to be created
-    doubleClickOn("dir4");
+    waitUntilNodeAppearsAndDoubleClick("dir4");
     sleep(2000); // wait for the node to expand
     drag("dirB").dropTo("UCP");
     sleep(2000); // wait for the modal to open
-    clickOn("#assoc3");
-    clickOn("#btConfirm");
+    waitUntilNodeAppearsAndClick("#assoc3");
+    waitUntilNodeAppearsAndClick("#btConfirm");
     sleep(2000); // wait for the modal to update
-    clickOn("#btConfirm");
+    waitUntilNodeAppearsAndClick("#btConfirm");
     sleep(3000); // wait for the SIPs creation
 
-    clickOn("UCP");
+    waitUntilNodeAppearsAndClick("UCP");
 
-    clickOn(I18n.t("SchemaPane.add"));
+    waitUntilNodeAppearsAndClick(I18n.t("SchemaPane.add"));
     sleep(2000);
-    clickOn(I18n.t("continue"));
+    waitUntilNodeAppearsAndClick(I18n.t("continue"));
     sleep(2000);
-    clickOn(I18n.t("SchemaPane.newNode"));
-    clickOn("file10.txt");
+    waitUntilNodeAppearsAndClick(I18n.t("SchemaPane.newNode"));
+    waitUntilNodeAppearsAndClick("file10.txt");
     sleep(1000);
 
     Platform.runLater(() -> {
@@ -305,13 +291,13 @@ public class MainTest extends ApplicationTest {
 
     sleep(3000);
 
-    clickOn("#descObjTitle");
+    waitUntilNodeAppearsAndClick("#descObjTitle");
     eraseText(50);
     write("Testing");
     sleep(1000);
 
     sleep(1000);
-    clickOn(I18n.t("apply"));
+    waitUntilNodeAppearsAndClick(I18n.t("apply"));
   }
 
   @Test
@@ -341,10 +327,10 @@ public class MainTest extends ApplicationTest {
     drag(test10000Dir.getFileName().toString()).dropTo("#schemaPaneDropBox");
 
     sleep(1000); // wait for the modal to open
-    clickOn("#assoc3"); // SIP per File
-    clickOn(I18n.t("continue"));
+    waitUntilNodeAppearsAndClick("#assoc3"); // SIP per File
+    waitUntilNodeAppearsAndClick(I18n.t("continue"));
     sleep(1000); // wait for the modal to update
-    clickOn(I18n.t("confirm"));
+    waitUntilNodeAppearsAndClick(I18n.t("confirm"));
     sleep(5000); // wait for the SIPs creation
 
     long startTimestamp = System.currentTimeMillis();
@@ -352,7 +338,7 @@ public class MainTest extends ApplicationTest {
     boolean stop = false;
     while (!stop && System.currentTimeMillis() - startTimestamp < timeout) {
       try {
-        clickOn(I18n.t("RuleModalProcessing.creatingPreview").toUpperCase());
+        waitUntilNodeAppearsAndClick(I18n.t("RuleModalProcessing.creatingPreview").toUpperCase());
         sleep(1000);
       } catch (Exception e) {
         stop = true;

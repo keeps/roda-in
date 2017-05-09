@@ -27,7 +27,6 @@ import javafx.stage.Stage;
  * @author Andre Pereira apereira@keep.pt
  * @since 15-12-2015.
  */
-@Ignore
 public class IgnoreTest extends ApplicationTest {
   private static Path testDir;
   private FileExplorerPane fileExplorer;

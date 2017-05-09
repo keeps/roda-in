@@ -2,6 +2,8 @@ package org.roda.rodain.core;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.function.Function;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
@@ -216,6 +218,7 @@ public final class Constants {
   public static final String CSS_FX_BACKGROUND_COLOR_TRANSPARENT = "-fx-background-color: transparent";
   public static final String CSS_FX_FONT_SIZE_16PX = "-fx-font-size: 16px";
   public static final String CSS_FX_TEXT_FILL_BLACK = "-fx-text-fill: black";
+  public static final String CSS_REMOVE_LEVEL = "removeLevel";
 
   // I18n
   public static final String I18N_NEW_VERSION_CONTENT = "Main.newVersion.content";

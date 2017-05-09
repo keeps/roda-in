@@ -287,7 +287,9 @@ public class InspectionPane extends BorderPane {
     metaText.setWrapText(true);
     VBox.setVgrow(metaText, Priority.ALWAYS);
     metaText.textProperty().addListener((observable, oldValue, newValue) -> {
-      metaText.setStyleSpans(0, XMLEditor.computeHighlighting(newValue));
+      if (!newValue.isEmpty()) {
+        metaText.setStyleSpans(0, XMLEditor.computeHighlighting(newValue));
+      }
       Pair selectedPair = metadataCombo.getSelectionModel().getSelectedItem();
       DescriptiveMetadata selected = (DescriptiveMetadata) selectedPair.getKey();
 
@@ -2069,7 +2071,9 @@ public class InspectionPane extends BorderPane {
     Platform.runLater(() -> {
       metaText.replaceText(content);
       try {
-        metaText.setStyleSpans(0, XMLEditor.computeHighlighting(content));
+        if (!content.isEmpty()) {
+          metaText.setStyleSpans(0, XMLEditor.computeHighlighting(content));
+        }
       } catch (IndexOutOfBoundsException e) {
         LOGGER.warn("Error setting the StyleSpans", e);
       }

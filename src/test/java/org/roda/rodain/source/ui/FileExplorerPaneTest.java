@@ -26,7 +26,6 @@ import javafx.stage.Stage;
  * @author Andre Pereira apereira@keep.pt
  * @since 14-12-2015.
  */
-@Ignore
 public class FileExplorerPaneTest extends ApplicationTest {
   private static int LOAD_MORE_SIZE = 100;
   private static Path testDir;

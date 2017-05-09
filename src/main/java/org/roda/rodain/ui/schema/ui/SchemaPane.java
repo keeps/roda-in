@@ -34,6 +34,7 @@ import org.roda.rodain.ui.utils.AutoscrollTreeView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -441,6 +442,11 @@ public class SchemaPane extends BorderPane {
         setBottom(new HBox());
       } else {
         sortRootChildren();
+        Platform.runLater(() -> {
+          for (TreeItem<String> stringTreeItem : rootNode.getChildren()) {
+            forceUpdate(stringTreeItem);
+          }
+        });
         hasClassificationScheme.setValue(true);
       }
     } catch (Exception e) {
@@ -496,7 +502,7 @@ public class SchemaPane extends BorderPane {
     bottom.setAlignment(Pos.CENTER);
 
     Button removeLevel = new Button(I18n.t(Constants.I18N_SCHEMAPANE_REMOVE));
-    removeLevel.setId("removeLevel");
+    removeLevel.setId(Constants.CSS_REMOVE_LEVEL);
     removeLevel.setMinWidth(100);
     removeLevel.setOnAction(event -> {
       List<TreeItem<String>> selectedItems = new ArrayList<>(treeView.getSelectionModel().getSelectedItems());
