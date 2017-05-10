@@ -4,6 +4,12 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import javafx.application.Platform;
+import javafx.scene.control.Button;
+import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 import org.apache.commons.lang3.StringUtils;
 import org.roda.rodain.core.Constants;
 import org.roda.rodain.ui.utils.FontAwesomeImageCreator;
@@ -27,6 +33,7 @@ public abstract class AbstractGroup extends VBox {
 
   private HBox addMorePanel;
   private Hyperlink addMoreInfo;
+  private Button addMoreButton;
 
   private VBox errorMessagesPanel;
 
@@ -63,7 +70,7 @@ public abstract class AbstractGroup extends VBox {
 
     // create button to add more lines to the form
     addMorePanel = new HBox(5);
-    addMorePanel.setAlignment(Pos.BASELINE_LEFT);
+    addMorePanel.setAlignment(Pos.BASELINE_RIGHT);
     addMorePanel.managedProperty().bind(addMorePanel.visibleProperty());
     addMorePanel.setVisible(false);
 
@@ -71,7 +78,18 @@ public abstract class AbstractGroup extends VBox {
     addMoreInfo.getStyleClass().add(Constants.CSS_METS_HEADER_ITEM_ADD_MORE_LINK);
     addMoreInfo.setOnAction(event -> createAndAddRow());
 
-    addMorePanel.getChildren().addAll(addMoreInfo);
+    addMoreButton = new Button();
+    addMoreButton.minHeightProperty().bind(addMoreInfo.heightProperty());
+    addMoreButton.maxHeightProperty().bind(addMoreInfo.heightProperty());
+    addMoreButton.getStyleClass().add(Constants.CSS_METS_HEADER_ITEM_BUTTON_REMOVE);
+    addMoreButton.setOnAction(event -> createAndAddRow());
+    Platform.runLater(() -> {
+      Image image = FontAwesomeImageCreator.generate(ICON_ADD, Color.WHITE);
+      ImageView imageView = new ImageView(image);
+      addMoreButton.setGraphic(imageView);
+    });
+
+    addMorePanel.getChildren().addAll(addMoreInfo, addMoreButton);
     this.getChildren().add(addMorePanel);
 
     updateAddMore();
@@ -151,8 +169,11 @@ public abstract class AbstractGroup extends VBox {
       addMorePanel.setVisible(true);
       if (totalItemsAmount() < getMaximum()) {
         addMorePanel.setDisable(false);
-        addMoreInfo.setText(String.format("%s %s", StringUtils.capitalize(getTextFromI18N(Constants.I18N_ADD)),
-          getTextFromI18N(getFieldParameterAsString(Constants.CONF_K_METS_HEADER_FIELD_TITLE, ""))));
+
+        String textAndTooltip = String.format("%s %s", StringUtils.capitalize(getTextFromI18N(Constants.I18N_ADD)),
+          getTextFromI18N(getFieldParameterAsString(Constants.CONF_K_METS_HEADER_FIELD_TITLE, "")));
+        addMoreButton.setTooltip(new Tooltip(textAndTooltip));
+        addMoreInfo.setText(textAndTooltip);
       } else {
         addMorePanel.setDisable(true);
         addMoreInfo.setText("Maximum reached!");
