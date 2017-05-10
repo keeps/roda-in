@@ -92,7 +92,7 @@ public class AltRecordGroup extends AbstractGroup {
 
   public void addAltRecordsToHeader(IPHeader header) {
     for (AbstractItem abstractItem : getItems()) {
-      if (abstractItem.isValid()) {
+      if (!abstractItem.isEmpty() && abstractItem.isValid()) {
         header.addAltRecordID(((AltRecordItem) abstractItem).getValue());
       }
     }

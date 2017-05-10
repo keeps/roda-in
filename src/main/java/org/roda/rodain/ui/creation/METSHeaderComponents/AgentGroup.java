@@ -176,7 +176,7 @@ public class AgentGroup extends AbstractGroup {
 
   public void addAgentsToHeader(IPHeader header) {
     for (AbstractItem abstractItem : getItems()) {
-      if (abstractItem.isValid()) {
+      if (!abstractItem.isEmpty() && abstractItem.isValid()) {
         header.addAgent(((AgentItem) abstractItem).getValue());
       }
     }

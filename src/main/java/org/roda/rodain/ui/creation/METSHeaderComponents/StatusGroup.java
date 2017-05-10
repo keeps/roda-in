@@ -52,7 +52,7 @@ public class StatusGroup extends AbstractGroup {
 
   public void addStatusToHeader(IPHeader header) {
     for (AbstractItem abstractItem : getItems()) {
-      if (abstractItem.isValid()) {
+      if (!abstractItem.isEmpty() && abstractItem.isValid()) {
         header.setStatus(((StatusItem) abstractItem).getValue());
       }
     }

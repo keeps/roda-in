@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.roda.rodain.core.Constants;
+import org.roda.rodain.core.I18n;
 import org.roda.rodain.ui.utils.FontAwesomeImageCreator;
 import org.roda_project.commons_ip.model.IPHeader;
 
@@ -158,28 +159,62 @@ public abstract class AbstractGroup extends VBox {
           getTextFromI18N(getFieldParameterAsString(Constants.CONF_K_METS_HEADER_FIELD_TITLE, ""))));
       } else {
         addMorePanel.setDisable(true);
-        addMoreInfo.setText("Maximum reached!");
+        addMoreInfo.setText(I18n.t(Constants.I18N_CREATIONMODALMETSHEADER_WARNING_MAXIMUM));
       }
     }
   }
 
+  /**
+   * Checks if this group contains the required number of items (min < #items <
+   * max)
+   * 
+   * @return
+   */
   public boolean validate() {
     boolean valid = true;
 
     errorMessagesPanel.getChildren().clear();
 
+    int count = 0;
     for (AbstractItem item : items) {
-      if (!item.isValid()) {
-        valid = false;
+      if (!item.isEmpty()) {
+        if (item.isValid()) {
+          count++;
+        } else {
+          valid = false;
 
-        for (String errorMessage : item.getValidationFailures()) {
-          Label errorMessageLabel = new Label(errorMessage);
-          errorMessageLabel.getStyleClass().add(Constants.CSS_ERROR);
-          errorMessagesPanel.getChildren().add(errorMessageLabel);
+          for (String errorMessage : item.getValidationFailures()) {
+            Label errorMessageLabel = new Label(errorMessage);
+            errorMessageLabel.getStyleClass().add(Constants.CSS_ERROR);
+            errorMessagesPanel.getChildren().add(errorMessageLabel);
+          }
         }
       }
     }
-    return valid;
+
+    if (count < minimumItems) {
+      Label errorMessageLabel = new Label();
+      if (count == 0 && minimumItems == 1) {
+        errorMessageLabel.setText(I18n.t(Constants.I18N_CREATIONMODALMETSHEADER_ERROR_MANDATORY));
+      } else {
+        errorMessageLabel
+          .setText(String.format("%s %d %s", I18n.t(Constants.I18N_CREATIONMODALMETSHEADER_ERROR_MINIMUM_BEFORE),
+            minimumItems, I18n.t(Constants.I18N_CREATIONMODALMETSHEADER_ERROR_MINIMUM_AFTER)));
+      }
+
+      errorMessageLabel.getStyleClass().add(Constants.CSS_ERROR);
+      errorMessagesPanel.getChildren().add(errorMessageLabel);
+    }
+
+    if (count > maximumItems) {
+      Label errorMessageLabel = new Label(
+        String.format("%s %d %s", I18n.t(Constants.I18N_CREATIONMODALMETSHEADER_ERROR_MAXIMUM_BEFORE), maximumItems,
+          I18n.t(Constants.I18N_CREATIONMODALMETSHEADER_ERROR_MAXIMUM_AFTER)));
+      errorMessageLabel.getStyleClass().add(Constants.CSS_ERROR);
+      errorMessagesPanel.getChildren().add(errorMessageLabel);
+    }
+
+    return valid && count >= minimumItems && count <= maximumItems;
   }
 
   protected String getFieldParameterAsString(String suffix, String defaultValue) {

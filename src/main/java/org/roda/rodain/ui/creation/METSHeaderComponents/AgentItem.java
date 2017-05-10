@@ -5,6 +5,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.roda.rodain.core.Constants;
+import org.roda.rodain.core.I18n;
 import org.roda.rodain.ui.creation.HorizontalSpace;
 import org.roda_project.commons_ip.model.IPAgent;
 import org.roda_project.commons_ip.utils.METSEnums;
@@ -207,6 +209,45 @@ public class AgentItem extends AbstractItem {
   }
 
   @Override
+  protected boolean internalIsEmpty() {
+    if (!hasPredefinedType() && StringUtils.isNotBlank(tfType.getText())) {
+      return false;
+    }
+
+    METSEnums.CreatorType type = null;
+    try {
+      if (hasPredefinedType()) {
+        type = METSEnums.CreatorType.valueOf(predefinedType);
+      } else {
+        type = METSEnums.CreatorType.valueOf(tfType.getText());
+      }
+    } catch (IllegalArgumentException e) {
+      // do nothing about the error
+    }
+
+    if (type != null && type.equals(METSEnums.CreatorType.OTHER) && !hasPredefinedOtherType()
+      && StringUtils.isNotBlank(tfOtherType.getText())) {
+      return false;
+    }
+
+    if (!hasPredefinedRole() && StringUtils.isNotBlank(tfRole.getText())) {
+      return false;
+    }
+
+    if (cbNameAndNote == null) {
+      if (StringUtils.isNotBlank(tfName.getText())) {
+        return false;
+      }
+
+      if (mandatoryNote && StringUtils.isNotBlank(tfNote.getText())) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  @Override
   protected boolean internalIsValid(List<String> addFailureReasonsToThisList) {
     if (!hasPredefinedType() && StringUtils.isBlank(tfType.getText())) {
       addFailureReasonsToThisList.add(i18nTypeLabel + " is a mandatory field and can not be blank");
@@ -221,8 +262,11 @@ public class AgentItem extends AbstractItem {
       }
     } catch (IllegalArgumentException e) {
       String collect = Stream.of(METSEnums.CreatorType.values()).map(Enum::toString).collect(Collectors.joining(", "));
-      addFailureReasonsToThisList.add(String.format("'%s' is not a valid %s. Must be one of %s",
-        StringUtils.isBlank(tfType.getText()) ? "<blank>" : tfType.getText(), i18nTypeLabel, collect));
+      addFailureReasonsToThisList.add(String.format("'%s' %s %s. %s %s",
+        StringUtils.isBlank(tfType.getText()) ? I18n.t(Constants.I18N_CREATIONMODALMETSHEADER_ERROR_BLANK)
+          : tfType.getText(),
+        I18n.t(Constants.I18N_CREATIONMODALMETSHEADER_ERROR_ONE_OF_BEFORE), i18nTypeLabel,
+        I18n.t(Constants.I18N_CREATIONMODALMETSHEADER_ERROR_ONE_OF_AFTER), collect));
     }
 
     if (type != null && type.equals(METSEnums.CreatorType.OTHER) && !hasPredefinedOtherType()

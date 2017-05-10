@@ -70,13 +70,19 @@ public abstract class AbstractItem extends HBox {
 
   protected abstract boolean internalIsValid(List<String> addFailureReasonsToThisList);
 
+  protected abstract boolean internalIsEmpty();
+
   /**
    * Check if this is a valid item. If it is not valid, the reasons for that can
    * be obtained using getValidationFailures()
    */
   public boolean isValid() {
     validationFailures = new ArrayList<>();
-    return internalIsValid(validationFailures);
+    return internalIsEmpty() || internalIsValid(validationFailures);
+  }
+
+  public boolean isEmpty() {
+    return internalIsEmpty();
   }
 
   /**

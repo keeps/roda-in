@@ -231,6 +231,15 @@ public final class Constants {
   public static final String I18N_CREATIONMODALMETSHEADER_SECTION_STATUS = "CreationModalMETSHeader.section.status";
   public static final String I18N_CREATIONMODALMETSHEADER_SECTION_AGENTS = "CreationModalMETSHeader.section.agents";
   public static final String I18N_CREATIONMODALMETSHEADER_SECTION_ALTRECORDS = "CreationModalMETSHeader.section.altrecords";
+  public static final String I18N_CREATIONMODALMETSHEADER_ERROR_MINIMUM_BEFORE = "CreationModalMETSHeader.error.minimum.before";
+  public static final String I18N_CREATIONMODALMETSHEADER_ERROR_MINIMUM_AFTER = "CreationModalMETSHeader.error.minimum.after";
+  public static final String I18N_CREATIONMODALMETSHEADER_ERROR_MAXIMUM_BEFORE = "CreationModalMETSHeader.error.maximum.before";
+  public static final String I18N_CREATIONMODALMETSHEADER_ERROR_MAXIMUM_AFTER = "CreationModalMETSHeader.error.maximum.after";
+  public static final String I18N_CREATIONMODALMETSHEADER_ERROR_ONE_OF_BEFORE = "CreationModalMETSHeader.error.oneOf.before";
+  public static final String I18N_CREATIONMODALMETSHEADER_ERROR_ONE_OF_AFTER = "CreationModalMETSHeader.error.oneOf.after";
+  public static final String I18N_CREATIONMODALMETSHEADER_ERROR_BLANK = "CreationModalMETSHeader.error.blank";
+  public static final String I18N_CREATIONMODALMETSHEADER_ERROR_MANDATORY = "CreationModalMETSHeader.error.mandatory";
+  public static final String I18N_CREATIONMODALMETSHEADER_WARNING_MAXIMUM = "CreationModalMETSHeader.warning.maximum";
   public static final String I18N_CREATIONMODALPREPARATION_CHOOSE = "CreationModalPreparation.choose";
   public static final String I18N_CREATIONMODALPREPARATION_CREATE_REPORT = "CreationModalPreparation.createReport";
   public static final String I18N_CREATIONMODALPREPARATION_CREATING_SIPS = "CreationModalPreparation.creatingSips";

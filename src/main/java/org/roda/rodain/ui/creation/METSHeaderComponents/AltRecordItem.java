@@ -116,6 +116,19 @@ public class AltRecordItem extends AbstractItem {
   }
 
   @Override
+  protected boolean internalIsEmpty() {
+    if (!hasPredefinedType() && StringUtils.isNotBlank(tfType.getText())) {
+      return false;
+    }
+
+    if (StringUtils.isNotBlank(getFieldValue())) {
+      return false;
+    }
+
+    return true;
+  }
+
+  @Override
   protected boolean internalIsValid(List<String> addFailureReasonsToThisList) {
     if (!hasPredefinedType() && StringUtils.isBlank(tfType.getText())) {
       addFailureReasonsToThisList.add(i18nTypeLabel + " is a mandatory field and can not be blank");

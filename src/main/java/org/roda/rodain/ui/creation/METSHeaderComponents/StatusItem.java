@@ -50,6 +50,11 @@ public class StatusItem extends AbstractItem {
   }
 
   @Override
+  protected boolean internalIsEmpty() {
+    return false;
+  }
+
+  @Override
   protected boolean internalIsValid(List<String> addFailureReasonsToThisList) {
     // status defaults to NEW if blank
     try {
