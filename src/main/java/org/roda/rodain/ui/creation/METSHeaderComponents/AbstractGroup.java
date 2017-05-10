@@ -12,8 +12,10 @@ import org.roda_project.commons_ip.model.IPHeader;
 import javafx.geometry.Pos;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
 /**
  * An AbstractGroup groups together and manages similar AbstractItem objects
@@ -70,6 +72,7 @@ public abstract class AbstractGroup extends VBox {
     addMoreInfo = new Hyperlink();
     addMoreInfo.getStyleClass().add(Constants.CSS_METS_HEADER_ITEM_ADD_MORE_LINK);
     addMoreInfo.setOnAction(event -> createAndAddRow());
+    addMoreInfo.setGraphic(new ImageView(FontAwesomeImageCreator.generate(ICON_ADD, Color.valueOf("#0773a6"))));
 
     addMorePanel.getChildren().addAll(addMoreInfo);
     this.getChildren().add(addMorePanel);
