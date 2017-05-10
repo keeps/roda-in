@@ -142,11 +142,17 @@ public class CreationModalMETSHeader extends BorderPane {
         }
       }
 
-      // 2017-05-10 bferreira: this is constant. see issue #286
+      // 2017-05-10 bferreira: these are constant. see issue #286
       IPAltRecordID deliveryType = new IPAltRecordID();
       deliveryType.setType("DELIVERYTYPE");
       deliveryType.setValue("STRUKTÚRÁLATLAN");
       header.addAltRecordID(deliveryType);
+
+      IPAltRecordID deliverySpecification = new IPAltRecordID();
+      deliverySpecification.setType("DELIVERYSPECIFICATION");
+      deliverySpecification.setValue(
+        "34/2016. (XI. 30.) EMMI rendelet az elektronikus formában tárolt iratok közlevéltári átvételének eljárásrendjéről és műszaki követelményeiről");
+      header.addAltRecordID(deliverySpecification);
 
       if (valid) {
         ConfigurationManager.serialize(header, sipType.name() + Constants.RODAIN_SERIALIZE_FILE_METS_HEADER_SUFFIX);
