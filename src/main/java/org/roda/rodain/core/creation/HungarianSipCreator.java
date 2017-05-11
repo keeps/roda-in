@@ -141,6 +141,7 @@ public class HungarianSipCreator extends SimpleSipCreator implements SIPObserver
         }
 
         IPFile metadataFile = new IPFile(metadataPath);
+        metadataFile.setRelatedTags(descObjMetadata.getRelatedTags());
         IPDescriptiveMetadata metadata = new IPDescriptiveMetadata(descObjMetadata.getId(), metadataFile, metadataType,
           descObjMetadata.getMetadataVersion());
 
@@ -191,7 +192,7 @@ public class HungarianSipCreator extends SimpleSipCreator implements SIPObserver
       ipHeader.addAltRecordID(deliverySpecification);
 
       hungarianSip.setHeader(ipHeader);
-      hungarianSip.addCreatorSoftwareAgent(agentName);
+      hungarianSip.addCreatorSoftwareAgent(Constants.SIP_DEFAULT_AGENT_NAME).setNote(Controller.getCurrentVersion());
       Path sipPath = hungarianSip.build(outputPath, createSipName(descriptionObject, sipNameBuilder));
 
       createdSipsCount++;
