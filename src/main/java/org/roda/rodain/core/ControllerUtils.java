@@ -55,9 +55,10 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  */
 public final class ControllerUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(ControllerUtils.class.getName());
-  private static String UTF8_BOM = "\uFEFF";
+  private static final String UTF8_BOM = "\uFEFF";
 
   private ControllerUtils() {
+    // do nothing
   }
 
   /**

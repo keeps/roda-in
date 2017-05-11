@@ -324,6 +324,7 @@ public class AddMetadataPane extends BorderPane {
               metadataVersion = splitted.length == 3 ? splitted[2] : null;
             metadataToAdd = new DescriptiveMetadata(MetadataOption.TEMPLATE, templateType, metadataType,
               metadataVersion);
+            addRelatedTags(templateType, metadataToAdd);
             break;
           case SINGLE_FILE:
             if (selectedPath == null) {
@@ -388,15 +389,20 @@ public class AddMetadataPane extends BorderPane {
   private void addTypeAndVersionToMetadata(Pair metaType, DescriptiveMetadata metadataToAdd) {
     if (metaType != null) {
       String templateVersion = (String) metaType.getKey();
-      String metadataVersion = ConfigurationManager.getMetadataConfig(templateVersion + Constants.CONF_K_SUFFIX_VERSION);
+      String metadataVersion = ConfigurationManager
+        .getMetadataConfig(templateVersion + Constants.CONF_K_SUFFIX_VERSION);
       String metadataType = ConfigurationManager.getMetadataConfig(templateVersion + Constants.CONF_K_SUFFIX_TYPE);
-      String metadataTags = ConfigurationManager.getMetadataConfig(templateVersion + Constants.CONF_K_SUFFIX_TAGS);
-      List<String> tagList = Arrays.asList(metadataTags.split(","));
       metadataToAdd.setMetadataType(metadataType);
       metadataToAdd.setMetadataVersion(metadataVersion);
       metadataToAdd.setTemplateType(templateVersion);
-      metadataToAdd.setRelatedTags(tagList);
+      addRelatedTags(templateVersion, metadataToAdd);
     }
+  }
+
+  private void addRelatedTags(String templateVersion, DescriptiveMetadata metadataToAdd) {
+    String metadataTags = ConfigurationManager.getMetadataConfig(templateVersion + Constants.CONF_K_SUFFIX_TAGS);
+    List<String> tagList = Arrays.asList(metadataTags.split(","));
+    metadataToAdd.setRelatedTags(tagList);
   }
 
   private void createCancelButton() {
