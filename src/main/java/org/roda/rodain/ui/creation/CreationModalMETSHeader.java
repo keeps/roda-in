@@ -14,7 +14,6 @@ import org.roda.rodain.ui.creation.METSHeaderComponents.AltRecordGroup;
 import org.roda.rodain.ui.creation.METSHeaderComponents.METSHeaderUtils;
 import org.roda.rodain.ui.creation.METSHeaderComponents.Section;
 import org.roda.rodain.ui.creation.METSHeaderComponents.StatusGroup;
-import org.roda_project.commons_ip.model.IPAltRecordID;
 import org.roda_project.commons_ip.model.IPHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -141,18 +140,6 @@ public class CreationModalMETSHeader extends BorderPane {
           }
         }
       }
-
-      // 2017-05-10 bferreira: these are constant. see issue #286
-      IPAltRecordID deliveryType = new IPAltRecordID();
-      deliveryType.setType("DELIVERYTYPE");
-      deliveryType.setValue("STRUKTÚRÁLATLAN");
-      header.addAltRecordID(deliveryType);
-
-      IPAltRecordID deliverySpecification = new IPAltRecordID();
-      deliverySpecification.setType("DELIVERYSPECIFICATION");
-      deliverySpecification.setValue(
-        "34/2016. (XI. 30.) EMMI rendelet az elektronikus formában tárolt iratok közlevéltári átvételének eljárásrendjéről és műszaki követelményeiről");
-      header.addAltRecordID(deliverySpecification);
 
       if (valid) {
         ConfigurationManager.serialize(header, sipType.name() + Constants.RODAIN_SERIALIZE_FILE_METS_HEADER_SUFFIX);

@@ -13,10 +13,10 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.roda.rodain.core.ConfigurationManager;
 import org.roda.rodain.core.Constants;
+import org.roda.rodain.core.Constants.MetadataOption;
 import org.roda.rodain.core.Controller;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.Pair;
-import org.roda.rodain.core.Constants.MetadataOption;
 import org.roda.rodain.core.rules.TreeNode;
 import org.roda.rodain.core.schema.DescriptiveMetadata;
 import org.roda.rodain.core.schema.Sip;
@@ -24,6 +24,7 @@ import org.roda.rodain.core.sip.SipPreview;
 import org.roda.rodain.core.sip.SipRepresentation;
 import org.roda.rodain.core.sip.naming.SIPNameBuilder;
 import org.roda.rodain.ui.creation.CreationModalProcessing;
+import org.roda_project.commons_ip.model.IPAltRecordID;
 import org.roda_project.commons_ip.model.IPContentType;
 import org.roda_project.commons_ip.model.IPDescriptiveMetadata;
 import org.roda_project.commons_ip.model.IPFile;
@@ -176,6 +177,18 @@ public class HungarianSipCreator extends SimpleSipCreator implements SIPObserver
       }
 
       currentAction = I18n.t(Constants.I18N_SIMPLE_SIP_CREATOR_INIT_ZIP);
+
+      // 2017-05-10 bferreira: these are constant. see issue #286
+      IPAltRecordID deliveryType = new IPAltRecordID();
+      deliveryType.setType("DELIVERYTYPE");
+      deliveryType.setValue("STRUKTÚRÁLATLAN");
+      ipHeader.addAltRecordID(deliveryType);
+
+      IPAltRecordID deliverySpecification = new IPAltRecordID();
+      deliverySpecification.setType("DELIVERYSPECIFICATION");
+      deliverySpecification.setValue(
+        "34/2016. (XI. 30.) EMMI rendelet az elektronikus formában tárolt iratok közlevéltári átvételének eljárásrendjéről és műszaki követelményeiről");
+      ipHeader.addAltRecordID(deliverySpecification);
 
       hungarianSip.setHeader(ipHeader);
       hungarianSip.addCreatorSoftwareAgent(agentName);
