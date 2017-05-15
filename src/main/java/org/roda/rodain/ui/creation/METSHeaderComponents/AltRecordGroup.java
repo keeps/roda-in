@@ -34,7 +34,7 @@ public class AltRecordGroup extends AbstractGroup {
   }
 
   @Override
-  public String getHeaderText() {
+  public String getInternalName() {
     if (StringUtils.isNotBlank(predefinedType)) {
       return "AltRecords of type " + predefinedType;
     } else {

@@ -507,7 +507,7 @@ public class ConfigurationManager {
     return String.join(Constants.MISC_COMMA, (List<String>) res);
   }
 
-  protected static String getLocalizedString(String key, String languageTag) {
+  protected static String getLocalizedStringForLanguage(String key, String languageTag) {
     ResourceBundle localResourceBundle = ResourceBundle.getBundle("properties/lang", Locale.forLanguageTag(languageTag),
       new FolderBasedUTF8Control());
     String result = null;
@@ -526,9 +526,14 @@ public class ConfigurationManager {
    *
    * @param key
    *          The name of the property
+   *
+   * @param values
+   *          Optional replacement values that will, in order, replace any {}
+   *          found in the localized string
+   * 
    * @return The value of the property using
    */
-  protected static String getLocalizedString(String key) {
+  protected static String getLocalizedString(String key, Object... values) {
     String result = null;
     try {
       result = resourceBundle.getString(key);
@@ -540,6 +545,13 @@ public class ConfigurationManager {
         LOGGER.trace("Missing translation for {} in language: {}", key, Locale.ENGLISH);
       }
     }
+
+    if (result != null) {
+      for (Object value : values) {
+        result = result.replace("{}", String.valueOf(value));
+      }
+    }
+
     return result;
   }
 

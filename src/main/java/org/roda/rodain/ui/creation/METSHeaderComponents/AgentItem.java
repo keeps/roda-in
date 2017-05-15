@@ -262,30 +262,31 @@ public class AgentItem extends AbstractItem {
       }
     } catch (IllegalArgumentException e) {
       String collect = Stream.of(METSEnums.CreatorType.values()).map(Enum::toString).collect(Collectors.joining(", "));
-      addFailureReasonsToThisList.add(String.format("'%s' %s %s. %s %s",
-        StringUtils.isBlank(tfType.getText()) ? I18n.t(Constants.I18N_CREATIONMODALMETSHEADER_ERROR_BLANK)
-          : tfType.getText(),
-        I18n.t(Constants.I18N_CREATIONMODALMETSHEADER_ERROR_ONE_OF_BEFORE), i18nTypeLabel,
-        I18n.t(Constants.I18N_CREATIONMODALMETSHEADER_ERROR_ONE_OF_AFTER), collect));
+      addFailureReasonsToThisList
+        .add(I18n.t(Constants.I18N_CREATIONMODALMETSHEADER_ERROR_ONE_OF, StringUtils.isBlank(tfType.getText())
+          ? I18n.t(Constants.I18N_CREATIONMODALMETSHEADER_HELPER_BLANK) : tfType.getText(), i18nTypeLabel, collect));
     }
 
     if (type != null && type.equals(METSEnums.CreatorType.OTHER) && !hasPredefinedOtherType()
       && StringUtils.isBlank(tfOtherType.getText())) {
-      addFailureReasonsToThisList.add(i18nOtherTypeLabel + " is a mandatory field when " + i18nTypeLabel + " is "
-        + METSEnums.CreatorType.OTHER.toString() + " and can not be blank");
+      addFailureReasonsToThisList.add(I18n.t(Constants.I18N_CREATIONMODALMETSHEADER_ERROR_MANDATORY_WHEN,
+        i18nOtherTypeLabel, i18nTypeLabel, METSEnums.CreatorType.OTHER.toString()));
     }
 
     if (!hasPredefinedRole() && StringUtils.isBlank(tfRole.getText())) {
-      addFailureReasonsToThisList.add(i18nRoleLabel + " is a mandatory field and can not be blank");
+      addFailureReasonsToThisList
+        .add(I18n.t(Constants.I18N_CREATIONMODALMETSHEADER_ERROR_MANDATORY_CAN_NOT_BE_BLANK, i18nRoleLabel));
     }
 
     if (cbNameAndNote == null) {
       if (StringUtils.isBlank(tfName.getText())) {
-        addFailureReasonsToThisList.add(i18nNameLabel + " is a mandatory field and can not be blank");
+        addFailureReasonsToThisList
+          .add(I18n.t(Constants.I18N_CREATIONMODALMETSHEADER_ERROR_MANDATORY_CAN_NOT_BE_BLANK, i18nNameLabel));
       }
 
       if (mandatoryNote && StringUtils.isBlank(tfNote.getText())) {
-        addFailureReasonsToThisList.add(i18nNoteLabel + " is a mandatory field and can not be blank");
+        addFailureReasonsToThisList
+          .add(I18n.t(Constants.I18N_CREATIONMODALMETSHEADER_ERROR_MANDATORY_CAN_NOT_BE_BLANK, i18nNoteLabel));
       }
     }
 

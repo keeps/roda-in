@@ -22,7 +22,7 @@ public class StatusGroup extends AbstractGroup {
   }
 
   @Override
-  public String getHeaderText() {
+  public String getInternalName() {
     return "Record Status";
   }
 

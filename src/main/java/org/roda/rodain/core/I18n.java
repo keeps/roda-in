@@ -10,13 +10,16 @@ public class I18n {
 
   /**
    * Gets the localized message for the key parameter using the selected locale.
-   * 
+   *
    * @param key
    *          The key of the required localized message
+   * @param values
+   *          Optional replacement values that will, in order, replace any {}
+   *          found in the localized string
    * @return The localized message
    */
-  public static String t(String key) {
-    return ConfigurationManager.getLocalizedString(key);
+  public static String t(String key, Object... values) {
+    return ConfigurationManager.getLocalizedString(key, values);
   }
 
   /**
@@ -29,8 +32,8 @@ public class I18n {
    *          The language of the message.
    * @return The localized message
    */
-  public static String t(String key, String languageTag) {
-    return ConfigurationManager.getLocalizedString(key, languageTag);
+  public static String tLang(String key, String languageTag) {
+    return ConfigurationManager.getLocalizedStringForLanguage(key, languageTag);
   }
 
   /**

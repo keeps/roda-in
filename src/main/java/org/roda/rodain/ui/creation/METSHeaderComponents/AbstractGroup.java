@@ -197,9 +197,7 @@ public abstract class AbstractGroup extends VBox {
       if (count == 0 && minimumItems == 1) {
         errorMessageLabel.setText(I18n.t(Constants.I18N_CREATIONMODALMETSHEADER_ERROR_MANDATORY));
       } else {
-        errorMessageLabel
-          .setText(String.format("%s %d %s", I18n.t(Constants.I18N_CREATIONMODALMETSHEADER_ERROR_MINIMUM_BEFORE),
-            minimumItems, I18n.t(Constants.I18N_CREATIONMODALMETSHEADER_ERROR_MINIMUM_AFTER)));
+        errorMessageLabel.setText(I18n.t(Constants.I18N_CREATIONMODALMETSHEADER_ERROR_MINIMUM, minimumItems));
       }
 
       errorMessageLabel.getStyleClass().add(Constants.CSS_ERROR);
@@ -207,9 +205,7 @@ public abstract class AbstractGroup extends VBox {
     }
 
     if (count > maximumItems) {
-      Label errorMessageLabel = new Label(
-        String.format("%s %d %s", I18n.t(Constants.I18N_CREATIONMODALMETSHEADER_ERROR_MAXIMUM_BEFORE), maximumItems,
-          I18n.t(Constants.I18N_CREATIONMODALMETSHEADER_ERROR_MAXIMUM_AFTER)));
+      Label errorMessageLabel = new Label(I18n.t(Constants.I18N_CREATIONMODALMETSHEADER_ERROR_MAXIMUM, maximumItems));
       errorMessageLabel.getStyleClass().add(Constants.CSS_ERROR);
       errorMessagesPanel.getChildren().add(errorMessageLabel);
     }
@@ -245,7 +241,7 @@ public abstract class AbstractGroup extends VBox {
    * Methods to override
    * ____________________________________________________________________________________________________________________
    */
-  public abstract String getHeaderText();
+  public abstract String getInternalName();
 
   protected abstract AbstractItem internalCreateRow(boolean usingSavedItems);
 

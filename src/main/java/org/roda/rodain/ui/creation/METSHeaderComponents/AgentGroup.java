@@ -49,7 +49,7 @@ public class AgentGroup extends AbstractGroup {
   }
 
   @Override
-  public String getHeaderText() {
+  public String getInternalName() {
     StringBuilder text = new StringBuilder();
     text.append("Agents");
 
@@ -170,7 +170,7 @@ public class AgentGroup extends AbstractGroup {
     } else {
       LOGGER.error(
         "For {} found {} multifield combobox names and {} multifield combobox notes. They need to have the same cardinality to be created as a combobox.",
-        getHeaderText(), names.length, notes.length);
+        getInternalName(), names.length, notes.length);
     }
   }
 

@@ -3,6 +3,8 @@ package org.roda.rodain.ui.creation.METSHeaderComponents;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.roda.rodain.core.Constants;
+import org.roda.rodain.core.I18n;
 import org.roda.rodain.ui.creation.HorizontalSpace;
 import org.roda_project.commons_ip.model.IPAltRecordID;
 
@@ -131,11 +133,13 @@ public class AltRecordItem extends AbstractItem {
   @Override
   protected boolean internalIsValid(List<String> addFailureReasonsToThisList) {
     if (!hasPredefinedType() && StringUtils.isBlank(tfType.getText())) {
-      addFailureReasonsToThisList.add(i18nTypeLabel + " is a mandatory field and can not be blank");
+      addFailureReasonsToThisList
+        .add(I18n.t(Constants.I18N_CREATIONMODALMETSHEADER_ERROR_MANDATORY_CAN_NOT_BE_BLANK, i18nTypeLabel));
     }
 
     if (StringUtils.isBlank(getFieldValue())) {
-      addFailureReasonsToThisList.add(i18nValueLabel + " is a mandatory field and can not be blank");
+      addFailureReasonsToThisList
+        .add(I18n.t(Constants.I18N_CREATIONMODALMETSHEADER_ERROR_MANDATORY_CAN_NOT_BE_BLANK, i18nValueLabel));
     }
 
     return addFailureReasonsToThisList.isEmpty();

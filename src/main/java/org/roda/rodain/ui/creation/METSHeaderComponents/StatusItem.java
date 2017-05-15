@@ -5,6 +5,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.roda.rodain.core.Constants;
+import org.roda.rodain.core.I18n;
 import org.roda.rodain.ui.creation.HorizontalSpace;
 import org.roda_project.commons_ip.utils.IPEnums;
 
@@ -19,12 +21,17 @@ import javafx.scene.control.Tooltip;
  * @author Bruno Ferreira <bferreira@keep.pt>
  */
 public class StatusItem extends AbstractItem {
+  // i18n configurable strings
+  private final String i18nValueLabel;
+
   private Button btnRemove;
 
   private ComboBox<String> cbValue;
 
   public StatusItem(AbstractGroup parent, String i18nValueLabel, String i18nValueDescription) {
     super(parent);
+
+    this.i18nValueLabel = i18nValueLabel;
 
     this.setAlignment(Pos.CENTER_LEFT);
     Label label = new Label(i18nValueLabel);
@@ -62,8 +69,9 @@ public class StatusItem extends AbstractItem {
       return true;
     } catch (IllegalArgumentException e) {
       String collect = Stream.of(IPEnums.IPStatus.values()).map(Enum::toString).collect(Collectors.joining(", "));
-      addFailureReasonsToThisList.add(String.format("'%s' is not a valid status. Must be one of %s",
-        StringUtils.isBlank(getComboboxValue()) ? "<blank>" : getComboboxValue(), collect));
+      addFailureReasonsToThisList
+        .add(I18n.t(Constants.I18N_CREATIONMODALMETSHEADER_ERROR_ONE_OF, StringUtils.isBlank(getComboboxValue())
+          ? Constants.I18N_CREATIONMODALMETSHEADER_HELPER_BLANK : getComboboxValue(), i18nValueLabel, collect));
       return false;
     }
   }

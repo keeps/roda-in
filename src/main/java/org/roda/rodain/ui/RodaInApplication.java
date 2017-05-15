@@ -345,12 +345,12 @@ public class RodaInApplication extends Application {
           Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
           dlg.getButtonTypes().clear();
           dlg.getButtonTypes().addAll(
-            new ButtonType(I18n.t(Constants.I18N_CANCEL, lang), ButtonBar.ButtonData.CANCEL_CLOSE),
-            new ButtonType(I18n.t(Constants.I18N_RESTART, lang), ButtonBar.ButtonData.OK_DONE));
+            new ButtonType(I18n.tLang(Constants.I18N_CANCEL, lang), ButtonBar.ButtonData.CANCEL_CLOSE),
+            new ButtonType(I18n.tLang(Constants.I18N_RESTART, lang), ButtonBar.ButtonData.OK_DONE));
           dlg.initStyle(StageStyle.UNDECORATED);
-          dlg.setHeaderText(I18n.t(Constants.I18N_MAIN_UPDATE_LANG_HEADER, lang));
-          dlg.setTitle(I18n.t(Constants.I18N_MAIN_UPDATE_LANG_TITLE, lang));
-          dlg.setContentText(I18n.t(Constants.I18N_MAIN_UPDATE_LANG_CONTENT, lang));
+          dlg.setHeaderText(I18n.tLang(Constants.I18N_MAIN_UPDATE_LANG_HEADER, lang));
+          dlg.setTitle(I18n.tLang(Constants.I18N_MAIN_UPDATE_LANG_TITLE, lang));
+          dlg.setContentText(I18n.tLang(Constants.I18N_MAIN_UPDATE_LANG_CONTENT, lang));
           dlg.initModality(Modality.APPLICATION_MODAL);
           dlg.initOwner(stage);
           dlg.show();
