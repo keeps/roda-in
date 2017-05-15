@@ -57,7 +57,7 @@ public class CreationModalPreparation extends BorderPane {
 
   private static final List<Pair> SIP_TYPES = new ArrayList<>();
   static {
-    for (SipType type : SipType.values()) {
+    for (SipType type : SipType.getFilteredValues()) {
       SIP_TYPES.add(new Pair(type, type.toString()));
     }
   }

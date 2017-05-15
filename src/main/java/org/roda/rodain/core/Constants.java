@@ -1,7 +1,10 @@
 package org.roda.rodain.core;
 
+import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
@@ -83,6 +86,7 @@ public final class Constants {
   public static final String CONF_K_SUFFIX_SYNCHRONIZED = ".synchronized";
   public static final String CONF_K_SUFFIX_LEVELS_ICON = "levels.icon.";
   // configs keys
+  public static final String CONF_K_ACTIVE_SIP_TYPES = "activeSipTypes";
   public static final String CONF_K_IGNORED_FILES = "app.ignoredFiles";
   public static final String CONF_K_METADATA_TEMPLATES = "metadata.templates";
   public static final String CONF_K_METADATA_TYPES = "metadata.types";
@@ -454,6 +458,8 @@ public final class Constants {
     private Set<SipNameStrategy> sipNameStrategies;
     private boolean requiresMETSHeaderInfo;
 
+    private static SipType[] filteredValues = null;
+
     private SipType(final String text, boolean requiresMETSHeaderInfo, SipNameStrategy... sipNameStrategies) {
       this.text = text;
       this.requiresMETSHeaderInfo = requiresMETSHeaderInfo;
@@ -461,6 +467,23 @@ public final class Constants {
       for (SipNameStrategy sipNameStrategy : sipNameStrategies) {
         this.sipNameStrategies.add(sipNameStrategy);
       }
+    }
+
+    /**
+     * Used instead of SipType#values to get the values of this enum that are
+     * enabled (according to the configuration).
+     *
+     * @return a SipType list filtered according to configuration.
+     */
+    public static SipType[] getFilteredValues() {
+      if (filteredValues == null) {
+        List<SipType> list = Arrays.asList(SipType.values());
+        List<String> allowedValues = Arrays
+          .asList(ConfigurationManager.getConfigAsStringArray(CONF_K_ACTIVE_SIP_TYPES));
+        filteredValues = list.stream().filter(m -> allowedValues.contains(m.name())).collect(Collectors.toList())
+          .toArray(new SipType[] {});
+      }
+      return filteredValues;
     }
 
     public boolean requiresMETSHeaderInfo() {
