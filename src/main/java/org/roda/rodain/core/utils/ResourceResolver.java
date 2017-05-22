@@ -1,14 +1,14 @@
 package org.roda.rodain.core.utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.ls.LSInput;
-import org.w3c.dom.ls.LSResourceResolver;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.ls.LSInput;
+import org.w3c.dom.ls.LSResourceResolver;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -19,11 +19,14 @@ public class ResourceResolver implements LSResourceResolver {
 
   @Override
   public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseURI) {
+    LOGGER.info("ResourceResolver | type: {}; namespaceURI: {}; publicId: {}; systemId: {}; baseURI: {}", type,
+      namespaceURI, publicId, systemId, baseURI);
     InputStream resourceAsStream = null;
     try {
       URL url = new URL(systemId);
       resourceAsStream = url.openStream();
     } catch (MalformedURLException e) {
+      // 20170519 hsilva: no, the schemas should be obtained from RODA-in home schemas folder
       // the XSD's are expected to be in the root of the classpath
       resourceAsStream = this.getClass().getClassLoader().getResourceAsStream(systemId);
       // we use this catch exception to check if the systemID is a URL or a

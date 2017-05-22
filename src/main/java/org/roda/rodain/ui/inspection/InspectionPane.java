@@ -2,6 +2,7 @@ package org.roda.rodain.ui.inspection;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -1594,11 +1595,12 @@ public class InspectionPane extends BorderPane {
         showMetadataPane(show);
       }
 
-      String schema = dom.getSchema();
-      if (schema == null || "".equals(schema)) {
+      InputStream schema = dom.getSchema();
+      if (schema == null) {
         topButtons.remove(validationButton);
-      } else
+      } else {
         topButtons.add(validationButton);
+      }
       updateMetadataTop();
     });
     metadataTask.setOnFailed(event -> {

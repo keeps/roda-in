@@ -110,11 +110,10 @@ public final class ControllerUtils {
    *         otherwise.
    * @throws SAXException
    */
-  protected static boolean validateSchema(String content, String schemaString) throws SAXException {
+  protected static boolean validateSchema(String content, InputStream schemaInputStream) throws SAXException {
     boolean isValid = false;
     try {
-      isValid = validateSchemaWithoutCatch(content,
-        IOUtils.toInputStream(schemaString, Constants.RODAIN_DEFAULT_ENCODING));
+      isValid = validateSchemaWithoutCatch(content, schemaInputStream);
     } catch (IOException e) {
       LOGGER.error("Can't access the schema file", e);
     }
@@ -127,7 +126,7 @@ public final class ControllerUtils {
     // build the schema
     SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
     factory.setResourceResolver(new ResourceResolver());
-    StreamSource streamSource = new StreamSource(schemaStream, ConfigurationManager.getRodainPath().toString());
+    StreamSource streamSource = new StreamSource(schemaStream);
     Schema schema = factory.newSchema(streamSource);
     Validator validator = schema.newValidator();
 

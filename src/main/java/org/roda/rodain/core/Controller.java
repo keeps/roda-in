@@ -95,13 +95,15 @@ public class Controller {
     }
   }
 
-  public static boolean validateSchema(Path fileToValidate, String schemaString) throws SAXException, IOException {
+  public static boolean validateSchema(Path fileToValidate, InputStream schemaInputStream)
+    throws SAXException, IOException {
     String fileContent = ControllerUtils.readFile(fileToValidate);
-    return validateSchema(fileContent, schemaString);
+    return validateSchema(fileContent, schemaInputStream);
   }
 
-  public static boolean validateSchema(String content, String schemaString) throws SAXException {
-    return ControllerUtils.validateSchema(content, schemaString);
+  public static boolean validateSchema(String content, InputStream schemaInputStream) throws SAXException {
+    // LOGGER.info("Validating against schema {}", schemaString);
+    return ControllerUtils.validateSchema(content, schemaInputStream);
   }
 
   public static String loadMetadataFile(Path path) throws IOException {

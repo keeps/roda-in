@@ -293,6 +293,7 @@ public class ConfigurationManager {
   private static void copyHelpFiles() {
     final File jarFile = new File(
       ConfigurationManager.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+    LOGGER.info("Coppying help files (jar file: {}; from jar? {})", jarFile.toString(), jarFile.isFile());
     if (jarFile.isFile()) { // Run with JAR file
       try (final JarFile jar = new JarFile(jarFile)) {
         final Enumeration<JarEntry> entries = jar.entries();
@@ -373,13 +374,13 @@ public class ConfigurationManager {
    *          The name of the template
    * @return The content of the schema file associated to the template
    */
-  public static String getSchemaFile(String templateType) {
+  public static InputStream getSchemaFile(String templateType) {
     String completeKey = Constants.CONF_K_PREFIX_METADATA + templateType + Constants.CONF_K_SUFFIX_SCHEMA;
     if (externalConfig.containsKey(completeKey)) {
       Path filePath = schemasPath.resolve(externalConfig.getString(completeKey));
       if (Files.exists(filePath)) {
         try {
-          return ControllerUtils.readFile(filePath);
+          return Files.newInputStream(filePath);
         } catch (IOException e) {
           LOGGER.error("Unable to get schema file '{}'", filePath, e);
         }

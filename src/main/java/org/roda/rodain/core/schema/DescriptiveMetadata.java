@@ -1,6 +1,7 @@
 package org.roda.rodain.core.schema;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -253,9 +254,9 @@ public class DescriptiveMetadata {
   }
 
   @JsonIgnore
-  public String getSchema() {
+  public InputStream getSchema() {
     // FIXME 20170307 hsilva: possible NPE
-    String result = null;
+    InputStream result = null;
     if (templateType != null) {
       result = ConfigurationManager.getSchemaFile(templateType);
     } else {
