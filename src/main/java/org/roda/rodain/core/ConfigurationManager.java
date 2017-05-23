@@ -211,9 +211,11 @@ public class ConfigurationManager {
       if (schemaFileName == null || schemaFileName.length() == 0) {
         continue;
       }
-      Files.copy(
-        ClassLoader.getSystemResourceAsStream(Constants.FOLDER_TEMPLATES + Constants.MISC_FWD_SLASH + schemaFileName),
-        schemasPath.resolve(schemaFileName), StandardCopyOption.REPLACE_EXISTING);
+      if (!Files.exists(schemasPath.resolve(schemaFileName))) {
+        Files.copy(
+          ClassLoader.getSystemResourceAsStream(Constants.FOLDER_TEMPLATES + Constants.MISC_FWD_SLASH + schemaFileName),
+          schemasPath.resolve(schemaFileName), StandardCopyOption.REPLACE_EXISTING);
+      }
     }
 
     // ensure that the xlink.xsd and xml.xsd files are in the application home
@@ -310,16 +312,16 @@ public class ConfigurationManager {
         LOGGER.error("Error while copying help files", e);
       }
     } else { // Run with IDE
-      final URL url = ConfigurationManager.class.getResource(Constants.MISC_FWD_SLASH + Constants.FOLDER_HELP);
-      if (url != null) {
-        try {
+      try {
+        final URL url = ConfigurationManager.class.getResource(Constants.MISC_FWD_SLASH + Constants.FOLDER_HELP);
+        if (url != null) {
           final File apps = new File(url.toURI());
           for (File app : apps.listFiles()) {
             Files.copy(app.toPath(), helpPath.resolve(app.getName()), StandardCopyOption.REPLACE_EXISTING);
           }
-        } catch (URISyntaxException | IOException e) {
-          LOGGER.error("Error while copying help files", e);
         }
+      } catch (URISyntaxException | IOException e) {
+        LOGGER.error("Error while copying help files", e);
       }
     }
   }
