@@ -262,7 +262,11 @@ public class CreationModalPreparation extends BorderPane {
   private void setOutputFolder(File selectedFile, Button chooseFile) {
     if (selectedFile != null) {
       outputFolder = selectedFile.toPath();
-      chooseFile.setText(selectedFile.toPath().getFileName().toString());
+      // 20170524 hsilva: the following is required to be able to use the root
+      // of the filesystem as output folder (otherwise NPE occurs)
+      String folderName = outputFolder.getFileName() != null ? outputFolder.getFileName().toString()
+        : outputFolder.toString();
+      chooseFile.setText(folderName);
       if (start != null) {
         start.setDisable(false);
       }

@@ -8,22 +8,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.net.URISyntaxException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 import javax.swing.filechooser.FileSystemView;
 
@@ -293,35 +290,20 @@ public class ConfigurationManager {
   }
 
   private static void copyHelpFiles() {
-    final File jarFile = new File(
-      ConfigurationManager.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-    LOGGER.info("Coppying help files (jar file: {}; from jar? {})", jarFile.toString(), jarFile.isFile());
-    if (jarFile.isFile()) { // Run with JAR file
-      try (final JarFile jar = new JarFile(jarFile)) {
-        final Enumeration<JarEntry> entries = jar.entries();
-        while (entries.hasMoreElements()) {
-          JarEntry entry = entries.nextElement();
-          if (entry.getName().startsWith(Constants.FOLDER_HELP + Constants.MISC_FWD_SLASH) && !entry.isDirectory()) {
-            InputStream input = jar.getInputStream(entry);
-            Files.copy(input, rodainPath.resolve(entry.getName()), StandardCopyOption.REPLACE_EXISTING);
-            input.close();
-          }
-
+    // 20170524 hsilva: we need to copy help files knowing all the file names
+    // because using windows exe (jar wrapped with launch4j), strategies like
+    // reflections do not work well
+    List<Object> helpFiles = internalConfig.getList("help.files");
+    for (Object object : helpFiles) {
+      String helpFile = (String) object;
+      Path helpFilePath = helpPath.resolve(helpFile);
+      if (!Files.exists(helpFilePath)) {
+        try {
+          Files.copy(ClassLoader.getSystemResourceAsStream(Constants.FOLDER_HELP + Constants.MISC_FWD_SLASH + helpFile),
+            helpFilePath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+          LOGGER.error("Error while copying help file '{}' to '{}'", helpFile, helpPath);
         }
-      } catch (IOException e) {
-        LOGGER.error("Error while copying help files", e);
-      }
-    } else { // Run with IDE
-      try {
-        final URL url = ConfigurationManager.class.getResource(Constants.MISC_FWD_SLASH + Constants.FOLDER_HELP);
-        if (url != null) {
-          final File apps = new File(url.toURI());
-          for (File app : apps.listFiles()) {
-            Files.copy(app.toPath(), helpPath.resolve(app.getName()), StandardCopyOption.REPLACE_EXISTING);
-          }
-        }
-      } catch (URISyntaxException | IOException e) {
-        LOGGER.error("Error while copying help files", e);
       }
     }
   }
@@ -358,7 +340,16 @@ public class ConfigurationManager {
         helpFile = helpPath.resolve("help.html");
       }
     }
-    return "file://" + helpFile.toString();
+
+    if (Controller.systemIsWindows()) {
+      try {
+        return helpFile.toUri().toURL().toString();
+      } catch (MalformedURLException e) {
+        return "file://" + helpFile.toString();
+      }
+    } else {
+      return "file://" + helpFile.toString();
+    }
   }
 
   /**

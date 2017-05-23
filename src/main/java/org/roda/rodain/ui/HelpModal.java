@@ -21,7 +21,6 @@ import javafx.stage.Stage;
  * @since 13/09/2016.
  */
 public class HelpModal extends BorderPane {
-  private static final String WEB_VIEW_HEAD = "<html> <head> <meta charset=\"UTF-8\"> <link rel=\"stylesheet\" type=\"text/css\" href=\"webview.css\"> </head><body>";
   private Stage stage;
   private WebView webView;
   private Hyperlink currentlyVisited;
@@ -69,7 +68,6 @@ public class HelpModal extends BorderPane {
   }
 
   private void setHelp() {
-    String help = ConfigurationManager.getHelpFile();
     webView.getEngine().load(ConfigurationManager.getHelpFile());
   }
 

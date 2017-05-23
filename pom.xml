@@ -16,7 +16,7 @@
 		<misc.version.java>1.8</misc.version.java>
 		<projectLocalRepository>${project.basedir}/repository</projectLocalRepository>
 		<!-- plugins versions -->
-		<plug.version.launch4j>1.7.16</plug.version.launch4j>
+		<plug.version.launch4j>1.7.17</plug.version.launch4j>
 		<plug.version.git-commit>2.2.2</plug.version.git-commit>
 		<plug.version.surefire>2.19.1</plug.version.surefire>
 		<plug.version.compiler>3.6.1</plug.version.compiler>
@@ -60,7 +60,7 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<jar.id/>
+				<jar.id />
 			</properties>
 		</profile>
 		<profile>
