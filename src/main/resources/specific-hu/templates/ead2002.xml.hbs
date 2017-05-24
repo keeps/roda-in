@@ -1,0 +1,301 @@
+{{~field name="identityArea"			order="10" type="separator" order="1" labeli18n="crosswalks.dissemination.html.ead.identityarea" label="{\"en\": \"Identity\", \"pt\": \"Identificação\", \"hu\": \"Azonosítási adatcsoport\"}"~}}
+{{~field name="id"				order="20" auto-generate="id" labeli18n="crosswalks.dissemination.html.ead.reference" label="{\"en\": \"Identifier\", \"pt\": \"Identificador\", \"hu\": \"Jelzet/ Metaadat-leírás azonosító\"}" xpath="/*:ead/*:archdesc/*:did/*:unitid/string()"~}}
+{{~field name="level" 				order="30" type="list" value="fonds" options="[\"fonds\",\"class\",\"collection\",\"recordgrp\",\"subgrp\",\"subfonds\",\"series\",\"subseries\",\"file\",\"item\",\"otherlevel\"]" optionsLabels="{\"fonds\": {\"en\":\"Fonds\", \"pt\":\"Fundo\", \"hu\": \"Fond\"},\"class\": {\"en\":\"Class\", \"pt\":\"Classe\", \"hu\": \"Tétel\"},\"collection\": {\"en\":\"Collection\", \"pt\":\"Coleção\", \"hu\": \"Gyűjtemény\"},\"recordgrp\": {\"en\":\"Record group\", \"pt\":\"Grupo de registos\", \"hu\": \"Irategyüttes - Recordgroup\"},\"subgrp\": {\"en\":\"Subgroup\", \"pt\":\"Subgrupo\", \"hu\": \"Irategyüttes - Subgroup\"},\"subfonds\": {\"en\":\"Subfonds\", \"pt\":\"Subfundo\", \"hu\": \"Állag\"},\"series\": {\"en\":\"Series\", \"pt\":\"Série\", \"hu\": \"Sorozat\"},\"subseries\": {\"en\":\"Subseries\", \"pt\":\"Subsérie\", \"hu\": \"Alsorozat\"},\"file\": {\"en\":\"File\", \"pt\":\"Documento composto\", \"hu\": \"Ügyirat\"},\"item\": {\"en\":\"Item\", \"pt\":\"Documento simples\", \"hu\": \"Egyes irat\"},\"otherlevel\": {\"en\":\"Other level\", \"pt\":\"Other level\", \"hu\": \"Egyéb\"}}" optionsLabelI18nKeyPrefix="crosswalks.dissemination.html.ead.level" auto-generate="level" label="{\"i18n\": \"crosswalks.dissemination.html.ead.level\", \"en\": \"Description level\", \"pt\": \"Nível descritivo\", \"hu\": \"Leírás szintje\"}" xpath="//*:archdesc/@level/string()" ~}}
+{{~field name="otherlevel" 			order="40" labeli18n="crosswalks.dissemination.html.ead.otherlevel" label="{\"en\": \"Other level\", \"pt\": \"Outro nível\", \"hu\": \"Egyéb szint\"}" xpath="/*:ead/*:archdesc/@otherlevel/string()"~}}
+{{~field name="title"       			order="25" auto-generate='title' labeli18n="crosswalks.dissemination.html.ead.title" label="{\"en\": \"Title\", \"pt\": \"Título\", \"hu\": \"Cím/ Metaadat-leírás megnevezés\"}" xpath="/*:ead/*:archdesc/*:did/*:unittitle/string()"~}}
+{{~field name="dateInitial" 			order="50" type="date" label="{\"i18n\": \"crosswalks.dissemination.html.ead.initialdate\", \"en\": \"Initial date\", \"pt\": \"Data de início\", \"hu\": \"Idő(kör) kezdete\"}" xpath="/*:ead/*:archdesc/*:did/*:unitdate[@label='UnitDateInitial']/@normal/string() ##%## tokenize(/*:ead/*:archdesc/*:did/*:unitdate[@label='UnitDates']/@normal/string(), \"/\")[1]"~}}
+{{~field name="dateFinal"   			order="60" type="date" label="{\"i18n\": \"crosswalks.dissemination.html.ead.finaldate\", \"en\": \"Final date\", \"pt\": \"Data de fim\", \"hu\": \"Idő(kör) vége\"}" xpath="/*:ead/*:archdesc/*:did/*:unitdate[@label='UnitDateFinal']/@normal/string() ##%## tokenize(/*:ead/*:archdesc/*:did/*:unitdate[@label='UnitDates']/@normal/string(), \"/\")[2]"~}}
+{{~field name="digitDateInitial" 		order="70" type="date" label="{\"i18n\": \"crosswalks.dissemination.html.ead.initialdate\", \"en\": \"Initial date of digitization\", \"pt\": \"Initial date of digitization\", \"hu\": \"Digitalizálás kezdete\"}" xpath="/*:ead/*:archdesc/*:did/*:unitdate[@label='UnitDateInitialDigitization']/@normal/string() ##%## tokenize(/*:ead/*:archdesc/*:did/*:unitdate[@label='UnitDates']/@normal/string(), \"/\")[1]"~}}
+{{~field name="digitDateFinal"   		order="80" type="date" label="{\"i18n\": \"crosswalks.dissemination.html.ead.finaldate\", \"en\": \"Final date of digitization\", \"pt\": \"Final date of digitization\", \"hu\": \"Digitalizálás vége\"}" xpath="/*:ead/*:archdesc/*:did/*:unitdate[@label='UnitDateFinalDigitization']/@normal/string() ##%## tokenize(/*:ead/*:archdesc/*:did/*:unitdate[@label='UnitDates']/@normal/string(), \"/\")[2]"~}}
+{{~field name="origination" 			order="110" labeli18n="crosswalks.dissemination.html.ead.origination" label="{\"en\": \"Origination\", \"pt\": \"Origem\", \"hu\": \"Az iratképző neve\"}" xpath="/*:ead/*:archdesc/*:did/*:origination[not(*)]/string()"~}}
+{{~field name="abstract"			order="115" type="text-area" labeli18n="crosswalks.dissemination.html.ead.abstract" label="{\"en\": \"Abstract\", \"pt\": \"Abstract\", \"hu\": \"Rövid tartalmi összefoglaló\"}" xpath="/*:ead/*:archdesc/*:did/*:abstract/string()"~}}
+{{~field name="physdesc" 			hidden="true" order="120" type="text-area" labeli18n="crosswalks.dissemination.html.ead.physdesc" label="{\"en\": \"Physical description\", \"pt\": \"Descrição física\", \"hu\": \"Fizikai leírás\"}" xpath="/*:ead/*:archderepositorysc/*:did/*:physdesc/text()"~}}
+{{~field name="extent" 				hidden="true" order="130" type="text" labeli18n="crosswalks.dissemination.html.ead.extent" label="{\"en\": \"Extent and medium\", \"pt\": \"Dimensão e suporte\", \"hu\": \"Terjedelem\"}" xpath="/*:ead/*:archdesc/*:did/*:physdesc/*:extent/string()"~}}{{~field name="extent" 					hidden="true" order="120" type="text-area" labeli18n="crosswalks.dissemination.html.ead.physicaldescription" label="{\"en\": \"Extent and medium\", \"pt\": \"Dimensão e suporte\", \"hu\": \"Terjedelem\"}" xpath="/*:ead/*:archdesc/*:did/*:physdesc/string()"~}}
+{{~field name="dimensions" 			hidden="true" order="140" type="text" labeli18n="crosswalks.dissemination.html.ead.dimensions" label="{\"en\": \"Dimensions\", \"pt\": \"Dimensões\", \"hu\": \"Kiterjedés\"}" xpath="/*:ead/*:archdesc/*:did/*:physdesc/*:dimensions/string()"~}}{{~field name="extent" 					hidden="true" order="120" type="text-area" labeli18n="crosswalks.dissemination.html.ead.physicaldescription" label="{\"en\": \"Extent and medium\", \"pt\": \"Dimensão e suporte\", \"hu\": \"Terjedelem\"}" xpath="/*:ead/*:archdesc/*:did/*:physdesc/string()"~}}
+{{~field name="physfacet" 			hidden="true" order="150" type="text" labeli18n="crosswalks.dissemination.html.ead.physfacet" label="{\"en\": \"Appearance\", \"pt\": \"Aparência\", \"hu\": \"Megjelenés\"}" xpath="/*:ead/*:archdesc/*:did/*:physdesc/*:physfacet/string()"~}}{{~field name="extent" 					hidden="true" order="120" type="text-area" labeli18n="crosswalks.dissemination.html.ead.physicaldescription" label="{\"en\": \"Extent and medium\", \"pt\": \"Dimensão e suporte\", \"hu\": \"Terjedelem\"}" xpath="/*:ead/*:archdesc/*:did/*:physdesc/string()"~}}
+{{~field name="quote" 				hidden="true" order="160" type="text-area" labeli18n="crosswalks.dissemination.html.ead.quote" label="{\"en\": \"Quote\", \"pt\": \"Citação\", \"hu\": \"Javasolt hivatkozás\"}" xpath="/*:ead/*:archdesc/*:prefercite/*:p/string()"~}}
+
+{{~field name="contextArea" 			order="150" type="separator" labeli18n="crosswalks.dissemination.html.ead.contextarea" label="{\"en\": \"Context\", \"pt\": \"Contexto\", \"hu\": \"Kontextus adatcsoport\"}"~}}
+{{~field name="bioghist"     			hidden="true" order="180" type="text-area" labeli18n="crosswalks.dissemination.html.ead.bioghist" label="{\"en\": \"Administrative and biographical history\", \"pt\": \"Bibliografia\", \"hu\": \"Életrajz vagy történet\"}" xpath="/*:ead/*:archdesc/*:did/*:origination[@label='creator']/*:name/string()"~}}
+{{~field name="creator"     			hidden="true" order="190" labeli18n="crosswalks.dissemination.html.ead.creator" label="{\"en\": \"Name of creator(s)\", \"pt\": \"Nome do(s) autores\", \"hu\": \"Iratképző\"}" xpath="/*:ead/*:archdesc/*:did/*:origination[@label='creator']/*:name/string()"~}}
+{{~field name="repositoryCode" 			hidden="true" order="210" labeli18n="crosswalks.dissemination.html.ead.repositorycode" label="{\"en\": \"Repository code\", \"pt\": \"Código do repositório\", \"hu\": \"Iratörző kódja\"}" xpath="/*:ead/*:archdesc/*:did/*:unitid/@repositorycode/string()"~}}
+{{~field name="repository" 			hidden="true" order="220" labeli18n="crosswalks.dissemination.html.ead.repository" label="{\"en\": \"Repository\", \"pt\": \"Repositório\", \"hu\": \"Iratörző\"}" xpath="/*:ead/*:archdesc/*:did/*:repository/*:corpname/string()"~}}
+{{~field name="producer"    			hidden="true" order="200" labeli18n="crosswalks.dissemination.html.ead.producer" label="{\"en\": \"Producer\", \"pt\": \"Produtor\", \"hu\": \"Iratátadó\"}" xpath="/*:ead/*:archdesc/*:did/*:origination[@label='producer']/*:name/string()"~}}
+{{~field name="custodhist"		 	order="160" type="text-area" labeli18n="crosswalks.dissemination.html.ead.custodialhistory" label="{\"en\": \"Custodial history\", \"pt\": \"História custodial\", \"hu\": \"A megőrzés története\"}" xpath="/*:ead/*:archdesc/*:custodhist/*:p/string()"~}}
+{{~field name="acqinfo" 			order="170" labeli18n="crosswalks.dissemination.html.ead.acquisitioninformation" label="{\"en\": \"Immediate source of acquisition or transfer\", \"pt\": \"Fonte imediata de aquisição ou transferência\", \"hu\": \"A levéltárba kerülés közvetlen forrása\"}" xpath="/*:ead/*:archdesc/*:acqinfo/*:p/string()"~}}
+
+{{~field name="contentArea" 			order="220" type="separator" labeli18n="crosswalks.dissemination.html.ead.contentarea" label="{\"en\": \"Content and structure\", \"pt\": \"Conteúdo e estrutura\", \"hu\": \"Tartalom és szerkezet\"}"~}}
+{{~field name="scopeContent" 			order="240" type="text-area" labeli18n="crosswalks.dissemination.html.ead.description" label="{\"en\": \"Scope and content\", \"pt\": \"Âmbito e conteúdo\", \"hu\": \"Részletes tartalmi leírás\"}" xpath="/*:ead/*:archdesc/*:scopecontent/*:p/string()"~}}
+{{~field name="appraisal" 			hidden="true" order="270" type="text-area" labeli18n="crosswalks.dissemination.html.ead.appraisal" label="{\"en\": \"Appraisal, destruction and scheduling\", \"pt\": \"Avaliação, seleção e eliminação\", \"hu\": \"Selejtezhetőség\"}" xpath="/*:ead/*:archdesc/*:appraisal/*:p/string()"~}}
+{{~field name="accruals" 			hidden="true" order="242" type="text-area" labeli18n="crosswalks.dissemination.html.ead.accruals" label="{\"en\": \"Accruals\", \"pt\": \"Acréscimo\", \"hu\": \"Gyarapodás\"}" xpath="/*:ead/*:archdesc/*:accruals/*:p/string()"~}}
+{{~field name="systemOfArrangement" 		hidden="true" order="290" type="text-area" labeli18n="crosswalks.dissemination.html.ead.arrangement" label="{\"en\": \"System of arrangement\", \"pt\": \"Sistema de organização\", \"hu\": \"A leírási egység szerkezete\"}" xpath="/*:ead/*:archdesc/*:arrangement/*:p/string()"~}}
+
+{{~field name="accessArea" 			order="245" type="separator" labeli18n="crosswalks.dissemination.html.ead.accessarea" label="{\"en\": \"Conditions of access and use\", \"pt\": \"Acesso e utilização\", \"hu\": \"A hozzáférésre és használatra vonatkozó adatok\"}"~}}
+{{~field name="phystech" 			hidden="true" order="310" type="text-area" labeli18n="crosswalks.dissemination.html.ead.administrativeandbiographicalhistory" label="{\"en\": \"Administrative and biographical history\", \"pt\": \"História administrativa e biográfica\", \"hu\": \"Külső jellegzetességek és műszaki követelmények\"}" xpath="/*:ead/*:archdesc/*:phystech/*:p/string()"~}}
+{{~field name="accessrestrict" 			order="250" type="text-area" labeli18n="crosswalks.dissemination.html.ead.accessrestrictions" label="{\"en\": \"Conditions governing access\", \"pt\": \"Condições de acesso\", \"hu\": \"Hozzáférési korlátozások\"}" xpath="/*:ead/*:archdesc/*:accessrestrict/*:p/string()"~}}
+{{~field name="userestrict" 			order="260" type="text-area" labeli18n="crosswalks.dissemination.html.ead.userestrict" label="{\"en\": \"Conditions governing reproduction\", \"pt\": \"Condições de reprodução\", \"hu\": \"Felhasználási korlátozások\"}" xpath="/*:ead/*:archdesc/*:userestrict/*:p/string()"~}}
+{{~field name="language" 			order="270" auto-generate='language' labeli18n="crosswalks.dissemination.html.ead.languages" label="{\"en\": \"Language of material\", \"pt\": \"Idioma dos materiais\", \"hu\": \"Nyelv\"}" xpath="/*:ead/*:archdesc/*:did/*:langmaterial/*:language/text()[normalize-space()]"~}}
+{{~field name="languageScriptNotes" 		hidden="true" order="350" type="text-area" labeli18n="crosswalks.dissemination.html.ead.languagesMaterial" label="{\"en\": \"Language and script notes\", \"pt\": \"Idioma e escrita\", \"hu\": \"Nyelv és írás jegyzetei\"}" xpath="/*:ead/*:archdesc/*:did/*:langmaterial/text()[normalize-space()]"~}}
+
+{{~field name="alliedArea" 			order="275" type="separator" labeli18n="crosswalks.dissemination.html.ead.alliedarea" label="{\"en\": \"Allied materials\", \"pt\": \"Documentação associada\", \"hu\": \"Kapcsolódó anyagok\"}"~}}
+{{~field name="originalsloc" 			order="280" type="text-area" labeli18n="crosswalks.dissemination.html.ead.originalsloc" label="{\"en\": \"Existence and location of originals\", \"pt\": \"Existência e localização de originais\", \"hu\": \"Eredeti példányok léte és őrzési helye\"}" xpath="/*:ead/*:archdesc/*:originalsloc/*:p/string()"~}}
+{{~field name="altformavail" 			order="290" type="text-area" labeli18n="crosswalks.dissemination.html.ead.altformavail" label="{\"en\": \"Existence and location of copies\", \"pt\": \"Existência e localização de cópias\", \"hu\": \"Másolatok léte és őrzési helye\"}" xpath="/*:ead/*:archdesc/*:altformavail/*:p/string()"~}}
+{{~field name="relatedmaterial"       		order="300" type="text-area" labeli18n="crosswalks.dissemination.html.ead.relatedmaterials" label="{\"en\": \"Related units of description\", \"pt\": \"Unidades de descrição relacionadas\", \"hu\": \"Kapcsolódó leírási egységek\"}" xpath="/*:ead/*:archdesc/*:relatedmaterial/*:p/string()"~}}
+{{~field name="bibliography"         		hidden="true" order="400" type="text-area" labeli18n="crosswalks.dissemination.html.ead.bibliography" label="{\"en\": \"Bibliography\", \"pt\": \"Bibliografia\", \"hu\": \"Bibliográfia\"}" xpath="/*:ead/*:archdesc/*:bibliography/*:p/string()"~}}
+{{~field name="otherfindaid" 			hidden="true" order="410" type="text-area" labeli18n="crosswalks.dissemination.html.ead.otherfindaids" label="{\"en\": \"Find aid\", \"pt\": \"Ajuda\", \"hu\": \"Segítség\"}" xpath="/*:ead/*:archdesc/*:otherfindaid/*:p/string()"~}}
+
+{{~field name="notesArea" 			order="420" type="separator" labeli18n="crosswalks.dissemination.html.ead.notesarea" label="{\"en\": \"Notes area\", \"pt\": \"Notas\", \"hu\": \"Megjegyzések\"}"~}}
+{{~field name="notes" 				order="430" type="text-area" labeli18n="crosswalks.dissemination.html.ead.notes" label="{\"en\": \"Notes\", \"pt\": \"Notas\", \"hu\": \"Megjegyzés\"}" xpath="/*:ead/*:archdesc/*:did/*:note[@type='generalNote']/string()"~}}
+
+
+{{~field name="descriptionControlArea" 		order="440" type="separator" labeli18n="crosswalks.dissemination.html.ead.descriptioncontrolarea" label="{\"en\": \"Description control area\", \"pt\": \"Controlo da descrição\", \"hu\": \"Leírás ellenörző adatcsoport\"}"~}}
+{{~field name="rules" 				order="450" type="text-area" labeli18n="crosswalks.dissemination.html.ead.rules" label="{\"en\": \"Rules or conventions\", \"pt\": \"Regras ou convenções\", \"hu\": \"Leírási szabályok\"}" xpath="/*:ead/*:eadheader/*:profiledesc/*:descrules/string()"~}}
+{{~field name="statusDescription"		hidden="true" order="470" type="list" value="final" options="[\"final\",\"revised\",\"draft\"]" optionsLabels="{\"final\": {\"en\":\"Final\", \"pt\":\"Final\", \"hu\": \"Végső\"},\"revised\": {\"en\":\"Revised\", \"pt\":\"Verificado\", \"hu\": \"Átnézett\"},\"draft\": {\"en\":\"Draft\", \"pt\":\"Rascunho\", \"hu\": \"Teszt\"}}" optionsLabelI18nKeyPrefix="crosswalks.dissemination.html.ead.statusDescription" label="{\"en\": \"Status description\", \"pt\": \"Estado da descrição\", \"hu\": \"Állapot leírás\"}" xpath="/*:ead/*:archdesc/*:odd[@type='statusDescription']/*:p/string()" ~}}
+
+{{~field name="levelOfDetail" 			hidden="true" order="480" type="list" value="minimal" options="[\"full\",\"partial\",\"minimal\"]" optionsLabels="{\"full\": {\"en\":\"Full\", \"pt\":\"Completo\", \"hu\": \"Teljes\"}, \"partial\": {\"en\":\"Partial\", \"pt\":\"Parcial\", \"hu\": \"Részleges\"}, \"minimal\": {\"en\":\"Minimal\", \"pt\":\"Mínimo\", \"hu\": \"Minimális\"}}" optionsLabelI18nKeyPrefix="crosswalks.dissemination.html.ead.levelOfDetail" label="{\"en\": \"Level of detail\", \"pt\": \"Nível de detalhe\", \"hu\": \"Leírás szintje\"}" xpath="/*:ead/*:archdesc/*:odd[@type='levelOfDetail']/*:p/string()" ~}}
+{{~field name="processDates" 			hidden="true" order="490" type="date" auto-generate="now" labeli18n="crosswalks.dissemination.html.ead.processdates" label="{\"en\": \"Date of creation or revision\", \"pt\": \"Data de criação ou revisão\", \"hu\": \"A leírás készítésének ideje\"}" xpath="/*:ead/*:archdesc/*:processinfo/*:p/*:date/string()[normalize-space()]"~}}
+{{~field name="sources" 			hidden="true" order="500" type="text-area" labeli18n="crosswalks.dissemination.html.ead.sources" label="{\"en\": \"Sources\", \"pt\": \"Fontes\", \"hu\": \"Források\"}" xpath="/*:ead/*:archdesc/*:did/*:note[@type='sourcesDescription']/string()"~}}
+{{~field name="archivistNotes" 			hidden="true" order="510" type="text-area" labeli18n="crosswalks.dissemination.html.ead.archivistNotes" label="{\"en\": \"Archivist notes\", \"pt\": \"Notas do arquivista\", \"hu\": \"Levéltáros jegyzetei\"}" xpath="/*:ead/*:archdesc/*:processinfo/*:p/text()[normalize-space()]"~}}
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<ead xmlns="urn:isbn:1-931666-22-9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:isbn:1-931666-22-9 ../schemas/ead2002.xsd">
+	<eadheader>
+		<eadid>{{id}}</eadid>
+		<filedesc>
+			<titlestmt>
+			  {{~#if title~}}
+				  <titleproper>{{title}}</titleproper>
+		    {{~^~}}
+				  <titleproper/>
+				{{~/if~}}
+			</titlestmt>
+		</filedesc>
+		<profiledesc>
+			<creation>
+				Generated by RODA-In version 2.0
+			</creation>
+			{{~#if rules~}}
+				<descrules>{{rules}}</descrules>
+			{{~/if~}}
+		</profiledesc>
+	</eadheader>
+  <archdesc {{#if level}}level='{{level}}'{{/if}} {{#if otherlevel}}otherlevel="{{otherlevel}}"{{/if}}>
+    <did>
+    	{{~#if title~}}
+      	<unittitle {{#if titleType}}type="{{titleType}}"{{/if}}>{{title}}</unittitle>
+      	{{~/if~}}
+      	{{~#ifCond "||" countryCode repositoryCode id~}}
+      	<unitid {{#if countryCode}}countrycode="{{countryCode}}"{{/if}} {{#if repositoryCode}}repositorycode="{{repositoryCode}}"{{/if}}>{{id}}</unitid>
+      	{{~/ifCond~}}
+		{{~#if dateInitial~}}
+			{{~#if dateFinal~}}
+				<unitdate label="UnitDates" normal='{{dateInitial}}/{{dateFinal}}'>{{#if descDate}}{{descDate}}{{/if}}</unitdate>
+			{{~^~}}
+				<unitdate label="UnitDateInitial" normal="{{dateInitial}}">{{#if descDate}}{{descDate}}{{/if}}</unitdate>
+			{{~/if~}}
+		{{~^~}}
+			{{~#if dateFinal~}}
+				<unitdate label="UnitDateFinal" normal="{{dateFinal}}">{{#if descDate}}{{descDate}}{{/if}}</unitdate>
+			{{~^~}}
+				{{~#if descDate~}}
+					<unitdate label="UnitDates">{{descDate}}</unitdate>
+				{{~/if~}}
+			{{~/if~}}
+		{{~/if~}}
+		{{~#if digitDateInitial~}}
+			{{~#if digitDateFinal~}}
+				<unitdate label="DigitizationDates" normal='{{digitDateInitial}}/{{digitDateFinal}}'>{{#if descDate}}{{descDate}}{{/if}}</unitdate>
+			{{~^~}}
+				<unitdate label="DigitizationDateInitial" normal="{{digitDateInitial}}">{{#if descDate}}{{descDate}}{{/if}}</unitdate>
+			{{~/if~}}
+		{{~^~}}
+			{{~#if digitDateFinal~}}
+				<unitdate label="DigitizationDateFinal" normal="{{digitDateFinal}}">{{#if descDate}}{{descDate}}{{/if}}</unitdate>
+			{{~^~}}
+				{{~#if descDate~}}
+					<unitdate label="DigitizationDates">{{descDate}}</unitdate>
+				{{~/if~}}
+			{{~/if~}}
+		{{~/if~}}{{~#ifCond "||" extent physdesc dimensions physfacet~}} 
+			<physdesc>
+				{{~#if extent~}}
+				<extent>{{extent}}</extent>
+				{{~/if~}}
+				{{~#if dimensions~}}
+				<dimensions>{{dimensions}}</dimensions>
+				{{~/if~}}
+				{{~#if physfacet~}}
+				<physfacet>{{physfacet}}</physfacet>
+				{{~/if~}}
+				{{~#if physdesc~}}
+				{{physdesc}}
+				{{~/if~}}
+			</physdesc>
+		{{~/ifCond~}}
+		{{~#if repository~}}
+      	<repository>
+        	<corpname>{{repository}}</corpname>
+      	</repository>
+      	{{~/if~}}
+		{{~#if language~}}
+      	<langmaterial>
+      		<language>{{language}}</language>
+            {{languageScriptNotes}}     
+        </langmaterial>
+        {{~/if~}}
+       	{{~#if abstract~}}
+       		<abstract>{{abstract}}</abstract>
+           {{~/if~}}
+	{{~#if sources~}} 
+      <note type="sourcesDescription">
+        <p>{{sources}}</p>
+      </note>
+      {{~/if~}}
+      {{~#if notes~}} 
+      <note type="generalNote">
+        <p>{{notes}}</p>
+      </note>
+      {{~/if~}}
+      {{~#if creator~}} 
+      <origination label='creator'>
+        <name>{{creator}}</name>
+      </origination>
+      {{~/if~}}
+      {{~#if producer~}} 
+      <origination label='producer'>
+        <name>{{producer}}</name>
+      </origination>
+      {{~/if~}}
+      {{~#if materialspec~}} 
+      <materialspec>{{materialspec}}</materialspec>
+      {{~/if~}}
+      {{~#if origination~}} 
+      <origination>{{origination}}</origination>
+      {{~/if~}}
+    </did>
+    {{~#if publicationStatus~}} 
+    <odd type="publicationStatus">
+      <p>{{publicationStatus}}</p>
+    </odd>
+    {{~/if~}}
+    {{~#if levelOfDetail~}} 
+    <odd type="levelOfDetail">
+      <p>{{levelOfDetail}}</p>
+    </odd>
+    {{~/if~}}
+    {{~#if statusDescription~}} 
+    <odd type="statusDescription">
+      <p>{{statusDescription}}</p>
+    </odd>
+    {{~/if~}}
+    {{~#if descriptionIdentifier~}} 
+    <odd type="descriptionIdentifier">
+      <p>{{descriptionIdentifier}}</p>
+    </odd>
+    {{~/if~}}
+    {{~#if institutionIdentifier~}} 
+    <odd type="institutionIdentifier">
+      <p>{{institutionIdentifier}}</p>
+    </odd>
+    {{~/if~}}
+    {{~#if scopeContent~}} 
+    <scopecontent>
+      <p>{{scopeContent}}</p>
+    </scopecontent>
+     {{~/if~}}
+     {{~#if systemOfArrangement~}} 
+    <arrangement>
+      <p>{{systemOfArrangement}}</p>
+    </arrangement>
+    {{~/if~}}
+    {{~#ifCond "||" nameAccessPoint subjectAccessPoint placeAccessPoint~}} 
+    <controlaccess>
+    	{{~#if nameAccessPoint~}} 
+      	<name role="subject">{{nameAccessPoint}}</name>
+      	{{~/if~}}
+      	{{~#if subjectAccessPoint~}} 
+      	<subject>{{subjectAccessPoint}}</subject>
+      	{{~/if~}}
+      	{{~#if placeAccessPoint~}} 
+      	<geogname>{{placeAccessPoint}}</geogname>
+      	{{~/if~}}
+    </controlaccess>
+    {{~/ifCond~}}
+    {{~#if appraisal~}} 
+    <appraisal>
+      <p>{{appraisal}}</p>
+    </appraisal>
+    {{~/if~}}
+    {{~#if acqinfo~}} 
+    <acqinfo>
+      <p>{{acqinfo}}</p>
+    </acqinfo>
+    {{~/if~}}
+    {{~#if accruals~}} 
+    <accruals>
+      <p>{{accruals}}</p>
+    </accruals>
+    {{~/if~}}
+    {{~#if custodhist~}} 
+    <custodhist>
+      <p>{{custodhist}}</p>
+    </custodhist>
+    {{~/if~}}
+        {{~#ifCond "||" processDates archivistNotes~}} 
+    <processinfo>
+	  {{~#if processDates~}}<p><date>{{processDates}}</date></p>{{~/if~}}
+      {{~#if archivistNotes~}}<p>{{archivistNotes}}</p>{{~/if~}}
+    </processinfo>
+    {{~/ifCond~}}
+    {{~#if originalsloc~}} 
+    <originalsloc>
+      <p>{{originalsloc}}</p>
+    </originalsloc>
+    {{~/if~}}
+    {{~#if altformavail~}} 
+    <altformavail>
+      <p>{{altformavail}}</p>
+    </altformavail>
+    {{~/if~}}
+    {{~#if relatedmaterial~}} 
+    <relatedmaterial>
+      <p>{{relatedmaterial}}</p>
+    </relatedmaterial>
+    {{~/if~}}
+    {{~#if accessrestrict~}} 
+    <accessrestrict>
+      <p>{{accessrestrict}}</p>
+    </accessrestrict>
+    {{~/if~}}
+    {{~#if userestrict~}} 
+    <userestrict>
+      <p>{{userestrict}}</p>
+    </userestrict>
+    {{~/if~}}
+    {{~#if otherfindaid~}} 
+    <otherfindaid>
+      <p>{{otherfindaid}}</p>
+    </otherfindaid>
+    {{~/if~}}
+    {{~#if phystech~}} 
+    <phystech>
+      <p>{{phystech}}</p>
+    </phystech>
+    {{~/if~}}
+    {{~#if bibliography~}} 
+    <bibliography>
+      <p>{{bibliography}}</p>
+    </bibliography>
+    {{~/if~}}
+    <dsc type="combined">  
+  </dsc>
+  	{{~#if quote~}} 
+  	<prefercite>
+  	<p>
+  	{{quote}}
+  	</p>
+  	</prefercite>
+  	{{~/if~}}
+  </archdesc>
+</ead>
