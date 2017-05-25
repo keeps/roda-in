@@ -1,6 +1,6 @@
 <html>
 <head>
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 </head>
 <body>
 
@@ -9,27 +9,27 @@
 <h1>Introduction</h1>
 
 <p>
-    RODA-in is a tool specially designed for producers and archivists to create Submission Information Packages (SIP) ready to be submitted to an Open Archival Information System (OAIS). The tool creates SIPs from files and folders available on the local file system.
+  RODA-in is a tool specially designed for producers and archivists to create Submission Information Packages (SIP) ready to be submitted to an Open Archival Information System (OAIS). The tool creates SIPs from files and folders available on the local file system.
 </p>
 <p>
-    In this version of the tool we revolutionized the way SIPs are created to satisfy the need for mass processing of data. In this version you can create thousands of valid SIPs with just a few clicks, complete with data and metadata.
+  In this version of the tool we revolutionized the way SIPs are created to satisfy the need for mass processing of data. In this version you can create thousands of valid SIPs with just a few clicks, complete with data and metadata.
 </p>
 <p>
-    The tool includes features such as:
+The tool includes features such as:
 <ul>
-    <li>Create, load and edit classification schemas</li>
-    <li>Automatic association of files/folders to SIP</li>
-    <li>Automatic association of metadata to SIP</li>
-    <li>Definition of metadata templates</li>
-    <li>Support for various metadata formats (EAD, DC, etc.)</li>
-    <li>Creation of SIP of unlimited size</li>
-    <li>Creation of SIP in various formats: BagIt, E-ARK and Hungarian SIP 4</li>
+  <li>Create, load and edit classification schemas</li>
+  <li>Automatic association of files/folders to SIP</li>
+  <li>Automatic association of metadata to SIP</li>
+  <li>Definition of metadata templates</li>
+  <li>Support for various metadata formats (EAD, DC, etc.)</li>
+  <li>Creation of SIP of unlimited size</li>
+  <li>Creation of SIP in various formats: BagIt, E-ARK and Hungarian SIP 4</li>
 </ul>
 </p>
 
 <h2>Supported SIP formats</h2>
 <p>
-    RODA-in supports several Submission Information Package formats. At the moment we have included support for:
+  RODA-in supports several Submission Information Package formats. At the moment we have included support for:
 </p>
 
 <ul>
@@ -53,13 +53,13 @@ RODA-in is available in two flavors: the base release and the Hungarian release.
 
 
 <p>
-    The applications is composed of 4 distinct panels depicted in light blue in the following figure:
-<ol>
+The applications is composed of 4 distinct panels depicted in light blue in the following figure:
+  <ol>
     <li><strong>File explorer</strong> - where the user should pick the files/folders that she whishes on pack.</li>
     <li><strong>Information packages</strong> - where the user may see and rearrange the pre-prepared packages.</li>
     <li><strong>Inspector</strong> - where the user can edit the content of the information package (data and metadata).</li>
     <li><strong>Submission packages</strong> - where the user may generate the Submission Information Packages that have been prepared.</li>
-</ol>
+  </ol>
 </p>
 
 
@@ -72,33 +72,33 @@ RODA-in is available in two flavors: the base release and the Hungarian release.
 
 <p>The basic workflow of the application is as follows:</p>
 <ol>
-    <li>Choose a working folder in your file system (panel on the left). This will serve as the root of your project.</li>
-    <li>Choose a classification scheme (panel on the center). There's two options:
+<li>Choose a working folder in your file system (panel on the left). This will serve as the root of your project.</li>
+<li>Choose a classification scheme (panel on the center). There's two options:
 
-        <ul>
-            <li>Load a classification scheme. You can obtain a classification scheme from RODA repository, for example.</li>
-            <li>Create a new classification scheme. </li>
-        </ul>
-    </li>
-    <li>Drag files/folders from the left panel to the center panel into the appropriate node in the classification hierarchical structure on the central pane .</li>
-    <li>Choose the type of data and metadata association that best fits your needs. This will have impact on the number and structure of the SIPs created.</li>
-    <li>(Optional) Inspect the created SIPs, edit metadata and content.</li>
-    <li>Export the SIPs to a folder</li>
+<ul>
+<li>Load a classification scheme. You can obtain a classification scheme from RODA repository, for example.</li>
+<li>Create a new classification scheme. </li>
+</ul>
+</li>
+<li>Drag files/folders from the left panel to the center panel into the appropriate node in the classification hierarchical structure on the central pane .</li>
+<li>Choose the type of data and metadata association that best fits your needs. This will have impact on the number and structure of the SIPs created.</li>
+<li>(Optional) Inspect the created SIPs, edit metadata and content.</li>
+<li>Export the SIPs to a folder</li>
 </ol>
 
 <p>To select more than one file/folder you can press SHIFT or CTRL.</p>
 <p>The following actions are supported to edit the classification scheme:</p>
 <ul>
-    <li>Add node</li>
-    <li>Edit the title and the description level of the node</li>
-    <li>Move node (using drag and drop)
+<li>Add node</li>
+<li>Edit the title and the description level of the node</li>
+<li>Move node (using drag and drop)
 
-        <ul>
-            <li>Change parent</li>
-            <li>Move to the root of the tree</li>
-        </ul>
-    </li>
-    <li>Remove node</li>
+<ul>
+<li>Change parent</li>
+<li>Move to the root of the tree</li>
+</ul>
+</li>
+<li>Remove node</li>
 </ul>
 
 
@@ -135,33 +135,33 @@ The export SIP window provides some customization options:
 <p>The available options that alter the fields created for each tag are:</p>
 
 <ul>
-    <li>value - the predefined value of the field</li>
-    <li>order - the order of the field</li>
-    <li>type - the type of the field. The possible values are:
+<li>value - the predefined value of the field</li>
+<li>order - the order of the field</li>
+<li>type - the type of the field. The possible values are:
 
-        <ul>
-            <li>text - text field</li>
-            <li>text-area - Text area. Larger than a field text.</li>
-            <li>date - text field with a date picker</li>
-            <li>list - list with the possible values (combo box)</li>
-        </ul>
-    </li>
-    <li>list - List with the possible values that a field can have. Usable when <code>type="list"</code>. The format is a JSON array. Example: <code>[option A, option B, "option C"]</code>
-    </li>
-    <li>label - The label that appears to the left of the field.</li>
-    <li>mandatory - If set to true the label is styled in bold to draw attention.</li>
-    <li>hidden - If set to true the field is hidden</li>
-    <li>auto-generate - Fills the value with one of the available generators. Overrides the value option:
+<ul>
+<li>text - text field</li>
+<li>text-area - Text area. Larger than a field text.</li>
+<li>date - text field with a date picker</li>
+<li>list - list with the possible values (combo box)</li>
+</ul>
+</li>
+<li>list - List with the possible values that a field can have. Usable when <code>type="list"</code>. The format is a JSON array. Example: <code>[option A, option B, "option C"]</code>
+</li>
+<li>label - The label that appears to the left of the field.</li>
+<li>mandatory - If set to true the label is styled in bold to draw attention.</li>
+<li>hidden - If set to true the field is hidden</li>
+<li>auto-generate - Fills the value with one of the available generators. Overrides the value option:
 
-        <ul>
-            <li>now - the current date in the format year/month/day</li>
-            <li>id - generates an identifier</li>
-            <li>title - generates a title</li>
-            <li>level - adds the current description level</li>
-            <li>parentid - adds the parent's id, if it exists</li>
-            <li>language - adds the system language, based on the locale. Example: "português" or "English"</li>
-        </ul>
-    </li>
+<ul>
+<li>now - the current date in the format year/month/day</li>
+<li>id - generates an identifier</li>
+<li>title - generates a title</li>
+<li>level - adds the current description level</li>
+<li>parentid - adds the parent's id, if it exists</li>
+<li>language - adds the system language, based on the locale. Example: "português" or "English"</li>
+</ul>
+</li>
 </ul>
 
 <p>The following is an example of how the tags can be used:</p>
