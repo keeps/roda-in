@@ -102,7 +102,6 @@ public class Controller {
   }
 
   public static boolean validateSchema(String content, InputStream schemaInputStream) throws SAXException {
-    // LOGGER.info("Validating against schema {}", schemaString);
     return ControllerUtils.validateSchema(content, schemaInputStream);
   }
 

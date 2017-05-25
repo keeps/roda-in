@@ -23,7 +23,7 @@ public class ResourceResolver implements LSResourceResolver {
 
   @Override
   public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseURI) {
-    LOGGER.info("ResourceResolver | type: {}; namespaceURI: {}; publicId: {}; systemId: {}; baseURI: {}", type,
+    LOGGER.debug("ResourceResolver | type: {}; namespaceURI: {}; publicId: {}; systemId: {}; baseURI: {}", type,
       namespaceURI, publicId, systemId, baseURI);
     InputStream resourceAsStream = null;
     try {
