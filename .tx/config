@@ -1,0 +1,17 @@
+[main]
+host = https://www.transifex.com
+lang_map = pt_PT: pt
+
+[roda-in.lang]
+file_filter = properties/lang_<lang>.properties
+minimum_perc = 100
+source_file = src/main/resources/properties/lang_en.properties
+source_lang = en
+type = UNICODEPROPERTIES
+
+[roda-in.help]
+file_filter = properties/help_<lang>.properties
+minimum_perc = 100
+source_file = src/main/resources/properties/help_en.properties
+source_lang = en
+type = UNICODEPROPERTIES
