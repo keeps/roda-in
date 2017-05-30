@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import javafx.event.EventHandler;
+import javafx.scene.control.DialogEvent;
 import org.apache.commons.configuration.ConfigurationException;
 import org.roda.rodain.core.ConfigurationManager;
 import org.roda.rodain.core.Constants;
@@ -459,7 +461,7 @@ public class RodaInApplication extends Application {
 
     menuView.getItems().addAll(showFiles, showIgnored, showMapped);
 
-    // Help
+    // Check version
     final MenuItem checkVersion = new MenuItem(I18n.t(Constants.I18N_MAIN_CHECK_VERSION));
     checkVersion.setAccelerator(KeyCombination.keyCombination("Ctrl+U"));
     checkVersion.setOnAction(event -> {
@@ -481,6 +483,7 @@ public class RodaInApplication extends Application {
       }
     });
 
+    // Help
     String startingValue = ConfigurationManager.getAppConfig(Constants.CONF_K_APP_HELP_ENABLED);
     String showHelpText;
     if (Boolean.parseBoolean(startingValue)) {

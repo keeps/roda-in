@@ -1,5 +1,6 @@
 package org.roda.rodain.ui.creation;
 
+import javafx.event.Event;
 import org.roda.rodain.core.Constants;
 import org.roda.rodain.ui.utils.UnsafeDouble;
 
@@ -33,6 +34,7 @@ public class RenameModalStage extends Stage {
     colorAdjust = new ColorAdjust();
     colorAdjust.setBrightness(-0.275);
 
+    setOnCloseRequest(Event::consume);
     setResizable(true);
 
     Scene scene = new Scene(new HBox(), 400, PREPARATION_HEIGHT);

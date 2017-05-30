@@ -1,5 +1,9 @@
 package org.roda.rodain.ui;
 
+import javafx.application.Platform;
+import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.stage.WindowEvent;
 import org.roda.rodain.core.Constants;
 import org.roda.rodain.ui.utils.UnsafeDouble;
 
@@ -34,6 +38,7 @@ public class ModalStage extends Stage {
     colorAdjust = new ColorAdjust();
     colorAdjust.setBrightness(-0.275);
 
+    setOnCloseRequest(Event::consume);
     setResizable(false);
 
     Scene scene = new Scene(new HBox(), 800, 580);

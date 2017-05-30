@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
+import javafx.event.Event;
 import org.roda.rodain.core.Constants;
 import org.roda.rodain.core.creation.CreateSips;
 import org.roda.rodain.core.schema.Sip;
@@ -47,6 +48,7 @@ public class CreationModalStage extends Stage {
     colorAdjust = new ColorAdjust();
     colorAdjust.setBrightness(-0.275);
 
+    setOnCloseRequest(Event::consume);
     setResizable(true);
 
     Scene scene = new Scene(new HBox());
