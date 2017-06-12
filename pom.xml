@@ -129,7 +129,7 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
-							<finalName>rodain-app-${jar.id}${project.version}</finalName>
+							<finalName>rodain-app-${jar.id}${project.version}_OtherOS</finalName>
 							<attach>true</attach>
 							<archive>
 								<manifest>
@@ -163,8 +163,8 @@
 						</goals>
 						<configuration>
 							<headerType>gui</headerType>
-							<outfile>target/rodain-app-${jar.id}${project.version}.exe</outfile>
-							<jar>target/rodain-app-${jar.id}${project.version}.jar</jar>
+							<outfile>target/rodain-app-${jar.id}${project.version}_Windows.exe</outfile>
+							<jar>target/rodain-app-${jar.id}${project.version}_OtherOS.jar</jar>
 							<errTitle>Error opening RODA-in</errTitle>
 							<classPath>
 								<mainClass>org.roda.rodain.Main</mainClass>
