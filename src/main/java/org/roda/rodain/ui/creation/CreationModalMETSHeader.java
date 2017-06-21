@@ -91,8 +91,8 @@ public class CreationModalMETSHeader extends BorderPane {
     createBottom();
 
     stage.sizeToScene();
-    stage.setWidth(stage.getWidth() * 1.2);
-    stage.setHeight(stage.getHeight() * 1.4);
+    stage.setWidth(stage.getWidth() * 1.6);
+    stage.setHeight(stage.getHeight() * 1.8);
   }
 
   private void createTop() {
