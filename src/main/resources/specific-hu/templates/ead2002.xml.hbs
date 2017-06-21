@@ -83,11 +83,16 @@
   <archdesc {{#if level}}level='{{level}}'{{/if}} {{#if otherlevel}}otherlevel="{{otherlevel}}"{{/if}}>
     <did>
     	{{~#if title~}}
-      	<unittitle {{#if titleType}}type="{{titleType}}"{{/if}}>{{title}}</unittitle>
-      	{{~/if~}}
-      	{{~#ifCond "||" countryCode repositoryCode id~}}
-      	<unitid {{#if countryCode}}countrycode="{{countryCode}}"{{/if}} {{#if repositoryCode}}repositorycode="{{repositoryCode}}"{{/if}}>{{id}}</unitid>
-      	{{~/ifCond~}}
+	      	<unittitle {{#if titleType}}type="{{titleType}}"{{/if}}>{{title}}</unittitle>
+	      	{{~#ifCond "||" countryCode repositoryCode title~}}
+	      		<unitid {{#if countryCode}}countrycode="{{countryCode}}"{{/if}} {{#if repositoryCode}}repositorycode="{{repositoryCode}}"{{/if}}>{{title}}</unitid>
+	      	{{~/ifCond~}}
+	    {{~^~}}
+	      	{{~#ifCond "||" countryCode repositoryCode id~}}
+	      		<unitid {{#if countryCode}}countrycode="{{countryCode}}"{{/if}} {{#if repositoryCode}}repositorycode="{{repositoryCode}}"{{/if}}>{{id}}</unitid>
+	      	{{~/ifCond~}}
+      	{{~/if~}}     	
+      	
 		{{~#if dateInitial~}}
 			{{~#if dateFinal~}}
 				<unitdate label="UnitDates" normal='{{dateInitial}}/{{dateFinal}}'>{{#if descDate}}{{descDate}}{{/if}}</unitdate>
