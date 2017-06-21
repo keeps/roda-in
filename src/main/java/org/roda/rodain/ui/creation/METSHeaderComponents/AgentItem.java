@@ -242,6 +242,9 @@ public class AgentItem extends AbstractItem {
       if (mandatoryNote && StringUtils.isNotBlank(tfNote.getText())) {
         return false;
       }
+    } else {
+      return !(cbNameAndNote.getValue() != null && StringUtils.isNotBlank(cbNameAndNote.getValue().getKey())
+        && StringUtils.isNotBlank(cbNameAndNote.getValue().getValue()));
     }
 
     return true;
