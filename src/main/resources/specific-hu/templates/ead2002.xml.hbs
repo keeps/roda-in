@@ -84,9 +84,7 @@
     <did>
     	{{~#if title~}}
 	      	<unittitle {{#if titleType}}type="{{titleType}}"{{/if}}>{{title}}</unittitle>
-	      	{{~#ifCond "||" countryCode repositoryCode title~}}
-	      		<unitid {{#if countryCode}}countrycode="{{countryCode}}"{{/if}} {{#if repositoryCode}}repositorycode="{{repositoryCode}}"{{/if}}>{{title}}</unitid>
-	      	{{~/ifCond~}}
+	      	<unitid {{#if countryCode}}countrycode="{{countryCode}}"{{/if}} {{#if repositoryCode}}repositorycode="{{repositoryCode}}"{{/if}}>{{title}}</unitid>
 	    {{~^~}}
 	      	{{~#ifCond "||" countryCode repositoryCode id~}}
 	      		<unitid {{#if countryCode}}countrycode="{{countryCode}}"{{/if}} {{#if repositoryCode}}repositorycode="{{repositoryCode}}"{{/if}}>{{id}}</unitid>

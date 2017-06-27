@@ -37,7 +37,7 @@ public class TemplateUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(TemplateUtils.class.getName());
 
   public static TreeSet<TemplateFieldValue> getTemplateFields(DescriptiveMetadata dom) {
-    TreeSet<TemplateFieldValue> fields = new TreeSet<TemplateFieldValue>();
+    TreeSet<TemplateFieldValue> fields = new TreeSet<>();
     String content = dom.getContentDecoded();
     String templateContent = dom.getTemplateType() != null
       ? ConfigurationManager.getTemplateContent(dom.getTemplateType()) : null;

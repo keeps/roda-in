@@ -1,6 +1,8 @@
 package org.roda.rodain.core.creation;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -11,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.roda.rodain.core.ConfigurationManager;
 import org.roda.rodain.core.Constants;
 import org.roda.rodain.core.Constants.MetadataOption;
@@ -94,7 +97,7 @@ public class HungarianSipCreator extends SimpleSipCreator implements SIPObserver
       IPContentType contentType = descriptionObject instanceof SipPreview
         ? ((SipPreview) descriptionObject).getContentType() : IPContentType.getMIXED();
 
-      SIP hungarianSip = new HungarianSIP(Controller.encodeId(descriptionObject.getId()), contentType);
+      HungarianSIP hungarianSip = new HungarianSIP(Controller.encodeId(descriptionObject.getId()), contentType);
       hungarianSip.addObserver(this);
       hungarianSip.setAncestors(previews.get(descriptionObject));
       if (descriptionObject.isUpdateSIP()) {
@@ -193,6 +196,12 @@ public class HungarianSipCreator extends SimpleSipCreator implements SIPObserver
 
       hungarianSip.setHeader(ipHeader);
       hungarianSip.addCreatorSoftwareAgent(Constants.SIP_DEFAULT_AGENT_NAME).setNote(Controller.getCurrentVersion());
+
+      try (InputStream stream = ClassLoader
+        .getSystemResourceAsStream(Constants.FOLDER_TEMPLATES + Constants.MISC_FWD_SLASH + "folder_template.xml.hbs")) {
+        String template = IOUtils.toString(stream, Charset.defaultCharset());
+        hungarianSip.setFolderTemplate(template);
+      }
       Path sipPath = hungarianSip.build(outputPath, createSipName(descriptionObject, sipNameBuilder));
 
       createdSipsCount++;
