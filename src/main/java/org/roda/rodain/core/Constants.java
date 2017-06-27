@@ -87,6 +87,7 @@ public final class Constants {
   public static final String CONF_K_SUFFIX_LEVELS_ICON = "levels.icon.";
   // configs keys
   public static final String CONF_K_ACTIVE_SIP_TYPES = "activeSipTypes";
+  public static final String CONF_K_LAST_SIP_TYPE = "lastSipType";
   public static final String CONF_K_IGNORED_FILES = "app.ignoredFiles";
   public static final String CONF_K_METADATA_TEMPLATES = "metadata.templates";
   public static final String CONF_K_METADATA_TYPES = "metadata.types";

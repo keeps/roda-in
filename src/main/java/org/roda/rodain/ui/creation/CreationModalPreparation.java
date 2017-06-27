@@ -132,7 +132,12 @@ public class CreationModalPreparation extends BorderPane {
     HBox prefixBox = createSipNameStrategyBoxAndDropdown();
 
     sipTypes.getSelectionModel().clearSelection();
-    sipTypes.getSelectionModel().selectFirst();
+    Pair lastSipType = getLastSipType();
+    if (lastSipType != null) {
+      sipTypes.getSelectionModel().select(lastSipType);
+    } else {
+      sipTypes.getSelectionModel().selectFirst();
+    }
 
     center.getChildren().addAll(countBox, reportBox, outputFolderBox, sipTypesBox, prefixBox);
     setCenter(center);
@@ -476,6 +481,10 @@ public class CreationModalPreparation extends BorderPane {
         // 20170411 bferreira: sipExportSwitch was purposely left out because
         // there is some logic in place to select that toggle
 
+        // persist SIP type
+        ConfigurationManager.setAppConfig(Constants.CONF_K_LAST_SIP_TYPE,
+          (String) sipTypes.getSelectionModel().getSelectedItem().getValue());
+
         // persist output folder in config file
         ConfigurationManager.setAppConfig(Constants.CONF_K_EXPORT_LAST_SIP_OUTPUT_FOLDER,
           outputFolder.toAbsolutePath().toString());
@@ -496,4 +505,14 @@ public class CreationModalPreparation extends BorderPane {
     setBottom(bottom);
   }
 
+  private static Pair getLastSipType() {
+    String lastSipType = ConfigurationManager.getAppConfig(Constants.CONF_K_LAST_SIP_TYPE);
+    for (Pair sipType : SIP_TYPES) {
+      String name = (String) sipType.getValue();
+      if (name.equals(lastSipType)) {
+        return sipType;
+      }
+    }
+    return null;
+  }
 }
