@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.roda.rodain.core.Constants.SipNameStrategy;
 import org.roda.rodain.core.Constants.SipType;
 import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.core.sip.SipPreview;
@@ -54,21 +53,24 @@ public class CreateSips {
    * Starts the exportation process.
    */
   public void start(Map<Sip, List<String>> sips) {
-    if (!exportItems)
-      sips = sips.entrySet().stream().filter(entry -> entry.getKey() instanceof SipPreview)
+
+    Map<Sip, List<String>> previews = sips;
+    if (!exportItems) {
+      previews = sips.entrySet().stream().filter(entry -> entry.getKey() instanceof SipPreview)
         .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
+    }
     startedTime = System.currentTimeMillis();
 
     sipsCount = sips.size();
     switch (type) {
       case BAGIT:
-        creator = new BagitSipCreator(outputPath, sips, sipNameBuilder, createReport);
+        creator = new BagitSipCreator(outputPath, previews, sipNameBuilder, createReport);
         break;
       case EARK:
-        creator = new EarkSipCreator(outputPath, sips, sipNameBuilder, createReport, ipHeader);
+        creator = new EarkSipCreator(outputPath, previews, sipNameBuilder, createReport, ipHeader);
         break;
       case HUNGARIAN:
-        creator = new HungarianSipCreator(outputPath, sips, sipNameBuilder, createReport, ipHeader);
+        creator = new HungarianSipCreator(outputPath, previews, sipNameBuilder, createReport, ipHeader);
         break;
     }
     creator.start();

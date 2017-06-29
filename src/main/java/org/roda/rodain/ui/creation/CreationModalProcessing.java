@@ -130,6 +130,7 @@ public class CreationModalProcessing extends BorderPane {
     progress = new ProgressBar();
     progress.setPadding(new Insets(5, 0, 10, 0));
     progress.setPrefSize(380, 25);
+    progress.prefWidthProperty().bind(center.widthProperty().subtract(20));
 
     HBox elapsed = new HBox(10);
     elapsed.maxWidth(380);

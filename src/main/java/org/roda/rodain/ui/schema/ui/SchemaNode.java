@@ -417,10 +417,14 @@ public class SchemaNode extends TreeItem<String> implements Observer {
 
   public List<String> computeAncestorsOfSips() {
     List<String> ancestors = new ArrayList<>();
-    // Add current node
-    ancestors.add(getDob().getId());
-    // Add ancestors of current node
-    ancestors.addAll(computeAncestors());
+    // Add current node if not root (i.e. id != null)
+
+    String id = getDob().getId();
+    if (id != null) {
+      ancestors.add(id);
+      // Add ancestors of current node
+      ancestors.addAll(computeAncestors());
+    }
     return ancestors;
   }
 

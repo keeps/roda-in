@@ -13,6 +13,7 @@ import java.util.Observable;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.roda.rodain.core.ConfigurationManager;
 import org.roda.rodain.core.Constants;
 import org.roda.rodain.core.Constants.MetadataOption;
@@ -281,32 +282,25 @@ public class Sip extends Observable {
   public void updatedMetadata(DescriptiveMetadata dom) {
     dom.getValues().forEach(metadataValue -> {
       String toSearch = metadataValue.getId().toLowerCase();
-      switch (toSearch) {
-        case "title":
-          if (metadataValue.get("value") == null) {
-            title = "";
+      Object value = metadataValue.get("value");
+      if ("title".equals(toSearch)) {
+        title = (value != null) ? (String) value : "";
+      } else if ("id".equals(toSearch)) {
+        if (StringUtils.isNotBlank((String) value)) {
+          id = (String) value;
+        }
+      } else if ("level".equals(toSearch)) {
+        if (value != null) {
+          if (value instanceof String) {
+            descriptionlevel = (String) value;
+          } else if (value instanceof Pair) {
+            descriptionlevel = (String) ((Pair) value).getKey();
           } else {
-            title = (String) metadataValue.get("value");
+            descriptionlevel = value.toString();
           }
-          break;
-        case "id":
-          id = (String) metadataValue.get("value");
-          break;
-        case "level":
-          Object value = metadataValue.get("value");
-          if (value != null) {
-            if (value instanceof String) {
-              descriptionlevel = (String) metadataValue.get("value");
-            } else if (value instanceof Pair) {
-              descriptionlevel = (String) ((Pair) metadataValue.get("value")).getKey();
-            } else {
-              descriptionlevel = value.toString();
-            }
-          }
-          break;
-        case "parentid":
-          parentId = (String) metadataValue.get("value");
-          break;
+        }
+      } else if ("parentid".equals(toSearch)) {
+        parentId = (String) value;
       }
     });
   }
