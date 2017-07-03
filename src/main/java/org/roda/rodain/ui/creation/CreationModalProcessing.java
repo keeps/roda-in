@@ -289,7 +289,10 @@ public class CreationModalProcessing extends BorderPane {
         String header = String.format(I18n.t(Constants.I18N_CREATIONMODALPROCESSING_ALERT_HEADER),
           descriptionObject.getTitle());
         alert.setHeaderText(header);
-        StringBuilder content = new StringBuilder(ex.getLocalizedMessage());
+        StringBuilder content = new StringBuilder();
+        if (ex.getLocalizedMessage() != null) {
+          content.append(ex.getLocalizedMessage());
+        }
         content.append("\n");
         content.append(I18n.t(Constants.I18N_CREATIONMODALPROCESSING_CAUSE));
         if (ex.getCause() != null) {

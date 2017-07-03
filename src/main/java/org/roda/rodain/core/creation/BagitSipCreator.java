@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.roda.rodain.core.Constants;
-import org.roda.rodain.core.Constants.SipNameStrategy;
 import org.roda.rodain.core.Controller;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.Pair;
