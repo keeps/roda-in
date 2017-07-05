@@ -462,8 +462,9 @@ public class FileExplorerPane extends BorderPane implements Observer {
 
     Set<SourceTreeItem> toRemove = new HashSet<>();
     result.forEach(currentItem -> {
+      Path currentItemPath = Paths.get(currentItem.getPath());
       Set<SourceTreeItem> ancestors = result.stream()
-        .filter(p -> !currentItem.getPath().equals(p.getPath()) && currentItem.getPath().startsWith(p.getPath()))
+        .filter(p -> !currentItem.getPath().equals(p.getPath()) && currentItemPath.startsWith(Paths.get(p.getPath())))
         .collect(Collectors.toSet());
       if (ancestors != null && !ancestors.isEmpty())
         toRemove.add(currentItem);
