@@ -235,18 +235,24 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
   protected SipPreview createSip(Path path, TreeNode node) {
     Set<Path> metaPath = getMetadataPath(path);
 
+    boolean jumpBaseFolder = ConfigurationManager.getConfigAsBoolean(Constants.CONF_K_SIP_CREATION_ALWAYS_JUMP_FOLDER,
+      false);
+
     Set<TreeNode> filesSet = new HashSet<>();
     // start as false otherwise when there's only files they would be jumped
     boolean onlyFiles = false;
     // check if there's a folder with only files inside
     // in that case we will jump the folder and add the files to the root of the
     // representation
+
     if (Files.isDirectory(node.getPath())) {
       onlyFiles = true;
-      for (String pt : node.getKeys()) {
-        if (Files.isDirectory(Paths.get(pt))) {
-          onlyFiles = false;
-          break;
+      if (!jumpBaseFolder) {
+        for (String pt : node.getKeys()) {
+          if (Files.isDirectory(Paths.get(pt))) {
+            onlyFiles = false;
+            break;
+          }
         }
       }
     }

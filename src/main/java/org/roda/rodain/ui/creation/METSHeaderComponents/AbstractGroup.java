@@ -225,7 +225,7 @@ public abstract class AbstractGroup extends VBox {
     return METSHeaderUtils.getFieldParameterAsInteger(sipType, shortId, suffix, defaultValue);
   }
 
-  protected Boolean getFieldParameterAsBoolean(String suffix, Boolean defaultValue) {
+  protected Boolean getFieldParameterAsBoolean(String suffix, boolean defaultValue) {
     return METSHeaderUtils.getFieldParameterAsBoolean(sipType, shortId, suffix, defaultValue);
   }
 

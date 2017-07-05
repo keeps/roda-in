@@ -120,9 +120,9 @@ public class METSHeaderUtils {
   }
 
   public static Boolean getFieldParameterAsBoolean(Constants.SipType sipType, String fieldShortId, String suffix,
-    Boolean defaultValue) {
-    // valueOf defaults to false, using an 'or' to force the default
-    return Boolean.valueOf(getFieldParameter(sipType, fieldShortId, suffix)) || defaultValue;
+    boolean defaultValue) {
+    return ConfigurationManager.getConfigAsBoolean(Constants.CONF_K_METS_HEADER_FIELDS_PREFIX + sipType.name()
+      + Constants.CONF_K_METS_HEADER_FIELD_SEPARATOR + fieldShortId + suffix, defaultValue);
   }
 
   public static String getTextFromI18N(String key) {

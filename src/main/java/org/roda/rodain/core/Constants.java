@@ -102,6 +102,7 @@ public final class Constants {
   public static final String CONF_K_EXPORT_LAST_REPORT_CREATION_SWITCH = "export.lastReportCreationSwitch";
   public static final String CONF_K_EXPORT_LAST_SIP_OUTPUT_FOLDER = "export.lastSipOutputFolder";
   public static final String CONF_K_ID_PREFIX = "idPrefix";
+  public static final String CONF_K_SIP_CREATION_ALWAYS_JUMP_FOLDER = "sipPreviewCreator.createSip.alwaysJumpFolder";
   // METS Header fields
   public static final String CONF_K_METS_HEADER_FIELDS_PREFIX = "metsheader.";
   public static final String CONF_K_METS_HEADER_FIELDS_SUFFIX = ".fields";

@@ -471,6 +471,25 @@ public class ConfigurationManager {
    *          The name of the property (config)
    * @return The value of the property (config)
    */
+  public static Boolean getConfigAsBoolean(String key, boolean defaultValue) {
+    // valueOf defaults to false, using an 'or' to force the default
+    return Boolean.valueOf(getConfig(key)) || defaultValue;
+  }
+
+  /**
+   * @param key
+   *          The name of the property (config)
+   * @return The value of the property (config)
+   */
+  public static Boolean getConfigAsBoolean(String key) {
+    return getConfigAsBoolean(key, false);
+  }
+
+  /**
+   * @param key
+   *          The name of the property (config)
+   * @return The value of the property (config)
+   */
   public static String[] getConfigAsStringArray(String key) {
     String[] res;
     if (externalConfig != null && externalConfig.containsKey(key)) {
