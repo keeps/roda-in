@@ -255,6 +255,9 @@ public class ConfigurationManager {
 
   private static void processLanguageAndOtherResources() {
     String appLanguage = getAppConfig("app.language");
+    if (StringUtils.isBlank(appLanguage)) {
+      appLanguage = getConfig(Constants.CONF_K_DEFAULT_LANGUAGE);
+    }
     locale = parseLocale(appLanguage);
     resourceBundle = ResourceBundle.getBundle("properties/lang", locale, new FolderBasedUTF8Control());
     helpBundle = ResourceBundle.getBundle("properties/help", locale, new FolderBasedUTF8Control());

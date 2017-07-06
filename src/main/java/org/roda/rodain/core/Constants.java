@@ -87,6 +87,7 @@ public final class Constants {
   public static final String CONF_K_SUFFIX_LEVELS_ICON = "levels.icon.";
   // configs keys
   public static final String CONF_K_ACTIVE_SIP_TYPES = "activeSipTypes";
+  public static final String CONF_K_DEFAULT_LANGUAGE = "defaultLanguage";
   public static final String CONF_K_LAST_SIP_TYPE = "lastSipType";
   public static final String CONF_K_DEFAULT_SIP_TYPE = "creationModalPreparation.defaultSipType";
   public static final String CONF_K_IGNORED_FILES = "app.ignoredFiles";
