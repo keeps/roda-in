@@ -51,15 +51,12 @@ public class Controller {
     String rodaInEnv = System.getenv(Constants.RODAIN_ENV_VARIABLE);
     if (!(checkForEnvVariable && Constants.RODAIN_ENV_TESTING.equals(rodaInEnv))) {
       try {
-        Date currentVersion = getCurrentVersionBuildDate();
-        Date latestVersion = getLatestVersionBuildDate();
+        String currentVersion = getCurrentVersion();
+        String latestVersion = getLatestVersion();
 
-        if (currentVersion != null && latestVersion != null) {
-          if (currentVersion.compareTo(latestVersion) < 0) {
-            String content = String.format(I18n.t(Constants.I18N_NEW_VERSION_CONTENT), getCurrentVersion(),
-              getLatestVersion());
-            res = Optional.ofNullable(content);
-          }
+        if (currentVersion != null && latestVersion != null && !currentVersion.equals(latestVersion)) {
+          String content = String.format(I18n.t(Constants.I18N_NEW_VERSION_CONTENT), currentVersion, latestVersion);
+          res = Optional.ofNullable(content);
         }
       } catch (ConfigurationException e) {
         LOGGER.error("Could not retrieve application version from build.properties", e);

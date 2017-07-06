@@ -155,11 +155,12 @@ public final class ControllerUtils {
    */
   protected static String getLatestVersion() throws URISyntaxException, IOException {
     URI uri = new URI(Constants.RODAIN_GITHUB_LATEST_VERSION_API_LINK);
-    // FIXME 20170307 hsilva: possible leak as stream is not closed
-    JSONTokener tokener = new JSONTokener(uri.toURL().openStream());
-    JSONObject versionJSON = new JSONObject(tokener);
+    try (InputStream in = uri.toURL().openStream()) {
+      JSONTokener tokener = new JSONTokener(in);
+      JSONObject versionJSON = new JSONObject(tokener);
 
-    return versionJSON.getString("tag_name");
+      return versionJSON.getString("tag_name");
+    }
   }
 
   /**
@@ -186,17 +187,19 @@ public final class ControllerUtils {
    */
   protected static Date getLatestVersionBuildDate() throws URISyntaxException, IOException {
     URI uri = new URI(Constants.RODAIN_GITHUB_LATEST_VERSION_API_LINK);
-    JSONTokener tokener = new JSONTokener(uri.toURL().openStream());
-    JSONObject versionJSON = new JSONObject(tokener);
-    String dateRaw = versionJSON.getString("created_at");
+    try (InputStream in = uri.toURL().openStream()) {
+      JSONTokener tokener = new JSONTokener(in);
+      JSONObject versionJSON = new JSONObject(tokener);
+      String dateRaw = versionJSON.getString("created_at");
 
-    SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT_3);
-    try {
-      return sdf.parse(dateRaw);
-    } catch (ParseException e) {
-      LOGGER.warn("Cannot parse the date \"{}\"", dateRaw, e);
+      SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT_3);
+      try {
+        return sdf.parse(dateRaw);
+      } catch (ParseException e) {
+        LOGGER.warn("Cannot parse the date \"{}\"", dateRaw, e);
+      }
+      return null;
     }
-    return null;
   }
 
   protected static String createID() {
