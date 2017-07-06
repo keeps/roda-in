@@ -132,9 +132,9 @@ public class CreationModalPreparation extends BorderPane {
     HBox prefixBox = createSipNameStrategyBoxAndDropdown();
 
     sipTypes.getSelectionModel().clearSelection();
-    Pair lastSipType = getLastSipType();
-    if (lastSipType != null) {
-      sipTypes.getSelectionModel().select(lastSipType);
+    Pair lastOrDefaultSipType = getLastOrDefaultSipType();
+    if (lastOrDefaultSipType != null) {
+      sipTypes.getSelectionModel().select(lastOrDefaultSipType);
     } else {
       sipTypes.getSelectionModel().selectFirst();
     }
@@ -505,11 +505,19 @@ public class CreationModalPreparation extends BorderPane {
     setBottom(bottom);
   }
 
-  private static Pair getLastSipType() {
+  private static Pair getLastOrDefaultSipType() {
     String lastSipType = ConfigurationManager.getAppConfig(Constants.CONF_K_LAST_SIP_TYPE);
     for (Pair sipType : SIP_TYPES) {
       String name = (String) sipType.getValue();
       if (name.equals(lastSipType)) {
+        return sipType;
+      }
+    }
+
+    String defaultSipType = ConfigurationManager.getConfig(Constants.CONF_K_DEFAULT_SIP_TYPE);
+    for (Pair sipType : SIP_TYPES) {
+      String name = (String) sipType.getValue();
+      if (name.equals(defaultSipType)) {
         return sipType;
       }
     }

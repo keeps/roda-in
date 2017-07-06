@@ -88,6 +88,7 @@ public final class Constants {
   // configs keys
   public static final String CONF_K_ACTIVE_SIP_TYPES = "activeSipTypes";
   public static final String CONF_K_LAST_SIP_TYPE = "lastSipType";
+  public static final String CONF_K_DEFAULT_SIP_TYPE = "creationModalPreparation.defaultSipType";
   public static final String CONF_K_IGNORED_FILES = "app.ignoredFiles";
   public static final String CONF_K_METADATA_TEMPLATES = "metadata.templates";
   public static final String CONF_K_METADATA_TYPES = "metadata.types";
