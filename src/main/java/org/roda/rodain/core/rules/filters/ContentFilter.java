@@ -94,11 +94,16 @@ public class ContentFilter {
         // slash we're checking
         if (index == -1) {
           break;
+        } else if (path.startsWith("\\\\")) {
+          //for UNC paths iterations throw the subs will bring an exception
+          return false;
         } else {
           String sub = path.substring(0, index);
           fromIndex = index + 1; // move the starting index for the next
           // iteration so it's after the slash
-          if (ignored.contains(sub) || mapped.contains(sub) || IgnoredFilter.isIgnored(Paths.get(sub))) {
+          if (ignored.contains(sub) || mapped.contains(sub)
+                  // Paths.get(sub) will rise InvalidPathException for UNC paths on some point of iteration
+                  || IgnoredFilter.isIgnored(Paths.get(sub))) {
             result = true;
           }
         }
