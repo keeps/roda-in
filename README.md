@@ -11,7 +11,7 @@ The tool includes features such as:
 * Definition of metadata templates
 * Support for various metadata formats (EAD, DC, etc.)
 * Creation of SIP of unlimited size
-* Creation of SIP in various formats: [BagIt](https://github.com/LibraryOfCongress/bagit-java) and [E-ARK](http://www.eark-project.com/resources/project-deliverables/51-d33pilotspec)
+* Creation of SIP in various formats: [BagIt](https://github.com/LibraryOfCongress/bagit-java) and [E-ARK](http://dilcis.eu/specifications/sip)
 
 This application was part of the [RODA project](http://www.roda-community.org) and now has been released as a project by its own due to the increasing interest in its particular functionality. It is now being further developed in the [E-ARK project](http://www.eark-project.com).
 
@@ -20,7 +20,7 @@ This application was part of the [RODA project](http://www.roda-community.org) a
 RODA-in supports several Submission Information Package formats. At the moment we have included support for:
 
 * BagIt, a hierarchical file packaging format for storage and transfer of arbitrary digital content.  A "bag" has just enough structure to enclose descriptive "tags" and a "payload" but does not require knowledge of the payload's internal semantics. This BagIt format should be suitable for disk-based or network-based storage and transfer.  BagIt is widely used in the practice of digital preservation. The specification of BagIt can be found [here](https://tools.ietf.org/html/draft-kunze-bagit-13).
-* E-ARK SIP format, a Submission Information Package format developed by the EU funded E-ARK Project. The specification can be found [here](http://www.eark-project.com/resources/project-deliverables/17-d32-e-ark-sip-draft-specification/file)
+* E-ARK SIP format, a Submission Information Package format developed by the EU funded E-ARK Project. The specification can be found [here](http://dilcis.eu/specifications/sip)
 
 
 ## Requirements
@@ -166,8 +166,8 @@ For more information or commercial support, contact [KEEP SOLUTIONS](http://www.
 ## Further reading
 
 * [Bagit specification](https://tools.ietf.org/html/draft-kunze-bagit-08)
-* [E-ARK SIP specification](http://www.eark-project.com/resources/project-deliverables/17-d32-e-ark-sip-draft-specification/file)
-* [E-ARK Common specification](http://www.eark-project.com/resources/specificationdocs/50-draftcommonspec-1/file)
+* [E-ARK SIP specification](http://dilcis.eu/specifications/sip)
+* [E-ARK Common specification](http://dilcis.eu/specifications/common-specification)
 * [RODA source code](http://github.com/keeps/roda)
 * [RODA Community Web site](http://www.roda-community.org)
 * [E-ARK Project Web site](http://www.eark-project.com)
