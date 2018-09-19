@@ -119,9 +119,12 @@ The available options that alter the fields created for each tag are:
 
 The following is an example of how the tags can be used:
 
+
+<!--- {% raw %} --->
 ```handlebars
 {{title order=1 type="text" label="Template title" mandatory=true auto-generate="title"}}
 ```
+<!--- {% endraw %} --->
 
 ## How to build from source
 
