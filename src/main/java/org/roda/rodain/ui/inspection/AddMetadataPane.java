@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.roda.rodain.core.ConfigurationManager;
 import org.roda.rodain.core.Constants;
 import org.roda.rodain.core.Constants.MetadataOption;
@@ -401,8 +402,10 @@ public class AddMetadataPane extends BorderPane {
 
   private void addRelatedTags(String templateVersion, DescriptiveMetadata metadataToAdd) {
     String metadataTags = ConfigurationManager.getMetadataConfig(templateVersion + Constants.CONF_K_SUFFIX_TAGS);
-    List<String> tagList = Arrays.asList(metadataTags.split(","));
-    metadataToAdd.setRelatedTags(tagList);
+    if (StringUtils.isNotBlank(metadataTags)) {
+      List<String> tagList = Arrays.asList(metadataTags.split(","));
+      metadataToAdd.setRelatedTags(tagList);
+    }
   }
 
   private void createCancelButton() {
