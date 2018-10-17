@@ -61,7 +61,7 @@ public class CreateSips {
     }
     startedTime = System.currentTimeMillis();
 
-    sipsCount = sips.size();
+    sipsCount = previews.size();
     switch (type) {
       case BAGIT:
         creator = new BagitSipCreator(outputPath, previews, sipNameBuilder, createReport);
