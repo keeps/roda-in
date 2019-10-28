@@ -69,6 +69,9 @@ public class CreateSips {
       case EARK:
         creator = new EarkSipCreator(outputPath, previews, sipNameBuilder, createReport, ipHeader);
         break;
+      case EARK2:
+        creator = new EarkSip2Creator(outputPath, previews, sipNameBuilder, createReport, ipHeader);
+        break;
       case HUNGARIAN:
         creator = new HungarianSipCreator(outputPath, previews, sipNameBuilder, createReport, ipHeader);
         break;

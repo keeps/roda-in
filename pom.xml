@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.roda</groupId>
 	<artifactId>rodain</artifactId>
-	<version>2.1.2</version>
+	<version>2.2.0</version>
 
 	<prerequisites>
 		<maven>3.0</maven>
@@ -28,7 +29,7 @@
 		<plug.version.resources>3.0.2</plug.version.resources>
 		<plug.version.site>3.6</plug.version.site>
 		<!-- dependencies versions -->
-		<dep.version.commons-ip>1.0.3</dep.version.commons-ip>
+		<dep.version.commons-ip2>2.0.0-alpha1</dep.version.commons-ip2>
 		<dep.version.sf-test>4.0.6-alpha</dep.version.sf-test>
 		<dep.version.jackson>2.9.9</dep.version.jackson>
 		<dep.version.slf4j>1.7.25</dep.version.slf4j>
@@ -40,9 +41,9 @@
 
 	<repositories>
 		<repository>
-			<id>KEEPS-Artifacts</id>
-			<name>KEEP Artifacts-releases (fits, etc.)</name>
-			<url>http://artifactory.keep.pt/keep</url>
+			<id>keeps_artifactory</id>
+			<name>KEEP SOLUTIONS artifactory</name>
+			<url>https://artifactory.keep.pt/artifactory/keep</url>
 		</repository>
 		<repository>
 			<id>maven-central-repo</id>
@@ -220,7 +221,7 @@
 					<!-- this is false by default, forces the plugin to generate the file -->
 					<generateGitPropertiesFile>true</generateGitPropertiesFile>
 
-					<!-- The path for the properties file to be generated. See Super Pom
+					<!-- The path for the properties file to be generated. See Super Pom 
 						for default variable reference https://maven.apache.org/guides/introduction/introduction-to-the-pom.html -->
 					<generateGitPropertiesFilename>
 						${project.basedir}/src/main/resources/build.properties
@@ -289,8 +290,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.roda-project</groupId>
-			<artifactId>commons-ip</artifactId>
-			<version>${dep.version.commons-ip}</version>
+			<artifactId>commons-ip2</artifactId>
+			<version>${dep.version.commons-ip2}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.jknack</groupId>

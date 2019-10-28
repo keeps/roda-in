@@ -21,7 +21,6 @@ import org.roda.rodain.core.Controller;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.Pair;
 import org.roda.rodain.core.template.TemplateFieldValue;
-import org.roda_project.commons_ip.model.IPContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,12 +39,12 @@ public class Sip extends Observable {
   private List<DescriptiveMetadata> metadata = new ArrayList<>();
   private Map<String, Object> additionalProperties = new TreeMap<>();
   private boolean isUpdateSIP = false;
-  private String type;
+  private IPContentType type;
 
   public Sip() {
     title = I18n.t(Constants.I18N_ROOT);
     id = Controller.createID();
-    this.type = IPContentType.getMIXED().asString();
+    this.type = IPContentType.defaultIPContentType();
   }
 
   public Sip(DescriptiveMetadata template) {
@@ -352,19 +351,11 @@ public class Sip extends Observable {
 
   @JsonIgnore
   public IPContentType getContentType() {
-    return new IPContentType(type);
-  }
-
-  public void setContentType(IPContentType contentType) {
-    this.type = contentType.asString();
-  }
-
-  public String getType() {
     return type;
   }
 
-  public void setType(String type) {
-    this.type = type;
+  public void setContentType(IPContentType contentType) {
+    this.type = contentType;
   }
 
 }

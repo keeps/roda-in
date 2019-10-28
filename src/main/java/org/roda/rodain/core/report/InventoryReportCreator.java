@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -65,12 +66,19 @@ public class InventoryReportCreator {
       headers.add(CSV_FIELD_FILE_SIZE);
       csvFilePrinter.printRecord(headers);
       for (Map.Entry<Path, Object> entry : sips.entrySet()) {
-        if (entry.getValue() instanceof Bag) {
-          List<List<String>> lines = bagToCSVLines(entry.getKey());
-          csvFilePrinter.printRecords(lines);
-        } else if (entry.getValue() instanceof SIP) {
-          SIP sip = (SIP) entry.getValue();
-          List<List<String>> lines = SIPToCSVLines(entry.getKey(), sip);
+        Object sipToProcess = entry.getValue();
+        List<List<String>> lines = null;
+        if (sipToProcess instanceof Bag) {
+          lines = bagToCSVLines(entry.getKey());
+        } else if (sipToProcess instanceof SIP) {
+          SIP sip = (SIP) sipToProcess;
+          lines = generateCsvLines(entry.getKey(), sip.getZipEntries().values());
+        } else if (sipToProcess instanceof org.roda_project.commons_ip2.model.SIP) {
+          org.roda_project.commons_ip2.model.SIP sip = (org.roda_project.commons_ip2.model.SIP) sipToProcess;
+          lines = generateCsvLines(entry.getKey(), sip.getZipEntries().values());
+        }
+
+        if (lines != null) {
           csvFilePrinter.printRecords(lines);
         }
       }
@@ -82,9 +90,9 @@ public class InventoryReportCreator {
     }
   }
 
-  private List<List<String>> SIPToCSVLines(Path path, SIP sip) {
+  private List<List<String>> generateCsvLines(Path path, Collection<ZipEntryInfo> values) {
     List<List<String>> lines = new ArrayList<List<String>>();
-    for (ZipEntryInfo entry : sip.getZipEntries().values()) {
+    for (ZipEntryInfo entry : values) {
       if (!(entry instanceof METSZipEntryInfo)) {
         try {
           List<String> line = new ArrayList<String>();

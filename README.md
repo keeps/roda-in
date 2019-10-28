@@ -1,6 +1,6 @@
 # RODA-In
 
-RODA-in is a tool specially designed for producers and archivists to create Submission Information Packages (SIP) ready to be submitted to an Open Archival Information System (OAIS). The tool creates SIPs from files and folders available on the local file system. 
+RODA-in is a tool specially designed for producers and archivists to create Submission Information Packages (SIP) ready to be submitted to an Open Archival Information System (OAIS). The tool creates SIPs from files and folders available on the local file system.
 
 In version 2 we revolutionized the way SIPs are created to satisfy the need for mass processing of data. In this version you can create thousands of valid SIPs with just a few clicks, complete with data and metadata.
 
@@ -11,16 +11,16 @@ The tool includes features such as:
 * Definition of metadata templates
 * Support for various metadata formats (EAD, DC, etc.)
 * Creation of SIP of unlimited size
-* Creation of SIP in various formats: [BagIt](https://github.com/LibraryOfCongress/bagit-java) and [E-ARK](http://dilcis.eu/specifications/sip)
+* Creation of SIP in various formats: [BagIt](https://github.com/LibraryOfCongress/bagit-java) and [E-ARK (versions 1.x & 2.x)](http://dilcis.eu/specifications/sip)
 
-This application was part of the [RODA project](http://www.roda-community.org) and now has been released as a project by its own due to the increasing interest in its particular functionality. It is now being further developed in the [E-ARK project](http://www.eark-project.com).
+This application was part of the [RODA project](http://www.roda-community.org) and now has been released as a project by its own due to the increasing interest in its particular functionality. It was further developed in the [E-ARK project](http://www.eark-project.com) and now it is being developed in the [CEF eArchiving Building Block](https://ec.europa.eu/cefdigital/wiki/display/CEFDIGITAL/eArchiving).
 
 ## Supported SIP formats
 
 RODA-in supports several Submission Information Package formats. At the moment we have included support for:
 
 * BagIt, a hierarchical file packaging format for storage and transfer of arbitrary digital content.  A "bag" has just enough structure to enclose descriptive "tags" and a "payload" but does not require knowledge of the payload's internal semantics. This BagIt format should be suitable for disk-based or network-based storage and transfer.  BagIt is widely used in the practice of digital preservation. The specification of BagIt can be found [here](https://tools.ietf.org/html/draft-kunze-bagit-13).
-* E-ARK SIP format, a Submission Information Package format developed by the EU funded E-ARK Project. The specification can be found [here](http://dilcis.eu/specifications/sip)
+* E-ARK SIP format, both versions 1.x & 2.x, a Submission Information Package format developed by the EU funded E-ARK Project and maintained by the Digital Information LifeCycle Interoperability Standards Board (DILCIS Board). The specification can be found [here](http://dilcis.eu/specifications/sip).
 
 
 ## Requirements
@@ -53,7 +53,7 @@ The basic workflow of the application is as follows:
 1. Choose a working folder in your file system (panel on the left). This will serve as the root of your project.
 2. Choose or create a classification scheme (panel on the center). There's two options:
   - Load a classification scheme. You can obtain a classification scheme from RODA repository, for example.
-  - Create a new classification scheme. 
+  - Create a new classification scheme.
 3. Drag files/folders from the left panel to the center panel into the appropriate node in the classification scheme.
 4. Choose the creatorOption of data and metadata association. This will have impact on the number and structure of the SIPs created.
 5. (Optional) Inspect the created SIPs, edit metadata and content.
@@ -71,25 +71,25 @@ The following actions are supported to edit the classification scheme:
 
 ## Tutorials
 
-In this section you may find a few video tutorials on how to use the RODA-in tool to create Submission Information Packages (SIP). 
+In this section you may find a few video tutorials on how to use the RODA-in tool to create Submission Information Packages (SIP).
 
 #### How to download and run the application  
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=bIcWnOJVyLg
-" target="_blank"><img src="http://img.youtube.com/vi/bIcWnOJVyLg/0.jpg" 
+" target="_blank"><img src="http://img.youtube.com/vi/bIcWnOJVyLg/0.jpg"
 alt="Tutorial" width="240" height="180" border="1" /></a>
 
 #### How to create SIPs from local files and folders
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=FRd6NUHZ3R4
-" target="_blank"><img src="http://img.youtube.com/vi/FRd6NUHZ3R4/0.jpg" 
+" target="_blank"><img src="http://img.youtube.com/vi/FRd6NUHZ3R4/0.jpg"
 alt="Tutorial" width="240" height="180" border="1" /></a>
 
 
 #### Advanced ways of creating SIPs
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=nJEeTFdEyWM
-" target="_blank"><img src="http://img.youtube.com/vi/nJEeTFdEyWM/0.jpg" 
+" target="_blank"><img src="http://img.youtube.com/vi/nJEeTFdEyWM/0.jpg"
 alt="Tutorial" width="240" height="180" border="1" /></a>
 
 #### The templating system
@@ -138,13 +138,13 @@ That's it! Binaries will be on the target folder. To run the application just do
 java -jar roda-in-app-x.y.z.jar
 ```
 
-RODA-in uses [TestFX](https://github.com/TestFX/TestFX) to execute tests using the user interface. 
-TestFX needs full control of the mouse and keyboard when running the tests, so you won't be able to use them. 
+RODA-in uses [TestFX](https://github.com/TestFX/TestFX) to execute tests using the user interface.
+TestFX needs full control of the mouse and keyboard when running the tests, so you won't be able to use them.
 In order to make the tests run in the headless mode (so that they can run in the background) follow these steps:
 
-1. Download the [Monocle](http://mvnrepository.com/artifact/org.testfx/openjfx-monocle) graphic environment jar 
+1. Download the [Monocle](http://mvnrepository.com/artifact/org.testfx/openjfx-monocle) graphic environment jar
 2. Copy the jar to `<JDK_HOME>/jre/lib/ext`
-3. Run the command `mvn clean package -Dtestfx.robot=glass -Dglass.platform=Monocle -Dmonocle.platform=Headless -Dprism.order=sw` 
+3. Run the command `mvn clean package -Dtestfx.robot=glass -Dglass.platform=Monocle -Dmonocle.platform=Headless -Dprism.order=sw`
 
 ## Troubleshooting
 
@@ -167,12 +167,15 @@ For more information or commercial support, contact [KEEP SOLUTIONS](http://www.
 
 ## Further reading
 
-* [Bagit specification](https://tools.ietf.org/html/draft-kunze-bagit-08)
-* [E-ARK SIP specification](http://dilcis.eu/specifications/sip)
-* [E-ARK Common specification](http://dilcis.eu/specifications/common-specification)
-* [RODA source code](http://github.com/keeps/roda)
-* [RODA Community Web site](http://www.roda-community.org)
-* [E-ARK Project Web site](http://www.eark-project.com)
+* [Bagit specification](https://tools.ietf.org/html/draft-kunze-bagit-13)
+* [E-ARK SIP specification (all versions)](https://dilcis.eu/specifications/sip)
+* [E-ARK SIP specification (latest version)](https://earksip.dilcis.eu)
+* [E-ARK Common specification (all versions)](https://dilcis.eu/specifications/common-specification)
+* [E-ARK Common specification (latest version)](https://earkcsip.dilcis.eu)
+* [RODA source code](https://github.com/keeps/roda)
+* [RODA Community Web site](https://www.roda-community.org)
+* [E-ARK Project Web site](https://www.eark-project.com)
+* [CEF eArchiving Building Block](https://ec.europa.eu/cefdigital/wiki/display/CEFDIGITAL/eArchiving)
 
 
 ## Contributing
@@ -195,7 +198,7 @@ To increase the changes of you code being accepted and merged into RODA source h
 
 
 ### Translating
-To help make RODA-in better you can translate it to your language. 
+To help make RODA-in better you can translate it to your language.
 
 RODA-in uses Transifex, a localization platform, and you can find the [project here](https://www.transifex.com/roda-1/roda-in/). If you don't know how to use Transifex, check out [these instructions](http://docs.transifex.com/tutorials/txeditor/), it's really easy and simple.
 

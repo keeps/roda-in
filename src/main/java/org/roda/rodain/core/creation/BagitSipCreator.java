@@ -15,6 +15,7 @@ import org.roda.rodain.core.Controller;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.Pair;
 import org.roda.rodain.core.rules.TreeNode;
+import org.roda.rodain.core.schema.RepresentationContentType;
 import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.core.sip.SipPreview;
 import org.roda.rodain.core.sip.SipRepresentation;
@@ -22,7 +23,9 @@ import org.roda.rodain.core.sip.naming.SIPNameBuilder;
 import org.roda.rodain.ui.creation.CreationModalProcessing;
 import org.roda_project.commons_ip.model.IPConstants;
 import org.roda_project.commons_ip.model.IPContentType;
+import org.roda_project.commons_ip.model.IPContentType.IPContentTypeEnum;
 import org.roda_project.commons_ip.model.IPRepresentation;
+import org.roda_project.commons_ip.model.RepresentationContentType.RepresentationContentTypeEnum;
 import org.roda_project.commons_ip.model.SIP;
 import org.roda_project.commons_ip.model.SIPObserver;
 import org.roda_project.commons_ip.model.impl.bagit.BagitSIP;
@@ -36,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * @author Andre Pereira apereira@keep.pt
  * @since 19/11/2015.
  */
-public class BagitSipCreator extends SimpleSipCreator implements SIPObserver {
+public class BagitSipCreator extends SimpleSipCreator implements SIPObserver, SipCreator {
   private static final Logger LOGGER = LoggerFactory.getLogger(BagitSipCreator.class.getName());
   private int countFilesOfZip;
   private int currentSIPsize = 0;
@@ -90,10 +93,12 @@ public class BagitSipCreator extends SimpleSipCreator implements SIPObserver {
     currentSipName = descriptionObject.getTitle();
     currentAction = actionCreatingFolders;
 
-    IPContentType contentType = descriptionObject instanceof SipPreview
-      ? ((SipPreview) descriptionObject).getContentType() : IPContentType.getMIXED();
+    org.roda.rodain.core.schema.IPContentType userDefinedContentType = descriptionObject instanceof SipPreview
+      ? ((SipPreview) descriptionObject).getContentType()
+      : org.roda.rodain.core.schema.IPContentType.defaultIPContentType();
 
-    SIP bagit = new BagitSIP(Controller.encodeId(descriptionObject.getId()), contentType);
+    SIP bagit = new BagitSIP(Controller.encodeId(descriptionObject.getId()),
+      new IPContentType(userDefinedContentType.getValue()));
     bagit.addCreatorSoftwareAgent(agentName);
     bagit.addObserver(this);
     bagit.setStatus(IPStatus.NEW);
@@ -104,7 +109,7 @@ public class BagitSipCreator extends SimpleSipCreator implements SIPObserver {
         SipPreview sip = (SipPreview) descriptionObject;
         for (SipRepresentation sr : sip.getRepresentations()) {
           IPRepresentation rep = new IPRepresentation(sr.getName());
-          rep.setContentType(sr.getType());
+          rep.setContentType(new org.roda_project.commons_ip.model.RepresentationContentType(sr.getType().getValue()));
 
           Set<TreeNode> files = sr.getFiles();
           currentSIPadded = 0;
@@ -210,4 +215,29 @@ public class BagitSipCreator extends SimpleSipCreator implements SIPObserver {
     currentAction = actionFinalizingSip;
     currentSipProgress = 0;
   }
+
+  public static String getText() {
+    return "BagIt";
+  }
+
+  public static boolean requiresMETSHeaderInfo() {
+    return false;
+  }
+
+  public static List<org.roda.rodain.core.schema.IPContentType> ipSpecificContentTypes() {
+    List<org.roda.rodain.core.schema.IPContentType> res = new ArrayList<>();
+    for (IPContentTypeEnum ipContentTypeEnum : IPContentTypeEnum.values()) {
+      res.add(new org.roda.rodain.core.schema.IPContentType(getText(), ipContentTypeEnum.toString()));
+    }
+    return res;
+  }
+
+  public static List<RepresentationContentType> representationSpecificContentTypes() {
+    List<RepresentationContentType> res = new ArrayList<>();
+    for (RepresentationContentTypeEnum representationContentTypeEnum : RepresentationContentTypeEnum.values()) {
+      res.add(new RepresentationContentType(getText(), representationContentTypeEnum.toString()));
+    }
+    return res;
+  }
+
 }

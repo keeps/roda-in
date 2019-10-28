@@ -11,8 +11,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import javafx.event.EventHandler;
-import javafx.scene.control.DialogEvent;
 import org.apache.commons.configuration.ConfigurationException;
 import org.roda.rodain.core.ConfigurationManager;
 import org.roda.rodain.core.Constants;

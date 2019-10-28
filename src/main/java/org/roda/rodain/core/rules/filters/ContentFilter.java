@@ -84,6 +84,9 @@ public class ContentFilter {
       || PathCollection.getState(Paths.get(path)) != PathState.NORMAL
       || IgnoredFilter.isIgnored(Paths.get(path))) {
       result = true;
+    } else if (path.startsWith("\\\\")) {
+      //for UNC paths iterations throw the subs will bring an exception
+      return false;
     } else {
       int index = 0, end = path.length(), fromIndex = 0;
       String separator = File.separator;

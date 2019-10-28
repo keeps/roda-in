@@ -29,6 +29,7 @@ import org.roda.rodain.core.ConfigurationManager;
 import org.roda.rodain.core.Constants;
 import org.roda.rodain.core.Constants.MetadataOption;
 import org.roda.rodain.core.Constants.PathState;
+import org.roda.rodain.core.Constants.SipType;
 import org.roda.rodain.core.Controller;
 import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.Pair;
@@ -36,6 +37,8 @@ import org.roda.rodain.core.PathCollection;
 import org.roda.rodain.core.rules.TreeNode;
 import org.roda.rodain.core.rules.filters.ContentFilter;
 import org.roda.rodain.core.schema.DescriptiveMetadata;
+import org.roda.rodain.core.schema.IPContentType;
+import org.roda.rodain.core.schema.RepresentationContentType;
 import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.core.sip.SipPreview;
 import org.roda.rodain.core.sip.SipRepresentation;
@@ -55,8 +58,6 @@ import org.roda.rodain.ui.schema.ui.SipPreviewNode;
 import org.roda.rodain.ui.source.SourceTreeCell;
 import org.roda.rodain.ui.source.items.SourceTreeItem;
 import org.roda.rodain.ui.utils.FontAwesomeImageCreator;
-import org.roda_project.commons_ip.model.IPContentType;
-import org.roda_project.commons_ip.model.RepresentationContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -70,6 +71,7 @@ import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
@@ -162,7 +164,7 @@ public class InspectionPane extends BorderPane {
   private SipContentRepresentation currentRepresentation;
   private HBox representationTypeBox;
 
-  private ComboBox<Pair> contentType;
+  private ComboBox<Pair<IPContentType, String>> contentType;
 
   private Button editButton;
 
@@ -1345,7 +1347,7 @@ public class InspectionPane extends BorderPane {
 
   private void applyIPTypeToDescriptionObject(Sip itemDO, IPContentType setContentType) {
     IPContentType mixedMergeIPType = new IPContentType("{{mixed}}");
-    if (!setContentType.asString().equalsIgnoreCase(mixedMergeIPType.asString())) {
+    if (!setContentType.getValue().equalsIgnoreCase(mixedMergeIPType.getValue())) {
       itemDO.setContentType(setContentType);
     }
   }
@@ -1817,7 +1819,7 @@ public class InspectionPane extends BorderPane {
       if (commonIPType == null) {
         commonIPType = dob.getContentType();
       } else {
-        if (!commonIPType.asString().equalsIgnoreCase(dob.getContentType().asString())) {
+        if (!commonIPType.getValue().equalsIgnoreCase(dob.getContentType().getValue())) {
           commonIPType = new IPContentType("{{mixed}}");
         }
       }
@@ -1912,9 +1914,9 @@ public class InspectionPane extends BorderPane {
     representationTypeBox.getChildren().addAll(space, editButton);
 
     if (commonIPType != null) {
-      Pair commonIPTypePair = new Pair(commonIPType, commonIPType.getType());
+      Pair commonIPTypePair = new Pair(commonIPType, commonIPType.getValue());
       contentType.getSelectionModel().select(commonIPTypePair);
-      editButton.setText(((IPContentType) commonIPTypePair.getKey()).asString());
+      editButton.setText(((IPContentType) commonIPTypePair.getKey()).getValue());
       currentDescOb.setContentType(commonIPType);
     }
 
@@ -1955,57 +1957,84 @@ public class InspectionPane extends BorderPane {
   }
 
   private HBox createTypeComboBox(Sip descOb) {
-    HBox result = new HBox(10);
+    HBox result = new HBox(5);
     result.setAlignment(Pos.CENTER_LEFT);
 
     // Text field for the OTHER content type
     TextField otherTextField = new TextField();
-    otherTextField.textProperty().addListener((obs, old, newValue) -> {
-      descOb.getContentType().setOtherType(newValue);
+    otherTextField.textProperty().addListener((obs, oldValue, newValue) -> {
+      if (Constants.SIP_CONTENT_TYPE_OTHER.equalsIgnoreCase(descOb.getContentType().getValue())) {
+        descOb.getContentType().setOtherValue(newValue);
+      } else {
+        descOb.getContentType().setValue(newValue);
+      }
       editButton.setText(newValue);
 
     });
     // Content Type combo box
     contentType = new ComboBox<>();
-    List<Pair> contTypeList = new ArrayList<>();
+    List<Pair<IPContentType, String>> contTypeList = new ArrayList<>();
 
     result.getChildren().addAll(contentType);
 
     Pair selected = null;
-    for (IPContentType.IPContentTypeEnum ct : IPContentType.IPContentTypeEnum.values()) {
-      IPContentType ipCT = new IPContentType(ct);
-      Pair toAdd = new Pair(ipCT, ipCT.getType());
-      contTypeList.add(toAdd);
-      if (ipCT.asString().equalsIgnoreCase(descOb.getContentType().asString())) {
-        selected = toAdd;
+    for (Pair<SipType, List<IPContentType>> ct : SipType.getFilteredIpContentTypes()) {
+      for (IPContentType ipContentType : ct.getValue()) {
+        IPContentType ipCT = new IPContentType(ipContentType);
+        Pair toAdd = new Pair(ipCT, ipCT.asString());
+        contTypeList.add(toAdd);
+        if (ipCT.getValue().equalsIgnoreCase(descOb.getContentType().getValue())) {
+          selected = toAdd;
+        }
       }
     }
     // sort the list as strings
-    Collections.sort(contTypeList, (o1, o2) -> o1.toString().compareTo(o2.toString()));
+    Collections.sort(contTypeList, (o1, o2) -> o1.getValue().compareTo(o2.getValue()));
     contentType.setItems(FXCollections.observableList(contTypeList));
     contentType.getSelectionModel().select(selected);
-    editButton.setText(((IPContentType) selected.getKey()).asString());
+    editButton.setText(((IPContentType) selected.getKey()).getValue());
 
-    contentType.valueProperty().addListener((obs, old, newValue) -> {
-      descOb.setContentType((IPContentType) newValue.getKey());
-      if (old != null || ((IPContentType) newValue.getKey()).getType() != IPContentType.IPContentTypeEnum.MIXED) {
-        editButton.setText(((IPContentType) newValue.getKey()).asString());
+    contentType.valueProperty().addListener((obs, oldValue, newValue) -> {
+      IPContentType newContentType = (IPContentType) newValue.getKey();
+      descOb.setContentType(newContentType);
+      if (oldValue != null || IPContentType.defaultIPContentType() != newContentType) {
+
+        if (Constants.SIP_CONTENT_TYPE_OTHER.equalsIgnoreCase(descOb.getContentType().getValue())) {
+          if ("".equals(descOb.getContentType().getOtherValue())) {
+            editButton.setText(newContentType.getValue());
+          } else {
+            editButton.setText(newContentType.getOtherValue());
+          }
+        } else {
+          editButton.setText(newContentType.getValue());
+        }
       }
-      if (((IPContentType) newValue.getKey()).getType() == IPContentType.IPContentTypeEnum.OTHER) {
-        if (!result.getChildren().contains(otherTextField)) {
+
+      Node otherTextFieldNode = null;
+      for (Node node : result.getChildren()) {
+        if (node instanceof TextField) {
+          otherTextFieldNode = node;
+          break;
+        }
+      }
+      if (Constants.SIP_CONTENT_TYPE_OTHER.equalsIgnoreCase(newContentType.getValue())) {
+        if (otherTextFieldNode == null) {
           result.getChildren().add(otherTextField);
-          otherTextField.setText(descOb.getContentType().getOtherType());
+          otherTextField.setText("");
+        } else if (!oldValue.getKey().getPackageType().equalsIgnoreCase(newContentType.getPackageType())) {
+          ((TextField) otherTextFieldNode).setText("");
         }
       } else {
-        if (result.getChildren().contains(otherTextField))
-          result.getChildren().remove(otherTextField);
+        if (otherTextFieldNode != null) {
+          result.getChildren().remove(otherTextFieldNode);
+        }
       }
     });
-    contentType.getSelectionModel().select(new Pair(descOb.getContentType(), descOb.getContentType().getType()));
+    contentType.getSelectionModel().select(new Pair(descOb.getContentType(), descOb.getContentType().getValue()));
     contentType.setMinWidth(85);
-    contentType.setCellFactory(param -> new ComboBoxListCell<Pair>() {
+    contentType.setCellFactory(param -> new ComboBoxListCell<Pair<IPContentType, String>>() {
       @Override
-      public void updateItem(Pair item, boolean empty) {
+      public void updateItem(Pair<IPContentType, String> item, boolean empty) {
         super.updateItem(item, empty);
         if (item != null && item.getKey() != null) {
           String translation = I18n
@@ -2284,54 +2313,67 @@ public class InspectionPane extends BorderPane {
   }
 
   private HBox createRepresentationTypeComboBox() {
-    HBox result = new HBox(10);
+    HBox result = new HBox(5);
     result.setAlignment(Pos.CENTER_LEFT);
 
     TextField otherTextField = new TextField();
-    otherTextField.textProperty().addListener((obs, old, newValue) -> {
+    otherTextField.textProperty().addListener((obs, oldValue, newValue) -> {
       if (sipFiles.getSelectionModel().getSelectedItem().getClass() == SipContentRepresentation.class) {
         SipContentRepresentation scr = (SipContentRepresentation) sipFiles.getSelectionModel().getSelectedItem();
-        RepresentationContentType other = new RepresentationContentType(newValue);
+        RepresentationContentType other = new RepresentationContentType(scr.getRepresentation().getType());
+        if (Constants.SIP_CONTENT_TYPE_OTHER.equalsIgnoreCase(other.getValue())) {
+          other.setOtherValue(newValue);
+        }
         scr.getRepresentation().setType(other);
-        editRepresentationTypeButton.setText(scr.getRepresentation().getType().asString());
+        editRepresentationTypeButton.setText(newValue);
       }
     });
-    ComboBox<Pair> representationContentType = new ComboBox<>();
-    List<Pair> representationContentTypeList = new ArrayList<>();
+    ComboBox<Pair<RepresentationContentType, String>> representationContentType = new ComboBox<>();
+    List<Pair<RepresentationContentType, String>> representationContentTypeList = new ArrayList<>();
 
     result.getChildren().addAll(representationContentType);
 
-    for (RepresentationContentType.RepresentationContentTypeEnum rct : RepresentationContentType.RepresentationContentTypeEnum
-      .values()) {
-      RepresentationContentType rCT = new RepresentationContentType(rct);
-      Pair toAdd = new Pair(rCT, rCT.getType());
-      representationContentTypeList.add(toAdd);
+    for (Pair<SipType, List<RepresentationContentType>> rct : SipType.getFilteredRepresentationContentTypes()) {
+      for (RepresentationContentType repContentType : rct.getValue()) {
+        RepresentationContentType rCT = new RepresentationContentType(repContentType);
+        Pair<RepresentationContentType, String> toAdd = new Pair<>(rCT, rCT.asString());
+        representationContentTypeList.add(toAdd);
+      }
     }
-    Collections.sort(representationContentTypeList, (o1, o2) -> o1.toString().compareTo(o2.toString()));
+    Collections.sort(representationContentTypeList, (o1, o2) -> o1.getValue().compareTo(o2.getValue()));
     representationContentType.setItems(FXCollections.observableList(representationContentTypeList));
     representationContentType.valueProperty().addListener((obs, old, newValue) -> {
-      RepresentationContentType newRep = (RepresentationContentType) newValue.getKey();
-      if (((RepresentationContentType) newValue.getKey())
-        .getType() == RepresentationContentType.RepresentationContentTypeEnum.OTHER) {
-        if (!result.getChildren().contains(otherTextField)) {
-          result.getChildren().add(otherTextField);
+      RepresentationContentType newRep = new RepresentationContentType((RepresentationContentType) newValue.getKey());
+
+      Node otherTextFieldNode = null;
+      for (Node node : result.getChildren()) {
+        if (node instanceof TextField) {
+          otherTextFieldNode = node;
+          break;
+        }
+      }
+
+      if (Constants.SIP_CONTENT_TYPE_OTHER.equalsIgnoreCase(newRep.getValue())) {
+        if (otherTextFieldNode == null) {
           otherTextField.setText("");
+          result.getChildren().add(otherTextField);
         }
       } else {
-        if (result.getChildren().contains(otherTextField))
-          result.getChildren().remove(otherTextField);
+        if (otherTextFieldNode != null) {
+          result.getChildren().remove(otherTextFieldNode);
+        }
       }
       if (sipFiles.getSelectionModel().getSelectedItem().getClass() == SipContentRepresentation.class) {
         SipContentRepresentation scr = (SipContentRepresentation) sipFiles.getSelectionModel().getSelectedItem();
         scr.getRepresentation().setType(newRep);
-        editRepresentationTypeButton.setText(scr.getRepresentation().getType().asString());
+        editRepresentationTypeButton.setText(scr.getRepresentation().getType().getValue());
       }
     });
 
     representationContentType.setMinWidth(85);
-    representationContentType.setCellFactory(param -> new ComboBoxListCell<Pair>() {
+    representationContentType.setCellFactory(param -> new ComboBoxListCell<Pair<RepresentationContentType, String>>() {
       @Override
-      public void updateItem(Pair item, boolean empty) {
+      public void updateItem(Pair<RepresentationContentType, String> item, boolean empty) {
         super.updateItem(item, empty);
         if (item != null && item.getKey() != null) {
           String translation = I18n
@@ -2349,7 +2391,7 @@ public class InspectionPane extends BorderPane {
   public void showEditRepresentationTypeButton(SipContentRepresentation scr) {
     setCurrentRepresentation(scr);
     RepresentationContentType type = scr.getRepresentation().getType();
-    editRepresentationTypeButton.setText(type.asString());
+    editRepresentationTypeButton.setText(type.getValue());
     editRepresentationTypeButton.setVisible(true);
   }
 

@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.roda.rodain.core.rules.TreeNode;
-import org.roda_project.commons_ip.model.RepresentationContentType;
+import org.roda.rodain.core.schema.RepresentationContentType;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -19,7 +19,7 @@ public class SipRepresentation {
   public SipRepresentation(String name) {
     this.name = name;
     files = new HashSet<>();
-    this.type = RepresentationContentType.getMIXED();
+    this.type = RepresentationContentType.defaultRepresentationContentType();
   }
 
   /**

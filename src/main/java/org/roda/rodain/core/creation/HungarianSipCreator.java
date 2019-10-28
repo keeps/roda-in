@@ -22,6 +22,7 @@ import org.roda.rodain.core.I18n;
 import org.roda.rodain.core.Pair;
 import org.roda.rodain.core.rules.TreeNode;
 import org.roda.rodain.core.schema.DescriptiveMetadata;
+import org.roda.rodain.core.schema.RepresentationContentType;
 import org.roda.rodain.core.schema.Sip;
 import org.roda.rodain.core.sip.SipPreview;
 import org.roda.rodain.core.sip.SipRepresentation;
@@ -29,11 +30,13 @@ import org.roda.rodain.core.sip.naming.SIPNameBuilder;
 import org.roda.rodain.ui.creation.CreationModalProcessing;
 import org.roda_project.commons_ip.model.IPAltRecordID;
 import org.roda_project.commons_ip.model.IPContentType;
+import org.roda_project.commons_ip.model.IPContentType.IPContentTypeEnum;
 import org.roda_project.commons_ip.model.IPDescriptiveMetadata;
 import org.roda_project.commons_ip.model.IPFile;
 import org.roda_project.commons_ip.model.IPHeader;
 import org.roda_project.commons_ip.model.IPRepresentation;
 import org.roda_project.commons_ip.model.MetadataType;
+import org.roda_project.commons_ip.model.RepresentationContentType.RepresentationContentTypeEnum;
 import org.roda_project.commons_ip.model.SIP;
 import org.roda_project.commons_ip.model.SIPObserver;
 import org.roda_project.commons_ip.model.impl.hungarian.HungarianSIP;
@@ -41,7 +44,7 @@ import org.roda_project.commons_ip.utils.IPEnums.IPStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class HungarianSipCreator extends SimpleSipCreator implements SIPObserver {
+public class HungarianSipCreator extends SimpleSipCreator implements SIPObserver, SipCreator {
   private static final Logger LOGGER = LoggerFactory.getLogger(HungarianSipCreator.class.getName());
   private int countFilesOfZip;
   private int currentSIPadded = 0;
@@ -49,7 +52,7 @@ public class HungarianSipCreator extends SimpleSipCreator implements SIPObserver
   private int repProcessingSize;
 
   private SIPNameBuilder sipNameBuilder;
-  private final IPHeader ipHeader;
+  private IPHeader ipHeader;
 
   /**
    * Creates a new Hungarian SIP exporter.
@@ -94,10 +97,12 @@ public class HungarianSipCreator extends SimpleSipCreator implements SIPObserver
   private Pair createHungarianSip(Sip descriptionObject) {
     Path tempDir = Paths.get(System.getProperty("java.io.tmpdir"));
     try {
-      IPContentType contentType = descriptionObject instanceof SipPreview
-        ? ((SipPreview) descriptionObject).getContentType() : IPContentType.getMIXED();
+      org.roda.rodain.core.schema.IPContentType userDefinedContentType = descriptionObject instanceof SipPreview
+        ? ((SipPreview) descriptionObject).getContentType()
+        : org.roda.rodain.core.schema.IPContentType.defaultIPContentType();
 
-      HungarianSIP hungarianSip = new HungarianSIP(Controller.encodeId(descriptionObject.getId()), contentType);
+      HungarianSIP hungarianSip = new HungarianSIP(Controller.encodeId(descriptionObject.getId()),
+        new IPContentType(userDefinedContentType.getValue()));
       hungarianSip.addObserver(this);
       hungarianSip.setAncestors(previews.get(descriptionObject));
       if (descriptionObject.isUpdateSIP()) {
@@ -156,7 +161,7 @@ public class HungarianSipCreator extends SimpleSipCreator implements SIPObserver
         SipPreview sip = (SipPreview) descriptionObject;
         for (SipRepresentation sr : sip.getRepresentations()) {
           IPRepresentation rep = new IPRepresentation(sr.getName());
-          rep.setContentType(sr.getType());
+          rep.setContentType(new org.roda_project.commons_ip.model.RepresentationContentType(sr.getType().getValue()));
 
           Set<TreeNode> files = sr.getFiles();
           currentSIPadded = 0;
@@ -300,4 +305,29 @@ public class HungarianSipCreator extends SimpleSipCreator implements SIPObserver
     currentAction = actionFinalizingSip;
     currentSipProgress = 0;
   }
+
+  public static String getText() {
+    return "Hungarian SIP 4";
+  }
+
+  public static boolean requiresMETSHeaderInfo() {
+    return true;
+  }
+
+  public static List<org.roda.rodain.core.schema.IPContentType> ipSpecificContentTypes() {
+    List<org.roda.rodain.core.schema.IPContentType> res = new ArrayList<>();
+    for (IPContentTypeEnum ipContentTypeEnum : IPContentTypeEnum.values()) {
+      res.add(new org.roda.rodain.core.schema.IPContentType(getText(), ipContentTypeEnum.toString()));
+    }
+    return res;
+  }
+
+  public static List<RepresentationContentType> representationSpecificContentTypes() {
+    List<RepresentationContentType> res = new ArrayList<>();
+    for (RepresentationContentTypeEnum representationContentTypeEnum : RepresentationContentTypeEnum.values()) {
+      res.add(new RepresentationContentType(getText(), representationContentTypeEnum.toString()));
+    }
+    return res;
+  }
+
 }

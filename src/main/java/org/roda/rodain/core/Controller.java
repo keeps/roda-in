@@ -110,6 +110,14 @@ public class Controller {
     return ControllerUtils.getCurrentVersion();
   }
 
+  public static Optional<String> getCurrentVersionSilently() {
+    try {
+      return Optional.ofNullable(ControllerUtils.getCurrentVersion());
+    } catch (ConfigurationException e) {
+      return Optional.empty();
+    }
+  }
+
   private static String getLatestVersion() throws URISyntaxException, IOException {
     return ControllerUtils.getLatestVersion();
   }

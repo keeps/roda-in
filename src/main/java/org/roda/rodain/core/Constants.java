@@ -1,10 +1,18 @@
 package org.roda.rodain.core;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.roda.rodain.core.creation.BagitSipCreator;
+import org.roda.rodain.core.creation.EarkSip2Creator;
+import org.roda.rodain.core.creation.EarkSipCreator;
+import org.roda.rodain.core.creation.HungarianSipCreator;
+import org.roda.rodain.core.schema.IPContentType;
+import org.roda.rodain.core.schema.RepresentationContentType;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
@@ -58,9 +66,14 @@ public final class Constants {
   public static final String LANG_DEFAULT = LANG_EN;
 
   // sip related
+  public static final String SIP_DEFAULT_PACKAGE_TYPE = "UNKNOWN";
+  public static final String SIP_DEFAULT_CONTENT_TYPE = "MIXED";
+  public static final String SIP_CONTENT_TYPE_OTHER = "OTHER";
+  public static final String SIP_DEFAULT_REPRESENTATION_CONTENT_TYPE = SIP_DEFAULT_CONTENT_TYPE;
   public static final String SIP_REP_FIRST = "rep1";
   public static final String SIP_REP_PREFIX = "rep";
   public static final String SIP_DEFAULT_AGENT_NAME = "RODA-in";
+  public static final String SIP_AGENT_VERSION_UNKNOWN = "UNKNOWN";
   public static final String SIP_AGENT_NAME_FORMAT = "RODA-in %s";
   public static final String SIP_NAME_STRATEGY_SERIAL_FORMAT_NUMBER = "%03d";
 
@@ -454,18 +467,35 @@ public final class Constants {
    */
   // sip type
   public enum SipType {
-    EARK("E-ARK", true, SipNameStrategy.ID, SipNameStrategy.TITLE_ID, SipNameStrategy.TITLE_DATE),
-    BAGIT("BagIt", false, SipNameStrategy.ID, SipNameStrategy.TITLE_ID, SipNameStrategy.TITLE_DATE),
-    HUNGARIAN("Hungarian SIP 4", true, SipNameStrategy.DATE_TRANSFERRING_SERIALNUMBER);
+    EARK(EarkSipCreator.getText(), EarkSipCreator.requiresMETSHeaderInfo(), EarkSipCreator.ipSpecificContentTypes(),
+      EarkSipCreator.representationSpecificContentTypes(), SipNameStrategy.ID, SipNameStrategy.TITLE_ID,
+      SipNameStrategy.TITLE_DATE),
+    EARK2(EarkSip2Creator.getText(), EarkSip2Creator.requiresMETSHeaderInfo(), EarkSip2Creator.ipSpecificContentTypes(),
+      EarkSip2Creator.representationSpecificContentTypes(), SipNameStrategy.ID, SipNameStrategy.TITLE_ID,
+      SipNameStrategy.TITLE_DATE),
+    BAGIT(BagitSipCreator.getText(), BagitSipCreator.requiresMETSHeaderInfo(), BagitSipCreator.ipSpecificContentTypes(),
+      BagitSipCreator.representationSpecificContentTypes(), SipNameStrategy.ID, SipNameStrategy.TITLE_ID,
+      SipNameStrategy.TITLE_DATE),
+    HUNGARIAN(HungarianSipCreator.getText(), HungarianSipCreator.requiresMETSHeaderInfo(),
+      HungarianSipCreator.ipSpecificContentTypes(), HungarianSipCreator.representationSpecificContentTypes(),
+      SipNameStrategy.DATE_TRANSFERRING_SERIALNUMBER);
+
     private final String text;
     private Set<SipNameStrategy> sipNameStrategies;
     private boolean requiresMETSHeaderInfo;
+    private List<IPContentType> ipContentTypes;
+    private List<RepresentationContentType> representationContentTypes;
 
     private static SipType[] filteredValues = null;
+    private static List<Pair<SipType, List<IPContentType>>> filteredIpContentTypes = null;
+    private static List<Pair<SipType, List<RepresentationContentType>>> filteredRepresentationContentTypes = null;
 
-    private SipType(final String text, boolean requiresMETSHeaderInfo, SipNameStrategy... sipNameStrategies) {
+    private SipType(final String text, boolean requiresMETSHeaderInfo, List<IPContentType> ipContentTypes,
+      List<RepresentationContentType> representationContentTypes, SipNameStrategy... sipNameStrategies) {
       this.text = text;
       this.requiresMETSHeaderInfo = requiresMETSHeaderInfo;
+      this.ipContentTypes = ipContentTypes;
+      this.representationContentTypes = representationContentTypes;
       this.sipNameStrategies = new LinkedHashSet<>();
       for (SipNameStrategy sipNameStrategy : sipNameStrategies) {
         this.sipNameStrategies.add(sipNameStrategy);
@@ -487,6 +517,34 @@ public final class Constants {
           .toArray(new SipType[] {});
       }
       return filteredValues;
+    }
+
+    public static List<Pair<SipType, List<IPContentType>>> getFilteredIpContentTypes() {
+      if (filteredIpContentTypes == null) {
+        filteredIpContentTypes = new ArrayList<Pair<SipType, List<IPContentType>>>();
+        for (SipType sipType : getFilteredValues()) {
+          filteredIpContentTypes.add(new Pair<>(sipType, sipType.getIpContentTypes()));
+        }
+      }
+      return filteredIpContentTypes;
+    }
+
+    public static List<Pair<SipType, List<RepresentationContentType>>> getFilteredRepresentationContentTypes() {
+      if (filteredRepresentationContentTypes == null) {
+        filteredRepresentationContentTypes = new ArrayList<>();
+        for (SipType sipType : getFilteredValues()) {
+          filteredRepresentationContentTypes.add(new Pair<>(sipType, sipType.getRepresentationContentTypes()));
+        }
+      }
+      return filteredRepresentationContentTypes;
+    }
+
+    public List<IPContentType> getIpContentTypes() {
+      return ipContentTypes;
+    }
+
+    public List<RepresentationContentType> getRepresentationContentTypes() {
+      return representationContentTypes;
     }
 
     public boolean requiresMETSHeaderInfo() {
