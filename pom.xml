@@ -31,7 +31,7 @@
 		<!-- dependencies versions -->
 		<dep.version.commons-ip2>2.0.0-alpha1</dep.version.commons-ip2>
 		<dep.version.sf-test>4.0.6-alpha</dep.version.sf-test>
-		<dep.version.jackson>2.9.9</dep.version.jackson>
+		<dep.version.jackson>2.9.10.3</dep.version.jackson>
 		<dep.version.slf4j>1.7.25</dep.version.slf4j>
 		<dep.version.logback>1.2.2</dep.version.logback>
 		<dep.version.richtextfx>0.9.1</dep.version.richtextfx>
