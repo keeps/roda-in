@@ -1,5 +1,6 @@
 package org.roda.rodain.ui;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -60,6 +61,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -517,14 +519,51 @@ public class RodaInApplication extends Application {
 
     final MenuItem helpPage = new MenuItem(I18n.t(Constants.I18N_MAIN_HELP_PAGE));
     helpPage.setOnAction(event -> {
-      ModalStage modalStage = new ModalStage(stage);
-      modalStage.setRoot(new HelpModal(modalStage), false);
+      // handle missing WebView implementation
+      if (isWebViewImplemented()) {
+        ModalStage modalStage = new ModalStage(stage);
+        modalStage.setRoot(new HelpModal(modalStage), false);
+      } else {
+        openHelpInWebBrowser();
+      }
     });
 
     menuHelp.getItems().addAll(language, checkVersion, showHelp, helpPage);
 
     menu.getMenus().addAll(menuFile, menuEdit, menuClassScheme, menuView, menuHelp);
     mainPane.setTop(menu);
+  }
+
+  /**
+   * @author Jonas Bolldén jonas@bollden.se
+   * @return will return whether the used JRE has a working implementation of WebView or not.
+   *
+   * Some builds of Java do not come with WebView implemented, e.g. Amazon Corretto 8,
+   * cf. https://github.com/corretto/corretto-8/issues/26
+   */
+  private boolean isWebViewImplemented() {
+    try {
+      WebView webView = new WebView();
+      return true;
+    } catch (Throwable t) {
+      return false;
+    }
+  }
+
+  /**
+   * @author Jonas Bolldén jonas@bollden.se
+   *
+   * Opens the OS default browser and displays the help text.
+   */
+  private void openHelpInWebBrowser() {
+    String helpFilePath = ConfigurationManager.getHelpFile();
+    if (helpFilePath.toLowerCase().startsWith("file:")) {
+      helpFilePath = helpFilePath.substring(6);
+    }
+    File helpFile = new File(helpFilePath);
+    try {
+      Desktop.getDesktop().browse(helpFile.toURI());
+    } catch (IOException e) {}
   }
 
   private void updateSelectedLanguageMenu() {
