@@ -176,6 +176,7 @@ For more information or commercial support, contact [KEEP SOLUTIONS](http://www.
 * [RODA Community Web site](https://www.roda-community.org)
 * [E-ARK Project Web site](https://www.eark-project.com)
 * [CEF eArchiving Building Block](https://ec.europa.eu/cefdigital/wiki/display/CEFDIGITAL/eArchiving)
+* [RODA-in master thesis (2016)](https://repositorium.sdum.uminho.pt/bitstream/1822/47724/1/Andr%C3%A9%20Diogo%20Ribeiro%20Assun%C3%A7%C3%A3o%20Pereira.pdf)
 
 
 ## Contributing
