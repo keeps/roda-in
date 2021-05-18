@@ -1,6 +1,6 @@
 package org.roda.rodain.ui.utils;
 
-import com.sun.javafx.scene.control.skin.VirtualFlow;
+// import com.sun.javafx.scene.control.skin.VirtualFlow;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.LongProperty;
@@ -9,7 +9,7 @@ import javafx.beans.property.SimpleLongProperty;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.DragEvent;
-
+import javafx.scene.control.skin.VirtualFlow;
 /**
  * @author Andre Pereira apereira@keep.pt
  * @since 31-05-2016.
@@ -196,7 +196,7 @@ public class AutoscrollTreeView<T> extends TreeView<T> {
     // apereira 14/09/2016 In the future, it may be possible to use JavaFX 9 VirtualFlow
     // http://download.java.net/java/jdk9/jfxdocs/javafx/scene/control/skin/VirtualFlow.html
     VirtualFlow<?> flow = ((VirtualFlow<?>) lookup("VirtualFlow"));
-    flow.adjustPixels(offset);
+    flow.scrollPixels(offset);
   }
 
   // endregion

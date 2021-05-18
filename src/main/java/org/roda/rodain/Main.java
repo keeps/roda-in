@@ -21,13 +21,14 @@ public class Main {
 
   public static void main(String[] args) {
     // get the java version
-    String javaString = Runtime.class.getPackage().getSpecificationVersion();
+    /* String javaString = Runtime.class.getPackage().getSpecificationVersion();
     double javaVersion = Double.parseDouble(javaString);
     if (javaVersion < 1.8) {
       String format = I18n.t(Constants.I18N_MAIN_USE_JAVA8);
       LOGGER.error(String.format(format, javaVersion));
       return;
     }
+     */
     System.setErr(new PrintStream(new LoggingOutputStream()));
 
     RodaInApplication.start(args);
