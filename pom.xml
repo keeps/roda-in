@@ -172,7 +172,7 @@
 							</classPath>
 							<icon>src/main/resources/roda2-logo.ico</icon>
 							<jre>
-								<minVersion>11</minVersion>
+								<path>../jre/bin</path>
 							</jre>
 							<versionInfo>
 								<fileVersion>1.0.0.0</fileVersion>
@@ -186,6 +186,28 @@
 								<originalFilename>rodain-app-${jar.id}${project.version}.exe</originalFilename>
 							</versionInfo>
 						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>de.perdian.maven.plugins</groupId>
+				<artifactId>macosappbundler-maven-plugin</artifactId>
+				<version>1.10.2</version>
+				<configuration>
+					<plist>
+						<CFBundleName>rodain-app-${jar.id}${project.version}_MACOS</CFBundleName>
+						<JVMMainClassName>org.roda.rodain.Main</JVMMainClassName>
+					</plist>
+					<jdk>
+						<include>true</include>
+					</jdk>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>bundle</goal>
+						</goals>
 					</execution>
 				</executions>
 			</plugin>
