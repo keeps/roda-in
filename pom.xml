@@ -156,6 +156,30 @@
 				<version>1.5.1</version>
 				<executions>
 					<execution>
+						<id>linux-bundler</id>
+						<phase>package</phase>
+						<goals>
+							<goal>package</goal>
+						</goals>
+						<configuration>
+							<mainClass>org.roda.rodain.Main</mainClass>
+							<name>rodain-app-${jar.id}${project.version}_Linux</name>
+							<bundleJre>true</bundleJre>
+							<generateInstaller>true</generateInstaller>
+							<platform>linux</platform>
+							<jdkPath>../../OpenJDK11U-jdk_x64_linux_openj9_linuxXL_11.0.10_9_openj9-0.24.0/jdk-11.0.10+9</jdkPath>
+							<runnableJar>target/rodain-app-2.2.0_OtherOS.jar</runnableJar>
+							<additionalResources>
+								<additionalResource>src/main/resources</additionalResource>
+							</additionalResources>
+							<linuxConfig>
+								<pngFile>src/main/resources/roda2-logo.png</pngFile>
+								<generateDeb>true</generateDeb>
+							</linuxConfig>
+						</configuration>
+					</execution>
+					<execution>
+						<id>windows-bundler</id>
 						<phase>package</phase>
 						<goals>
 							<goal>package</goal>
@@ -169,8 +193,8 @@
 							<generateInstaller>true</generateInstaller>
 							<platform>windows</platform>
 							<createZipball>true</createZipball>
-							<jdkPath>/home/jgomes/Github/OpenJDK11U-jdk_x64_windows_openj9_windowsXL_11.0.10_9_openj9-0.24.0/jdk-11.0.10+9</jdkPath>
-							<runnableJar>/home/jgomes/Github/KEEPS/roda-in/target/rodain-app-2.2.0_OtherOS.jar</runnableJar>
+							<jdkPath>../../OpenJDK11U-jdk_x64_windows_openj9_windowsXL_11.0.10_9_openj9-0.24.0/jdk-11.0.10+9</jdkPath>
+							<runnableJar>target/rodain-app-2.2.0_OtherOS.jar</runnableJar>
 							<additionalResources>
 								<additionalResource>src/main/resources</additionalResource>
 							</additionalResources>
@@ -188,46 +212,33 @@
 								<productName>RODA-in</productName>
 								<internalName>RODA-in</internalName>
 								<originalFilename>rodain-app-${jar.id}${project.version}.exe</originalFilename>
-
 							</winConfig>
 						</configuration>
 					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>com.akathist.maven.plugins.launch4j</groupId>
-				<artifactId>launch4j-maven-plugin</artifactId>
-				<version>${plug.version.launch4j}</version>
-				<executions>
 					<execution>
-						<id>l4j-gui</id>
+						<id>mac-bundler</id>
 						<phase>package</phase>
 						<goals>
-							<goal>launch4j</goal>
+							<goal>package</goal>
 						</goals>
 						<configuration>
-							<headerType>gui</headerType>
-							<outfile>target/rodain-app-${jar.id}${project.version}_Windows.exe</outfile>
-							<jar>target/rodain-app-${jar.id}${project.version}_OtherOS.jar</jar>
-							<errTitle>Error opening RODA-in</errTitle>
-							<classPath>
-								<mainClass>org.roda.rodain.Main</mainClass>
-							</classPath>
-							<icon>src/main/resources/roda2-logo.ico</icon>
-							<jre>
-								<path>../../jre/bin</path>
-							</jre>
-							<versionInfo>
-								<fileVersion>1.0.0.0</fileVersion>
-								<txtFileVersion>1.0.0.0</txtFileVersion>
-								<fileDescription>Desc</fileDescription>
-								<copyright>C</copyright>
-								<productVersion>2.0.0.3</productVersion>
-								<txtProductVersion>2.0.0.3</txtProductVersion>
-								<productName>RODA-in</productName>
-								<internalName>RODA-in</internalName>
-								<originalFilename>rodain-app-${jar.id}${project.version}.exe</originalFilename>
-							</versionInfo>
+							<mainClass>org.roda.rodain.Main</mainClass>
+							<!-- optional -->
+							<name>rodain-app-${jar.id}${project.version}_MacOS</name>
+							<bundleJre>true</bundleJre>
+							<generateInstaller>true</generateInstaller>
+							<platform>mac</platform>
+							<jdkPath>../../OpenJDK11U-jdk_x64_mac_openj9_macosXL_11.0.10_9_openj9-0.24.0/jdk-11.0.10+9/Contents/Home</jdkPath>
+							<runnableJar>target/rodain-app-2.2.0_OtherOS.jar</runnableJar>
+							<additionalResources>
+								<additionalResource>src/main/resources</additionalResource>
+							</additionalResources>
+							<createZipball>true</createZipball>
+							<macConfig>
+								<appId>rodain-app-${jar.id}${project.version}_MacOS</appId>
+								<icnsFile>roda2-logo.ico</icnsFile>
+								<backgroundImage>src/main/resources/roda2-logo.png</backgroundImage>
+							</macConfig>
 						</configuration>
 					</execution>
 				</executions>
@@ -409,7 +420,12 @@
 			<version>11</version>
 			<classifier>win</classifier>
 		</dependency>
-
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-swing</artifactId>
+			<version>11</version>
+			<classifier>mac</classifier>
+		</dependency>
 
 		<dependency>
 			<groupId>org.openjfx</groupId>
@@ -422,6 +438,12 @@
 			<artifactId>javafx-media</artifactId>
 			<version>11</version>
 			<classifier>win</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-media</artifactId>
+			<version>11</version>
+			<classifier>mac</classifier>
 		</dependency>
 
 		<dependency>
@@ -436,6 +458,12 @@
 			<version>11</version>
 			<classifier>win</classifier>
 		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-graphics</artifactId>
+			<version>11</version>
+			<classifier>mac</classifier>
+		</dependency>
 
 		<dependency>
 			<groupId>org.openjfx</groupId>
@@ -448,6 +476,12 @@
 			<artifactId>javafx-web</artifactId>
 			<version>11</version>
 			<classifier>win</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-web</artifactId>
+			<version>11</version>
+			<classifier>mac</classifier>
 		</dependency>
 
 		<dependency>
