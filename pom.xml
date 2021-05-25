@@ -47,7 +47,7 @@
         </repository>
         <repository>
             <id>maven-central-repo</id>
-            <url>http://repo1.maven.org/maven2</url>
+            <url>https://repo1.maven.org/maven2</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -124,7 +124,7 @@
                                     <generateInstaller>true</generateInstaller>
                                     <platform>linux</platform>
                                     <jdkPath>jdk/linux</jdkPath>
-                                    <runnableJar>target/rodain-app-2.2.0_OtherOS.jar</runnableJar>
+                                    <runnableJar>target/rodain-app-${jar.id}${project.version}_OtherOS.jar</runnableJar>
                                     <additionalResources>
                                         <additionalResource>src/main/resources</additionalResource>
                                     </additionalResources>
@@ -170,7 +170,7 @@
                                     <platform>windows</platform>
                                     <createZipball>true</createZipball>
                                     <jdkPath>jdk/windows</jdkPath>
-                                    <runnableJar>target/rodain-app-2.2.0_OtherOS.jar</runnableJar>
+                                    <runnableJar>target/rodain-app-${jar.id}${project.version}_OtherOS.jar</runnableJar>
                                     <additionalResources>
                                         <additionalResource>src/main/resources</additionalResource>
                                     </additionalResources>
@@ -225,7 +225,7 @@
                                     <generateInstaller>true</generateInstaller>
                                     <platform>mac</platform>
                                     <jdkPath>jdk/mac/Contents/Home</jdkPath>
-                                    <runnableJar>target/rodain-app-2.2.0_OtherOS.jar</runnableJar>
+                                    <runnableJar>target/rodain-app-${jar.id}${project.version}_OtherOS.jar</runnableJar>
                                     <additionalResources>
                                         <additionalResource>src/main/resources</additionalResource>
                                     </additionalResources>
@@ -414,7 +414,7 @@
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
-            <version>2.3.0-b170127.1453</version>
+            <version>2.3.4</version>
         </dependency>
 
         <dependency>
