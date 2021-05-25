@@ -18,7 +18,7 @@ import org.roda_project.commons_ip.model.IPHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.javafx.scene.control.skin.ScrollPaneSkin;
+// import com.sun.javafx.scene.control.skin.ScrollPaneSkin;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Bounds;
@@ -31,6 +31,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.control.skin.ScrollPaneSkin;
 
 /**
  * @author Bruno Ferreira <bferreira@keep.pt>
@@ -69,8 +70,8 @@ public class CreationModalMETSHeader extends BorderPane {
    *          The stage of the pane
    */
   public CreationModalMETSHeader(CreationModalStage stage, CreationModalPreparation previousPanel, Path outputFolder,
-    boolean exportAll, boolean exportItems, Constants.SipType sipType, SIPNameBuilder sipNameBuilder,
-    boolean createReport) {
+                                 boolean exportAll, boolean exportItems, Constants.SipType sipType, SIPNameBuilder sipNameBuilder,
+                                 boolean createReport) {
     this.stage = stage;
     this.previousPanel = previousPanel;
     this.outputFolder = outputFolder;
@@ -80,7 +81,7 @@ public class CreationModalMETSHeader extends BorderPane {
     this.sipNameBuilder = sipNameBuilder;
     this.createReport = createReport;
     this.savedHeader = ConfigurationManager
-      .deserialize(sipType.name() + Constants.RODAIN_SERIALIZE_FILE_METS_HEADER_SUFFIX);
+            .deserialize(sipType.name() + Constants.RODAIN_SERIALIZE_FILE_METS_HEADER_SUFFIX);
 
     this.validationErrorsVisibilityProperty = new SimpleBooleanProperty(false);
 
@@ -164,23 +165,24 @@ public class CreationModalMETSHeader extends BorderPane {
     // 20170330 bferreira - source: http://stackoverflow.com/a/29376445/1483200
     scrollPane.getStyleClass().add(Constants.CSS_EDGE_TO_EDGE);
     scrollPane.setFitToWidth(true);
-    scrollPane.setSkin(new ScrollPaneSkin(scrollPane) {
+    scrollPane.setSkin(new ScrollPaneSkin(scrollPane));
+
+   /* scrollPane.setSkin(new ScrollPaneSkin(scrollPane) {
       @Override
       public void onTraverse(Node n, Bounds b) {
-        /*
          * 20170330 bferreira: Workaround to avoid having the scrollPane scroll
          * to the top when a "remove field" button is clicked. Source:
          * http://www.developersite.org/103-2678-java
-         */
       }
     });
+    */
 
     Section sectionStatus = new Section(sipType.name(), Constants.CONF_K_METS_HEADER_TYPE_RECORD_STATUS,
-      Constants.I18N_CREATIONMODALMETSHEADER_SECTION_STATUS);
+            Constants.I18N_CREATIONMODALMETSHEADER_SECTION_STATUS);
     Section sectionAltRecord = new Section(sipType.name(), Constants.CONF_K_METS_HEADER_TYPE_ALTRECORD_ID,
-      Constants.I18N_CREATIONMODALMETSHEADER_SECTION_ALTRECORDS);
+            Constants.I18N_CREATIONMODALMETSHEADER_SECTION_ALTRECORDS);
     Section sectionAgent = new Section(sipType.name(), Constants.CONF_K_METS_HEADER_TYPE_AGENT,
-      Constants.I18N_CREATIONMODALMETSHEADER_SECTION_AGENTS);
+            Constants.I18N_CREATIONMODALMETSHEADER_SECTION_AGENTS);
 
     VBox inner = new VBox(0, sectionStatus, sectionAltRecord, sectionAgent);
     // inner.setPadding(new Insets(10, 10, 10, 10));

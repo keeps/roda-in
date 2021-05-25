@@ -180,14 +180,16 @@ public class CreationModalPreparation extends BorderPane {
     if (StringUtils.isNotBlank(savedState)) {
       itemExportSwitch.setSelected(Boolean.valueOf(savedState));
     }
-
-    countBox.getChildren().addAll(countLabel, sipExportSwitch, itemExportSwitch);
+    VBox switchBox = new VBox(10);
+    switchBox.setAlignment(Pos.CENTER_LEFT);
+    switchBox.getChildren().addAll(sipExportSwitch,itemExportSwitch);
+    countBox.getChildren().addAll(countLabel, switchBox);
     return countBox;
   }
 
   private VBox createReportBox() {
     VBox reportBox = new VBox(10);
-    reportBox.setAlignment(Pos.CENTER);
+    reportBox.setAlignment(Pos.CENTER_LEFT);
     reportCreationSwitch = new ToggleSwitch(I18n.t(Constants.I18N_CREATIONMODALPREPARATION_CREATE_REPORT));
     reportCreationSwitch.setSelected(true);
 
@@ -271,7 +273,7 @@ public class CreationModalPreparation extends BorderPane {
       // 20170524 hsilva: the following is required to be able to use the root
       // of the filesystem as output folder (otherwise NPE occurs)
       String folderName = outputFolder.getFileName() != null ? outputFolder.getFileName().toString()
-        : outputFolder.toString();
+              : outputFolder.toString();
       chooseFile.setText(folderName);
       if (start != null) {
         start.setDisable(false);
@@ -318,7 +320,7 @@ public class CreationModalPreparation extends BorderPane {
     });
 
     prefixBox.getChildren().addAll(prefixOnlySipNameStrategyBox, hungarianSipNameStrategyBox, HorizontalSpace.create(),
-      sipNameStrategyComboBox);
+            sipNameStrategyComboBox);
     return prefixBox;
   }
 
@@ -349,7 +351,7 @@ public class CreationModalPreparation extends BorderPane {
     sipNameStrategyTransferring.setMaxWidth(DEFAULT_WIDTH);
     sipNameStrategyTransferring.setText(ConfigurationManager.getAppConfig(Constants.CONF_K_EXPORT_LAST_TRANSFERRING));
     transferringLabelAndField.getChildren().addAll(transferringLabel, HorizontalSpace.create(),
-      sipNameStrategyTransferring);
+            sipNameStrategyTransferring);
 
     // serial number
     HBox serialLabelAndField = new HBox(5);
@@ -430,7 +432,7 @@ public class CreationModalPreparation extends BorderPane {
     start = new Button();
     SipType sipType = (SipType) sipTypes.getValue().getKey();
     if (sipTypes.getValue() != null && sipType.requiresMETSHeaderInfo()
-      && METSHeaderUtils.getFieldList(sipType).length > 0) {
+            && METSHeaderUtils.getFieldList(sipType).length > 0) {
       start.setText(I18n.t(Constants.I18N_CONTINUE));
     } else {
       start.setText(I18n.t(Constants.I18N_START));
@@ -450,20 +452,20 @@ public class CreationModalPreparation extends BorderPane {
           String nextSerial;
           try {
             nextSerial = String.format(Constants.SIP_NAME_STRATEGY_SERIAL_FORMAT_NUMBER,
-              Integer.valueOf(serial) + CreationModalPreparation.this.selectedSIP);
+                    Integer.valueOf(serial) + CreationModalPreparation.this.selectedSIP);
           } catch (NumberFormatException e) {
             serial = ConfigurationManager.getAppConfig(Constants.CONF_K_EXPORT_LAST_SERIAL);
             if (StringUtils.isBlank(serial)) {
               serial = Constants.MISC_DEFAULT_HUNGARIAN_SIP_SERIAL;
             }
             nextSerial = String.format(Constants.SIP_NAME_STRATEGY_SERIAL_FORMAT_NUMBER,
-              Integer.valueOf(serial) + CreationModalPreparation.this.selectedSIP);
+                    Integer.valueOf(serial) + CreationModalPreparation.this.selectedSIP);
           }
           sipNameBuilder = new SIPNameBuilderHungarian(sipNameStrategyTransferring.getText(), serial, sipNameStrategy);
 
           // persist in config file
           ConfigurationManager.setAppConfig(Constants.CONF_K_EXPORT_LAST_TRANSFERRING,
-            sipNameStrategyTransferring.getText(), true);
+                  sipNameStrategyTransferring.getText(), true);
 
           ConfigurationManager.setAppConfig(Constants.CONF_K_EXPORT_LAST_SERIAL, nextSerial, true);
         } else if (sipType.equals(SipType.EARK)) {
@@ -479,26 +481,26 @@ public class CreationModalPreparation extends BorderPane {
 
         // persist switches in config file
         ConfigurationManager.setAppConfig(Constants.CONF_K_EXPORT_LAST_ITEM_EXPORT_SWITCH,
-          String.valueOf(itemExportSwitch.isSelected()));
+                String.valueOf(itemExportSwitch.isSelected()));
         ConfigurationManager.setAppConfig(Constants.CONF_K_EXPORT_LAST_REPORT_CREATION_SWITCH,
-          String.valueOf(reportCreationSwitch.isSelected()));
+                String.valueOf(reportCreationSwitch.isSelected()));
         // 20170411 bferreira: sipExportSwitch was purposely left out because
         // there is some logic in place to select that toggle
 
         // persist SIP type
         ConfigurationManager.setAppConfig(Constants.CONF_K_LAST_SIP_TYPE,
-          (String) sipTypes.getSelectionModel().getSelectedItem().getValue());
+                (String) sipTypes.getSelectionModel().getSelectedItem().getValue());
 
         // persist output folder in config file
         ConfigurationManager.setAppConfig(Constants.CONF_K_EXPORT_LAST_SIP_OUTPUT_FOLDER,
-          outputFolder.toAbsolutePath().toString());
+                outputFolder.toAbsolutePath().toString());
 
         if (sipType.requiresMETSHeaderInfo() && METSHeaderUtils.getFieldList(sipType).length > 0) {
           stage.showMETSHeaderModal(CreationModalPreparation.this, outputFolder, sipExportSwitch.isSelected(),
-            itemExportSwitch.isSelected(), sipType, sipNameBuilder, reportCreationSwitch.isSelected());
+                  itemExportSwitch.isSelected(), sipType, sipNameBuilder, reportCreationSwitch.isSelected());
         } else {
           stage.startCreation(outputFolder, sipExportSwitch.isSelected(), itemExportSwitch.isSelected(), sipNameBuilder,
-            reportCreationSwitch.isSelected(), new IPHeader());
+                  reportCreationSwitch.isSelected(), new IPHeader());
         }
       }
     });
