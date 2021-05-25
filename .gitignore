@@ -13,3 +13,4 @@ buildNumber.properties
 .project
 build.properties
 .vscode/settings.json
+jdk/
