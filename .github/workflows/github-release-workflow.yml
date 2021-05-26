@@ -24,13 +24,13 @@ jobs:
           OS: ${{ matrix.os }}
       - name: Build Linux
         if: startsWith(matrix.os, 'ubuntu')
-        run: mvn clean package -P build-linux
+        run: mvn --batch-mode clean package -P build-linux
       - name: Build Windows
         if: startsWith(matrix.os, 'windows')
-        run: mvn clean package -P build-windows
+        run: mvn --batch-mode clean package -P build-windows
       - name: Build Windows
         if: startsWith(matrix.os, 'macos')
-        run: mvn clean package -P build-macos
+        run: mvn --batch-mode clean package -P build-macos
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:

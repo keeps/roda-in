@@ -13,7 +13,6 @@ if [[ ${os} == "macos-latest" ]]; then
   os_version="mac"
 fi
 
-echo ${os_version}
 JDK="https://api.adoptopenjdk.net/v3/binary/latest/11/ga/${os_version}/x64/jdk/openj9/large/adoptopenjdk"
 ext="tar.gz"
 if [[ ${os_version} == "windows" ]]; then
@@ -22,6 +21,7 @@ fi
 
 JDK_FOLDER="../../../jdk/${os_version}"
 JDK_TARGET="${JDK_FOLDER}/jdk11.${ext}"
+echo ${JDK_TARGET}
 if [ ! -d "$JDK_FOLDER" ]; then
     mkdir -p "${JDK_FOLDER}"
     response=$(curl --write-out %{http_code} -L $JDK -o $JDK_TARGET)
