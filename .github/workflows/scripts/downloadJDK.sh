@@ -21,7 +21,7 @@ fi
 
 JDK_FOLDER="../../../jdk/${os_version}"
 JDK_TARGET="${JDK_FOLDER}/jdk11.${ext}"
-echo ${JDK_TARGET}
+pwd
 if [ ! -d "$JDK_FOLDER" ]; then
     mkdir -p "${JDK_FOLDER}"
     response=$(curl --write-out %{http_code} -L $JDK -o $JDK_TARGET)
