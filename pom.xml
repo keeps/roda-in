@@ -98,9 +98,6 @@
         </profile>
         <profile>
             <id>build-linux</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <properties>
                 <jar.id/>
             </properties>
@@ -141,9 +138,6 @@
         </profile>
         <profile>
             <id>build-windows</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <properties>
                 <jar.id/>
             </properties>
@@ -198,9 +192,6 @@
         </profile>
         <profile>
             <id>build-macos</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <properties>
                 <jar.id/>
             </properties>
