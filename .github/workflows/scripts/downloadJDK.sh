@@ -13,7 +13,7 @@ if [[ ${os} == "macos-latest" ]]; then
   os_version="mac"
 fi
 
-JDK="https://api.adoptopenjdk.net/v3/binary/latest/11/ga/${os_version}/x64/jdk/hotspot/normal/adoptopenjdk"
+JDK="https://api.adoptopenjdk.net/v3/binary/latest/11/ga/${os_version}/x64/jdk/openj9/large/adoptopenjdk"
 ext="tar.gz"
 if [[ ${os_version} == "windows" ]]; then
   ext="zip"
