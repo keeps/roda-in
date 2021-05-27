@@ -471,7 +471,7 @@
                                     <createZipball>true</createZipball>
                                     <macConfig>
                                         <appId>RODA-in${jar.id}-v</appId>
-                                        <icnsFile>rodain${jar.id}-macOS-installer.icns</icnsFile>
+                                        <icnsFile>src/main/resources/rodain${jar.id}-macOS-installer.icns</icnsFile>
                                         <volumeName>RODA-in${jar.id}-v${project.version}</volumeName>
                                     </macConfig>
                                 </configuration>
