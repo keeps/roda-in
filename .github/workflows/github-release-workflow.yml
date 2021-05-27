@@ -4,7 +4,7 @@ jobs:
   deploy:
     strategy:
       matrix:
-        os: [ windows-latest, ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
 
     runs-on: ${{ matrix.os }}
 
@@ -47,15 +47,17 @@ jobs:
         run: bash -c ".github/workflows/scripts/downloadJDK.sh"
         env:
           OS: ${{ matrix.os }}
+      - name: Build Jar
+        run: mvn --batch-mode clean package
       - name: Build Linux
         if: startsWith(matrix.os, 'ubuntu')
-        run: mvn --batch-mode clean package -P build-linux
+        run: mvn --batch-mode package -P build-linux
       - name: Build Windows
         if: startsWith(matrix.os, 'windows')
-        run: mvn --batch-mode clean package -P build-windows
+        run: mvn --batch-mode package -P build-windows
       - name: Build macOS
         if: startsWith(matrix.os, 'macos')
-        run: mvn --batch-mode clean package -P build-macos
+        run: mvn --batch-mode package -P build-macos
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
@@ -63,7 +65,75 @@ jobs:
           path: |
             target/*.deb
             target/*.rpm
-            target/*.app
+            target/*/*.app
+            target/*.dmg
+            target/*.exe
+          retention-days: 1
+  deploy-hu:
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Download JDK Large Linux
+        if: startsWith(matrix.os, 'ubuntu')
+        run: |
+          download_url="https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.10%2B9_openj9-0.24.0/OpenJDK11U-jdk_x64_linux_openj9_linuxXL_11.0.10_9_openj9-0.24.0.tar.gz"
+          curl -L $download_url -o  $RUNNER_TEMP/java_package.tar.gz
+      - name: Download JDK Large macOS
+        if: startsWith(matrix.os, 'macos')
+        run: |
+          download_url="https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.10%2B9_openj9-0.24.0/OpenJDK11U-jdk_x64_mac_openj9_macosXL_11.0.10_9_openj9-0.24.0.tar.gz"
+          curl -L $download_url -o $RUNNER_TEMP/java_package.tar.gz
+      - name: Download JDK Large Windows
+        if: startsWith(matrix.os, 'windows')
+        run: |
+          curl -L "https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.10%2B9_openj9-0.24.0/OpenJDK11U-jdk_x64_windows_openj9_windowsXL_11.0.10_9_openj9-0.24.0.zip" -o java_package.zip
+      - name: Set up JDK 11 Linux and macOS
+        if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'jdkfile'
+          jdkFile: ${{ runner.temp }}/java_package.tar.gz
+          java-version: '11.0.0'
+          architecture: x64
+      - name: Set up JDK 11 Windows
+        if: startsWith(matrix.os, 'windows')
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'jdkfile'
+          jdkFile: java_package.zip
+          java-version: '11.0.0'
+          architecture: x64
+      - name: Download JDK 11
+        run: bash -c ".github/workflows/scripts/downloadJDK.sh"
+        env:
+          OS: ${{ matrix.os }}
+      - name: Build Jar
+        run: mvn --batch-mode clean package -P hu
+      - name: Build Linux
+        if: startsWith(matrix.os, 'ubuntu')
+        run: mvn --batch-mode package -P build-linux -D jar.id=-hu
+      - name: Build Windows
+        if: startsWith(matrix.os, 'windows')
+        run: mvn --batch-mode package -P build-windows -D jar.id=-hu
+      - name: Build macOS
+        if: startsWith(matrix.os, 'macos')
+        run: mvn --batch-mode package -P build-macos -D jar.id=-hu
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: artifact
+          path: |
+            target/*.deb
+            target/*.rpm
+            target/*/*.app
             target/*.dmg
             target/*.exe
           retention-days: 1

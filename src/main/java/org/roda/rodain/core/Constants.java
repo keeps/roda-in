@@ -181,7 +181,7 @@ public final class Constants {
 
   // resources
   public static final String RSC_SPLASH_SCREEN_IMAGE = "roda-in-splash.png";
-  public static final String RSC_RODA_LOGO = "roda2-logo.png";
+  public static final String RSC_RODA_LOGO = "rodain-linux-installer.png";
   public static final String RSC_LOADING_GIF = "loading.GIF";
   public static final String RSC_ICON_FOLDER = "icons/folder.png";
   public static final String RSC_ICON_FOLDER_OPEN = "icons/folder-open.png";
