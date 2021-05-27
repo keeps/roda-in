@@ -471,8 +471,9 @@
                                     <createZipball>true</createZipball>
                                     <macConfig>
                                         <appId>RODA-in${jar.id} v</appId>
-                                        <icnsFile>roda2-logo.ico</icnsFile>
+                                        <icnsFile>roda2-logo.icns</icnsFile>
                                         <backgroundImage>src/main/resources/rodain${jar.id}-linux-installer.png</backgroundImage>
+                                        <volumeName>RODA-in${jar.id} v${project.version}</volumeName>
                                     </macConfig>
                                 </configuration>
                             </execution>
