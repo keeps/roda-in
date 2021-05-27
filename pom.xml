@@ -459,7 +459,7 @@
                                     <mainClass>org.roda.rodain.Main</mainClass>
                                     <!-- optional -->
                                     <name>rodain${jar.id}-macOS-installer</name>
-                                    <displayName>RODA-in${jar.id} v${project.version}</displayName>
+                                    <displayName>RODA-in${jar.id}-v${project.version}</displayName>
                                     <bundleJre>true</bundleJre>
                                     <generateInstaller>true</generateInstaller>
                                     <platform>mac</platform>
@@ -470,10 +470,9 @@
                                     </additionalResources>
                                     <createZipball>true</createZipball>
                                     <macConfig>
-                                        <appId>RODA-in${jar.id} v</appId>
-                                        <icnsFile>roda2-logo.icns</icnsFile>
-                                        <backgroundImage>src/main/resources/rodain${jar.id}-linux-installer.png</backgroundImage>
-                                        <volumeName>RODA-in${jar.id} v${project.version}</volumeName>
+                                        <appId>RODA-in${jar.id}-v</appId>
+                                        <icnsFile>rodain${jar.id}-macOS-installer.icns</icnsFile>
+                                        <volumeName>RODA-in${jar.id}-v${project.version}</volumeName>
                                     </macConfig>
                                 </configuration>
                             </execution>
