@@ -1,5 +1,10 @@
 name: Github Release Workflow
-on: [workflow_dispatch]
+on:
+  push:
+    tags:
+      - "**"
+    branches-ignore:
+      - "**"
 jobs:
   deploy:
     strategy:
@@ -16,8 +21,8 @@ jobs:
       - name: Download JDK Large Linux
         if: startsWith(matrix.os, 'ubuntu')
         run: |
-         download_url="https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.10%2B9_openj9-0.24.0/OpenJDK11U-jdk_x64_linux_openj9_linuxXL_11.0.10_9_openj9-0.24.0.tar.gz"
-         curl -L $download_url -o  $RUNNER_TEMP/java_package.tar.gz
+          download_url="https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.10%2B9_openj9-0.24.0/OpenJDK11U-jdk_x64_linux_openj9_linuxXL_11.0.10_9_openj9-0.24.0.tar.gz"
+          curl -L $download_url -o  $RUNNER_TEMP/java_package.tar.gz
       - name: Download JDK Large macOS
         if: startsWith(matrix.os, 'macos')
         run: |
@@ -26,7 +31,7 @@ jobs:
       - name: Download JDK Large Windows
         if: startsWith(matrix.os, 'windows')
         run: |
-           curl -L "https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.10%2B9_openj9-0.24.0/OpenJDK11U-jdk_x64_windows_openj9_windowsXL_11.0.10_9_openj9-0.24.0.zip" -o java_package.zip
+          curl -L "https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.10%2B9_openj9-0.24.0/OpenJDK11U-jdk_x64_windows_openj9_windowsXL_11.0.10_9_openj9-0.24.0.zip" -o java_package.zip
       - name: Set up JDK 11 Linux and macOS
         if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
         uses: actions/setup-java@v2
@@ -69,6 +74,22 @@ jobs:
             target/*.dmg
             target/*.exe
           retention-days: 1
+      - name: Get release version
+        id: tag
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\/}
+      - name: Release to GitHub
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Version ${{ steps.tag.outputs.VERSION }}
+          tag_name: ${{ steps.tag.outputs.VERSION }}
+          draft: true
+          files: |
+            target/*.deb
+            target/*.rpm
+            target/*.dmg
+            target/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   deploy-hu:
     strategy:
       matrix:
@@ -133,7 +154,22 @@ jobs:
           path: |
             target/*.deb
             target/*.rpm
-            target/*/*.app
             target/*.dmg
             target/*.exe
           retention-days: 1
+      - name: Get release version
+        id: tag
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\/}
+      - name: Release to GitHub
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Version ${{ steps.tag.outputs.VERSION }}
+          tag_name: ${{ steps.tag.outputs.VERSION }}
+          draft: true
+          files: |
+            target/*.deb
+            target/*.rpm
+            target/*.dmg
+            target/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
