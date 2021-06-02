@@ -86,7 +86,7 @@ public class RodaInApplication extends Application {
   private static SchemaPane schemePane;
 
   // Languages
-  private RadioMenuItem langEN, langPT, langHU, langES_CL;
+  private RadioMenuItem langEN, langPT, langHU, langES_CL, langHR;
 
   private static long lastMessage = System.currentTimeMillis();
 
@@ -334,7 +334,10 @@ public class RodaInApplication extends Application {
     langES_CL = new RadioMenuItem("Español (Chile)");
     langES_CL.setUserData("es_CL");
     langES_CL.setToggleGroup(languageGroup);
-    language.getItems().addAll(langEN, langPT, langHU, langES_CL);
+    langHR = new RadioMenuItem("Hrvatski");
+    langHR.setUserData(Constants.LANG_HR);
+    langHR.setToggleGroup(languageGroup);
+    language.getItems().addAll(langEN, langPT, langHU, langES_CL,langHR);
 
     updateSelectedLanguageMenu();
 
