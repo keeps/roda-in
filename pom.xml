@@ -361,7 +361,7 @@
                                 <configuration>
                                     <mainClass>org.roda.rodain.Main</mainClass>
                                     <version/>
-                                    <name>rodain${jar.id}-linux-installer</name>
+                                    <name>RODA-in${jar.id}</name>
                                     <displayName>RODA-in${jar.id}</displayName>
                                     <bundleJre>true</bundleJre>
                                     <generateInstaller>true</generateInstaller>
@@ -372,8 +372,8 @@
                                         <additionalResource>src/main/resources</additionalResource>
                                     </additionalResources>
                                     <linuxConfig>
-                                        <pngFile>src/main/resources/rodain${jar.id}-linux-installer.png</pngFile>
-                                        <xpmFile>src/main/resources/rodain${jar.id}-linux-installer.xpm</xpmFile>
+                                        <pngFile>src/main/resources/RODA-in${jar.id}.png</pngFile>
+                                        <xpmFile>src/main/resources/RODA-in${jar.id}.xpm</xpmFile>
                                     </linuxConfig>
                                 </configuration>
                             </execution>
@@ -404,8 +404,8 @@
                                     <!-- mandatory -->
                                     <mainClass>org.roda.rodain.Main</mainClass>
                                     <!-- optional -->
-                                    <name>rodain${jar.id}-Windows-installer</name>
-                                    <displayName>RODA-in${jar.id} v${project.version}</displayName>
+                                    <name>RODA-in${jar.id}</name>
+                                    <displayName>RODA-in${jar.id}</displayName>
                                     <bundleJre>true</bundleJre>
                                     <generateInstaller>true</generateInstaller>
                                     <platform>windows</platform>
@@ -428,7 +428,7 @@
                                         <txtProductVersion>2.0.0.3</txtProductVersion>
                                         <productName>RODA-in</productName>
                                         <internalName>RODA-in</internalName>
-                                        <originalFilename>RODA-in${jar.id} v${project.version}.exe</originalFilename>
+                                        <originalFilename>RODA-in${jar.id}.exe</originalFilename>
                                     </winConfig>
                                 </configuration>
                             </execution>
@@ -458,8 +458,8 @@
                                 <configuration>
                                     <mainClass>org.roda.rodain.Main</mainClass>
                                     <!-- optional -->
-                                    <name>rodain${jar.id}-macOS-installer</name>
-                                    <displayName>RODA-in${jar.id}-v${project.version}</displayName>
+                                    <name>RODA-in${jar.id}</name>
+                                    <displayName>RODA-in${jar.id}</displayName>
                                     <bundleJre>true</bundleJre>
                                     <generateInstaller>true</generateInstaller>
                                     <platform>mac</platform>
@@ -471,8 +471,8 @@
                                     <createZipball>true</createZipball>
                                     <macConfig>
                                         <appId>RODA-in${jar.id}-v</appId>
-                                        <icnsFile>src/main/resources/rodain${jar.id}-macOS-installer.icns</icnsFile>
-                                        <volumeName>RODA-in${jar.id}-v${project.version}</volumeName>
+                                        <icnsFile>src/main/resources/RODA-in${jar.id}.icns</icnsFile>
+                                        <volumeName>RODA-in${jar.id}</volumeName>
                                     </macConfig>
                                 </configuration>
                             </execution>
