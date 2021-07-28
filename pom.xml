@@ -470,7 +470,7 @@
                                     </additionalResources>
                                     <createZipball>true</createZipball>
                                     <macConfig>
-                                        <appId>RODA-in${jar.id}-v</appId>
+                                        <appId>RODA-in${jar.id}</appId>
                                         <icnsFile>src/main/resources/RODA-in${jar.id}.icns</icnsFile>
                                         <volumeName>RODA-in${jar.id}</volumeName>
                                     </macConfig>
@@ -599,7 +599,6 @@
             <artifactId>javafx-graphics</artifactId>
             <version>11</version>
         </dependency>
-
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-web</artifactId>
