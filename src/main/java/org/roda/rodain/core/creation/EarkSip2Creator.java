@@ -27,6 +27,7 @@ import org.roda.rodain.core.sip.naming.SIPNameBuilder;
 import org.roda.rodain.ui.creation.CreationModalProcessing;
 import org.roda_project.commons_ip.model.IPHeader;
 import org.roda_project.commons_ip.utils.IPEnums.IPStatus;
+import org.roda_project.commons_ip2.model.IPAgent;
 import org.roda_project.commons_ip2.model.IPContentInformationType;
 import org.roda_project.commons_ip2.model.IPContentInformationType.IPContentInformationTypeEnum;
 import org.roda_project.commons_ip2.model.IPContentType;
@@ -101,7 +102,7 @@ public class EarkSip2Creator extends SimpleSipCreator implements SIPObserver, Si
         : org.roda.rodain.core.schema.IPContentType.defaultIPContentType();
 
       SIP earkSip = new EARKSIP(Controller.encodeId(descriptionObject.getId()),
-        new IPContentType(userDefinedContentType.getValue()), null);
+        new IPContentType(userDefinedContentType.getValue()), new IPContentInformationType(Constants.SIP_DEFAULT_CONTENT_TYPE));
       if (IPContentTypeEnum.OTHER == earkSip.getContentType().getType()) {
         earkSip.getContentType().setOtherType(userDefinedContentType.getOtherValue());
       }
