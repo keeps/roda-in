@@ -1,15 +1,22 @@
 package org.roda.rodain.ui.creation;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.stage.DirectoryChooser;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.ToggleSwitch;
 import org.roda.rodain.core.ConfigurationManager;
@@ -31,21 +38,16 @@ import org.roda_project.commons_ip.model.IPHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
-import javafx.stage.DirectoryChooser;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -53,36 +55,40 @@ import javafx.stage.DirectoryChooser;
  */
 public class CreationModalPreparation extends BorderPane {
   private static final Logger LOGGER = LoggerFactory.getLogger(CreationModalPreparation.class.getName());
-
-  private final int DEFAULT_WIDTH = 120;
-
   private static final List<Pair> SIP_TYPES = new ArrayList<>();
+  private static final ObservableList<Pair> SIP_NAME_STRATEGY_COMBO_BOX_ITEMS = FXCollections.observableArrayList();
+  private static Path outputFolder = null;
+  private static Button start;
+  private static boolean isDisableOutputFolder = true;
+  private static boolean isDisableAgentName = true;
+  private static boolean isDisableAgentID = true;
+  private static boolean isDisableStart = true;
+  private static HBox sipAgentNameField;
+  private static HBox sipAgentNoteField;
+
   static {
     for (SipType type : SipType.getFilteredValues()) {
       SIP_TYPES.add(new Pair(type, type.toString()));
     }
   }
 
-  private static final ObservableList<Pair> SIP_NAME_STRATEGY_COMBO_BOX_ITEMS = FXCollections.observableArrayList();
   static {
     for (SipNameStrategy sipNameStrategy : SipNameStrategy.values()) {
       SIP_NAME_STRATEGY_COMBO_BOX_ITEMS.add(new Pair(sipNameStrategy, I18n.t("sipNameStrategy." + sipNameStrategy)));
     }
   }
 
+  private final int DEFAULT_WIDTH = 120;
   private CreationModalStage stage;
-
-  private static Path outputFolder = null;
   private ComboBox<Pair> sipTypes;
   private SIPNameStrategyComboBox sipNameStrategyComboBox;
-  private static Button start;
   private long selectedSIP, selectedItems, allSIP, allItems;
   private ToggleSwitch sipExportSwitch, itemExportSwitch, reportCreationSwitch;
-
   private TextField sipNameStrategyPrefix;
   private TextField sipNameStrategyTransferring;
   private TextField sipNameStrategySerial;
-
+  private TextField sipAgentName;
+  private TextField sipAgentNote;
   private String sSelectedSIP, sSelectedItems, sZeroItems, sAllSIP, sAllItems;
 
   /**
@@ -93,8 +99,7 @@ public class CreationModalPreparation extends BorderPane {
    * for the SIP exportation should be and the format of the SIPs.
    * </p>
    *
-   * @param stage
-   *          The stage of the pane
+   * @param stage The stage of the pane
    */
   public CreationModalPreparation(CreationModalStage stage) {
     this.stage = stage;
@@ -106,6 +111,64 @@ public class CreationModalPreparation extends BorderPane {
     createBottom();
 
     stage.sizeToScene();
+
+  }
+
+  /**
+   * Sets the output folder of the SIPs. Used for testing.
+   *
+   * @param out The path of the output folder
+   */
+  public static void setOutputFolder(String out) {
+    if (out != null && !"".equals(out)) {
+      outputFolder = Paths.get(out);
+      setIsDisableOutputFolder(false);
+      setIsDisableStart();
+    }
+  }
+
+  public static void setIsDisableOutputFolder(boolean isDisable) {
+    isDisableOutputFolder = isDisable;
+    setIsDisableStart();
+  }
+
+  public static void setIsDisableAgentName(boolean isDisable) {
+    isDisableAgentName = isDisable;
+    setIsDisableStart();
+  }
+
+  public static void setIsDisableAgentID(boolean isDisable) {
+    isDisableAgentID = isDisable;
+    setIsDisableStart();
+  }
+
+  public static void setIsDisableStart() {
+    if (start != null) {
+      if (sipAgentNameField.isVisible() && sipAgentNoteField.isVisible()) {
+        start.setDisable(isDisableOutputFolder || isDisableAgentName || isDisableAgentID);
+      } else {
+        start.setDisable(isDisableOutputFolder);
+      }
+    }
+  }
+
+  private static Pair getLastOrDefaultSipType() {
+    String lastSipType = ConfigurationManager.getAppConfig(Constants.CONF_K_LAST_SIP_TYPE);
+    for (Pair sipType : SIP_TYPES) {
+      String name = (String) sipType.getValue();
+      if (name.equals(lastSipType)) {
+        return sipType;
+      }
+    }
+
+    String defaultSipType = ConfigurationManager.getConfig(Constants.CONF_K_DEFAULT_SIP_TYPE);
+    for (Pair sipType : SIP_TYPES) {
+      String name = (String) sipType.getValue();
+      if (name.equals(defaultSipType)) {
+        return sipType;
+      }
+    }
+    return null;
   }
 
   private void createTop() {
@@ -125,11 +188,12 @@ public class CreationModalPreparation extends BorderPane {
     VBox center = new VBox(5);
     center.setAlignment(Pos.CENTER_LEFT);
     center.setPadding(new Insets(10, 10, 10, 10));
-
     VBox countBox = createCountBox();
     VBox reportBox = createReportBox();
     HBox outputFolderBox = createOutputFolder();
     HBox sipTypesBox = createSipTypes();
+    sipAgentNameField = createAgentName();
+    sipAgentNoteField = createAgentNote();
     HBox prefixBox = createSipNameStrategyBoxAndDropdown();
 
     sipTypes.getSelectionModel().clearSelection();
@@ -137,10 +201,14 @@ public class CreationModalPreparation extends BorderPane {
     if (lastOrDefaultSipType != null) {
       sipTypes.getSelectionModel().select(lastOrDefaultSipType);
     } else {
-      sipTypes.getSelectionModel().selectFirst();
+      sipTypes.getSelectionModel().select(1);
     }
-
-    center.getChildren().addAll(countBox, reportBox, outputFolderBox, sipTypesBox, prefixBox);
+    SipType type = (SipType) sipTypes.getSelectionModel().getSelectedItem().getKey();
+    center.getChildren().addAll(countBox, reportBox, outputFolderBox, sipTypesBox, sipAgentNameField, sipAgentNoteField, prefixBox);
+    if (!type.equals(SipType.EARK2)) {
+      sipAgentNameField.setVisible(false);
+      sipAgentNoteField.setVisible(false);
+    }
     setCenter(center);
   }
 
@@ -182,7 +250,7 @@ public class CreationModalPreparation extends BorderPane {
     }
     VBox switchBox = new VBox(10);
     switchBox.setAlignment(Pos.CENTER_LEFT);
-    switchBox.getChildren().addAll(sipExportSwitch,itemExportSwitch);
+    switchBox.getChildren().addAll(sipExportSwitch, itemExportSwitch);
     countBox.getChildren().addAll(countLabel, switchBox);
     return countBox;
   }
@@ -275,9 +343,7 @@ public class CreationModalPreparation extends BorderPane {
       String folderName = outputFolder.getFileName() != null ? outputFolder.getFileName().toString()
               : outputFolder.toString();
       chooseFile.setText(folderName);
-      if (start != null) {
-        start.setDisable(false);
-      }
+      setIsDisableOutputFolder(false);
     }
   }
 
@@ -322,6 +388,43 @@ public class CreationModalPreparation extends BorderPane {
     prefixBox.getChildren().addAll(prefixOnlySipNameStrategyBox, hungarianSipNameStrategyBox, HorizontalSpace.create(),
             sipNameStrategyComboBox);
     return prefixBox;
+  }
+
+  private HBox createAgentName() {
+    HBox labelAndField = new HBox(5);
+    labelAndField.setAlignment(Pos.CENTER_LEFT);
+    Label prefixLabel = new Label(I18n.t(Constants.I18N_CREATIONMODALPREPARATION_AGENT_NAME));
+    sipAgentName = new TextField();
+    sipAgentName.setMinWidth(300);
+    sipAgentName.setMaxWidth(450);
+    sipAgentName.textProperty().addListener(new ChangeListener<String>() {
+      @Override
+      public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+        setIsDisableAgentName(t1.isEmpty());
+      }
+    });
+    labelAndField.getChildren().addAll(prefixLabel, HorizontalSpace.create(), sipAgentName);
+    labelAndField.managedProperty().bind(labelAndField.visibleProperty());
+    return labelAndField;
+  }
+
+  private HBox createAgentNote() {
+    HBox labelAndField = new HBox(5);
+    labelAndField.setAlignment(Pos.CENTER_LEFT);
+    Label prefixLabel = new Label(I18n.t(Constants.I18N_CREATIONMODALPREPARATION_AGENT_ID));
+    sipAgentNote = new TextField();
+    sipAgentNote.setMinWidth(300);
+    sipAgentNote.setMaxWidth(450);
+    sipAgentNote.textProperty().addListener(new ChangeListener<String>() {
+      @Override
+      public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+        setIsDisableAgentID(t1.isEmpty());
+      }
+    });
+    labelAndField.getChildren().addAll(prefixLabel, HorizontalSpace.create(), sipAgentNote);
+
+    labelAndField.managedProperty().bind(labelAndField.visibleProperty());
+    return labelAndField;
   }
 
   private HBox createPrefixOnlySipNameStrategyBox() {
@@ -374,19 +477,6 @@ public class CreationModalPreparation extends BorderPane {
     return form;
   }
 
-  /**
-   * Sets the output folder of the SIPs. Used for testing.
-   *
-   * @param out
-   *          The path of the output folder
-   */
-  public static void setOutputFolder(String out) {
-    if (out != null && !"".equals(out)) {
-      outputFolder = Paths.get(out);
-      start.setDisable(false);
-    }
-  }
-
   private HBox createSipTypes() {
     HBox sipTypesBox = new HBox(5);
     sipTypesBox.setAlignment(Pos.CENTER_LEFT);
@@ -403,6 +493,9 @@ public class CreationModalPreparation extends BorderPane {
       if (newValue != null) {
         // sip name strategies combo box update
         SipType type = (SipType) newValue.getKey();
+        sipAgentNameField.setVisible(type.equals(SipType.EARK2));
+        sipAgentNoteField.setVisible(type.equals(SipType.EARK2));
+
         Set<SipNameStrategy> enabledStrategies = type.getSipNameStrategies();
         sipNameStrategyComboBox.setEnabledItems(enabledStrategies);
 
@@ -415,6 +508,9 @@ public class CreationModalPreparation extends BorderPane {
           }
         }
       }
+      setIsDisableStart();
+
+      stage.sizeToScene();
     });
 
     sipTypesBox.getChildren().addAll(sipTypesLabel, HorizontalSpace.create(), sipTypes);
@@ -500,33 +596,15 @@ public class CreationModalPreparation extends BorderPane {
                   itemExportSwitch.isSelected(), sipType, sipNameBuilder, reportCreationSwitch.isSelected());
         } else {
           stage.startCreation(outputFolder, sipExportSwitch.isSelected(), itemExportSwitch.isSelected(), sipNameBuilder,
-                  reportCreationSwitch.isSelected(), new IPHeader());
+                  reportCreationSwitch.isSelected(), new IPHeader(), Optional.of(sipAgentName.getText()), Optional.of(sipAgentNote.getText()));
+
         }
       }
     });
 
-    start.setDisable(outputFolder == null);
+    start.setDisable(isDisableStart);
 
     bottom.getChildren().addAll(cancel, HorizontalSpace.create(), start);
     setBottom(bottom);
-  }
-
-  private static Pair getLastOrDefaultSipType() {
-    String lastSipType = ConfigurationManager.getAppConfig(Constants.CONF_K_LAST_SIP_TYPE);
-    for (Pair sipType : SIP_TYPES) {
-      String name = (String) sipType.getValue();
-      if (name.equals(lastSipType)) {
-        return sipType;
-      }
-    }
-
-    String defaultSipType = ConfigurationManager.getConfig(Constants.CONF_K_DEFAULT_SIP_TYPE);
-    for (Pair sipType : SIP_TYPES) {
-      String name = (String) sipType.getValue();
-      if (name.equals(defaultSipType)) {
-        return sipType;
-      }
-    }
-    return null;
   }
 }

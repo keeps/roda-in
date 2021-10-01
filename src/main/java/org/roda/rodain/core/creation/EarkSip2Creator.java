@@ -1,15 +1,5 @@
 package org.roda.rodain.core.creation;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.io.FileUtils;
 import org.roda.rodain.core.ConfigurationManager;
 import org.roda.rodain.core.Constants;
@@ -27,7 +17,9 @@ import org.roda.rodain.core.sip.naming.SIPNameBuilder;
 import org.roda.rodain.ui.creation.CreationModalProcessing;
 import org.roda_project.commons_ip.model.IPHeader;
 import org.roda_project.commons_ip.utils.IPEnums.IPStatus;
+import org.roda_project.commons_ip.utils.METSEnums;
 import org.roda_project.commons_ip2.model.IPAgent;
+import org.roda_project.commons_ip2.model.IPAgentNoteTypeEnum;
 import org.roda_project.commons_ip2.model.IPContentInformationType;
 import org.roda_project.commons_ip2.model.IPContentInformationType.IPContentInformationTypeEnum;
 import org.roda_project.commons_ip2.model.IPContentType;
@@ -42,6 +34,16 @@ import org.roda_project.commons_ip2.model.impl.eark.EARKSIP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * @author Hélder Silva hsilva@keep.pt
  * @since 22/10/2019.
@@ -55,22 +57,49 @@ public class EarkSip2Creator extends SimpleSipCreator implements SIPObserver, Si
 
   private SIPNameBuilder sipNameBuilder;
   private IPHeader ipHeader;
+  private String sipAgentName;
+  private String sipAgentID;
 
   /**
    * Creates a new EARK SIP exporter.
    *
-   * @param outputPath
-   *          The path to the output folder of the SIP exportation
-   * @param previews
-   *          The map with the SIPs that will be exported
+   * @param outputPath     The path to the output folder of the SIP exportation
+   * @param previews       The map with the SIPs that will be exported
    * @param createReport
    * @param sipNameBuilder
    */
   public EarkSip2Creator(Path outputPath, Map<Sip, List<String>> previews, SIPNameBuilder sipNameBuilder,
-    boolean createReport, IPHeader ipHeader) {
+                         boolean createReport, IPHeader ipHeader, String sipAgentName, String sipAgentID) {
     super(outputPath, previews, createReport);
     this.sipNameBuilder = sipNameBuilder;
     this.ipHeader = ipHeader;
+    this.sipAgentName = sipAgentName;
+    this.sipAgentID = sipAgentID;
+  }
+
+  public static String getText() {
+    return "E-ARK2";
+  }
+
+  public static boolean requiresMETSHeaderInfo() {
+    // 20191028 hsilva: postponing this dev/adaptation
+    return false;
+  }
+
+  public static List<org.roda.rodain.core.schema.IPContentType> ipSpecificContentTypes() {
+    List<org.roda.rodain.core.schema.IPContentType> res = new ArrayList<>();
+    for (IPContentTypeEnum ipContentTypeEnum : IPContentTypeEnum.values()) {
+      res.add(new org.roda.rodain.core.schema.IPContentType(getText(), ipContentTypeEnum.toString()));
+    }
+    return res;
+  }
+
+  public static List<RepresentationContentType> representationSpecificContentTypes() {
+    List<RepresentationContentType> res = new ArrayList<>();
+    for (IPContentInformationTypeEnum ipContentInformationTypeEnum : IPContentInformationTypeEnum.values()) {
+      res.add(new RepresentationContentType(getText(), ipContentInformationTypeEnum.toString()));
+    }
+    return res;
   }
 
   /**
@@ -98,11 +127,11 @@ public class EarkSip2Creator extends SimpleSipCreator implements SIPObserver, Si
     Path tempDir = Paths.get(System.getProperty("java.io.tmpdir"));
     try {
       org.roda.rodain.core.schema.IPContentType userDefinedContentType = descriptionObject instanceof SipPreview
-        ? ((SipPreview) descriptionObject).getContentType()
-        : org.roda.rodain.core.schema.IPContentType.defaultIPContentType();
+              ? ((SipPreview) descriptionObject).getContentType()
+              : org.roda.rodain.core.schema.IPContentType.defaultIPContentType();
 
       SIP earkSip = new EARKSIP(Controller.encodeId(descriptionObject.getId()),
-        new IPContentType(userDefinedContentType.getValue()), new IPContentInformationType(Constants.SIP_DEFAULT_CONTENT_TYPE));
+              new IPContentType(userDefinedContentType.getValue()), new IPContentInformationType(Constants.SIP_DEFAULT_CONTENT_TYPE));
       if (IPContentTypeEnum.OTHER == earkSip.getContentType().getType()) {
         earkSip.getContentType().setOtherType(userDefinedContentType.getOtherValue());
       }
@@ -142,7 +171,7 @@ public class EarkSip2Creator extends SimpleSipCreator implements SIPObserver, Si
 
         Path metadataPath = null;
         if (descObjMetadata.getCreatorOption() != MetadataOption.TEMPLATE
-          && descObjMetadata.getCreatorOption() != MetadataOption.NEW_FILE && !descObjMetadata.isLoaded()) {
+                && descObjMetadata.getCreatorOption() != MetadataOption.NEW_FILE && !descObjMetadata.isLoaded()) {
           metadataPath = descObjMetadata.getPath();
         }
 
@@ -154,7 +183,7 @@ public class EarkSip2Creator extends SimpleSipCreator implements SIPObserver, Si
 
         IPFile metadataFile = new IPFile(metadataPath);
         IPDescriptiveMetadata metadata = new IPDescriptiveMetadata(descObjMetadata.getId(), metadataFile, metadataType,
-          descObjMetadata.getMetadataVersion());
+                descObjMetadata.getMetadataVersion());
 
         earkSip.addDescriptiveMetadata(metadata);
       }
@@ -192,7 +221,8 @@ public class EarkSip2Creator extends SimpleSipCreator implements SIPObserver, Si
 
       setHeader(earkSip);
       earkSip.addCreatorSoftwareAgent(Constants.SIP_DEFAULT_AGENT_NAME,
-        Controller.getCurrentVersionSilently().orElse(Constants.SIP_AGENT_VERSION_UNKNOWN));
+              Controller.getCurrentVersionSilently().orElse(Constants.SIP_AGENT_VERSION_UNKNOWN));
+      earkSip.addAgent(new IPAgent(sipAgentName, Constants.SIP_AGENT_ROLE_OTHER, Constants.SIP_AGENT_OTHERROLE_SUBMITTER, METSEnums.CreatorType.INDIVIDUAL, null, sipAgentID, IPAgentNoteTypeEnum.IDENTIFICATIONCODE));
 
       currentAction = I18n.t(Constants.I18N_SIMPLE_SIP_CREATOR_INIT_ZIP);
       Path sipPath = earkSip.build(outputPath, createSipName(descriptionObject, sipNameBuilder));
@@ -304,31 +334,6 @@ public class EarkSip2Creator extends SimpleSipCreator implements SIPObserver, Si
   public void sipBuildPackagingEnded() {
     currentAction = actionFinalizingSip;
     currentSipProgress = 0;
-  }
-
-  public static String getText() {
-    return "E-ARK2";
-  }
-
-  public static boolean requiresMETSHeaderInfo() {
-    // 20191028 hsilva: postponing this dev/adaptation
-    return false;
-  }
-
-  public static List<org.roda.rodain.core.schema.IPContentType> ipSpecificContentTypes() {
-    List<org.roda.rodain.core.schema.IPContentType> res = new ArrayList<>();
-    for (IPContentTypeEnum ipContentTypeEnum : IPContentTypeEnum.values()) {
-      res.add(new org.roda.rodain.core.schema.IPContentType(getText(), ipContentTypeEnum.toString()));
-    }
-    return res;
-  }
-
-  public static List<RepresentationContentType> representationSpecificContentTypes() {
-    List<RepresentationContentType> res = new ArrayList<>();
-    for (IPContentInformationTypeEnum ipContentInformationTypeEnum : IPContentInformationTypeEnum.values()) {
-      res.add(new RepresentationContentType(getText(), ipContentInformationTypeEnum.toString()));
-    }
-    return res;
   }
 
 }
