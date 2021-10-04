@@ -378,7 +378,6 @@
                                     </additionalResources>
                                     <linuxConfig>
                                         <pngFile>src/main/resources/RODA-in${jar.id}.png</pngFile>
-                                        <xpmFile>src/main/resources/RODA-in${jar.id}.xpm</xpmFile>
                                     </linuxConfig>
                                 </configuration>
                             </execution>
