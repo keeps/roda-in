@@ -3,6 +3,7 @@ package org.roda.rodain.ui.creation;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.roda.rodain.core.ConfigurationManager;
 import org.roda.rodain.core.Constants;
@@ -144,7 +145,7 @@ public class CreationModalMETSHeader extends BorderPane {
 
       if (valid) {
         ConfigurationManager.serialize(header, sipType.name() + Constants.RODAIN_SERIALIZE_FILE_METS_HEADER_SUFFIX);
-        stage.startCreation(outputFolder, exportAll, exportItems, sipNameBuilder, createReport, header);
+        stage.startCreation(outputFolder, exportAll, exportItems, sipNameBuilder, createReport, header,Optional.empty(),Optional.empty());
       }
     });
 

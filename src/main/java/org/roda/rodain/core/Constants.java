@@ -74,6 +74,10 @@ public final class Constants {
   public static final String SIP_REP_FIRST = "rep1";
   public static final String SIP_REP_PREFIX = "rep";
   public static final String SIP_DEFAULT_AGENT_NAME = "RODA-in";
+  public static final String SIP_AGENT_ROLE_OTHER = "OTHER";
+  public static final String SIP_AGENT_TYPE_INDIVIDUAL = "INDIVIDUAL";
+  public static final String SIP_AGENT_OTHERROLE_SUBMITTER = "SUBMITTER";
+  public static final String SIP_AGENT_NOTETYPE_IDENTIFICATIONCODE = "IDENTIFICATIONCODE";
   public static final String SIP_AGENT_VERSION_UNKNOWN = "UNKNOWN";
   public static final String SIP_AGENT_NAME_FORMAT = "RODA-in %s";
   public static final String SIP_NAME_STRATEGY_SERIAL_FORMAT_NUMBER = "%03d";
@@ -268,6 +272,8 @@ public final class Constants {
   public static final String I18N_CREATIONMODALPREPARATION_INCLUDE_HIERARCHY = "CreationModalPreparation.includeHierarchy";
   public static final String I18N_CREATIONMODALPREPARATION_OUTPUT_DIRECTORY = "CreationModalPreparation.outputDirectory";
   public static final String I18N_CREATIONMODALPREPARATION_PREFIX = "CreationModalPreparation.prefix";
+  public static final String I18N_CREATIONMODALPREPARATION_AGENT_NAME = "CreationModalPreparation.submitterAgentName";
+  public static final String I18N_CREATIONMODALPREPARATION_AGENT_ID = "CreationModalPreparation.submitterAgentID";
   public static final String I18N_CREATIONMODALPREPARATION_TRANSFERRING = "CreationModalPreparation.transferring";
   public static final String I18N_CREATIONMODALPREPARATION_SERIAL = "CreationModalPreparation.serial";
   public static final String I18N_CREATIONMODALPREPARATION_SIP_FORMAT = "CreationModalPreparation.sipFormat";

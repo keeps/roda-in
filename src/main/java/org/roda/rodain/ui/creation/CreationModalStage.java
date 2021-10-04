@@ -3,6 +3,7 @@ package org.roda.rodain.ui.creation;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javafx.event.Event;
 import org.roda.rodain.core.Constants;
@@ -75,10 +76,10 @@ public class CreationModalStage extends Stage {
    *          The output folder for the SIP exportation
    */
   public void startCreation(Path outputFolder, boolean exportAll, boolean exportItems, SIPNameBuilder sipNameBuilder,
-    boolean createReport, IPHeader METSHeader) {
+                            boolean createReport, IPHeader METSHeader, Optional<String> sipAgentName, Optional<String> sipAgentID) {
     setHeight(PROCESSING_HEIGHT);
     CreateSips creator = new CreateSips(outputFolder, sipNameBuilder.getSIPType(), exportItems, sipNameBuilder,
-      createReport, METSHeader);
+      createReport, METSHeader,sipAgentName,sipAgentID);
     CreationModalProcessing pane = new CreationModalProcessing(creator, this);
     setRoot(pane);
 
