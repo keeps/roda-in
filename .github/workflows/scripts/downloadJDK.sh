@@ -13,7 +13,7 @@ if [[ ${os} == "macos-latest" ]]; then
   os_version="mac"
 fi
 
-JDK="https://api.adoptium.net/v3/binary/latest/11/ga/${os_version}/x64/jdk/hotspot/normal/adoptopenjdk"
+JDK="https://api.adoptium.net/v3/binary/latest/11/ga/${os_version}/x64/jdk/hotspot/normal/eclipse"
 ext="tar.gz"
 
 if [[ ${os_version} == "windows" ]]; then
