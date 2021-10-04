@@ -13,14 +13,14 @@ if [[ ${os} == "macos-latest" ]]; then
   os_version="mac"
 fi
 
-JDK="https://api.adoptopenjdk.net/v3/binary/latest/11/ga/${os_version}/x64/jdk/openj9/large/adoptopenjdk"
+JDK="https://api.adoptium.net/v3/binary/latest/11/ga/${os_version}/x64/jdk/hotspot/normal/eclipse"
 ext="tar.gz"
 
 if [[ ${os_version} == "windows" ]]; then
   ext="zip"
 fi
 
-checksumApiPath="https://api.adoptopenjdk.net/v3/assets/latest/11/openj9"
+checksumApiPath="https://api.adoptium.net/v3/assets/latest/11/hotspot"
 file="./jdk/${os_version}/checksum.json"
 
 JDK_FOLDER="./jdk/${os_version}"
@@ -40,7 +40,7 @@ if [ ! -d "$JDK_FOLDER" ]; then
         exit 1;
       fi
 
-      release_checksum=$(jq -r --arg os_v $os_version '.[].binary | select(.architecture == "x64") | select(.heap_size == "large") | select(.image_type == "jdk") | select(.jvm_impl == "openj9") | select(.os == $os_v) | .package.checksum'  $file)
+      release_checksum=$(jq -r --arg os_v $os_version '.[].binary | select(.architecture == "x64") | select(.heap_size == "normal") | select(.image_type == "jdk") | select(.jvm_impl == "hotspot") | select(.os == $os_v) | .package.checksum'  $file)
       
       if [ "${os_version}" == 'mac' ]; then
        download_checksum=$(shasum -a 256 $JDK_TARGET | cut -d " " -f 1)
