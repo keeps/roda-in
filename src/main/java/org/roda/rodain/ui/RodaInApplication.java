@@ -682,8 +682,21 @@ public class RodaInApplication extends Application {
 
         final ProcessBuilder builder = new ProcessBuilder(command);
         builder.start();
-      } else if (currentExecutable.getName().endsWith(".exe")) {
-        OpenPathInExplorer.open(currentExecutable.toPath());
+      } else{
+        if (currentExecutable.getName().endsWith(".exe")) {
+          OpenPathInExplorer.open(currentExecutable.toPath());
+        }
+        else{
+          if(currentExecutable.getName().endsWith(".app")){
+            OpenPathInExplorer.open(currentExecutable.toPath());
+          }
+          else{
+            final ArrayList<String> command = new ArrayList<>();
+            command.add(currentExecutable.getPath());
+            final ProcessBuilder builder = new ProcessBuilder(command);
+            builder.start();
+          }
+        }
       }
       closeApp();
     } catch (URISyntaxException e) {
