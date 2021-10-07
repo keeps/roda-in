@@ -1,38 +1,5 @@
 package org.roda.rodain.ui;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
-import org.apache.commons.configuration.ConfigurationException;
-import org.roda.rodain.core.ConfigurationManager;
-import org.roda.rodain.core.Constants;
-import org.roda.rodain.core.Controller;
-import org.roda.rodain.core.I18n;
-import org.roda.rodain.core.PathCollection;
-import org.roda.rodain.core.schema.Sip;
-import org.roda.rodain.core.sip.SipRepresentation;
-import org.roda.rodain.core.utils.OpenPathInExplorer;
-import org.roda.rodain.ui.creation.CreationModalPreparation;
-import org.roda.rodain.ui.creation.CreationModalStage;
-import org.roda.rodain.ui.creation.RenameModal;
-import org.roda.rodain.ui.creation.RenameModalStage;
-import org.roda.rodain.ui.inspection.InspectionPane;
-import org.roda.rodain.ui.rules.VisitorStack;
-import org.roda.rodain.ui.schema.ui.SchemaPane;
-import org.roda.rodain.ui.source.FileExplorerPane;
-import org.roda.rodain.ui.source.items.SourceTreeItem;
-import org.roda.rodain.ui.utils.FontAwesomeImageCreator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -64,6 +31,38 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.apache.commons.configuration.ConfigurationException;
+import org.roda.rodain.core.ConfigurationManager;
+import org.roda.rodain.core.Constants;
+import org.roda.rodain.core.Controller;
+import org.roda.rodain.core.I18n;
+import org.roda.rodain.core.PathCollection;
+import org.roda.rodain.core.schema.Sip;
+import org.roda.rodain.core.sip.SipRepresentation;
+import org.roda.rodain.core.utils.OpenPathInExplorer;
+import org.roda.rodain.ui.creation.CreationModalPreparation;
+import org.roda.rodain.ui.creation.CreationModalStage;
+import org.roda.rodain.ui.creation.RenameModal;
+import org.roda.rodain.ui.creation.RenameModalStage;
+import org.roda.rodain.ui.inspection.InspectionPane;
+import org.roda.rodain.ui.rules.VisitorStack;
+import org.roda.rodain.ui.schema.ui.SchemaPane;
+import org.roda.rodain.ui.source.FileExplorerPane;
+import org.roda.rodain.ui.source.items.SourceTreeItem;
+import org.roda.rodain.ui.utils.FontAwesomeImageCreator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -73,31 +72,194 @@ import javafx.stage.StageStyle;
 public class RodaInApplication extends Application {
   private static final Logger LOGGER = LoggerFactory.getLogger(RodaInApplication.class.getName());
   private static Stage stage;
-
-  private BorderPane mainPane;
-  private double initialWidth = 1200, initialHeight = 700;
-
-  // Splash
-  private Pane splashPane;
-  private Stage splashStage;
-
   private static FileExplorerPane fileExplorer;
   private static InspectionPane inspectionPane;
   private static SchemaPane schemePane;
-
+  private static long lastMessage = System.currentTimeMillis();
+  private BorderPane mainPane;
+  private double initialWidth = 1200, initialHeight = 700;
+  // Splash
+  private Pane splashPane;
+  private Stage splashStage;
   // Languages
   private RadioMenuItem langEN, langPT, langHU, langES_CL, langHR;
-
-  private static long lastMessage = System.currentTimeMillis();
 
   /**
    * The entry point of the application.
    *
-   * @param args
-   *          The arguments passed to the application.
+   * @param args The arguments passed to the application.
    */
   public static void start(String[] args) {
     launch(args);
+  }
+
+  private static void showError(Thread t, Throwable e) {
+    if (Platform.isFxApplicationThread()) {
+      LOGGER.error("Unexpected error", e);
+      showErrorDialog(e);
+    } else {
+      LOGGER.error("An unexpected error occurred in {}", t, e);
+    }
+  }
+
+  private static void showErrorDialog(Throwable e) {
+    if (System.currentTimeMillis() - lastMessage > 500) {
+      lastMessage = System.currentTimeMillis();
+      Stage dialog = new Stage();
+      dialog.initModality(Modality.APPLICATION_MODAL);
+      Parent root = new HBox();
+      dialog.setScene(new Scene(root, 400, 550));
+      dialog.show();
+      dialog.centerOnScreen();
+      dialog.close();
+
+      Alert alert = new Alert(Alert.AlertType.ERROR);
+      alert.initStyle(StageStyle.DECORATED);
+      alert.initOwner(dialog);
+      alert.setTitle(I18n.t(Constants.I18N_GENERIC_ERROR_TITLE));
+      alert.setHeaderText(I18n.t(Constants.I18N_GENERIC_ERROR_TITLE));
+      StringBuilder content = new StringBuilder(I18n.t(Constants.I18N_GENERIC_ERROR_CONTENT));
+      content.append("\n\n");
+      content.append(e.toString());
+      alert.setContentText(content.toString());
+      alert.getDialogPane().setStyle(ConfigurationManager.getStyle("export.alert"));
+
+      // Create expandable Exception.
+      StringWriter sw = new StringWriter();
+      PrintWriter pw = new PrintWriter(sw);
+      pw.println(e.getMessage());
+      for (StackTraceElement ste : e.getStackTrace()) {
+        pw.println("\t" + ste);
+      }
+      String exceptionText = sw.toString();
+
+      Label label = new Label(I18n.t(Constants.I18N_CREATIONMODALPROCESSING_ALERT_STACK_TRACE));
+
+      TextArea textArea = new TextArea(exceptionText);
+      textArea.setWrapText(true);
+      textArea.setEditable(false);
+      textArea.minWidthProperty().bind(alert.getDialogPane().widthProperty().subtract(20));
+      textArea.maxWidthProperty().bind(alert.getDialogPane().widthProperty().subtract(20));
+
+      GridPane expContent = new GridPane();
+      expContent.setMaxWidth(Double.MAX_VALUE);
+      expContent.add(label, 0, 0);
+      expContent.add(textArea, 0, 1);
+
+      textArea.minHeightProperty().bind(expContent.heightProperty().subtract(50));
+      // Set expandable Exception into the dialog pane.
+      alert.getDialogPane().setExpandableContent(expContent);
+      alert.getDialogPane().minHeightProperty().bindBidirectional(dialog.minHeightProperty());
+      alert.getDialogPane().setMinWidth(500);
+      alert.getDialogPane().setMinHeight(275);
+
+      // Without this setStyle the pane won't resize correctly. Black magic...
+      alert.getDialogPane().setStyle(ConfigurationManager.getStyle("creationmodalprocessing.blackmagic"));
+
+      alert.show();
+    }
+  }
+
+  private static void closeApp() {
+    Controller.exportClassificationScheme(schemePane.getSchemaNodes(),
+            ConfigurationManager.getRodainPath().resolve(".plan.temp").toString());
+    // 20170308 hsilva: disabled watchservice
+    // fileExplorer.closeWatcher();
+    VisitorStack.end();
+    Footer.getInstance().cancelMemoryAutoUpdater();
+    Platform.exit();
+  }
+
+  /**
+   * @param checkForEnvVariable if true, the method will consult RODA-in env. variable to see if
+   *                            its running in a special mode (e.g. testing), in order to avoid
+   *                            checking for version update
+   */
+  private static boolean checkForUpdates(boolean checkForEnvVariable) {
+    Optional<String> updateMessage = Controller.checkForUpdates(checkForEnvVariable);
+    if (updateMessage.isPresent()) {
+      Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
+      dlg.initStyle(StageStyle.UNDECORATED);
+      dlg.setHeaderText(I18n.t(Constants.I18N_MAIN_NEW_VERSION_HEADER));
+      dlg.setTitle("");
+      dlg.setContentText(updateMessage.get());
+      dlg.initModality(Modality.APPLICATION_MODAL);
+      dlg.initOwner(stage);
+
+      dlg.getDialogPane().setMinWidth(300);
+      dlg.showAndWait();
+
+      if (dlg.getResult().getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+        OpenPathInExplorer.open(Constants.RODAIN_GITHUB_LATEST_VERSION_LINK);
+      }
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /**
+   * @return The selected items in the file explorer
+   */
+  public static Set<SourceTreeItem> getSourceSelectedItems() {
+    return fileExplorer.getSelectedItems();
+  }
+
+  /**
+   * @return The inspection pane object.
+   */
+  public static InspectionPane getInspectionPane() {
+    return inspectionPane;
+  }
+
+  /**
+   * @return The file explorer object.
+   */
+  public static FileExplorerPane getFileExplorer() {
+    return fileExplorer;
+  }
+
+  /**
+   * @return The scheme pane object.
+   */
+  public static SchemaPane getSchemePane() {
+    return schemePane;
+  }
+
+  /**
+   * @return The Map with the selected SIPs of all the SchemaNodes in the scheme
+   * pane
+   */
+  public static Map<Sip, List<String>> getSelectedDescriptionObjects() {
+    return schemePane.getSelectedDescriptionObjects();
+  }
+
+  /**
+   * @return The Map with all the SIPs of all the SchemaNodes in the scheme pane
+   */
+  public static Map<Sip, List<String>> getAllDescriptionObjects() {
+    return schemePane.getAllDescriptionObjects();
+  }
+
+  /**
+   * Shows a pane to start the export process of the created SIPs.
+   */
+  public static void exportSIPs() {
+    // force the edits to the metadata text area to be saved
+    inspectionPane.saveMetadata();
+
+    CreationModalStage creationStage = new CreationModalStage(stage);
+    CreationModalPreparation pane = new CreationModalPreparation(creationStage);
+    creationStage.setRoot(pane);
+  }
+
+  /**
+   * Shows a pane to rename a representation.
+   */
+  public static void renameRepresentation(SipRepresentation representation) {
+    RenameModalStage modalStage = new RenameModalStage(stage);
+    RenameModal pane = new RenameModal(representation.getName(), modalStage);
+    modalStage.setRoot(pane);
   }
 
   @Override
@@ -211,73 +373,6 @@ public class RodaInApplication extends Application {
     new Thread(initTask).start();
   }
 
-  private static void showError(Thread t, Throwable e) {
-    if (Platform.isFxApplicationThread()) {
-      LOGGER.error("Unexpected error", e);
-      showErrorDialog(e);
-    } else {
-      LOGGER.error("An unexpected error occurred in {}", t, e);
-    }
-  }
-
-  private static void showErrorDialog(Throwable e) {
-    if (System.currentTimeMillis() - lastMessage > 500) {
-      lastMessage = System.currentTimeMillis();
-      Stage dialog = new Stage();
-      dialog.initModality(Modality.APPLICATION_MODAL);
-      Parent root = new HBox();
-      dialog.setScene(new Scene(root, 400, 550));
-      dialog.show();
-      dialog.centerOnScreen();
-      dialog.close();
-
-      Alert alert = new Alert(Alert.AlertType.ERROR);
-      alert.initStyle(StageStyle.DECORATED);
-      alert.initOwner(dialog);
-      alert.setTitle(I18n.t(Constants.I18N_GENERIC_ERROR_TITLE));
-      alert.setHeaderText(I18n.t(Constants.I18N_GENERIC_ERROR_TITLE));
-      StringBuilder content = new StringBuilder(I18n.t(Constants.I18N_GENERIC_ERROR_CONTENT));
-      content.append("\n\n");
-      content.append(e.toString());
-      alert.setContentText(content.toString());
-      alert.getDialogPane().setStyle(ConfigurationManager.getStyle("export.alert"));
-
-      // Create expandable Exception.
-      StringWriter sw = new StringWriter();
-      PrintWriter pw = new PrintWriter(sw);
-      pw.println(e.getMessage());
-      for (StackTraceElement ste : e.getStackTrace()) {
-        pw.println("\t" + ste);
-      }
-      String exceptionText = sw.toString();
-
-      Label label = new Label(I18n.t(Constants.I18N_CREATIONMODALPROCESSING_ALERT_STACK_TRACE));
-
-      TextArea textArea = new TextArea(exceptionText);
-      textArea.setWrapText(true);
-      textArea.setEditable(false);
-      textArea.minWidthProperty().bind(alert.getDialogPane().widthProperty().subtract(20));
-      textArea.maxWidthProperty().bind(alert.getDialogPane().widthProperty().subtract(20));
-
-      GridPane expContent = new GridPane();
-      expContent.setMaxWidth(Double.MAX_VALUE);
-      expContent.add(label, 0, 0);
-      expContent.add(textArea, 0, 1);
-
-      textArea.minHeightProperty().bind(expContent.heightProperty().subtract(50));
-      // Set expandable Exception into the dialog pane.
-      alert.getDialogPane().setExpandableContent(expContent);
-      alert.getDialogPane().minHeightProperty().bindBidirectional(dialog.minHeightProperty());
-      alert.getDialogPane().setMinWidth(500);
-      alert.getDialogPane().setMinHeight(275);
-
-      // Without this setStyle the pane won't resize correctly. Black magic...
-      alert.getDialogPane().setStyle(ConfigurationManager.getStyle("creationmodalprocessing.blackmagic"));
-
-      alert.show();
-    }
-  }
-
   private void createFrameStructure() {
     mainPane = new BorderPane();
     mainPane.getStyleClass().add(Constants.CSS_BORDER_PANE);
@@ -318,7 +413,7 @@ public class RodaInApplication extends Application {
     Menu language = new Menu(I18n.t(Constants.I18N_MAIN_LANGUAGE));
 
     Platform.runLater(
-      () -> language.setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.GLOBE))));
+            () -> language.setGraphic(new ImageView(FontAwesomeImageCreator.generate(FontAwesomeImageCreator.GLOBE))));
 
     // File
     final ToggleGroup languageGroup = new ToggleGroup();
@@ -337,7 +432,7 @@ public class RodaInApplication extends Application {
     langHR = new RadioMenuItem("Hrvatski");
     langHR.setUserData(Constants.LANG_HR);
     langHR.setToggleGroup(languageGroup);
-    language.getItems().addAll(langEN, langPT, langHU, langES_CL,langHR);
+    language.getItems().addAll(langEN, langPT, langHU, langES_CL, langHR);
 
     updateSelectedLanguageMenu();
 
@@ -348,8 +443,8 @@ public class RodaInApplication extends Application {
           Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
           dlg.getButtonTypes().clear();
           dlg.getButtonTypes().addAll(
-            new ButtonType(I18n.tLang(Constants.I18N_CANCEL, lang), ButtonBar.ButtonData.CANCEL_CLOSE),
-            new ButtonType(I18n.tLang(Constants.I18N_RESTART, lang), ButtonBar.ButtonData.OK_DONE));
+                  new ButtonType(I18n.tLang(Constants.I18N_CANCEL, lang), ButtonBar.ButtonData.CANCEL_CLOSE),
+                  new ButtonType(I18n.tLang(Constants.I18N_RESTART, lang), ButtonBar.ButtonData.OK_DONE));
           dlg.initStyle(StageStyle.UNDECORATED);
           dlg.setHeaderText(I18n.tLang(Constants.I18N_MAIN_UPDATE_LANG_HEADER, lang));
           dlg.setTitle(I18n.tLang(Constants.I18N_MAIN_UPDATE_LANG_TITLE, lang));
@@ -471,7 +566,7 @@ public class RodaInApplication extends Application {
           Alert dlg = new Alert(Alert.AlertType.INFORMATION);
           dlg.initStyle(StageStyle.UNDECORATED);
           dlg.setHeaderText(
-            String.format(I18n.t(Constants.I18N_MAIN_NO_UPDATES_HEADER), Controller.getCurrentVersion()));
+                  String.format(I18n.t(Constants.I18N_MAIN_NO_UPDATES_HEADER), Controller.getCurrentVersion()));
           dlg.setContentText(I18n.t(Constants.I18N_MAIN_NO_UPDATES_CONTENT));
           dlg.initModality(Modality.APPLICATION_MODAL);
           dlg.initOwner(stage);
@@ -508,7 +603,7 @@ public class RodaInApplication extends Application {
       Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
       dlg.getButtonTypes().clear();
       dlg.getButtonTypes().addAll(new ButtonType(I18n.t(Constants.I18N_CANCEL), ButtonBar.ButtonData.CANCEL_CLOSE),
-        new ButtonType(I18n.t(Constants.I18N_RESTART), ButtonBar.ButtonData.OK_DONE));
+              new ButtonType(I18n.t(Constants.I18N_RESTART), ButtonBar.ButtonData.OK_DONE));
       dlg.initStyle(StageStyle.UNDECORATED);
       dlg.setHeaderText(currentValue);
       dlg.setContentText(I18n.t(Constants.I18N_MAIN_UPDATE_LANG_CONTENT));
@@ -547,6 +642,9 @@ public class RodaInApplication extends Application {
       case Constants.LANG_ES_CL:
         langES_CL.setSelected(true);
         break;
+      case Constants.LANG_HR:
+        langHR.setSelected(true);
+        break;
       default:
         langEN.setSelected(true);
         break;
@@ -571,7 +669,7 @@ public class RodaInApplication extends Application {
   private void restartApplication() {
     try {
       final File currentExecutable = new File(
-        RodaInApplication.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+              RodaInApplication.class.getProtectionDomain().getCodeSource().getLocation().toURI());
 
       /* is it a jar or exe file? */
       if (currentExecutable.getName().endsWith(".jar")) {
@@ -593,108 +691,5 @@ public class RodaInApplication extends Application {
     } catch (IOException e) {
       LOGGER.error("Error creating the process to restart the application", e);
     }
-  }
-
-  private static void closeApp() {
-    Controller.exportClassificationScheme(schemePane.getSchemaNodes(),
-      ConfigurationManager.getRodainPath().resolve(".plan.temp").toString());
-    // 20170308 hsilva: disabled watchservice
-    // fileExplorer.closeWatcher();
-    VisitorStack.end();
-    Footer.getInstance().cancelMemoryAutoUpdater();
-    Platform.exit();
-  }
-
-  /**
-   * @param checkForEnvVariable
-   *          if true, the method will consult RODA-in env. variable to see if
-   *          its running in a special mode (e.g. testing), in order to avoid
-   *          checking for version update
-   */
-  private static boolean checkForUpdates(boolean checkForEnvVariable) {
-    Optional<String> updateMessage = Controller.checkForUpdates(checkForEnvVariable);
-    if (updateMessage.isPresent()) {
-      Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
-      dlg.initStyle(StageStyle.UNDECORATED);
-      dlg.setHeaderText(I18n.t(Constants.I18N_MAIN_NEW_VERSION_HEADER));
-      dlg.setTitle("");
-      dlg.setContentText(updateMessage.get());
-      dlg.initModality(Modality.APPLICATION_MODAL);
-      dlg.initOwner(stage);
-
-      dlg.getDialogPane().setMinWidth(300);
-      dlg.showAndWait();
-
-      if (dlg.getResult().getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-        OpenPathInExplorer.open(Constants.RODAIN_GITHUB_LATEST_VERSION_LINK);
-      }
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  /**
-   * @return The selected items in the file explorer
-   */
-  public static Set<SourceTreeItem> getSourceSelectedItems() {
-    return fileExplorer.getSelectedItems();
-  }
-
-  /**
-   * @return The inspection pane object.
-   */
-  public static InspectionPane getInspectionPane() {
-    return inspectionPane;
-  }
-
-  /**
-   * @return The file explorer object.
-   */
-  public static FileExplorerPane getFileExplorer() {
-    return fileExplorer;
-  }
-
-  /**
-   * @return The scheme pane object.
-   */
-  public static SchemaPane getSchemePane() {
-    return schemePane;
-  }
-
-  /**
-   * @return The Map with the selected SIPs of all the SchemaNodes in the scheme
-   *         pane
-   */
-  public static Map<Sip, List<String>> getSelectedDescriptionObjects() {
-    return schemePane.getSelectedDescriptionObjects();
-  }
-
-  /**
-   * @return The Map with all the SIPs of all the SchemaNodes in the scheme pane
-   */
-  public static Map<Sip, List<String>> getAllDescriptionObjects() {
-    return schemePane.getAllDescriptionObjects();
-  }
-
-  /**
-   * Shows a pane to start the export process of the created SIPs.
-   */
-  public static void exportSIPs() {
-    // force the edits to the metadata text area to be saved
-    inspectionPane.saveMetadata();
-
-    CreationModalStage creationStage = new CreationModalStage(stage);
-    CreationModalPreparation pane = new CreationModalPreparation(creationStage);
-    creationStage.setRoot(pane);
-  }
-
-  /**
-   * Shows a pane to rename a representation.
-   */
-  public static void renameRepresentation(SipRepresentation representation) {
-    RenameModalStage modalStage = new RenameModalStage(stage);
-    RenameModal pane = new RenameModal(representation.getName(), modalStage);
-    modalStage.setRoot(pane);
   }
 }
