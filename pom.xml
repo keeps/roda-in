@@ -49,7 +49,7 @@
             </snapshots>
         </repository>
         <repository>
-            <id>github</id>
+            <id>GitHub</id>
             <name>GitHub Packages</name>
             <url>https://maven.pkg.github.com/keeps/*</url>
         </repository>
