@@ -222,7 +222,7 @@ public class EarkSip2Creator extends SimpleSipCreator implements SIPObserver, Si
       setHeader(earkSip);
       earkSip.addCreatorSoftwareAgent(Constants.SIP_DEFAULT_AGENT_NAME,
               Controller.getCurrentVersionSilently().orElse(Constants.SIP_AGENT_VERSION_UNKNOWN));
-      earkSip.addAgent(new IPAgent(sipAgentName, Constants.SIP_AGENT_ROLE_OTHER, Constants.SIP_AGENT_OTHERROLE_SUBMITTER, METSEnums.CreatorType.INDIVIDUAL, null, sipAgentID, IPAgentNoteTypeEnum.IDENTIFICATIONCODE));
+      earkSip.addAgent(new IPAgent(sipAgentName,"CREATOR", null, METSEnums.CreatorType.INDIVIDUAL, null, sipAgentID, IPAgentNoteTypeEnum.IDENTIFICATIONCODE));
 
       currentAction = I18n.t(Constants.I18N_SIMPLE_SIP_CREATOR_INIT_ZIP);
       Path sipPath = earkSip.build(outputPath, createSipName(descriptionObject, sipNameBuilder));
