@@ -49,9 +49,9 @@
             </snapshots>
         </repository>
         <repository>
-            <id>GitHub</id>
+            <id>github</id>
             <name>GitHub Packages</name>
-            <url>https://maven.pkg.github.com/keeps/*</url>
+            <url>https://maven.pkg.github.com/keeps/commons-ip</url>
         </repository>
     </repositories>
 
