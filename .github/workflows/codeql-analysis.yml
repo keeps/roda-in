@@ -51,7 +51,7 @@ jobs:
         distribution: 'adopt'
 
     - name: Build Java
-    - run: mvn --batch-mode clean package
+      run: mvn --batch-mode clean package
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
