@@ -28,6 +28,7 @@ import org.roda.rodain.core.sip.PseudoDescriptionObject;
 import org.roda.rodain.core.sip.PseudoItem;
 import org.roda.rodain.core.sip.PseudoSIP;
 import org.roda.rodain.core.sip.SipPreview;
+import org.roda.rodain.core.template.TemplateFieldValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,8 +45,8 @@ public class SipsWithStructure extends SipPreviewCreator {
   private Map<Path, SipPreview> sipPreviewMap;
 
   /**
-   * Creates a new SipPreviewCreator where there's a new SIP created with all
-   * the visited paths.
+   * Creates a new SipPreviewCreator where there's a new SIP created with all the
+   * visited paths.
    *
    * @param id
    *          The id of the SipPreviewCreator.
@@ -109,8 +110,8 @@ public class SipsWithStructure extends SipPreviewCreator {
   }
 
   /**
-   * Adds the current directory to its parent's node. If the parent doesn't
-   * exist, adds a new node to the Deque.
+   * Adds the current directory to its parent's node. If the parent doesn't exist,
+   * adds a new node to the Deque.
    *
    * @param path
    *          The path of the directory.
@@ -147,9 +148,25 @@ public class SipsWithStructure extends SipPreviewCreator {
       }
 
       // make this node a description object
-      Sip descriptionObject = new Sip(
-        new DescriptiveMetadata(MetadataOption.TEMPLATE, templateType, metadataType, metadataVersion));
-      descriptionObject.setTitle(path.getFileName().toString());
+      Set<Path> rootMetadata = getMetadataPath(path);
+      Sip descriptionObject;
+      if (rootMetadata.isEmpty()) {
+        descriptionObject = new Sip(
+          new DescriptiveMetadata(MetadataOption.TEMPLATE, templateType, metadataType, metadataVersion));
+        descriptionObject.setTitle(path.getFileName().toString());
+      } else {
+        descriptionObject = new Sip();
+        for (Path metadataPath : rootMetadata) {
+          DescriptiveMetadata descriptiveMetadata = new DescriptiveMetadata(MetadataOption.DIFF_DIRECTORY, metadataPath,
+            metadataType, metadataVersion, templateType);
+          descriptionObject.getMetadata().add(descriptiveMetadata);
+        }
+        String title = getDescriptiveMetadataTitle(descriptionObject.getMetadata().get(0).getValues());
+        if (title == null) {
+          title = path.getFileName().toString();
+        }
+        descriptionObject.setTitle(title);
+      }
       try {
         String metadataAggregationLevel = ConfigurationManager
           .getMetadataConfig(templateType + Constants.CONF_K_SUFFIX_AGGREG_LEVEL);
@@ -184,9 +201,19 @@ public class SipsWithStructure extends SipPreviewCreator {
     }
   }
 
+  private String getDescriptiveMetadataTitle(Set<TemplateFieldValue> values) {
+    String title = null;
+    for (TemplateFieldValue templateFieldValue : values) {
+      if (templateFieldValue.getId().equals("title")) {
+        title = templateFieldValue.get("value").toString();
+      }
+    }
+    return title;
+  }
+
   /**
-   * Adds the visited file to its parent. If the parent doesn't exist, adds a
-   * new TreeNode to the Deque.
+   * Adds the visited file to its parent. If the parent doesn't exist, adds a new
+   * TreeNode to the Deque.
    *
    * @param path
    *          The path of the visited file
