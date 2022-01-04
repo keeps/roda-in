@@ -63,8 +63,8 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
   protected boolean cancelled = false;
 
   /**
-   * Creates a new SipPreviewCreator where there's a new SIP created with all
-   * the visited paths.
+   * Creates a new SipPreviewCreator where there's a new SIP created with all the
+   * visited paths.
    *
    * @param id
    *          The id of the SipPreviewCreator.
@@ -185,8 +185,8 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
   }
 
   /**
-   * Adds the current directory to its parent's node. If the parent doesn't
-   * exist, adds a new node to the Deque.
+   * Adds the current directory to its parent's node. If the parent doesn't exist,
+   * adds a new node to the Deque.
    *
    * @param path
    *          The path of the directory.
@@ -197,8 +197,8 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
   }
 
   /**
-   * Adds the visited file to its parent. If the parent doesn't exist, adds a
-   * new TreeNode to the Deque.
+   * Adds the visited file to its parent. If the parent doesn't exist, adds a new
+   * TreeNode to the Deque.
    *
    * @param path
    *          The path of the visited file
@@ -334,7 +334,12 @@ public class SipPreviewCreator extends Observable implements TreeVisitor {
 
   private Set<Path> getFileFromDir(Path path) {
     String fileNameWithExtension = path.getFileName().toString();
-    String fileName = FilenameUtils.removeExtension(fileNameWithExtension);
+    String fileName;
+    if (Files.isDirectory(path)) {
+      fileName = fileNameWithExtension;
+    } else {
+      fileName = FilenameUtils.removeExtension(fileNameWithExtension);
+    }
 
     Set<Path> paths = metadata.get(fileName);
     Set<Path> result = new HashSet<>();
