@@ -80,6 +80,9 @@ public class CreateSips {
       case HUNGARIAN:
         creator = new HungarianSipCreator(outputPath, previews, sipNameBuilder, createReport, ipHeader);
         break;
+      case SIPS:
+        creator = new ShallowSipCreator(outputPath, previews, sipNameBuilder, createReport, ipHeader);
+        break;
     }
     creator.start();
   }
