@@ -32,6 +32,7 @@ import org.roda.rodain.core.sip.naming.SIPNameBuilderBagit;
 import org.roda.rodain.core.sip.naming.SIPNameBuilderEARK;
 import org.roda.rodain.core.sip.naming.SIPNameBuilderEARK2;
 import org.roda.rodain.core.sip.naming.SIPNameBuilderHungarian;
+import org.roda.rodain.core.sip.naming.SIPNameBuilderSIPS;
 import org.roda.rodain.ui.RodaInApplication;
 import org.roda.rodain.ui.creation.METSHeaderComponents.METSHeaderUtils;
 import org.roda_project.commons_ip.model.IPHeader;
@@ -572,6 +573,9 @@ public class CreationModalPreparation extends BorderPane {
           ConfigurationManager.setAppConfig(Constants.CONF_K_EXPORT_LAST_PREFIX, sipNameStrategyPrefix.getText(), true);
         } else if (sipType.equals(SipType.BAGIT)) {
           sipNameBuilder = new SIPNameBuilderBagit(sipNameStrategyPrefix.getText(), sipNameStrategy);
+          ConfigurationManager.setAppConfig(Constants.CONF_K_EXPORT_LAST_PREFIX, sipNameStrategyPrefix.getText(), true);
+        } else if (sipType.equals(SipType.SIPS)) {
+          sipNameBuilder = new SIPNameBuilderSIPS(sipNameStrategyPrefix.getText(), sipNameStrategy);
           ConfigurationManager.setAppConfig(Constants.CONF_K_EXPORT_LAST_PREFIX, sipNameStrategyPrefix.getText(), true);
         }
 
