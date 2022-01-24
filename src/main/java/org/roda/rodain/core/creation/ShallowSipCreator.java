@@ -32,7 +32,10 @@ import org.roda.rodain.ui.creation.CreationModalProcessing;
 import org.roda_project.commons_ip.model.IPHeader;
 import org.roda_project.commons_ip.utils.IPEnums;
 import org.roda_project.commons_ip.utils.IPException;
+import org.roda_project.commons_ip.utils.METSEnums;
 import org.roda_project.commons_ip2.mets_v1_12.beans.FileType;
+import org.roda_project.commons_ip2.model.IPAgent;
+import org.roda_project.commons_ip2.model.IPAgentNoteTypeEnum;
 import org.roda_project.commons_ip2.model.IPConstants;
 import org.roda_project.commons_ip2.model.IPContentInformationType;
 import org.roda_project.commons_ip2.model.IPContentType;
@@ -64,11 +67,16 @@ public class ShallowSipCreator extends SimpleSipCreator implements SIPObserver, 
   private SIPNameBuilder sipNameBuilder;
   private IPHeader ipHeader;
 
+  private String sipAgentName;
+  private String sipAgentID;
+
   public ShallowSipCreator(Path outputPath, Map<Sip, List<String>> previews, SIPNameBuilder sipNameBuilder,
-    boolean createReport, IPHeader ipHeader) {
+    boolean createReport, IPHeader ipHeader, String sipAgentName, String sipAgentID) {
     super(outputPath, previews, createReport);
     this.sipNameBuilder = sipNameBuilder;
     this.ipHeader = ipHeader;
+    this.sipAgentName = sipAgentName;
+    this.sipAgentID = sipAgentID;
   }
 
   public static String getText() {
@@ -218,6 +226,8 @@ public class ShallowSipCreator extends SimpleSipCreator implements SIPObserver, 
       setHeader(earkSip);
       earkSip.addCreatorSoftwareAgent(Constants.SIP_DEFAULT_AGENT_NAME,
         Controller.getCurrentVersionSilently().orElse(Constants.SIP_AGENT_VERSION_UNKNOWN));
+      earkSip.addAgent(new IPAgent(sipAgentName, "CREATOR", null, METSEnums.CreatorType.INDIVIDUAL, null, sipAgentID,
+        IPAgentNoteTypeEnum.IDENTIFICATIONCODE));
       // earkSip.addAgent(new IPAgent(sipAgentName,"CREATOR", null,
       // METSEnums.CreatorType.INDIVIDUAL, null, sipAgentID,
       // IPAgentNoteTypeEnum.IDENTIFICATIONCODE));
@@ -288,8 +298,7 @@ public class ShallowSipCreator extends SimpleSipCreator implements SIPObserver, 
     Set<String> checksumAlgorithms = new HashSet<>();
     checksumAlgorithms.add(checksumType);
     try (InputStream inputStream = Files.newInputStream(path)) {
-      Map<String, String> checksums = ZIPUtils.calculateChecksums(Optional.empty(), inputStream,
-              checksumAlgorithms);
+      Map<String, String> checksums = ZIPUtils.calculateChecksums(Optional.empty(), inputStream, checksumAlgorithms);
       String checksum = checksums.get(checksumType);
       filetype.setCHECKSUM(checksum);
       filetype.setCHECKSUMTYPE(checksumType);

@@ -1,22 +1,16 @@
 package org.roda.rodain.ui.creation;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
-import javafx.stage.DirectoryChooser;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.ToggleSwitch;
 import org.roda.rodain.core.ConfigurationManager;
@@ -39,16 +33,23 @@ import org.roda_project.commons_ip.model.IPHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.stage.DirectoryChooser;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -100,7 +101,8 @@ public class CreationModalPreparation extends BorderPane {
    * for the SIP exportation should be and the format of the SIPs.
    * </p>
    *
-   * @param stage The stage of the pane
+   * @param stage
+   *          The stage of the pane
    */
   public CreationModalPreparation(CreationModalStage stage) {
     this.stage = stage;
@@ -118,7 +120,8 @@ public class CreationModalPreparation extends BorderPane {
   /**
    * Sets the output folder of the SIPs. Used for testing.
    *
-   * @param out The path of the output folder
+   * @param out
+   *          The path of the output folder
    */
   public static void setOutputFolder(String out) {
     if (out != null && !"".equals(out)) {
@@ -205,8 +208,9 @@ public class CreationModalPreparation extends BorderPane {
       sipTypes.getSelectionModel().select(1);
     }
     SipType type = (SipType) sipTypes.getSelectionModel().getSelectedItem().getKey();
-    center.getChildren().addAll(countBox, reportBox, outputFolderBox, sipTypesBox, sipAgentNameField, sipAgentNoteField, prefixBox);
-    if (!type.equals(SipType.EARK2)) {
+    center.getChildren().addAll(countBox, reportBox, outputFolderBox, sipTypesBox, sipAgentNameField, sipAgentNoteField,
+      prefixBox);
+    if (!SipType.EARK2.equals(type) && !SipType.SIPS.equals(type)) {
       sipAgentNameField.setVisible(false);
       sipAgentNoteField.setVisible(false);
     }
@@ -342,7 +346,7 @@ public class CreationModalPreparation extends BorderPane {
       // 20170524 hsilva: the following is required to be able to use the root
       // of the filesystem as output folder (otherwise NPE occurs)
       String folderName = outputFolder.getFileName() != null ? outputFolder.getFileName().toString()
-              : outputFolder.toString();
+        : outputFolder.toString();
       chooseFile.setText(folderName);
       setIsDisableOutputFolder(false);
     }
@@ -387,7 +391,7 @@ public class CreationModalPreparation extends BorderPane {
     });
 
     prefixBox.getChildren().addAll(prefixOnlySipNameStrategyBox, hungarianSipNameStrategyBox, HorizontalSpace.create(),
-            sipNameStrategyComboBox);
+      sipNameStrategyComboBox);
     return prefixBox;
   }
 
@@ -455,7 +459,7 @@ public class CreationModalPreparation extends BorderPane {
     sipNameStrategyTransferring.setMaxWidth(DEFAULT_WIDTH);
     sipNameStrategyTransferring.setText(ConfigurationManager.getAppConfig(Constants.CONF_K_EXPORT_LAST_TRANSFERRING));
     transferringLabelAndField.getChildren().addAll(transferringLabel, HorizontalSpace.create(),
-            sipNameStrategyTransferring);
+      sipNameStrategyTransferring);
 
     // serial number
     HBox serialLabelAndField = new HBox(5);
@@ -494,8 +498,8 @@ public class CreationModalPreparation extends BorderPane {
       if (newValue != null) {
         // sip name strategies combo box update
         SipType type = (SipType) newValue.getKey();
-        sipAgentNameField.setVisible(type.equals(SipType.EARK2));
-        sipAgentNoteField.setVisible(type.equals(SipType.EARK2));
+        sipAgentNameField.setVisible(SipType.EARK2.equals(type) || SipType.SIPS.equals(type));
+        sipAgentNoteField.setVisible(SipType.EARK2.equals(type) || SipType.SIPS.equals(type));
 
         Set<SipNameStrategy> enabledStrategies = type.getSipNameStrategies();
         sipNameStrategyComboBox.setEnabledItems(enabledStrategies);
@@ -529,7 +533,7 @@ public class CreationModalPreparation extends BorderPane {
     start = new Button();
     SipType sipType = (SipType) sipTypes.getValue().getKey();
     if (sipTypes.getValue() != null && sipType.requiresMETSHeaderInfo()
-            && METSHeaderUtils.getFieldList(sipType).length > 0) {
+      && METSHeaderUtils.getFieldList(sipType).length > 0) {
       start.setText(I18n.t(Constants.I18N_CONTINUE));
     } else {
       start.setText(I18n.t(Constants.I18N_START));
@@ -549,20 +553,20 @@ public class CreationModalPreparation extends BorderPane {
           String nextSerial;
           try {
             nextSerial = String.format(Constants.SIP_NAME_STRATEGY_SERIAL_FORMAT_NUMBER,
-                    Integer.valueOf(serial) + CreationModalPreparation.this.selectedSIP);
+              Integer.valueOf(serial) + CreationModalPreparation.this.selectedSIP);
           } catch (NumberFormatException e) {
             serial = ConfigurationManager.getAppConfig(Constants.CONF_K_EXPORT_LAST_SERIAL);
             if (StringUtils.isBlank(serial)) {
               serial = Constants.MISC_DEFAULT_HUNGARIAN_SIP_SERIAL;
             }
             nextSerial = String.format(Constants.SIP_NAME_STRATEGY_SERIAL_FORMAT_NUMBER,
-                    Integer.valueOf(serial) + CreationModalPreparation.this.selectedSIP);
+              Integer.valueOf(serial) + CreationModalPreparation.this.selectedSIP);
           }
           sipNameBuilder = new SIPNameBuilderHungarian(sipNameStrategyTransferring.getText(), serial, sipNameStrategy);
 
           // persist in config file
           ConfigurationManager.setAppConfig(Constants.CONF_K_EXPORT_LAST_TRANSFERRING,
-                  sipNameStrategyTransferring.getText(), true);
+            sipNameStrategyTransferring.getText(), true);
 
           ConfigurationManager.setAppConfig(Constants.CONF_K_EXPORT_LAST_SERIAL, nextSerial, true);
         } else if (sipType.equals(SipType.EARK)) {
@@ -581,26 +585,27 @@ public class CreationModalPreparation extends BorderPane {
 
         // persist switches in config file
         ConfigurationManager.setAppConfig(Constants.CONF_K_EXPORT_LAST_ITEM_EXPORT_SWITCH,
-                String.valueOf(itemExportSwitch.isSelected()));
+          String.valueOf(itemExportSwitch.isSelected()));
         ConfigurationManager.setAppConfig(Constants.CONF_K_EXPORT_LAST_REPORT_CREATION_SWITCH,
-                String.valueOf(reportCreationSwitch.isSelected()));
+          String.valueOf(reportCreationSwitch.isSelected()));
         // 20170411 bferreira: sipExportSwitch was purposely left out because
         // there is some logic in place to select that toggle
 
         // persist SIP type
         ConfigurationManager.setAppConfig(Constants.CONF_K_LAST_SIP_TYPE,
-                (String) sipTypes.getSelectionModel().getSelectedItem().getValue());
+          (String) sipTypes.getSelectionModel().getSelectedItem().getValue());
 
         // persist output folder in config file
         ConfigurationManager.setAppConfig(Constants.CONF_K_EXPORT_LAST_SIP_OUTPUT_FOLDER,
-                outputFolder.toAbsolutePath().toString());
+          outputFolder.toAbsolutePath().toString());
 
         if (sipType.requiresMETSHeaderInfo() && METSHeaderUtils.getFieldList(sipType).length > 0) {
           stage.showMETSHeaderModal(CreationModalPreparation.this, outputFolder, sipExportSwitch.isSelected(),
-                  itemExportSwitch.isSelected(), sipType, sipNameBuilder, reportCreationSwitch.isSelected());
+            itemExportSwitch.isSelected(), sipType, sipNameBuilder, reportCreationSwitch.isSelected());
         } else {
           stage.startCreation(outputFolder, sipExportSwitch.isSelected(), itemExportSwitch.isSelected(), sipNameBuilder,
-                  reportCreationSwitch.isSelected(), new IPHeader(), Optional.of(sipAgentName.getText()), Optional.of(sipAgentNote.getText()));
+            reportCreationSwitch.isSelected(), new IPHeader(), Optional.of(sipAgentName.getText()),
+            Optional.of(sipAgentNote.getText()));
 
         }
       }
