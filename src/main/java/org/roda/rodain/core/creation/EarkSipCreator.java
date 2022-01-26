@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * @author Andre Pereira apereira@keep.pt
  * @since 19/11/2015.
  */
-public class EarkSipCreator extends SimpleSipCreator implements SIPObserver, SipCreator {
+public class EarkSipCreator extends SimpleSipCreator implements SIPObserver, ISipCreator {
   private static final Logger LOGGER = LoggerFactory.getLogger(EarkSipCreator.class.getName());
   private int countFilesOfZip;
   private int currentSIPadded = 0;
@@ -65,7 +65,7 @@ public class EarkSipCreator extends SimpleSipCreator implements SIPObserver, Sip
    * @param sipNameBuilder
    */
   public EarkSipCreator(Path outputPath, Map<Sip, List<String>> previews, SIPNameBuilder sipNameBuilder,
-    boolean createReport, IPHeader ipHeader) {
+                        boolean createReport, IPHeader ipHeader) {
     super(outputPath, previews, createReport);
     this.sipNameBuilder = sipNameBuilder;
     this.ipHeader = ipHeader;
