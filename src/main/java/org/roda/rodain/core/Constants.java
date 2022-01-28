@@ -470,6 +470,10 @@ public final class Constants {
   public static final String I18N_RENAME = "rename";
   public static final String I18N_RENAME_REPRESENTATION_ALREADY_EXISTS = "RenameModalProcessing.renameAlreadyExists";
 
+  public static final String CONF_K_SHALLOW_SIP_BASEPATH = "shallowSIP.basePath";
+  public static final String CONF_K_SHALLOW_SIP_HOST = "shallowSIP.host";
+  public static final String CONF_K_SHALLOW_SIP_PROTOCOL = "shallowSIP.protocol";
+
   /*
    * ENUMs
    */
