@@ -16,6 +16,8 @@ import java.util.Set;
 import org.roda.rodain.core.rules.TreeNode;
 import org.roda.rodain.core.schema.RepresentationContentType;
 import org.roda.rodain.core.schema.Sip;
+import org.roda.rodain.core.shallowSipManager.ShallowSipUriCreator;
+import org.roda.rodain.core.shallowSipManager.UriCreator;
 import org.roda.rodain.core.sip.naming.SIPNameBuilder;
 import org.roda.rodain.core.sip.naming.SIPNameBuilderSIPS;
 import org.roda_project.commons_ip.model.IPHeader;
@@ -24,6 +26,7 @@ import org.roda_project.commons_ip2.mets_v1_12.beans.FileType;
 import org.roda_project.commons_ip2.model.IPConstants;
 import org.roda_project.commons_ip2.model.IPContentInformationType;
 import org.roda_project.commons_ip2.model.IPContentType;
+import org.roda_project.commons_ip2.model.IPFile;
 import org.roda_project.commons_ip2.model.IPFileInterface;
 import org.roda_project.commons_ip2.model.IPFileShallow;
 import org.roda_project.commons_ip2.model.IPRepresentation;
@@ -106,9 +109,15 @@ public class ShallowSipCreator extends SipCreator {
       }
     } else {
       // if it's a file, add it to the representation
-      final URI url = tn.getPath().toUri();
+      final UriCreator uriCreator = new ShallowSipUriCreator();
+      final Optional<URI> uri = uriCreator.convertPathToUri(tn.getPath());
       final FileType filetype = createFileType(tn.getPath());
-      final IPFileInterface representationFile = new IPFileShallow(url, filetype);
+      final IPFileInterface representationFile;
+      if (uri.isPresent()) {
+        representationFile = new IPFileShallow(uri.get(), filetype);
+      } else {
+        representationFile = new IPFile(tn.getPath(), relativePath);
+      }
       rep.addFile(representationFile);
       setCurrentSIPadded(getCurrentSIPadded() + 1);
       currentAction = String.format("%s (%d/%d)", actionCopyingData, getCurrentSIPadded(), getCurrentSIPsize());
