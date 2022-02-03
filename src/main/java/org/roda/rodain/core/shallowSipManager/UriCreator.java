@@ -6,11 +6,17 @@ import java.util.Optional;
 
 import org.roda.rodain.core.ConfigurationManager;
 import org.roda.rodain.core.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@author João Gomes <jgomes@keep.pt>}.
  */
 public abstract class UriCreator implements UriCreatorInterface {
+  /**
+   * {@link Logger}.
+   */
+  private static final Logger LOGGER = LoggerFactory.getLogger(UriCreator.class.getName());
 
   /**
    * Get SIP shallow SIP Configurations.
@@ -32,6 +38,12 @@ public abstract class UriCreator implements UriCreatorInterface {
           .getConfig(Constants.CONF_K_REFERENCE_TRANSFORMER + config + ".protocol");
         final String port = ConfigurationManager.getConfig(Constants.CONF_K_REFERENCE_TRANSFORMER + config + ".port");
 
+        if (sourceBasepath == null) {
+          LOGGER.warn("Missing configuration base path for {}", config);
+        }
+        if (protocol == null) {
+          LOGGER.warn("Missing configuration protocol for {}", config);
+        }
         configurationList.add(
           new Configuration(sourceBasepath, targetBasepath != null ? Optional.of(targetBasepath) : Optional.empty(),
             host != null ? Optional.of(host) : Optional.empty(), protocol,

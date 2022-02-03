@@ -59,7 +59,7 @@ public class ShallowSipUriCreator extends UriCreator {
     final String absolutePath = path.toAbsolutePath().toString();
     Configuration configuration = null;
     for (Configuration config : configList) {
-      if (absolutePath.contains(config.getSourceBasepath())) {
+      if (config.getSourceBasepath() != null && absolutePath.contains(config.getSourceBasepath())) {
         configuration = config;
         break;
       }
