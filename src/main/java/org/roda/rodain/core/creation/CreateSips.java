@@ -43,7 +43,7 @@ public class CreateSips {
    *          The format of the SIP output
    */
   public CreateSips(Path outputPath, SipType type, boolean exportItems, SIPNameBuilder sipNameBuilder,
-                    boolean createReport, IPHeader ipHeader, Optional<String> sipAgentName, Optional<String> sipAgentID) {
+    boolean createReport, IPHeader ipHeader, Optional<String> sipAgentName, Optional<String> sipAgentID) {
     this.type = type;
     this.outputPath = outputPath;
     this.sipNameBuilder = sipNameBuilder;
@@ -75,10 +75,15 @@ public class CreateSips {
         creator = new EarkSipCreator(outputPath, previews, sipNameBuilder, createReport, ipHeader);
         break;
       case EARK2:
-        creator = new EarkSip2Creator(outputPath, previews, sipNameBuilder, createReport, ipHeader,sipAgentName,sipAgentID);
+        creator = new EarkSip2Creator(outputPath, previews, sipNameBuilder, createReport, ipHeader, sipAgentName,
+          sipAgentID);
         break;
       case HUNGARIAN:
         creator = new HungarianSipCreator(outputPath, previews, sipNameBuilder, createReport, ipHeader);
+        break;
+      case SIPS:
+        creator = new ShallowSipCreator(outputPath, previews, sipNameBuilder, createReport, ipHeader, sipAgentName,
+          sipAgentID);
         break;
     }
     creator.start();

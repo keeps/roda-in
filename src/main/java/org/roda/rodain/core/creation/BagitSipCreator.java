@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * @author Andre Pereira apereira@keep.pt
  * @since 19/11/2015.
  */
-public class BagitSipCreator extends SimpleSipCreator implements SIPObserver, SipCreator {
+public class BagitSipCreator extends SimpleSipCreator implements SIPObserver, ISipCreator {
   private static final Logger LOGGER = LoggerFactory.getLogger(BagitSipCreator.class.getName());
   private int countFilesOfZip;
   private int currentSIPsize = 0;
@@ -58,7 +58,7 @@ public class BagitSipCreator extends SimpleSipCreator implements SIPObserver, Si
    * @param sipNameBuilder
    */
   public BagitSipCreator(Path outputPath, Map<Sip, List<String>> previews, SIPNameBuilder sipNameBuilder,
-    boolean createReport) {
+                         boolean createReport) {
     super(outputPath, previews, createReport);
     this.sipNameBuilder = sipNameBuilder;
   }

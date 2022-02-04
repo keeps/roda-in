@@ -44,7 +44,7 @@ import org.roda_project.commons_ip.utils.IPEnums.IPStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class HungarianSipCreator extends SimpleSipCreator implements SIPObserver, SipCreator {
+public class HungarianSipCreator extends SimpleSipCreator implements SIPObserver, ISipCreator {
   private static final Logger LOGGER = LoggerFactory.getLogger(HungarianSipCreator.class.getName());
   private int countFilesOfZip;
   private int currentSIPadded = 0;
@@ -64,7 +64,7 @@ public class HungarianSipCreator extends SimpleSipCreator implements SIPObserver
    * @param createReport
    */
   public HungarianSipCreator(Path outputPath, Map<Sip, List<String>> previews, SIPNameBuilder sipNameBuilder,
-    boolean createReport, IPHeader ipHeader) {
+                             boolean createReport, IPHeader ipHeader) {
     super(outputPath, previews, createReport);
     this.sipNameBuilder = sipNameBuilder;
     this.ipHeader = ipHeader;

@@ -11,6 +11,7 @@ import org.roda.rodain.core.creation.BagitSipCreator;
 import org.roda.rodain.core.creation.EarkSip2Creator;
 import org.roda.rodain.core.creation.EarkSipCreator;
 import org.roda.rodain.core.creation.HungarianSipCreator;
+import org.roda.rodain.core.creation.ShallowSipCreator;
 import org.roda.rodain.core.schema.IPContentType;
 import org.roda.rodain.core.schema.RepresentationContentType;
 
@@ -469,6 +470,9 @@ public final class Constants {
   public static final String I18N_RENAME = "rename";
   public static final String I18N_RENAME_REPRESENTATION_ALREADY_EXISTS = "RenameModalProcessing.renameAlreadyExists";
 
+  public static final String CONF_K_REFERENCE_TRANSFORMER_LIST = "reference.transformer.list[]";
+  public static final String CONF_K_REFERENCE_TRANSFORMER = "reference.transformer.";
+
   /*
    * ENUMs
    */
@@ -485,7 +489,10 @@ public final class Constants {
       SipNameStrategy.TITLE_DATE),
     HUNGARIAN(HungarianSipCreator.getText(), HungarianSipCreator.requiresMETSHeaderInfo(),
       HungarianSipCreator.ipSpecificContentTypes(), HungarianSipCreator.representationSpecificContentTypes(),
-      SipNameStrategy.DATE_TRANSFERRING_SERIALNUMBER);
+      SipNameStrategy.DATE_TRANSFERRING_SERIALNUMBER),
+    SIPS(ShallowSipCreator.getText(), ShallowSipCreator.requiresMETSHeaderInfo(),
+      ShallowSipCreator.ipSpecificContentTypes(), ShallowSipCreator.representationSpecificContentTypes(),
+      SipNameStrategy.ID, SipNameStrategy.TITLE_ID, SipNameStrategy.TITLE_DATE);
 
     private final String text;
     private Set<SipNameStrategy> sipNameStrategies;
