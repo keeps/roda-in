@@ -93,13 +93,18 @@ public class ShallowSipUriCreator extends UriCreator {
     if (port != null && port.length() > 0) {
       uri.setPort(Integer.parseInt(port));
     }
+
     if (targetBasepath != null && targetBasepath.length() > 0) {
-      uri.setPath(Paths.get(targetBasepath).resolve(Paths.get(sourceBasepath).relativize(path)).toString());
+      final StringBuilder pb = new StringBuilder();
+      Paths.get(targetBasepath).forEach(pi -> pb.append(Constants.MISC_FWD_SLASH).append(pi.toString()));
+      Paths.get(sourceBasepath).relativize(path)
+        .forEach(pi -> pb.append(Constants.MISC_FWD_SLASH).append(pi.toString()));
+      uri.setPath(pb.toString());
     } else {
-      uri.setPath(Paths.get(sourceBasepath).relativize(path).toString());
-    }
-    if (!Constants.MISC_FWD_SLASH.startsWith(uri.getPath())) {
-      uri.setPath(Constants.MISC_FWD_SLASH + uri.getPath());
+      final StringBuilder pb = new StringBuilder();
+      Paths.get(sourceBasepath).relativize(path)
+        .forEach(pi -> pb.append(Constants.MISC_FWD_SLASH).append(pi.toString()));
+      uri.setPath(pb.toString());
     }
     return uri.build();
   }
