@@ -56,10 +56,11 @@ public class ShallowSipUriCreator extends UriCreator {
    * @return a {@link Configuration}
    */
   private Configuration getConfigurationFromPath(final Path path, final List<Configuration> configList) {
-    final String absolutePath = path.toAbsolutePath().toString();
+    final Path absolutePath = path.toAbsolutePath();
     Configuration configuration = null;
     for (Configuration config : configList) {
-      if (config.getSourceBasepath() != null && absolutePath.contains(config.getSourceBasepath())) {
+      if (config.getSourceBasepath() != null
+        && absolutePath.startsWith(Paths.get(config.getSourceBasepath()).toAbsolutePath())) {
         configuration = config;
         break;
       }
