@@ -95,19 +95,28 @@ public class ShallowSipUriCreator extends UriCreator {
       uri.setPort(Integer.parseInt(port));
     }
 
-    if (targetBasepath != null && targetBasepath.length() > 0) {
-      final StringBuilder pb = new StringBuilder();
-      Paths.get(targetBasepath).forEach(pi -> pb.append(Constants.MISC_FWD_SLASH).append(pi.toString()));
-      Paths.get(sourceBasepath).relativize(path)
-        .forEach(pi -> pb.append(Constants.MISC_FWD_SLASH).append(pi.toString()));
-      uri.setPath(pb.toString());
-    } else {
-      final StringBuilder pb = new StringBuilder();
-      Paths.get(sourceBasepath).relativize(path)
-        .forEach(pi -> pb.append(Constants.MISC_FWD_SLASH).append(pi.toString()));
-      uri.setPath(pb.toString());
-    }
+    uri.setPath(createUriPath(path, sourceBasepath, targetBasepath));
     return uri.build();
+  }
+
+  /**
+   * Creates the URI path with the basePath and the target base path if exists.
+   * 
+   * @param path
+   *          {@link Path}
+   * @param sourceBasePath
+   *          the source base path
+   * @param targetBasePath
+   *          the target base path
+   * @return the URI path
+   */
+  private String createUriPath(final Path path, final String sourceBasePath, final String targetBasePath) {
+    final StringBuilder pb = new StringBuilder();
+    if (targetBasePath != null && targetBasePath.length() > 0) {
+      Paths.get(targetBasePath).forEach(pi -> pb.append(Constants.MISC_FWD_SLASH).append(pi.toString()));
+    }
+    Paths.get(sourceBasePath).relativize(path).forEach(pi -> pb.append(Constants.MISC_FWD_SLASH).append(pi.toString()));
+    return pb.toString();
   }
 
 }
