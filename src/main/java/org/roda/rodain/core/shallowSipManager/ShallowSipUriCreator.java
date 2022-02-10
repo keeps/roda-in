@@ -4,10 +4,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.http.client.utils.URIBuilder;
+import org.apache.hc.core5.net.URIBuilder;
 import org.roda.rodain.core.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,8 +95,7 @@ public class ShallowSipUriCreator extends UriCreator {
     if (port != null && port.length() > 0) {
       uri.setPort(Integer.parseInt(port));
     }
-
-    uri.setPath(createUriPath(path, sourceBasePath, targetBasePath));
+    uri.setPathSegments(createUriPath(path, sourceBasePath, targetBasePath));
     return uri.build();
   }
 
@@ -110,13 +110,16 @@ public class ShallowSipUriCreator extends UriCreator {
    *          the target base path
    * @return the URI path
    */
-  private String createUriPath(final Path path, final String sourceBasePath, final String targetBasePath) {
+  private List<String> createUriPath(final Path path, final String sourceBasePath, final String targetBasePath) {
     final StringBuilder pb = new StringBuilder();
+    List<String> pathsSegments = new ArrayList<>();
     if (targetBasePath != null && targetBasePath.length() > 0) {
+      pathsSegments.add(Paths.get(targetBasePath).toString());
       Paths.get(targetBasePath).forEach(pi -> pb.append(Constants.MISC_FWD_SLASH).append(pi.toString()));
     }
+    pathsSegments.add(Paths.get(sourceBasePath).relativize(path).toString());
     Paths.get(sourceBasePath).relativize(path).forEach(pi -> pb.append(Constants.MISC_FWD_SLASH).append(pi.toString()));
-    return pb.toString();
+    return pathsSegments;
   }
 
 }
