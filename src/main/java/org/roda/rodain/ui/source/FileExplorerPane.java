@@ -298,7 +298,7 @@ public class FileExplorerPane extends BorderPane implements Observer {
   }
 
   /**
-   * Sets a new root to file explorer
+   * Sets a new root to file explorer.
    *
    * @param rootPath
    *          The new root path

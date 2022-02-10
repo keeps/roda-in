@@ -8,6 +8,7 @@ import java.util.Comparator;
 
 import org.roda.rodain.core.Constants;
 import org.roda.rodain.core.rules.TreeNode;
+import org.roda.rodain.core.shallowSipManager.UriCreator;
 
 import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
@@ -23,6 +24,10 @@ public class SipContentDirectory extends TreeItem<Object> implements InspectionT
     ClassLoader.getSystemResourceAsStream(Constants.RSC_ICON_FOLDER));
   public static final Image folderExpandImage = new Image(
     ClassLoader.getSystemResourceAsStream(Constants.RSC_ICON_FOLDER_OPEN));
+  public static final Image folderCollapseExportImage = new Image(
+    ClassLoader.getSystemResourceAsStream(Constants.RSC_ICON_FOLDER_EXPORT));
+  public static final Image folderExpandExportImage = new Image(
+    ClassLoader.getSystemResourceAsStream(Constants.RSC_ICON_FOLDER_OPEN_EXPORT));
   private static final Comparator comparator = createComparator();
   // this stores the full path to the file or directory
   private Path fullPath;
@@ -42,9 +47,13 @@ public class SipContentDirectory extends TreeItem<Object> implements InspectionT
     this.treeNode = treeNode;
     this.fullPath = treeNode.getPath();
     this.parent = parent;
-    this.setGraphic(new ImageView(folderCollapseImage));
+    if (UriCreator.partOfConfiguration(treeNode.getPath())) {
+      this.setGraphic(new ImageView(folderCollapseExportImage));
+    } else {
+      this.setGraphic(new ImageView(folderCollapseImage));
+    }
 
-    Path name = fullPath.getFileName();
+    final Path name = fullPath.getFileName();
     if (name != null) {
       this.setValue(name.toString());
     } else {
@@ -58,8 +67,12 @@ public class SipContentDirectory extends TreeItem<Object> implements InspectionT
         if (sourceObject instanceof SipContentDirectory) {
           SipContentDirectory source = (SipContentDirectory) sourceObject;
           if (source.isExpanded()) {
-            ImageView iv = (ImageView) source.getGraphic();
-            iv.setImage(folderExpandImage);
+            final ImageView iv = (ImageView) source.getGraphic();
+            if (UriCreator.partOfConfiguration(source.getPath())) {
+              iv.setImage(folderExpandExportImage);
+            } else {
+              iv.setImage(folderExpandImage);
+            }
           }
         }
       }
@@ -73,8 +86,12 @@ public class SipContentDirectory extends TreeItem<Object> implements InspectionT
         if (sourceObject instanceof SipContentDirectory) {
           SipContentDirectory source = (SipContentDirectory) sourceObject;
           if (!source.isExpanded()) {
-            ImageView iv = (ImageView) source.getGraphic();
-            iv.setImage(folderCollapseImage);
+            final ImageView iv = (ImageView) source.getGraphic();
+            if (UriCreator.partOfConfiguration(source.getPath())) {
+              iv.setImage(folderCollapseExportImage);
+            } else {
+              iv.setImage(folderCollapseImage);
+            }
           }
         }
       }
@@ -138,8 +155,8 @@ public class SipContentDirectory extends TreeItem<Object> implements InspectionT
    * <p/>
    * <p>
    * The comparator used by this method forces the directories to appear before
-   * the files. Between items of the same class the sorting is done comparing
-   * the items' values.
+   * the files. Between items of the same class the sorting is done comparing the
+   * items' values.
    * </p>
    */
   public void sortChildren() {

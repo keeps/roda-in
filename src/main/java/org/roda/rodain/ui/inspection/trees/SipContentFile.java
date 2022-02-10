@@ -1,12 +1,13 @@
 package org.roda.rodain.ui.inspection.trees;
 
-import javafx.scene.control.TreeItem;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-
 import java.nio.file.Path;
 
 import org.roda.rodain.core.Constants;
+import org.roda.rodain.core.shallowSipManager.UriCreator;
+
+import javafx.scene.control.TreeItem;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -14,6 +15,8 @@ import org.roda.rodain.core.Constants;
  */
 public class SipContentFile extends TreeItem<Object> implements InspectionTreeItem {
   public static final Image fileImage = new Image(ClassLoader.getSystemResourceAsStream(Constants.RSC_ICON_FILE));
+  public static final Image file_export = new Image(
+    ClassLoader.getSystemResourceAsStream(Constants.RSC_ICON_FILE_EXPORT));
   private Path fullPath;
   private TreeItem parent;
 
@@ -29,9 +32,15 @@ public class SipContentFile extends TreeItem<Object> implements InspectionTreeIt
     super(file.toString());
     this.fullPath = file;
     this.parent = parent;
-    this.setGraphic(new ImageView(fileImage));
+    final Image icon;
+    if (UriCreator.partOfConfiguration(file)) {
+      icon = file_export;
+    } else {
+      icon = fileImage;
+    }
+    this.setGraphic(new ImageView(icon));
 
-    Path name = fullPath.getFileName();
+    final Path name = fullPath.getFileName();
     if (name != null) {
       this.setValue(name.toString());
     } else {

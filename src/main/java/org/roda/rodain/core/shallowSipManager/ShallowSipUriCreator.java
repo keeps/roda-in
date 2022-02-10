@@ -81,8 +81,8 @@ public class ShallowSipUriCreator extends UriCreator {
    *           error.
    */
   private URI createURI(final Path path, final Configuration config) throws URISyntaxException {
-    final String sourceBasepath = config.getSourceBasepath();
-    final String targetBasepath = config.getTargetBasepath();
+    final String sourceBasePath = config.getSourceBasepath();
+    final String targetBasePath = config.getTargetBasepath();
     final String host = config.getHost();
     final String protocol = config.getProtocol();
     final String port = config.getPort();
@@ -95,7 +95,7 @@ public class ShallowSipUriCreator extends UriCreator {
       uri.setPort(Integer.parseInt(port));
     }
 
-    uri.setPath(createUriPath(path, sourceBasepath, targetBasepath));
+    uri.setPath(createUriPath(path, sourceBasePath, targetBasePath));
     return uri.build();
   }
 

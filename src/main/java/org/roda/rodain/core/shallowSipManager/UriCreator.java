@@ -1,5 +1,7 @@
 package org.roda.rodain.core.shallowSipManager;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -20,7 +22,7 @@ public abstract class UriCreator implements UriCreatorInterface {
 
   /**
    * Get SIP shallow SIP Configurations.
-   * 
+   *
    * @return {@link List}
    */
   public static List<Configuration> getShallowSipConfigurations() {
@@ -51,5 +53,21 @@ public abstract class UriCreator implements UriCreatorInterface {
       }
     }
     return configurationList;
+  }
+
+  public static boolean partOfConfiguration(final Path path) {
+    final List<Configuration> configurationList = getShallowSipConfigurations();
+    boolean found = false;
+    final Path absolutePath = path.toAbsolutePath();
+    if (!configurationList.isEmpty()) {
+      for (Configuration config : configurationList) {
+        if (config.getSourceBasepath() != null
+          && absolutePath.startsWith(Paths.get(config.getSourceBasepath()).toAbsolutePath())) {
+          found = true;
+          break;
+        }
+      }
+    }
+    return found;
   }
 }
