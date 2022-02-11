@@ -111,14 +111,11 @@ public class ShallowSipUriCreator extends UriCreator {
    * @return the URI path
    */
   private List<String> createUriPath(final Path path, final String sourceBasePath, final String targetBasePath) {
-    final StringBuilder pb = new StringBuilder();
-    List<String> pathsSegments = new ArrayList<>();
+    final List<String> pathsSegments = new ArrayList<>();
     if (targetBasePath != null && targetBasePath.length() > 0) {
       pathsSegments.add(Paths.get(targetBasePath).toString());
-      Paths.get(targetBasePath).forEach(pi -> pb.append(Constants.MISC_FWD_SLASH).append(pi.toString()));
     }
     pathsSegments.add(Paths.get(sourceBasePath).relativize(path).toString());
-    Paths.get(sourceBasePath).relativize(path).forEach(pi -> pb.append(Constants.MISC_FWD_SLASH).append(pi.toString()));
     return pathsSegments;
   }
 
