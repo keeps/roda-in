@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.hc.core5.net.URIBuilder;
-import org.roda.rodain.core.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
