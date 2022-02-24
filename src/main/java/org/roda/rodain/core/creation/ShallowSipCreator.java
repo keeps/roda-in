@@ -69,7 +69,7 @@ public class ShallowSipCreator extends SipCreator {
   }
 
   public static String getText() {
-    return "SIP-S";
+    return "EARK2-S";
   }
 
   /**
@@ -115,6 +115,7 @@ public class ShallowSipCreator extends SipCreator {
       final IPFileInterface representationFile;
       if (uri.isPresent()) {
         representationFile = new IPFileShallow(uri.get(), filetype);
+        ((IPFileShallow) representationFile).setRelativeFolders(relativePath);
       } else {
         representationFile = new IPFile(tn.getPath(), relativePath);
       }

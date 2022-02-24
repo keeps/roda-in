@@ -81,7 +81,7 @@ public class CreateSips {
       case HUNGARIAN:
         creator = new HungarianSipCreator(outputPath, previews, sipNameBuilder, createReport, ipHeader);
         break;
-      case SIPS:
+      case EARK2S:
         creator = new ShallowSipCreator(outputPath, previews, sipNameBuilder, createReport, ipHeader, sipAgentName,
           sipAgentID);
         break;

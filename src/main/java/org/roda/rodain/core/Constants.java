@@ -493,7 +493,7 @@ public final class Constants {
     HUNGARIAN(HungarianSipCreator.getText(), HungarianSipCreator.requiresMETSHeaderInfo(),
       HungarianSipCreator.ipSpecificContentTypes(), HungarianSipCreator.representationSpecificContentTypes(),
       SipNameStrategy.DATE_TRANSFERRING_SERIALNUMBER),
-    SIPS(ShallowSipCreator.getText(), ShallowSipCreator.requiresMETSHeaderInfo(),
+    EARK2S(ShallowSipCreator.getText(), ShallowSipCreator.requiresMETSHeaderInfo(),
       ShallowSipCreator.ipSpecificContentTypes(), ShallowSipCreator.representationSpecificContentTypes(),
       SipNameStrategy.ID, SipNameStrategy.TITLE_ID, SipNameStrategy.TITLE_DATE);
 

@@ -210,7 +210,7 @@ public class CreationModalPreparation extends BorderPane {
     SipType type = (SipType) sipTypes.getSelectionModel().getSelectedItem().getKey();
     center.getChildren().addAll(countBox, reportBox, outputFolderBox, sipTypesBox, sipAgentNameField, sipAgentNoteField,
       prefixBox);
-    if (!SipType.EARK2.equals(type) && !SipType.SIPS.equals(type)) {
+    if (!SipType.EARK2.equals(type) && !SipType.EARK2S.equals(type)) {
       sipAgentNameField.setVisible(false);
       sipAgentNoteField.setVisible(false);
     }
@@ -498,8 +498,8 @@ public class CreationModalPreparation extends BorderPane {
       if (newValue != null) {
         // sip name strategies combo box update
         SipType type = (SipType) newValue.getKey();
-        sipAgentNameField.setVisible(SipType.EARK2.equals(type) || SipType.SIPS.equals(type));
-        sipAgentNoteField.setVisible(SipType.EARK2.equals(type) || SipType.SIPS.equals(type));
+        sipAgentNameField.setVisible(SipType.EARK2.equals(type) || SipType.EARK2S.equals(type));
+        sipAgentNoteField.setVisible(SipType.EARK2.equals(type) || SipType.EARK2S.equals(type));
 
         Set<SipNameStrategy> enabledStrategies = type.getSipNameStrategies();
         sipNameStrategyComboBox.setEnabledItems(enabledStrategies);
@@ -578,7 +578,7 @@ public class CreationModalPreparation extends BorderPane {
         } else if (sipType.equals(SipType.BAGIT)) {
           sipNameBuilder = new SIPNameBuilderBagit(sipNameStrategyPrefix.getText(), sipNameStrategy);
           ConfigurationManager.setAppConfig(Constants.CONF_K_EXPORT_LAST_PREFIX, sipNameStrategyPrefix.getText(), true);
-        } else if (sipType.equals(SipType.SIPS)) {
+        } else if (sipType.equals(SipType.EARK2S)) {
           sipNameBuilder = new SIPNameBuilderSIPS(sipNameStrategyPrefix.getText(), sipNameStrategy);
           ConfigurationManager.setAppConfig(Constants.CONF_K_EXPORT_LAST_PREFIX, sipNameStrategyPrefix.getText(), true);
         }
