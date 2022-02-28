@@ -1,9 +1,13 @@
 package org.roda.rodain.ui.source;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import org.roda.rodain.core.ConfigurationManager;
 import org.roda.rodain.core.Constants;
 import org.roda.rodain.core.Constants.PathState;
 import org.roda.rodain.core.I18n;
+import org.roda.rodain.core.shallowSipManager.UriCreator;
 import org.roda.rodain.ui.source.items.SourceTreeDirectory;
 import org.roda.rodain.ui.source.items.SourceTreeFile;
 import org.roda.rodain.ui.source.items.SourceTreeItem;
@@ -86,18 +90,33 @@ public class SourceTreeCell extends TreeCell<String> {
       }
 
       if (treeItem instanceof SourceTreeDirectory) {
-        if (treeItem.isExpanded())
-          icon = SourceTreeDirectory.folderExpandImage;
-        else
-          icon = SourceTreeDirectory.folderCollapseImage;
+        final Path folderPath = Paths.get(((SourceTreeDirectory) treeItem).getPath());
+        if (treeItem.isExpanded()) {
+          if (UriCreator.partOfConfiguration(folderPath)) {
+            icon = SourceTreeDirectory.folderExpandExportImage;
+          } else {
+            icon = SourceTreeDirectory.folderExpandImage;
+          }
+        } else {
+          if (UriCreator.partOfConfiguration(folderPath)) {
+            icon = SourceTreeDirectory.folderCollapseExportImage;
+          } else {
+            icon = SourceTreeDirectory.folderCollapseImage;
+          }
+        }
         if (((SourceTreeDirectory) treeItem).getParentDir() == null) {
           optionalLabel = new Label(((SourceTreeDirectory) treeItem).getPath());
           optionalLabel.setStyle(ConfigurationManager.getStyle("source.cell.mapped"));
         }
       } else {
-        if (treeItem instanceof SourceTreeFile)
-          icon = SourceTreeFile.fileImage;
-        else if (treeItem instanceof SourceTreeLoadMore)
+        if (treeItem instanceof SourceTreeFile) {
+          Path filePath = Paths.get(((SourceTreeFile) treeItem).getPath());
+          if (UriCreator.partOfConfiguration(filePath)) {
+            icon = SourceTreeFile.exportFileImage;
+          } else {
+            icon = SourceTreeFile.fileImage;
+          }
+        } else if (treeItem instanceof SourceTreeLoadMore)
           icon = SourceTreeLoadMore.fileImage;
       }
 

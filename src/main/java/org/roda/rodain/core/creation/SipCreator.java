@@ -253,7 +253,8 @@ public abstract class SipCreator extends SimpleSipCreator implements SIPObserver
         IPAgentNoteTypeEnum.IDENTIFICATIONCODE));
 
       currentAction = I18n.t(Constants.I18N_SIMPLE_SIP_CREATOR_INIT_ZIP);
-      final Path sipPath = earkSip.build(outputPath, createSipName(descriptionObject, sipNameBuilder));
+      final Path sipPath = earkSip.build(outputPath, createSipName(descriptionObject, sipNameBuilder),
+        sipNameBuilder instanceof SIPNameBuilderSIPS ? IPEnums.SipType.EARK2S : IPEnums.SipType.EARK2);
 
       createdSipsCount++;
       return new Pair(sipPath, earkSip);

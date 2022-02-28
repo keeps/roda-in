@@ -41,6 +41,10 @@ public class SourceTreeDirectory extends SourceTreeItem {
     ClassLoader.getSystemResourceAsStream(Constants.RSC_ICON_FOLDER_COLAPSE));
   public static final Image folderExpandImage = new Image(
     ClassLoader.getSystemResourceAsStream(Constants.RSC_ICON_FOLDER_EXPAND));
+  public static final Image folderExpandExportImage = new Image(
+    ClassLoader.getSystemResourceAsStream(Constants.RSC_ICON_FOLDER_OPEN_EXPORT));
+  public static final Image folderCollapseExportImage = new Image(
+    ClassLoader.getSystemResourceAsStream(Constants.RSC_ICON_FOLDER_EXPORT));
   public static final Comparator<? super TreeItem> comparator = createComparator();
 
   public boolean expanded = false;
@@ -104,8 +108,8 @@ public class SourceTreeDirectory extends SourceTreeItem {
    * Creates a task to hide all this item's mapped items. The task is needed to
    * prevent the UI thread from hanging due to the computations.
    * <p/>
-   * First, it removes all the children with the MAPPED state and adds them to
-   * the mapped set, so that they can be shown at a later date. If a child is a
+   * First, it removes all the children with the MAPPED state and adds them to the
+   * mapped set, so that they can be shown at a later date. If a child is a
    * directory, this method is called in that item. Finally, clears the children
    * and adds the new list of items.
    *
@@ -140,11 +144,11 @@ public class SourceTreeDirectory extends SourceTreeItem {
    * prevent the UI thread from hanging due to the computations.
    * <p/>
    * First, it adds all the items in the mapped set, which are the previously
-   * hidden items, and clears the set. We need to be careful in this step
-   * because if the hiddenFiles flag is true, then we must hide the mapped items
-   * that are files. Then makes a call to this method for all its children and
-   * hidden ignored items. Finally, clears the children, adds the new list of
-   * items, and sorts them.
+   * hidden items, and clears the set. We need to be careful in this step because
+   * if the hiddenFiles flag is true, then we must hide the mapped items that are
+   * files. Then makes a call to this method for all its children and hidden
+   * ignored items. Finally, clears the children, adds the new list of items, and
+   * sorts them.
    *
    * @see #sortChildren()
    * @see #hideMapped()
@@ -226,11 +230,11 @@ public class SourceTreeDirectory extends SourceTreeItem {
    * prevent the UI thread from hanging due to the computations.
    * <p/>
    * First, it adds all the items in the ignored set, which are the previously
-   * hidden items, and clears the set. We need to be careful in this step
-   * because if the hiddenFiles flag is true, then we must hide the ignored
-   * items that are files. Then makes a call to this method for all its children
-   * and hidden mapped items. Finally, clears the children, adds the new list of
-   * items, and sorts them.
+   * hidden items, and clears the set. We need to be careful in this step because
+   * if the hiddenFiles flag is true, then we must hide the ignored items that are
+   * files. Then makes a call to this method for all its children and hidden
+   * mapped items. Finally, clears the children, adds the new list of items, and
+   * sorts them.
    *
    * @see #sortChildren()
    * @see #hideIgnored()
@@ -269,10 +273,10 @@ public class SourceTreeDirectory extends SourceTreeItem {
    * Creates a task to hide all this item's file items. The task is needed to
    * prevent the UI thread from hanging due to the computations.
    * <p/>
-   * First, it removes all the children that are a file and adds them to the
-   * files set, so that they can be shown at a later date. If a child is a
-   * directory, this method is called in that item. Finally, clears the children
-   * and adds the new list of items.
+   * First, it removes all the children that are a file and adds them to the files
+   * set, so that they can be shown at a later date. If a child is a directory,
+   * this method is called in that item. Finally, clears the children and adds the
+   * new list of items.
    *
    * @see #showFiles() ()
    */
@@ -477,8 +481,8 @@ public class SourceTreeDirectory extends SourceTreeItem {
   }
 
   /**
-   * Creates a task to load the items to a temporary collection, otherwise the
-   * UI will hang while accessing the disk. Then, sets the new collection as the
+   * Creates a task to load the items to a temporary collection, otherwise the UI
+   * will hang while accessing the disk. Then, sets the new collection as the
    * item's children.
    */
   public synchronized void loadMore() {

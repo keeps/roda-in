@@ -12,6 +12,6 @@ public class SIPNameBuilderSIPS extends SIPNameBuilderEARK {
 
   @Override
   public Constants.SipType getSIPType() {
-    return Constants.SipType.SIPS;
+    return Constants.SipType.EARK2S;
   }
 }

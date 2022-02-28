@@ -69,7 +69,7 @@ public class ShallowSipCreator extends SipCreator {
   }
 
   public static String getText() {
-    return "SIP-S";
+    return "EARK2-S";
   }
 
   /**
@@ -103,6 +103,11 @@ public class ShallowSipCreator extends SipCreator {
       // add this directory to the path list
       final List<String> newRelativePath = new ArrayList<>(relativePath);
       newRelativePath.add(tn.getPath().getFileName().toString());
+
+      if (tn.getChildren().values().isEmpty()) {
+        rep.addFile(new IPFileShallow(newRelativePath));
+      }
+
       // recursive call to all the node's children
       for (TreeNode node : tn.getChildren().values()) {
         addFileToRepresentation(node, newRelativePath, rep);
@@ -115,6 +120,7 @@ public class ShallowSipCreator extends SipCreator {
       final IPFileInterface representationFile;
       if (uri.isPresent()) {
         representationFile = new IPFileShallow(uri.get(), filetype);
+        ((IPFileShallow) representationFile).setRelativeFolders(relativePath);
       } else {
         representationFile = new IPFile(tn.getPath(), relativePath);
       }

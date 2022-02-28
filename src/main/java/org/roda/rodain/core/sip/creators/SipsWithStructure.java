@@ -59,8 +59,8 @@ public class SipsWithStructure extends SipPreviewCreator {
    * @param templateType
    *          The type of the metadata template
    */
-  public SipsWithStructure(String id, Set<ContentFilter> filters, MetadataOption metadataOption, String metadataType,
-    Path metadataPath, String templateType, String metadataVersion) {
+  public SipsWithStructure(final String id, final Set<ContentFilter> filters, final MetadataOption metadataOption,
+    final String metadataType, final Path metadataPath, final String templateType, final String metadataVersion) {
     super(id, filters, metadataOption, metadataType, metadataPath, templateType, metadataVersion);
     folders = new ArrayDeque<>();
     tree = new HashSet<>();
@@ -79,10 +79,11 @@ public class SipsWithStructure extends SipPreviewCreator {
    *          The attributes of the directory.
    */
   @Override
-  public void preVisitDirectory(Path path, BasicFileAttributes attrs) {
-    if (filter(path) || cancelled)
+  public void preVisitDirectory(final Path path, final BasicFileAttributes attrs) {
+    if (filter(path) || cancelled) {
       return;
-    Folder newFolder = new Folder(path);
+    }
+    final Folder newFolder = new Folder(path);
     folders.add(newFolder);
   }
 
@@ -102,9 +103,9 @@ public class SipsWithStructure extends SipPreviewCreator {
           return isTerminated();
         }
       });
-    } catch (AccessDeniedException e) {
+    } catch (final AccessDeniedException e) {
       LOGGER.info("Access denied to file", e);
-    } catch (IOException e) {
+    } catch (final IOException e) {
       LOGGER.error("Error walking the file tree", e);
     }
   }
@@ -117,11 +118,11 @@ public class SipsWithStructure extends SipPreviewCreator {
    *          The path of the directory.
    */
   @Override
-  public void postVisitDirectory(Path path) {
+  public void postVisitDirectory(final Path path) {
     if (filter(path) || cancelled)
       return;
     // pop the node of this directory and add it to its parent (if it exists)
-    Folder folder = folders.removeLast();
+    final Folder folder = folders.removeLast();
     if (!folders.isEmpty())
       folders.peekLast().addItem(folder.getPath());
 
@@ -148,9 +149,9 @@ public class SipsWithStructure extends SipPreviewCreator {
       }
 
       // make this node a description object
-      Set<Path> rootMetadata = getMetadataPath(path);
-      Sip descriptionObject;
-      if (rootMetadata.isEmpty()) {
+      final Set<Path> rootMetadata = getMetadataPath(path);
+      final Sip descriptionObject;
+      if (rootMetadata == null || rootMetadata.isEmpty()) {
         descriptionObject = new Sip(
           new DescriptiveMetadata(MetadataOption.TEMPLATE, templateType, metadataType, metadataVersion));
         descriptionObject.setTitle(path.getFileName().toString());
@@ -168,7 +169,7 @@ public class SipsWithStructure extends SipPreviewCreator {
         descriptionObject.setTitle(title);
       }
       try {
-        String metadataAggregationLevel = ConfigurationManager
+        final String metadataAggregationLevel = ConfigurationManager
           .getMetadataConfig(templateType + Constants.CONF_K_SUFFIX_AGGREG_LEVEL);
         descriptionObject.setDescriptionlevel(metadataAggregationLevel);
       } catch (Throwable t) {
@@ -189,7 +190,7 @@ public class SipsWithStructure extends SipPreviewCreator {
       Set<Path> children = new HashSet<>(subFiles);
       children.addAll(subFolders);
 
-      PseudoDescriptionObject pdo = new PseudoDescriptionObject(path);
+      final PseudoDescriptionObject pdo = new PseudoDescriptionObject(path);
       for (Path child : children) {
         pdo.addChild(record.get(child));
       }

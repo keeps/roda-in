@@ -2,13 +2,14 @@ package org.roda.rodain.core.shallowSipManager;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.http.client.utils.URIBuilder;
-import org.roda.rodain.core.Constants;
+import org.apache.hc.core5.net.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,12 +82,13 @@ public class ShallowSipUriCreator extends UriCreator {
    *           error.
    */
   private URI createURI(final Path path, final Configuration config) throws URISyntaxException {
-    final String sourceBasepath = config.getSourceBasepath();
-    final String targetBasepath = config.getTargetBasepath();
+    final String sourceBasePath = config.getSourceBasepath();
+    final String targetBasePath = config.getTargetBasepath();
     final String host = config.getHost();
     final String protocol = config.getProtocol();
     final String port = config.getPort();
     final URIBuilder uri = new URIBuilder();
+    uri.setCharset(StandardCharsets.UTF_8);
     uri.setScheme(protocol);
     if (host != null && host.length() > 0) {
       uri.setHost(host);
@@ -94,20 +96,28 @@ public class ShallowSipUriCreator extends UriCreator {
     if (port != null && port.length() > 0) {
       uri.setPort(Integer.parseInt(port));
     }
-
-    if (targetBasepath != null && targetBasepath.length() > 0) {
-      final StringBuilder pb = new StringBuilder();
-      Paths.get(targetBasepath).forEach(pi -> pb.append(Constants.MISC_FWD_SLASH).append(pi.toString()));
-      Paths.get(sourceBasepath).relativize(path)
-        .forEach(pi -> pb.append(Constants.MISC_FWD_SLASH).append(pi.toString()));
-      uri.setPath(pb.toString());
-    } else {
-      final StringBuilder pb = new StringBuilder();
-      Paths.get(sourceBasepath).relativize(path)
-        .forEach(pi -> pb.append(Constants.MISC_FWD_SLASH).append(pi.toString()));
-      uri.setPath(pb.toString());
-    }
+    uri.setPath(createUriPath(path, sourceBasePath, targetBasePath));
     return uri.build();
+  }
+
+  /**
+   * Creates the URI path with the basePath and the target base path if exists.
+   * 
+   * @param path
+   *          {@link Path}
+   * @param sourceBasePath
+   *          the source base path
+   * @param targetBasePath
+   *          the target base path
+   * @return the URI path
+   */
+  private String createUriPath(final Path path, final String sourceBasePath, final String targetBasePath) {
+    final List<String> pathsSegments = new ArrayList<>();
+    if (targetBasePath != null && targetBasePath.length() > 0) {
+      pathsSegments.add(Paths.get(targetBasePath).toString());
+    }
+    pathsSegments.add(Paths.get(sourceBasePath).relativize(path).toString());
+    return String.join("/", pathsSegments);
   }
 
 }

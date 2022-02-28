@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Observable;
 
+import org.reactfx.util.LL;
 import org.roda.rodain.core.Constants;
 import org.roda.rodain.core.Constants.PathState;
 import org.roda.rodain.core.PathCollection;
@@ -19,6 +20,7 @@ import javafx.scene.image.ImageView;
  */
 public class SourceTreeFile extends SourceTreeItem {
   public static final Image fileImage = new Image(ClassLoader.getSystemResourceAsStream(Constants.RSC_ICON_FILE));
+  public static final Image exportFileImage = new Image(ClassLoader.getSystemResourceAsStream(Constants.RSC_ICON_FILE_EXPORT));
   // this stores the full path to the file
   private String fullPath;
 
