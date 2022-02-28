@@ -96,7 +96,7 @@ public class ShallowSipUriCreator extends UriCreator {
     if (port != null && port.length() > 0) {
       uri.setPort(Integer.parseInt(port));
     }
-    uri.setPath(createUriPath(path, sourceBasePath, targetBasePath));
+    uri.setPathSegments(createUriPath(path, sourceBasePath, targetBasePath));
     return uri.build();
   }
 
@@ -111,13 +111,20 @@ public class ShallowSipUriCreator extends UriCreator {
    *          the target base path
    * @return the URI path
    */
-  private String createUriPath(final Path path, final String sourceBasePath, final String targetBasePath) {
+  private List<String> createUriPath(final Path path, final String sourceBasePath, final String targetBasePath) {
     final List<String> pathsSegments = new ArrayList<>();
     if (targetBasePath != null && targetBasePath.length() > 0) {
-      pathsSegments.add(Paths.get(targetBasePath).toString());
+      final Path target = Paths.get(targetBasePath);
+      for (int i = 0; i < target.getNameCount(); i++) {
+        pathsSegments.add(target.getName(i).toString());
+      }
     }
-    pathsSegments.add(Paths.get(sourceBasePath).relativize(path).toString());
-    return String.join("/", pathsSegments);
+    final Path source = Paths.get(sourceBasePath).relativize(path);
+    for (int i = 0; i < source.getNameCount(); i++) {
+      pathsSegments.add(source.getName(i).toString());
+    }
+
+    return pathsSegments;
   }
 
 }
