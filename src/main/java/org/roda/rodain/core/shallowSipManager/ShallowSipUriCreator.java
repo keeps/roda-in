@@ -2,6 +2,7 @@ package org.roda.rodain.core.shallowSipManager;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -87,6 +88,7 @@ public class ShallowSipUriCreator extends UriCreator {
     final String protocol = config.getProtocol();
     final String port = config.getPort();
     final URIBuilder uri = new URIBuilder();
+    uri.setCharset(StandardCharsets.UTF_8);
     uri.setScheme(protocol);
     if (host != null && host.length() > 0) {
       uri.setHost(host);
@@ -94,7 +96,7 @@ public class ShallowSipUriCreator extends UriCreator {
     if (port != null && port.length() > 0) {
       uri.setPort(Integer.parseInt(port));
     }
-    uri.setPathSegments(createUriPath(path, sourceBasePath, targetBasePath));
+    uri.setPath(createUriPath(path, sourceBasePath, targetBasePath));
     return uri.build();
   }
 
@@ -109,13 +111,13 @@ public class ShallowSipUriCreator extends UriCreator {
    *          the target base path
    * @return the URI path
    */
-  private List<String> createUriPath(final Path path, final String sourceBasePath, final String targetBasePath) {
+  private String createUriPath(final Path path, final String sourceBasePath, final String targetBasePath) {
     final List<String> pathsSegments = new ArrayList<>();
     if (targetBasePath != null && targetBasePath.length() > 0) {
       pathsSegments.add(Paths.get(targetBasePath).toString());
     }
     pathsSegments.add(Paths.get(sourceBasePath).relativize(path).toString());
-    return pathsSegments;
+    return String.join("/", pathsSegments);
   }
 
 }
