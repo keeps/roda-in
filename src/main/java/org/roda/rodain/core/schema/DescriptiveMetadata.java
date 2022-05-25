@@ -72,7 +72,11 @@ public class DescriptiveMetadata {
     this.metadataVersion = metadataVersion;
     this.templateType = templateType;
     if (templateType != null) {
-      this.id = templateType + Constants.MISC_XML_EXTENSION;
+      if (templateType.endsWith(Constants.MISC_XML_EXTENSION)) {
+        this.id = templateType;
+      } else {
+        this.id = templateType + Constants.MISC_XML_EXTENSION;
+      }
     } else if (path != null) {
       this.id = path.getFileName().toString();
     }
