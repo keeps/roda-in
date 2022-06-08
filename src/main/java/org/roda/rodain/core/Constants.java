@@ -195,9 +195,12 @@ public final class Constants {
   public static final String RSC_ICON_FOLDER_OPEN_EXPORT = "icons/folder-open_export_yellow.png";
   public static final String RSC_ICON_FILE = "icons/file_blue.png";
   public static final String RSC_ICON_FILE_EXPORT = "icons/file-export_blue.png";
+
   public static final String RSC_ICON_FOLDER_COLAPSE = "icons/folder_yellow.png";
   public static final String RSC_ICON_FOLDER_EXPAND = "icons/folder-open_yellow.png";
   public static final String RSC_ICON_LIST_ADD = "icons/list-add.png";
+
+  public static final String RSC_ICON_INFO_CIRCLE = "icons/info-circle-white.png";
   public static final String RSC_CSS_SHARED = "css/shared.css";
   public static final String RSC_CSS_MODAL = "css/modal.css";
 
@@ -277,7 +280,11 @@ public final class Constants {
   public static final String I18N_CREATIONMODALPREPARATION_OUTPUT_DIRECTORY = "CreationModalPreparation.outputDirectory";
   public static final String I18N_CREATIONMODALPREPARATION_PREFIX = "CreationModalPreparation.prefix";
   public static final String I18N_CREATIONMODALPREPARATION_AGENT_NAME = "CreationModalPreparation.submitterAgentName";
+
+  public static final String I18N_CREATIONMODALPREPARATION_AGENT_NAME_TOOLTIP = "CreationModalPreparation.submitterAgentNameTooltip";
   public static final String I18N_CREATIONMODALPREPARATION_AGENT_ID = "CreationModalPreparation.submitterAgentID";
+
+  public static final String I18N_CREATIONMODALPREPARATION_AGENT_ID_TOOLTIP = "CreationModalPreparation.submitterAgentIDTooltip";
   public static final String I18N_CREATIONMODALPREPARATION_TRANSFERRING = "CreationModalPreparation.transferring";
   public static final String I18N_CREATIONMODALPREPARATION_SERIAL = "CreationModalPreparation.serial";
   public static final String I18N_CREATIONMODALPREPARATION_SIP_FORMAT = "CreationModalPreparation.sipFormat";

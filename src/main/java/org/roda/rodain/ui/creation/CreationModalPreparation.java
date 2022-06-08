@@ -29,6 +29,7 @@ import org.roda.rodain.core.sip.naming.SIPNameBuilderHungarian;
 import org.roda.rodain.core.sip.naming.SIPNameBuilderSIPS;
 import org.roda.rodain.ui.RodaInApplication;
 import org.roda.rodain.ui.creation.METSHeaderComponents.METSHeaderUtils;
+import org.roda.rodain.ui.utils.InfoAlert;
 import org.roda_project.commons_ip.model.IPHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +46,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -92,6 +95,8 @@ public class CreationModalPreparation extends BorderPane {
   private TextField sipAgentName;
   private TextField sipAgentNote;
   private String sSelectedSIP, sSelectedItems, sZeroItems, sAllSIP, sAllItems;
+
+  public static final Image infoIcon = new Image(ClassLoader.getSystemResourceAsStream(Constants.RSC_ICON_INFO_CIRCLE));
 
   /**
    * Creates a modal to prepare for the SIP exportation.
@@ -408,7 +413,10 @@ public class CreationModalPreparation extends BorderPane {
         setIsDisableAgentName(t1.isEmpty());
       }
     });
-    labelAndField.getChildren().addAll(prefixLabel, HorizontalSpace.create(), sipAgentName);
+    ImageView infoImage = InfoAlert.getInfoAlert(stage, Constants.I18N_CREATIONMODALPREPARATION_AGENT_NAME,
+      Constants.I18N_CREATIONMODALPREPARATION_AGENT_NAME_TOOLTIP);
+
+    labelAndField.getChildren().addAll(prefixLabel, infoImage, HorizontalSpace.create(), sipAgentName);
     labelAndField.managedProperty().bind(labelAndField.visibleProperty());
     return labelAndField;
   }
@@ -420,13 +428,16 @@ public class CreationModalPreparation extends BorderPane {
     sipAgentNote = new TextField();
     sipAgentNote.setMinWidth(300);
     sipAgentNote.setMaxWidth(450);
+
     sipAgentNote.textProperty().addListener(new ChangeListener<String>() {
       @Override
       public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
         setIsDisableAgentID(t1.isEmpty());
       }
     });
-    labelAndField.getChildren().addAll(prefixLabel, HorizontalSpace.create(), sipAgentNote);
+    ImageView infoImage = InfoAlert.getInfoAlert(stage, Constants.I18N_CREATIONMODALPREPARATION_AGENT_ID,
+      Constants.I18N_CREATIONMODALPREPARATION_AGENT_ID_TOOLTIP);
+    labelAndField.getChildren().addAll(prefixLabel, infoImage, HorizontalSpace.create(), sipAgentNote);
 
     labelAndField.managedProperty().bind(labelAndField.visibleProperty());
     return labelAndField;
