@@ -65,6 +65,7 @@ public final class Constants {
   public static final String LANG_EN = "en";
   public static final String LANG_HU = "hu";
   public static final String LANG_HR = "hr";
+  public static final String LANG_SV = "sv";
   public static final String LANG_DEFAULT = LANG_EN;
 
   // sip related
