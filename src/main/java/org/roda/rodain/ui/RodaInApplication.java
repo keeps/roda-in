@@ -82,7 +82,7 @@ public class RodaInApplication extends Application {
   private Pane splashPane;
   private Stage splashStage;
   // Languages
-  private RadioMenuItem langEN, langPT, langHU, langES_CL, langHR;
+  private RadioMenuItem langEN, langPT, langHU, langES_CL, langHR, langSV;
 
   /**
    * The entry point of the application.
@@ -432,7 +432,10 @@ public class RodaInApplication extends Application {
     langHR = new RadioMenuItem("Hrvatski");
     langHR.setUserData(Constants.LANG_HR);
     langHR.setToggleGroup(languageGroup);
-    language.getItems().addAll(langEN, langPT, langHU, langES_CL, langHR);
+    langSV = new RadioMenuItem("Svenska");
+    langSV.setUserData(Constants.LANG_SV);
+    langSV.setToggleGroup(languageGroup);
+    language.getItems().addAll(langEN, langPT, langHU, langES_CL, langHR, langSV);
 
     updateSelectedLanguageMenu();
 
@@ -645,6 +648,8 @@ public class RodaInApplication extends Application {
       case Constants.LANG_HR:
         langHR.setSelected(true);
         break;
+      case Constants.LANG_SV:
+        langSV.setSelected(true);
       default:
         langEN.setSelected(true);
         break;
