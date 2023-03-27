@@ -10,8 +10,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.net.util.Base64;
 import org.roda.rodain.core.ConfigurationManager;
 import org.roda.rodain.core.Constants;
 import org.roda.rodain.core.Constants.MetadataOption;

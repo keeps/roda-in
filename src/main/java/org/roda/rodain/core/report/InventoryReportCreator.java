@@ -21,9 +21,13 @@ import org.roda_project.commons_ip.utils.ZipEntryInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gov.loc.repository.bagit.Bag;
-import gov.loc.repository.bagit.BagFactory;
-import gov.loc.repository.bagit.Manifest;
+import gov.loc.repository.bagit.domain.Bag;
+import gov.loc.repository.bagit.domain.Manifest;
+import gov.loc.repository.bagit.exceptions.InvalidBagitFileFormatException;
+import gov.loc.repository.bagit.exceptions.MaliciousPathException;
+import gov.loc.repository.bagit.exceptions.UnparsableVersionException;
+import gov.loc.repository.bagit.exceptions.UnsupportedAlgorithmException;
+import gov.loc.repository.bagit.reader.BagReader;
 
 public class InventoryReportCreator {
   private static final Logger LOGGER = LoggerFactory.getLogger(InventoryReportCreator.class.getName());
@@ -34,7 +38,6 @@ public class InventoryReportCreator {
   private static final String CSV_FIELD_FILE_ABSOLUTE_PATH = "absolute path";
   private static final String CSV_FIELD_FILE_RELATIVE_ZIP_PATH = "zip relative path";
   private static final String CSV_FIELD_SIP_ID = "SIP ID";
-  private static final String MD5 = "MD5";
 
   private Path outputPath;
 
@@ -82,7 +85,8 @@ public class InventoryReportCreator {
           csvFilePrinter.printRecords(lines);
         }
       }
-    } catch (IOException e) {
+    } catch (IOException | MaliciousPathException | UnparsableVersionException | UnsupportedAlgorithmException
+      | InvalidBagitFileFormatException e) {
       LOGGER.error("Error creating inventory report", e);
     } finally {
       IOUtils.closeQuietly(fileWriter);
@@ -115,33 +119,36 @@ public class InventoryReportCreator {
     return lines;
   }
 
-  private List<List<String>> bagToCSVLines(Path path) {
-    BagFactory fact = new BagFactory();
+  private List<List<String>> bagToCSVLines(Path path) throws MaliciousPathException, UnparsableVersionException,
+    UnsupportedAlgorithmException, InvalidBagitFileFormatException, IOException {
 
-    Bag bag = fact.createBag(path.toFile());
+    BagReader bagReader = new BagReader();
+    Bag bag = bagReader.read(path);
 
     List<List<String>> lines = new ArrayList<List<String>>();
     for (Manifest manifest : bag.getTagManifests()) {
-      for (Map.Entry<String, String> entry : manifest.entrySet()) {
-        List<String> line = new ArrayList<String>();
+      for (Map.Entry<Path, String> entry : manifest.getFileToChecksumMap().entrySet()) {
+        List<String> line = new ArrayList<>();
+        long size = Files.size(entry.getKey());
         line.add(path.getFileName().toString());
-        line.add(entry.getKey());
+        line.add(entry.getKey().toString());
         line.add("");
-        line.add(MD5);
+        line.add(manifest.getAlgorithm().getBagitName());
         line.add(entry.getValue());
-        line.add(Long.toString(bag.getBagFile(entry.getKey()).getSize()));
+        line.add(Long.toString(size));
         lines.add(line);
       }
     }
-    for (Manifest manifest : bag.getPayloadManifests()) {
-      for (Map.Entry<String, String> entry : manifest.entrySet()) {
-        List<String> line = new ArrayList<String>();
+    for (Manifest manifest : bag.getPayLoadManifests()) {
+      for (Map.Entry<Path, String> entry : manifest.getFileToChecksumMap().entrySet()) {
+        List<String> line = new ArrayList<>();
+        long size = Files.size(entry.getKey());
         line.add(path.getFileName().toString());
-        line.add(entry.getKey());
+        line.add(entry.getKey().toString());
         line.add("");
-        line.add(MD5);
+        line.add(manifest.getAlgorithm().getBagitName());
         line.add(entry.getValue());
-        line.add(Long.toString(bag.getBagFile(entry.getKey()).getSize()));
+        line.add(Long.toString(size));
         lines.add(line);
       }
     }
