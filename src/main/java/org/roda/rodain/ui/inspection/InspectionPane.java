@@ -578,8 +578,9 @@ public class InspectionPane extends BorderPane {
     int i = 0;
     for (TemplateFieldValue metadataValue : metadataValues) {
       // do not process this entry if it's marked as hidden
-      if (getBooleanOption(metadataValue.get("hidden")))
+      if (getBooleanOption(metadataValue.get("hidden"))) {
         continue;
+      }
       String templateLabel = (String) metadataValue.get("label");
 
       String templateLabelI18N = (String) metadataValue.get("labeli18n");
