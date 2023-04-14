@@ -650,9 +650,9 @@ public class RodaInApplication extends Application {
         break;
       case Constants.LANG_SV:
         langSV.setSelected(true);
+        break;
       default:
         langEN.setSelected(true);
-        break;
     }
   }
 
