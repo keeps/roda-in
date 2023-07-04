@@ -443,7 +443,7 @@ public class RodaInApplication extends Application {
 
     // File
     final ToggleGroup languageGroup = new ToggleGroup();
-    addLanguage(language, languageGroup, "en", "pt", "hu", "es_CL", "hr", "sv", "de", "sl");
+    addLanguage(language, languageGroup, "en", "pt_PT", "hu", "es_CL", "hr", "sv", "de", "sl");
 
     updateSelectedLanguageMenu();
 
