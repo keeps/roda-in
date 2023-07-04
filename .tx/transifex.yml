@@ -1,0 +1,14 @@
+git:
+  filters:
+    - filter_type: file
+      file_format: UNICODEPROPERTIES
+      source_language: en
+      source_file: src/main/resources/properties/lang_en.properties
+      translation_files_expression: src/main/resources/properties/lang_<lang>.properties
+    - filter_type: file
+      file_format: UNICODEPROPERTIES
+      source_language: en
+      source_file: src/main/resources/properties/help_en.properties
+      translation_files_expression: src/main/resources/properties/help_<lang>.properties
+  settings:
+    pr_branch_name: tx_translations_<br_unique_id>
