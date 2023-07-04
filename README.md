@@ -181,8 +181,6 @@ For more information or commercial support, contact [KEEP SOLUTIONS](http://www.
 
 ## Contributing
 
-[![Build Status](https://api.travis-ci.org/keeps/roda-in.png?branch=master)](https://travis-ci.org/keeps/roda-in)
-
 [Maven](https://maven.apache.org/) is required to build RODA-in.
 
 1. Fork it!
