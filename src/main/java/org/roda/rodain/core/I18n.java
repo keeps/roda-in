@@ -1,5 +1,7 @@
 package org.roda.rodain.core;
 
+import java.util.Locale;
+
 /**
  * Alias for the getLocalizedString method of the AppProperties class.
  * 
@@ -34,6 +36,10 @@ public class I18n {
    */
   public static String tLang(String key, String languageTag) {
     return ConfigurationManager.getLocalizedStringForLanguage(key, languageTag);
+  }
+
+  public static String tLang(String key, Locale locale) {
+    return ConfigurationManager.getLocalizedStringForLanguage(key, locale.toLanguageTag());
   }
 
   /**

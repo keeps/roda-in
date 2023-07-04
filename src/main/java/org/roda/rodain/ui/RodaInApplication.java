@@ -31,7 +31,11 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
+import org.apache.commons.collections.list.TreeList;
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.lang3.LocaleUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.roda.rodain.core.ConfigurationManager;
 import org.roda.rodain.core.Constants;
 import org.roda.rodain.core.Controller;
@@ -59,10 +63,15 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * @author Andre Pereira apereira@keep.pt
@@ -81,8 +90,8 @@ public class RodaInApplication extends Application {
   // Splash
   private Pane splashPane;
   private Stage splashStage;
-  // Languages
-  private RadioMenuItem langEN, langPT, langHU, langES_CL, langHR, langSV;
+  
+  private Map<Locale,RadioMenuItem> localeMenuItems = new HashMap<>();
 
   /**
    * The entry point of the application.
@@ -401,6 +410,23 @@ public class RodaInApplication extends Application {
     return split;
   }
 
+  private void addLanguage(Menu language, ToggleGroup languageGroup, String... localesAsStrings) {
+
+    List<RadioMenuItem> items = new ArrayList<>();
+
+    for(String localeAsString : localesAsStrings) {
+      Locale locale = LocaleUtils.toLocale(localeAsString);
+      RadioMenuItem newLang = new RadioMenuItem(StringUtils.capitalize(locale.getDisplayLanguage(locale)));
+      newLang.setUserData(localeAsString);
+      newLang.setToggleGroup(languageGroup);
+      items.add(newLang);
+      localeMenuItems.put(locale, newLang);
+    }
+
+    items.sort((a, b) -> a.getText().compareToIgnoreCase(b.getText()));
+    language.getItems().addAll(items);
+  }
+
   private void createMenu() {
     MenuBar menu = new MenuBar();
     Menu menuFile = new Menu(I18n.t(Constants.I18N_MAIN_FILE));
@@ -417,41 +443,24 @@ public class RodaInApplication extends Application {
 
     // File
     final ToggleGroup languageGroup = new ToggleGroup();
-    langPT = new RadioMenuItem("Português");
-    langPT.setUserData(Constants.LANG_PT);
-    langPT.setToggleGroup(languageGroup);
-    langEN = new RadioMenuItem("English");
-    langEN.setUserData(Constants.LANG_EN);
-    langEN.setToggleGroup(languageGroup);
-    langHU = new RadioMenuItem("Magyar");
-    langHU.setUserData(Constants.LANG_HU);
-    langHU.setToggleGroup(languageGroup);
-    langES_CL = new RadioMenuItem("Español (Chile)");
-    langES_CL.setUserData("es_CL");
-    langES_CL.setToggleGroup(languageGroup);
-    langHR = new RadioMenuItem("Hrvatski");
-    langHR.setUserData(Constants.LANG_HR);
-    langHR.setToggleGroup(languageGroup);
-    langSV = new RadioMenuItem("Svenska");
-    langSV.setUserData(Constants.LANG_SV);
-    langSV.setToggleGroup(languageGroup);
-    language.getItems().addAll(langEN, langPT, langHU, langES_CL, langHR, langSV);
+    addLanguage(language, languageGroup, "en", "pt", "hu", "es_CL", "hr", "sv", "de", "sl");
 
     updateSelectedLanguageMenu();
 
     languageGroup.selectedToggleProperty().addListener(observable -> {
       if (languageGroup.getSelectedToggle() != null) {
         String lang = (String) languageGroup.getSelectedToggle().getUserData();
-        if (!lang.equals(ConfigurationManager.getLocale().getLanguage())) {
+        Locale newLocale = LocaleUtils.toLocale(lang);
+        if (!newLocale.equals(ConfigurationManager.getLocale())) {
           Alert dlg = new Alert(Alert.AlertType.CONFIRMATION);
           dlg.getButtonTypes().clear();
           dlg.getButtonTypes().addAll(
-                  new ButtonType(I18n.tLang(Constants.I18N_CANCEL, lang), ButtonBar.ButtonData.CANCEL_CLOSE),
-                  new ButtonType(I18n.tLang(Constants.I18N_RESTART, lang), ButtonBar.ButtonData.OK_DONE));
+                  new ButtonType(I18n.tLang(Constants.I18N_CANCEL, newLocale), ButtonBar.ButtonData.CANCEL_CLOSE),
+                  new ButtonType(I18n.tLang(Constants.I18N_RESTART, newLocale), ButtonBar.ButtonData.OK_DONE));
           dlg.initStyle(StageStyle.UNDECORATED);
-          dlg.setHeaderText(I18n.tLang(Constants.I18N_MAIN_UPDATE_LANG_HEADER, lang));
-          dlg.setTitle(I18n.tLang(Constants.I18N_MAIN_UPDATE_LANG_TITLE, lang));
-          dlg.setContentText(I18n.tLang(Constants.I18N_MAIN_UPDATE_LANG_CONTENT, lang));
+          dlg.setHeaderText(I18n.tLang(Constants.I18N_MAIN_UPDATE_LANG_HEADER, newLocale));
+          dlg.setTitle(I18n.tLang(Constants.I18N_MAIN_UPDATE_LANG_TITLE, newLocale));
+          dlg.setContentText(I18n.tLang(Constants.I18N_MAIN_UPDATE_LANG_CONTENT, newLocale));
           dlg.initModality(Modality.APPLICATION_MODAL);
           dlg.initOwner(stage);
           dlg.show();
@@ -629,30 +638,29 @@ public class RodaInApplication extends Application {
   }
 
   private void updateSelectedLanguageMenu() {
-    switch (ConfigurationManager.getLocale().toLanguageTag().toLowerCase()) {
-      case Constants.LANG_EN:
-        langEN.setSelected(true);
-        break;
-      case Constants.LANG_PT_PT:
-      case Constants.LANG_PT_BR:
-      case Constants.LANG_PT:
-        langPT.setSelected(true);
-        break;
-      case Constants.LANG_HU:
-        langHU.setSelected(true);
-        break;
-      case Constants.LANG_ES:
-      case Constants.LANG_ES_CL:
-        langES_CL.setSelected(true);
-        break;
-      case Constants.LANG_HR:
-        langHR.setSelected(true);
-        break;
-      case Constants.LANG_SV:
-        langSV.setSelected(true);
-        break;
-      default:
-        langEN.setSelected(true);
+    Locale configurationLocale = ConfigurationManager.getLocale();
+
+    // Sanity check
+    if(configurationLocale == null) {
+      return;
+    } 
+
+    RadioMenuItem langMenuItem = localeMenuItems.get(configurationLocale);
+    if(langMenuItem != null) {
+      langMenuItem.setSelected(true);
+    } else if(StringUtils.isNotBlank(configurationLocale.getVariant())) {
+      // falling back to more generic locale
+      Locale genericLocale = Locale.forLanguageTag(configurationLocale.getCountry());
+
+      // Sanity check
+      if(genericLocale == null) {
+        return;
+      }
+
+      RadioMenuItem genericLangMenuItem = localeMenuItems.get(genericLocale);
+       if(genericLangMenuItem != null) {
+        genericLangMenuItem.setSelected(true);
+       }
     }
   }
 
