@@ -82,14 +82,13 @@ public class RuleModalController {
    * Confirms the creation of a new Rule.
    * <p/>
    * <p>
-   * The method starts by getting the association and metadata types chosen by
-   * the user. Then creates a new Rule using that information and, if it
-   * applies, the options from each chosen type (file names, maximum folder
-   * depth, etc.).
+   * The method starts by getting the association and metadata types chosen by the
+   * user. Then creates a new Rule using that information and, if it applies, the
+   * options from each chosen type (file names, maximum folder depth, etc.).
    * </p>
    * <p>
-   * The next step is to create the tree visitor to walk the files tree and add
-   * it to the queue of visitors. Finally, notifies the other components of the
+   * The next step is to create the tree visitor to walk the files tree and add it
+   * to the queue of visitors. Finally, notifies the other components of the
    * interface that a new association has been created and they need to adapt to
    * it.
    * </p>
@@ -130,7 +129,10 @@ public class RuleModalController {
           break;
       }
 
-      if (metadataType != null && metadataVersion == null) {
+      if (metadataType != null && metadataVersion == null && metadataOption.equals(MetadataOption.SAME_DIRECTORY)) {
+        metadataVersion = ConfigurationManager.getMetadataConfig(metadataType + Constants.CONF_K_SUFFIX_VERSION);
+        metadataType = ConfigurationManager.getMetadataConfig(metadataType + Constants.CONF_K_SUFFIX_TYPE);
+      } else if (metadataType != null && metadataVersion == null) {
         metadataVersion = ConfigurationManager.getMetadataConfig(templateType + Constants.CONF_K_SUFFIX_VERSION);
       }
 
@@ -165,8 +167,8 @@ public class RuleModalController {
   }
 
   /**
-   * Creates a new RuleModalRemoving pane and sets the stage's root scene as
-   * that pane.
+   * Creates a new RuleModalRemoving pane and sets the stage's root scene as that
+   * pane.
    *
    * @param r
    *          The rule to be removed
@@ -189,8 +191,8 @@ public class RuleModalController {
   }
 
   /**
-   * Creates a new RuleModalRemoving pane and sets the stage's root scene as
-   * that pane.
+   * Creates a new RuleModalRemoving pane and sets the stage's root scene as that
+   * pane.
    *
    * @param sip
    *          The SIP to be removed
