@@ -54,7 +54,7 @@ jobs:
         env:
           OS: ${{ matrix.os }}
       - name: Setup pom version
-        run: mvn versions:set -DnewVersion=${{ github.ref_name }}
+        run: mvn versions:set -DnewVersion='${{ github.ref_name }}'
       - name: Build Jar
         run: mvn --batch-mode clean package
       - name: Build Linux
@@ -138,7 +138,7 @@ jobs:
         env:
           OS: ${{ matrix.os }}
       - name: Setup pom version
-        run: mvn versions:set -DnewVersion=${{ github.ref_name }}
+        run: mvn versions:set -DnewVersion='${{ github.ref_name }}'
       - name: Build Jar
         run: mvn --batch-mode clean package -P hu
       - name: Build Linux
