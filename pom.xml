@@ -547,7 +547,7 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20160810</version>
+            <version>20230227</version>
         </dependency>
         <dependency>
             <groupId>net.sf.saxon</groupId>
