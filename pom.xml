@@ -33,7 +33,7 @@
         <dep.version.sf-test>4.0.6-alpha</dep.version.sf-test>
         <dep.version.jackson>2.12.6.1</dep.version.jackson>
         <dep.version.slf4j>1.7.30</dep.version.slf4j>
-        <dep.version.logback>1.2.9</dep.version.logback>
+        <dep.version.logback>1.2.13</dep.version.logback>
         <dep.version.richtextfx>0.9.3</dep.version.richtextfx>
         <dep.version.saxon>9.7.0-15</dep.version.saxon>
         <dep.version.jcabi>0.18.1</dep.version.jcabi>
