@@ -145,6 +145,9 @@ public class HungarianSipCreator extends SimpleSipCreator implements SIPObserver
         if (metadataPath == null) {
           String content = descriptionObject.getMetadataWithReplaces(descObjMetadata);
           metadataPath = descObjMetadata.getPath();
+          if (metadataPath == null) {
+            metadataPath = tempDir.resolve(descObjMetadata.getId());
+          }
           FileUtils.writeStringToFile(metadataPath.toFile(), content, Constants.RODAIN_DEFAULT_ENCODING);
         }
 

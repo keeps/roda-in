@@ -205,6 +205,9 @@ public abstract class SipCreator extends SimpleSipCreator implements SIPObserver
         if (metadataPath == null) {
           final String content = descriptionObject.getMetadataWithReplaces(descObjMetadata);
           metadataPath = descObjMetadata.getPath();
+          if (metadataPath == null) {
+            metadataPath = tempDir.resolve(descObjMetadata.getId());
+          }
           FileUtils.writeStringToFile(metadataPath.toFile(), content, Constants.RODAIN_DEFAULT_ENCODING);
         }
 
