@@ -35,7 +35,7 @@
         <dep.version.slf4j>1.7.30</dep.version.slf4j>
         <dep.version.logback>1.2.9</dep.version.logback>
         <dep.version.richtextfx>0.9.3</dep.version.richtextfx>
-        <dep.version.saxon>9.7.0-15</dep.version.saxon>
+        <dep.version.saxon>9.9.1-8</dep.version.saxon>
         <dep.version.jcabi>0.18.1</dep.version.jcabi>
     </properties>
 
