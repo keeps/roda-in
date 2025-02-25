@@ -349,7 +349,7 @@
                     <plugin>
                         <groupId>io.github.fvarrui</groupId>
                         <artifactId>javapackager</artifactId>
-                        <version>1.6.2</version>
+                        <version>1.7.6</version>
                         <executions>
                             <execution>
                                 <id>linux-bundler</id>
@@ -390,7 +390,7 @@
                     <plugin>
                         <groupId>io.github.fvarrui</groupId>
                         <artifactId>javapackager</artifactId>
-                        <version>1.6.2</version>
+                        <version>1.7.6</version>
                         <executions>
                             <execution>
                                 <id>windows-bundler</id>
@@ -445,7 +445,7 @@
                     <plugin>
                         <groupId>io.github.fvarrui</groupId>
                         <artifactId>javapackager</artifactId>
-                        <version>1.6.2</version>
+                        <version>1.7.6</version>
                         <executions>
                             <execution>
                                 <id>mac-bundler</id>
