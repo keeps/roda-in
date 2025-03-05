@@ -28,6 +28,8 @@ import org.roda.rodain.ui.creation.CreationModalProcessing;
 import org.roda_project.commons_ip.model.IPHeader;
 import org.roda_project.commons_ip.utils.IPEnums;
 import org.roda_project.commons_ip.utils.METSEnums;
+import org.roda_project.commons_ip2.cli.model.enums.WriteStrategyEnum;
+import org.roda_project.commons_ip2.cli.utils.SIPBuilderUtils;
 import org.roda_project.commons_ip2.model.IPAgent;
 import org.roda_project.commons_ip2.model.IPAgentNoteTypeEnum;
 import org.roda_project.commons_ip2.model.IPContentInformationType;
@@ -39,6 +41,8 @@ import org.roda_project.commons_ip2.model.MetadataType;
 import org.roda_project.commons_ip2.model.SIP;
 import org.roda_project.commons_ip2.model.SIPObserver;
 import org.roda_project.commons_ip2.model.impl.eark.EARKSIP;
+import org.roda_project.commons_ip2.model.impl.eark.out.writers.strategy.WriteStrategy;
+import org.roda_project.commons_ip2.model.impl.eark.out.writers.strategy.ZipWriteStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -256,7 +260,8 @@ public abstract class SipCreator extends SimpleSipCreator implements SIPObserver
         IPAgentNoteTypeEnum.IDENTIFICATIONCODE));
 
       currentAction = I18n.t(Constants.I18N_SIMPLE_SIP_CREATOR_INIT_ZIP);
-      final Path sipPath = earkSip.build(outputPath, createSipName(descriptionObject, sipNameBuilder),
+      WriteStrategy writeStrategy = SIPBuilderUtils.getWriteStrategy(WriteStrategyEnum.ZIP, outputPath);
+      final Path sipPath = earkSip.build(writeStrategy, createSipName(descriptionObject, sipNameBuilder),
         sipNameBuilder instanceof SIPNameBuilderSIPS ? IPEnums.SipType.EARK2S : IPEnums.SipType.EARK2);
 
       createdSipsCount++;
