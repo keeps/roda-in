@@ -489,8 +489,8 @@
                                 <configuration>
                                     <mainClass>org.roda.rodain.Main</mainClass>
                                     <!-- optional -->
-                                    <name>RODA-in${jar.id}</name>
-                                    <displayName>RODA-in${jar.id}</displayName>
+                                    <name>RODA-in${jar.id}${macos_arch}</name>
+                                    <displayName>RODA-in${jar.id}${macos_arch}</displayName>
                                     <bundleJre>true</bundleJre>
                                     <customizedJre>false</customizedJre>
                                     <generateInstaller>true</generateInstaller>
@@ -565,8 +565,8 @@
                                 <configuration>
                                     <mainClass>org.roda.rodain.Main</mainClass>
                                     <!-- optional -->
-                                    <name>RODA-in${jar.id}</name>
-                                    <displayName>RODA-in${jar.id}</displayName>
+                                    <name>RODA-in${jar.id}${macos_arch}</name>
+                                    <displayName>RODA-in${jar.id}${macos_arch}</displayName>
                                     <bundleJre>true</bundleJre>
                                     <customizedJre>false</customizedJre>
                                     <generateInstaller>true</generateInstaller>
@@ -577,7 +577,7 @@
                                     </additionalResources>
                                     <createZipball>true</createZipball>
                                     <macConfig>
-                                        <appId>RODA-in${jar.id}${macos_arch}</appId>
+                                        <appId>RODA-in${jar.id}</appId>
                                         <icnsFile>src/main/resources/RODA-in${jar.id}.icns</icnsFile>
                                         <volumeName>RODA-in${jar.id}-arm64</volumeName>
                                     </macConfig>
