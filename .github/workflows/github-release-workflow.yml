@@ -72,10 +72,10 @@ jobs:
         run: mvn --batch-mode package -P build-windows
       - name: Build macOS x64
         if: ${{ startsWith(matrix.os, 'macos') && matrix.arch == 'x64' }}
-        run: mvn --batch-mode package -P build-macos-x64
+        run: mvn --batch-mode package -P build-macos-x64 -D macos_arch=-x64
       - name: Build macOS arm64
         if: ${{ startsWith(matrix.os, 'macos') && matrix.arch == 'arm64' }}
-        run: mvn --batch-mode package -P build-macos-arm64
+        run: mvn --batch-mode package -P build-macos-arm64 -D macos_arch=-arm64
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -83,7 +83,6 @@ jobs:
           path: |
             target/*.deb
             target/*.rpm
-            target/*/*.app
             target/*.dmg
             target/*.exe
           retention-days: 1
@@ -163,10 +162,10 @@ jobs:
         run: mvn --batch-mode package -P build-windows -D jar.id=-hu
       - name: Build macOS x64
         if: startsWith(matrix.os, 'macos') && matrix.arch == 'x64'
-        run: mvn --batch-mode package -P build-macos-x64 -D jar.id=-hu
+        run: mvn --batch-mode package -P build-macos-x64 -D jar.id=-hu -D macos_arch=-x64
       - name: Build macOS arm64
         if: startsWith(matrix.os, 'macos') && matrix.arch == 'arm64'
-        run: mvn --batch-mode package -P build-macos-arm64 -D jar.id=-hu
+        run: mvn --batch-mode package -P build-macos-arm64 -D jar.id=-hu -D macos_arch=-arm64
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
