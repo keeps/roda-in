@@ -488,8 +488,8 @@
                                 <configuration>
                                     <mainClass>org.roda.rodain.Main</mainClass>
                                     <!-- optional -->
-                                    <name>RODA-in${jar.id}</name>
-                                    <displayName>RODA-in${jar.id}</displayName>
+                                    <name>RODA-in${jar.id}-x64</name>
+                                    <displayName>RODA-in${jar.id}-x64</displayName>
                                     <bundleJre>true</bundleJre>
                                     <customizedJre>false</customizedJre>
                                     <generateInstaller>true</generateInstaller>
@@ -563,8 +563,8 @@
                                 <configuration>
                                     <mainClass>org.roda.rodain.Main</mainClass>
                                     <!-- optional -->
-                                    <name>RODA-in${jar.id}</name>
-                                    <displayName>RODA-in${jar.id}</displayName>
+                                    <name>RODA-in${jar.id}-arm64</name>
+                                    <displayName>RODA-in${jar.id}-arm64</displayName>
                                     <bundleJre>true</bundleJre>
                                     <customizedJre>false</customizedJre>
                                     <generateInstaller>true</generateInstaller>
