@@ -501,7 +501,7 @@
                                     </additionalResources>
                                     <createZipball>true</createZipball>
                                     <macConfig>
-                                        <appId>RODA-in${jar.id}{macos_arch}</appId>
+                                        <appId>RODA-in${jar.id}${macos_arch}</appId>
                                         <icnsFile>src/main/resources/RODA-in${jar.id}.icns</icnsFile>
                                         <volumeName>RODA-in${jar.id}-x64</volumeName>
                                     </macConfig>
@@ -577,7 +577,7 @@
                                     </additionalResources>
                                     <createZipball>true</createZipball>
                                     <macConfig>
-                                        <appId>RODA-in${jar.id}{macos_arch}</appId>
+                                        <appId>RODA-in${jar.id}${macos_arch}</appId>
                                         <icnsFile>src/main/resources/RODA-in${jar.id}.icns</icnsFile>
                                         <volumeName>RODA-in${jar.id}-arm64</volumeName>
                                     </macConfig>
