@@ -9,52 +9,59 @@ jobs:
   deploy:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+        arch: [ x64, arm64 ]
+        exclude:
+          - os: ubuntu-latest
+            arch: arm64
+          - os: windows-latest
+            arch: arm64
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Download JDK Large Linux
+      - name: Set up JDK 21 Linux
         if: startsWith(matrix.os, 'ubuntu')
-        run: |
-          download_url="https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.10%2B9_openj9-0.24.0/OpenJDK11U-jdk_x64_linux_openj9_linuxXL_11.0.10_9_openj9-0.24.0.tar.gz"
-          curl -L $download_url -o  $RUNNER_TEMP/java_package.tar.gz
-      - name: Download JDK Large macOS
-        if: startsWith(matrix.os, 'macos')
-        run: |
-          download_url="https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.10%2B9_openj9-0.24.0/OpenJDK11U-jdk_x64_mac_openj9_macosXL_11.0.10_9_openj9-0.24.0.tar.gz"
-          curl -L $download_url -o $RUNNER_TEMP/java_package.tar.gz
-      - name: Download JDK Large Windows
-        if: startsWith(matrix.os, 'windows')
-        run: |
-          curl -L "https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.10%2B9_openj9-0.24.0/OpenJDK11U-jdk_x64_windows_openj9_windowsXL_11.0.10_9_openj9-0.24.0.zip" -o java_package.zip
-      - name: Set up JDK 11 Linux and macOS
-        if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v4
         with:
-          distribution: 'jdkfile'
-          jdkFile: ${{ runner.temp }}/java_package.tar.gz
-          java-version: '11.0.0'
+          distribution: 'temurin'
+          java-version: '21'
           architecture: x64
-      - name: Set up JDK 11 Windows
-        if: startsWith(matrix.os, 'windows')
-        uses: actions/setup-java@v2
+
+      - name: Set up JDK 21 macOS x64
+        if: startsWith(matrix.os, 'macos') && matrix.arch == 'x64'
+        uses: actions/setup-java@v4
         with:
-          distribution: 'jdkfile'
-          jdkFile: java_package.zip
-          java-version: '11.0.0'
+          distribution: 'temurin'
+          java-version: '21'
           architecture: x64
-      - name: Download JDK 11
-        run: bash -c ".github/workflows/scripts/downloadJDK.sh"
-        env:
-          OS: ${{ matrix.os }}
-      - name: Setup pom version
-        run: mvn versions:set -DnewVersion='${{ github.ref_name }}'
+
+      - name: Set up JDK 21 macOS arm64
+        if: startsWith(matrix.os, 'macos') && matrix.arch == 'arm64'
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          architecture: aarch64
+
+      - name: Set up JDK 21 Windows
+        if: startsWith(matrix.os, 'windows')
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          architecture: x64
+      - name: Cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven-
       - name: Build Jar
         run: mvn --batch-mode clean package
       - name: Build Linux
@@ -63,13 +70,16 @@ jobs:
       - name: Build Windows
         if: startsWith(matrix.os, 'windows')
         run: mvn --batch-mode package -P build-windows
-      - name: Build macOS
-        if: startsWith(matrix.os, 'macos')
-        run: mvn --batch-mode package -P build-macos
+      - name: Build macOS x64
+        if: ${{ startsWith(matrix.os, 'macos') && matrix.arch == 'x64' }}
+        run: mvn --batch-mode package -P build-macos-x64
+      - name: Build macOS arm64
+        if: ${{ startsWith(matrix.os, 'macos') && matrix.arch == 'arm64' }}
+        run: mvn --batch-mode package -P build-macos-arm64
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-          name: artifact
+          name: artifact-${{ matrix.os }}-${{ matrix.arch }}
           path: |
             target/*.deb
             target/*.rpm
@@ -78,7 +88,7 @@ jobs:
             target/*.exe
           retention-days: 1
       - name: Release to GitHub
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           name: Version ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}
@@ -90,55 +100,59 @@ jobs:
             target/*.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   deploy-hu:
     strategy:
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+        arch: [ x64, arm64 ]
+        exclude:
+          - os: ubuntu-latest
+            arch: arm64
+          - os: windows-latest
+            arch: arm64
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Download JDK Large Linux
+
+      - name: Set up JDK 21 Linux
         if: startsWith(matrix.os, 'ubuntu')
-        run: |
-          download_url="https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.10%2B9_openj9-0.24.0/OpenJDK11U-jdk_x64_linux_openj9_linuxXL_11.0.10_9_openj9-0.24.0.tar.gz"
-          curl -L $download_url -o  $RUNNER_TEMP/java_package.tar.gz
-      - name: Download JDK Large macOS
-        if: startsWith(matrix.os, 'macos')
-        run: |
-          download_url="https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.10%2B9_openj9-0.24.0/OpenJDK11U-jdk_x64_mac_openj9_macosXL_11.0.10_9_openj9-0.24.0.tar.gz"
-          curl -L $download_url -o $RUNNER_TEMP/java_package.tar.gz
-      - name: Download JDK Large Windows
-        if: startsWith(matrix.os, 'windows')
-        run: |
-          curl -L "https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.10%2B9_openj9-0.24.0/OpenJDK11U-jdk_x64_windows_openj9_windowsXL_11.0.10_9_openj9-0.24.0.zip" -o java_package.zip
-      - name: Set up JDK 11 Linux and macOS
-        if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v4
         with:
-          distribution: 'jdkfile'
-          jdkFile: ${{ runner.temp }}/java_package.tar.gz
-          java-version: '11.0.0'
+          distribution: 'temurin'
+          java-version: '21'
           architecture: x64
-      - name: Set up JDK 11 Windows
-        if: startsWith(matrix.os, 'windows')
-        uses: actions/setup-java@v2
+
+      - name: Set up JDK 21 macOS x64
+        if: ${{ startsWith(matrix.os, 'macos') && matrix.arch == 'x64' }}
+        uses: actions/setup-java@v4
         with:
-          distribution: 'jdkfile'
-          jdkFile: java_package.zip
-          java-version: '11.0.0'
+          distribution: 'temurin'
+          java-version: '21'
           architecture: x64
-      - name: Download JDK 11
-        run: bash -c ".github/workflows/scripts/downloadJDK.sh"
-        env:
-          OS: ${{ matrix.os }}
-      - name: Setup pom version
-        run: mvn versions:set -DnewVersion='${{ github.ref_name }}'
+
+      - name: Set up JDK 21 macOS arm64
+        if: ${{ startsWith(matrix.os, 'macos') && matrix.arch == 'arm64' }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          architecture: aarch64
+
+      - name: Set up JDK 21 Windows
+        if: startsWith(matrix.os, 'windows')
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          architecture: x64
+
       - name: Build Jar
         run: mvn --batch-mode clean package -P hu
       - name: Build Linux
@@ -147,13 +161,16 @@ jobs:
       - name: Build Windows
         if: startsWith(matrix.os, 'windows')
         run: mvn --batch-mode package -P build-windows -D jar.id=-hu
-      - name: Build macOS
-        if: startsWith(matrix.os, 'macos')
-        run: mvn --batch-mode package -P build-macos -D jar.id=-hu
+      - name: Build macOS x64
+        if: startsWith(matrix.os, 'macos') && matrix.arch == 'x64'
+        run: mvn --batch-mode package -P build-macos-x64 -D jar.id=-hu
+      - name: Build macOS arm64
+        if: startsWith(matrix.os, 'macos') && matrix.arch == 'arm64'
+        run: mvn --batch-mode package -P build-macos-arm64 -D jar.id=-hu
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-          name: artifact
+          name: artifact-hu-${{ matrix.os }}-${{ matrix.arch }}
           path: |
             target/*.deb
             target/*.rpm
@@ -161,7 +178,7 @@ jobs:
             target/*.exe
           retention-days: 1
       - name: Release to GitHub
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           name: Version ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}
