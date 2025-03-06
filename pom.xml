@@ -440,6 +440,7 @@
             <id>build-macos-x64</id>
             <properties>
                 <jar.id/>
+                <macos_arch/>
             </properties>
             <build>
                 <plugins>
@@ -500,7 +501,7 @@
                                     </additionalResources>
                                     <createZipball>true</createZipball>
                                     <macConfig>
-                                        <appId>RODA-in${jar.id}</appId>
+                                        <appId>RODA-in${jar.id}{macos_arch}</appId>
                                         <icnsFile>src/main/resources/RODA-in${jar.id}.icns</icnsFile>
                                         <volumeName>RODA-in${jar.id}-x64</volumeName>
                                     </macConfig>
@@ -515,6 +516,7 @@
             <id>build-macos-arm64</id>
             <properties>
                 <jar.id/>
+                <macos_arch/>
             </properties>
             <build>
                 <plugins>
@@ -575,7 +577,7 @@
                                     </additionalResources>
                                     <createZipball>true</createZipball>
                                     <macConfig>
-                                        <appId>RODA-in${jar.id}</appId>
+                                        <appId>RODA-in${jar.id}{macos_arch}</appId>
                                         <icnsFile>src/main/resources/RODA-in${jar.id}.icns</icnsFile>
                                         <volumeName>RODA-in${jar.id}-arm64</volumeName>
                                     </macConfig>
