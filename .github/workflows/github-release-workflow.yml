@@ -27,7 +27,7 @@ jobs:
           fetch-depth: 0
       - name: Set up JDK 21 Linux
         if: startsWith(matrix.os, 'ubuntu')
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '21'
@@ -35,7 +35,7 @@ jobs:
 
       - name: Set up JDK 21 macOS x64
         if: startsWith(matrix.os, 'macos') && matrix.arch == 'x64'
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '21'
@@ -43,7 +43,7 @@ jobs:
 
       - name: Set up JDK 21 macOS arm64
         if: startsWith(matrix.os, 'macos') && matrix.arch == 'arm64'
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '21'
@@ -51,7 +51,7 @@ jobs:
 
       - name: Set up JDK 21 Windows
         if: startsWith(matrix.os, 'windows')
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '21'
@@ -122,7 +122,7 @@ jobs:
 
       - name: Set up JDK 21 Linux
         if: startsWith(matrix.os, 'ubuntu')
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '21'
@@ -130,7 +130,7 @@ jobs:
 
       - name: Set up JDK 21 macOS x64
         if: ${{ startsWith(matrix.os, 'macos') && matrix.arch == 'x64' }}
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '21'
@@ -138,7 +138,7 @@ jobs:
 
       - name: Set up JDK 21 macOS arm64
         if: ${{ startsWith(matrix.os, 'macos') && matrix.arch == 'arm64' }}
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '21'
@@ -146,7 +146,7 @@ jobs:
 
       - name: Set up JDK 21 Windows
         if: startsWith(matrix.os, 'windows')
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '21'
