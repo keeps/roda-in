@@ -57,7 +57,7 @@ jobs:
           java-version: '21'
           architecture: x64
       - name: Cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
