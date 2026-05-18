@@ -195,6 +195,9 @@ public class TemplateUtils {
 
   public static List<String> applyXpath(String xml, String xpathString) {
     List<String> result = new ArrayList<>();
+    if (xml == null || xml.trim().isEmpty()) {
+      return result;
+    }
     try {
       Processor proc = new Processor(false);
       XPathCompiler xpath = proc.newXPathCompiler();

@@ -2101,7 +2101,7 @@ public class InspectionPane extends BorderPane {
     Platform.runLater(() -> {
       metaText.replaceText(content);
       try {
-        metaText.setStyleSpans(0, XMLEditor.computeHighlighting(content));
+        metaText.setStyleSpans(0, XMLEditor.computeHighlighting(metaText.getText()));
       } catch (IndexOutOfBoundsException e) {
         LOGGER.warn("Error setting the StyleSpans", e);
       }
